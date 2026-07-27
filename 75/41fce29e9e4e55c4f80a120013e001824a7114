@@ -1,0 +1,23 @@
+apps/web/Dockerfile
+  s_644e00651e10c2::t_f05894c1e54d9c 7,9-13,15-17,21,24-27,29
+apps/web/railway.toml
+  s_644e00651e10c2::t_67ec874a0f1b8c 1-9
+README.md
+  s_644e00651e10c2::t_6c764c8a69a2a1 39,41-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "7541fce29e9e4e55c4f80a120013e001824a7114",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
