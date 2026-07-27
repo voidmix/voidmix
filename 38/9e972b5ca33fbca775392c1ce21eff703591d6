@@ -1,0 +1,37 @@
+packages/storage/src/types.ts
+  s_644e00651e10c2::t_0e9e106caa63c4 1-48
+packages/storage/src/factory.ts
+  s_644e00651e10c2::t_ef18f96bf2b642 1-87
+packages/storage/src/index.ts
+  s_644e00651e10c2::t_62dd95fbc21e5d 1-11
+packages/storage/__tests__/factory.test.ts
+  s_644e00651e10c2::t_5bf2759ca0a198 1-142
+  s_644e00651e10c2::t_61ed7275a9b77d 143-145
+packages/storage/src/env.ts
+  s_644e00651e10c2::t_d75db01eaffbe5 1-23
+packages/storage/package.json
+  s_644e00651e10c2::t_d6d3845f54b0c2 1-27
+packages/storage/tsconfig.json
+  s_644e00651e10c2::t_6baa367b30a761 1-8
+packages/storage/src/drivers/s3.ts
+  s_644e00651e10c2::t_f20d116fcae825 1-87
+  s_644e00651e10c2::t_1a2dbb279d826a 88-90
+bun.lock
+  s_644e00651e10c2::t_19aeb6f2ae64fe 261-277,331-368,853-864,1073-1074,1151-1152,1179-1180,1231,1343,1367-1368,1429,1471-1472,1475-1476,1479-1480,1485,1579-1580,1713-1714,1721,1777-1778,1833-1834,1837-1838,1847,1851-1856,1903-1904
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "389e972b5ca33fbca775392c1ce21eff703591d6",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
