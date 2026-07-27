@@ -1,0 +1,54 @@
+packages/cache/tsconfig.json
+  s_644e00651e10c2::t_2d271efe629f81 1-8
+packages/cache/src/singleton.ts
+  s_644e00651e10c2::t_2d28a0081cca18 1-19
+packages/cache/package.json
+  s_644e00651e10c2::t_f630f7187937c9 1-28
+packages/cache/src/reset.ts
+  s_644e00651e10c2::t_739079ea556d6e 1-28
+packages/cache/src/factory.ts
+  s_644e00651e10c2::t_a36049696deebc 4
+  s_644e00651e10c2::t_2aaf75d8f17d7f 1,3,5-300,302-316
+  s_644e00651e10c2::t_b14b4904f58728 2
+  s_644e00651e10c2::t_0379b07ac79daa 301
+  s_644e00651e10c2::t_bd4e0650042d2f 317-319
+packages/cache/src/health.ts
+  s_644e00651e10c2::t_8e778ceb5fddce 1-59
+packages/cache/src/types.ts
+  s_644e00651e10c2::t_cc641891407200 1-48
+packages/cache/src/keys.ts
+  s_644e00651e10c2::t_1ead08c732e3e8 1-17
+packages/cache/src/index.ts
+  s_644e00651e10c2::t_7f1bead46a36d3 1-7
+packages/cache/__tests__/factory.test.ts
+  s_644e00651e10c2::t_6e815c605b7654 25
+  s_644e00651e10c2::t_50dd0d31f5547b 1-24,26-76
+  s_644e00651e10c2::t_7ae2e3ff0f88cc 77-78
+packages/cache/src/ratelimit.ts
+  s_644e00651e10c2::t_0980821646665e 1-48
+packages/cache/src/session.ts
+  s_644e00651e10c2::t_206941cde901d5 1-21
+packages/cache/__tests__/keys.test.ts
+  s_644e00651e10c2::t_553a6f9ea45f4c 1-18
+packages/cache/src/env.ts
+  s_644e00651e10c2::t_6642d13e769ed1 1-2
+  s_644e00651e10c2::t_7d43978b0f8447 3-17
+bun.lock
+  s_644e00651e10c2::t_4d9d279c1492d7 132-147,430-431,874-875,1020-1021,1060-1061,1148-1149,1350-1353,1410-1411
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "7407c7917e3ab8ee58db9decf92b15d7cb9defa8",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
