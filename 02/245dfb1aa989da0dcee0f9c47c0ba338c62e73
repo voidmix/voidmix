@@ -1,0 +1,33 @@
+packages/database/src/health.ts
+  s_644e00651e10c2::t_bfe947afa049e0 3-13
+packages/database/src/index.ts
+  s_644e00651e10c2::t_9d6a66ea7a30d1 1-2
+packages/database/__tests__/migrate.test.ts
+  s_644e00651e10c2::t_1b0dfb596d456e 12
+packages/database/package.json
+  s_644e00651e10c2::t_daaf71e900747d 2
+packages/database/src/client.ts
+  s_644e00651e10c2::t_293aff8cef2f6e 8-10
+packages/database/src/env.ts
+  s_644e00651e10c2::t_517ee60882088f 3
+packages/database/src/migrate.ts
+  s_644e00651e10c2::t_104faf36705bb7 7-42
+packages/database/__tests__/health.test.ts
+  s_644e00651e10c2::t_86ce9bb814c024 5-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "02245dfb1aa989da0dcee0f9c47c0ba338c62e73",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
