@@ -1,0 +1,59 @@
+docs/ROADMAP.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-105
+docs/specs/04-local-tools-and-permissions.md
+  s_4a84510d2abbc9::t_4b4c04adddd111 34-43
+  s_4a84510d2abbc9::t_85906358e11f1d 1-33,44-79
+apps/web/package.json
+  s_4a84510d2abbc9::t_e4a160cc06e66d 34
+README.md
+  s_4a84510d2abbc9::t_85906358e11f1d 3-11
+apps/desktop/src/components/app-sidebar.tsx
+  s_4a84510d2abbc9::t_95137bd473cd55 1-112,116-178,183-233,237-299,303-320
+  s_4a84510d2abbc9::t_51a0898b81aa08 113-115,179-182,234-236,300-302
+docs/specs/02-core-experience.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-76
+docs/specs/05-data-model-and-sync.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-81
+apps/desktop/src/routes/root.tsx
+  s_4a84510d2abbc9::t_95137bd473cd55 1,3,17-21
+apps/web/src/routes/__root.tsx
+  s_4a84510d2abbc9::t_a9d0a523c757c2 6-7,41-59,73
+apps/desktop/src-tauri/Cargo.toml
+  s_4a84510d2abbc9::t_1ee0b5c50966ba 27-34
+docs/specs/01-product-architecture.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-84
+apps/web/src/components/user-menu.tsx
+  s_4a84510d2abbc9::t_a9d0a523c757c2 1-95
+docs/specs/03-ai-runtime.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-74
+PRODUCT.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-87
+docs/specs/README.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-39
+apps/desktop/package.json
+  s_4a84510d2abbc9::t_12b98ce237df8f 22
+apps/web/src/routes/index.tsx
+  s_4a84510d2abbc9::t_0f84f6d4993353 35-40,91-94
+  s_4a84510d2abbc9::t_a9d0a523c757c2 16-34,41-46,49-54,56-63,65-90,95-141
+  s_4a84510d2abbc9::t_59a17053f291e7 4,55,64
+docs/specs/06-mvp-scope.md
+  s_4a84510d2abbc9::t_85906358e11f1d 1-81
+bun.lock
+  s_4a84510d2abbc9::t_fa5b276d1b5c70 39,76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "93d45cb4b8ea919b42e9fb24356cbde9431a7038",
+  "prompts": {},
+  "sessions": {
+    "s_4a84510d2abbc9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa831-32b6-7f02-8edb-bf5cdd87a733",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
