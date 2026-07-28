@@ -1,0 +1,50 @@
+apps/desktop/src/lib/bearer-token.ts
+  s_644e00651e10c2::t_03bc4007be36e8 1-21
+packages/api-client/__tests__/client.test.ts
+  s_644e00651e10c2::t_873a3f3ccca11a 7,21-34,36,42,57-65,67-69,72-77
+apps/desktop/src/lib/auth-client.ts
+  s_644e00651e10c2::t_8014cb4b9f31e9 3,23-24,33,35,48
+packages/api-server/src/procedures/base.ts
+  s_644e00651e10c2::t_2720c2709c208f 1,7-19
+  s_644e00651e10c2::t_436e2de4914d07 2-6
+packages/api-server/src/procedures/users.ts
+  s_644e00651e10c2::t_d4703250185881 5
+  s_644e00651e10c2::t_10a51002ae2a13 13
+apps/desktop/src/api.ts
+  s_644e00651e10c2::t_9fbd9c3ca95874 3,6-10,12-15
+  s_644e00651e10c2::t_b3f3ac8d77f8dc 11
+packages/api-server/src/procedures/health.ts
+  s_644e00651e10c2::t_0c1dce9668008d 1
+packages/api-server/__tests__/router.test.ts
+  s_644e00651e10c2::t_1a71fbc39cbbff 34-40,48
+  s_644e00651e10c2::t_1837db4bb90400 62-83
+  s_644e00651e10c2::t_0df3d70b9421fb 8
+  s_644e00651e10c2::t_528ab75f32274e 84
+packages/api-server/src/context.ts
+  s_644e00651e10c2::t_51b19b97d2c2c2 4-17,21
+packages/api-server/src/index.ts
+  s_644e00651e10c2::t_73d791b500fffe 2
+packages/api-client/src/client.ts
+  s_644e00651e10c2::t_c8125dedcaeebd 14-22,27-31,34
+apps/web/src/server/services.server.ts
+  s_644e00651e10c2::t_00ac107fab2650 15
+  s_644e00651e10c2::t_62deeb0bbe46d8 44-48
+apps/web/src/server/api-identity.server.ts
+  s_644e00651e10c2::t_f897fc3026114f 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "dda3a6f9499754352ec9705be758df98d65ceec3",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
