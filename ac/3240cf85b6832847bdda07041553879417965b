@@ -1,0 +1,91 @@
+packages/api-server/src/context.ts
+  s_644e00651e10c2::t_ada820196da035 1,5
+packages/database/__tests__/health.test.ts
+  s_644e00651e10c2::t_90fa883de4098c 5,10,21
+apps/web/src/server/services.server.ts
+  s_644e00651e10c2::t_a82fe3567b57f2 7-8,19,28,43
+packages/health/src/types.ts
+  s_644e00651e10c2::t_883444e703fca3 15
+packages/auth/package.json
+  s_644e00651e10c2::t_029b4da5b3974b 16
+packages/health/src/server.ts
+  s_644e00651e10c2::t_5f41ce18c3f063 11,55-56,60-61
+packages/credits/package.json
+  s_644e00651e10c2::t_fd004162b09321 16
+packages/database/src/env.ts
+  s_644e00651e10c2::t_90fa883de4098c 3
+packages/database/src/health.ts
+  s_644e00651e10c2::t_90fa883de4098c 3,11-13
+README.md
+  s_644e00651e10c2::t_6af3669601c082 18
+packages/api-server/package.json
+  s_644e00651e10c2::t_32f92b8d03f46d 16
+apps/web/__tests__/server/health-handler.test.ts
+  s_644e00651e10c2::t_7e72e16b8878a1 17
+packages/logger/src/request-context.ts
+  s_644e00651e10c2::t_f67dbd3bc1b0b4 5,13,16,26,34,44,51,60-63
+packages/credits/src/read-models.ts
+  s_644e00651e10c2::t_b47c261a04b8f9 3,68-69,78,84,107-111,121
+  s_644e00651e10c2::t_7c8f0396615987 2
+packages/auth/src/server.ts
+  s_644e00651e10c2::t_e5f98fbd08ef74 83
+  s_644e00651e10c2::t_274deecee672b7 6
+apps/web/__tests__/server/startup.test.ts
+  s_644e00651e10c2::t_9e130ac89ae323 24-25
+package.json
+  s_644e00651e10c2::t_9402e14e93ae02 22-25
+packages/database/src/index.ts
+  s_644e00651e10c2::t_90fa883de4098c 1-2
+packages/api-client/__tests__/client.test.ts
+  s_644e00651e10c2::t_15ae38360f318d 13,15,18,28
+packages/health/__tests__/server.test.ts
+  s_644e00651e10c2::t_13193564e7d0a1 8,18,25,37,44,50,56
+packages/api-server/src/procedures/users.ts
+  s_644e00651e10c2::t_23a21615a4a842 4,17
+packages/api-server/__tests__/router.test.ts
+  s_644e00651e10c2::t_85d532aba18d28 20,31,36,38,55
+apps/web/package.json
+  s_644e00651e10c2::t_16374bb6899b1b 28
+packages/database/__tests__/migrate.test.ts
+  s_644e00651e10c2::t_90fa883de4098c 12
+packages/database/package.json
+  s_644e00651e10c2::t_90fa883de4098c 2
+apps/web/src/server/startup.server.ts
+  s_644e00651e10c2::t_3d7681d5777d0d 11,20,22
+packages/credits/src/services/credits.ts
+  s_644e00651e10c2::t_86508d56335ac8 1,9,27-30,36,63-66,72
+  s_644e00651e10c2::t_4a5fcbfd61bfdf 17
+packages/database/src/client.ts
+  s_644e00651e10c2::t_90fa883de4098c 8,10
+packages/credits/src/types.ts
+  s_644e00651e10c2::t_7c8f0396615987 1
+.claude/agents/db-migrate.md
+  s_644e00651e10c2::t_ee06a99a7ca6e1 3,7,14,16,18
+packages/database/src/migrate.ts
+  s_644e00651e10c2::t_90fa883de4098c 7,11-14,17,42
+apps/web/Dockerfile
+  s_644e00651e10c2::t_c4fd5d6c0a1be9 35
+apps/web/e2e/home.spec.ts
+  s_644e00651e10c2::t_94f434d7f76597 17
+  s_644e00651e10c2::t_af0340b14772c5 29
+packages/credits/__tests__/services.test.ts
+  s_644e00651e10c2::t_a0536bc6d665fb 6,14,17,23,27,30,39,42,51,54,60
+bun.lock
+  s_644e00651e10c2::t_1f1df7459eae71 68,115,130,164,177-178,1063
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "ac3240cf85b6832847bdda07041553879417965b",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
