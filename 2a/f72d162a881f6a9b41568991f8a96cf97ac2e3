@@ -1,0 +1,32 @@
+packages/auth/src/env.ts
+  s_4a3ad1ff241292::t_a67ff6ae04e2a6 15
+  s_4a3ad1ff241292::t_ce3e89f2e2e7a7 1-10
+packages/auth/src/lib/cookies.ts
+  s_4a3ad1ff241292::t_57e1564f04bdd4 1-23
+packages/auth/src/server.ts
+  s_4a3ad1ff241292::t_3f11adc6bceb6c 35
+  s_4a3ad1ff241292::t_57e1564f04bdd4 10,28
+packages/auth/__tests__/cookies.test.ts
+  s_4a3ad1ff241292::t_57e1564f04bdd4 1-48
+README.md
+  s_4a3ad1ff241292::t_0409d7d377976a 83-86
+.env.example
+  s_4a3ad1ff241292::t_0409d7d377976a 4-5
+  s_4a3ad1ff241292::t_a67ff6ae04e2a6 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.17",
+  "base_commit_sha": "2af72d162a881f6a9b41568991f8a96cf97ac2e3",
+  "prompts": {},
+  "sessions": {
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
