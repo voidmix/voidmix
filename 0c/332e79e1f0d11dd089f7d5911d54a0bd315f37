@@ -1,0 +1,258 @@
+packages/rpc/src/client.ts
+  s_4a3ad1ff241292::t_b53308768000ae 7-10,15,26
+packages/rpc/src/index.ts
+  s_4a3ad1ff241292::t_b53308768000ae 1-6
+apps/web/server/api/app.server.ts
+  s_4a3ad1ff241292::t_1e0806b7230703 1-2,4-6,11-90
+  s_4a3ad1ff241292::t_8c748c35873877 3,7-10
+apps/web/server/request-handler.server.ts
+  s_4a3ad1ff241292::t_e340bb09657743 46-72,74-75,77-105,112,116-119,122,125,127-128,130,132
+  s_4a3ad1ff241292::t_cf01b4f5e896f3 73,76
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 1-45,106-111,113-115,120-121,123-124,126,129,131,133-137
+apps/web/__tests__/server/origin-policy.test.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 3
+apps/admin/server/runtime.server.ts
+  s_4a3ad1ff241292::t_f6bed496075c76 5
+  s_4a3ad1ff241292::t_cbb50cc02ef41b 58-61
+  s_4a3ad1ff241292::t_e7c187ded919e1 1-4,6-57,62-69
+apps/admin/.gitignore
+  s_4a3ad1ff241292::t_2e5a43554a43b0 1-15
+packages/logger/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 23,25-26
+apps/desktop/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 15,22-24,27,29-31,33-34
+packages/env/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 18,20-21
+packages/mail/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 22-23,25-27,30
+packages/ui/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 23,26,30,32,34,37
+apps/web/e2e/home.spec.ts
+  s_4a3ad1ff241292::t_f48ed03826203d 4-9,37-43
+  s_4a3ad1ff241292::t_7e64ceb135ee68 10
+  s_4a3ad1ff241292::t_0ac76aa00d1e26 44-45
+apps/web/package.json
+  s_4a3ad1ff241292::t_09038117b8af70 8,10
+  s_4a3ad1ff241292::t_f48ed03826203d 9
+  s_4a3ad1ff241292::t_bf621f085ebe0f 12,15-19,32-37,40-46,48,51
+apps/admin/src/lib/rpc.ts
+  s_4a3ad1ff241292::t_4cff2d714d1748 1,6-7,9-15
+  s_4a3ad1ff241292::t_8785ec74645a51 4
+  s_4a3ad1ff241292::t_8bfc79ac75f459 2-3,5,8
+packages/cache/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 22,24-25
+apps/admin/src/routes/__root.tsx
+  s_4a3ad1ff241292::t_5052302e3a822a 1-30
+apps/admin/server/rpc/direct.server.ts
+  s_4a3ad1ff241292::t_4cff2d714d1748 1,3,5-8,13,20
+  s_4a3ad1ff241292::t_e7c187ded919e1 2,4,9-12,14-19
+apps/admin/server/app.ts
+  s_4a3ad1ff241292::t_e7c187ded919e1 2,5,7-9
+  s_4a3ad1ff241292::t_c40e6a92a1b610 1,3-4,6
+apps/admin/src/features/system-health/system-health-dashboard.tsx
+  s_4a3ad1ff241292::t_0c6305cd49b3b5 3,7,82,103,149
+  s_4a3ad1ff241292::t_ab412b8d07ddc1 5-6,10-11,86
+  s_4a3ad1ff241292::t_8bfc79ac75f459 1-2,4,8-9,13-81,83-85,87-102,104-148,150-155
+  s_4a3ad1ff241292::t_bd2af03209a439 12
+apps/web/server/runtime.server.ts
+  s_4a3ad1ff241292::t_c2b22ba44bc27c 9-13,15-20,22-23,41,56,60-64,68-70
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 1-8,14,21,24-40,42-55,57-59,65-67,71
+apps/admin/__tests__/server/rpc/direct.test.ts
+  s_4a3ad1ff241292::t_f339d1120e29ad 1-55
+apps/web/server/cors.server.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 1-41
+apps/web/server/monitoring.server.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 1-3,5,7-36,38-43
+packages/database/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 28,32-33
+tooling/scripts/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 24,26-27
+apps/admin/__tests__/server/rpc/transport.test.ts
+  s_4a3ad1ff241292::t_b53308768000ae 22
+  s_4a3ad1ff241292::t_8785ec74645a51 6-8
+  s_4a3ad1ff241292::t_8bfc79ac75f459 1-5,9-21,23-33
+apps/web/vite.config.ts
+  s_4a3ad1ff241292::t_1e0806b7230703 12-13,29-33,36-47
+apps/admin/__tests__/server/rpc/router.test.ts
+  s_4a3ad1ff241292::t_8785ec74645a51 6
+  s_4a3ad1ff241292::t_80d0f8c8ec6f26 1-5,7-24
+packages/credits/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 23,25-26
+apps/admin/server/monitoring.server.ts
+  s_4a3ad1ff241292::t_e7c187ded919e1 1-43
+apps/admin/vite.config.ts
+  s_4a3ad1ff241292::t_956322cebe043e 1,3,21-22
+  s_4a3ad1ff241292::t_5052302e3a822a 2,4-5,17-18,44
+  s_4a3ad1ff241292::t_c40e6a92a1b610 7-15,20,24-43
+apps/admin/__tests__/features/system-health/format.test.ts
+  s_4a3ad1ff241292::t_01b8cf55cb7737 1-26
+tooling/scripts/src/harness/catalog.ts
+  s_4a3ad1ff241292::t_0b39353fbc2bbb 49
+  s_4a3ad1ff241292::t_bd7bff4a89526b 1-3,5-48,50-82,85-98,100-105
+  s_4a3ad1ff241292::t_175e01343fbd67 4,83-84
+  s_4a3ad1ff241292::t_fb13c17aaed871 99
+.github/workflows/ci.yml
+  s_4a3ad1ff241292::t_cbb50cc02ef41b 47
+  s_4a3ad1ff241292::t_6fbbb6d7e0bf44 54-55
+  s_4a3ad1ff241292::t_bd7bff4a89526b 26
+apps/admin/__tests__/features/system-health/model.test.ts
+  s_4a3ad1ff241292::t_62a63f7964213c 1-38
+apps/web/server/startup.server.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 1-23
+apps/admin/src/features/system-health/system-health-model.ts
+  s_4a3ad1ff241292::t_ab412b8d07ddc1 1-26,28-38
+  s_4a3ad1ff241292::t_0c6305cd49b3b5 27
+apps/admin/src/env.ts
+  s_4a3ad1ff241292::t_e7c187ded919e1 1,3-5
+.env.example
+  s_4a3ad1ff241292::t_5052302e3a822a 38
+apps/admin/playwright.config.ts
+  s_4a3ad1ff241292::t_6bccc13999a2a0 1,3-18,20-22
+vite.config.ts
+  s_4a3ad1ff241292::t_fb13c17aaed871 7-8
+apps/admin/vitest.config.ts
+  s_4a3ad1ff241292::t_956322cebe043e 1,3-6
+apps/admin/tsr.config.json
+  s_4a3ad1ff241292::t_5052302e3a822a 1-3
+apps/admin/src/router.tsx
+  s_4a3ad1ff241292::t_5052302e3a822a 1-18
+apps/admin/server/api/app.server.ts
+  s_4a3ad1ff241292::t_e7c187ded919e1 1-30
+apps/daemon/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 18,20-21
+apps/admin/__tests__/server/rpc/runtime-error.test.ts
+  s_4a3ad1ff241292::t_6fbbb6d7e0bf44 1-46
+apps/admin/src/routeTree.gen.ts
+  s_4a3ad1ff241292::t_033be98e38f748 22,25,29,37,40,51-52,56,60-68
+  s_4a3ad1ff241292::t_6c7d1335fe8f04 1-21,23-24,26-28,30-36,38-39,41-50,53-55,57-59
+apps/admin/tsconfig.json
+  s_4a3ad1ff241292::t_956322cebe043e 1-13
+apps/admin/server/request-handler.server.ts
+  s_4a3ad1ff241292::t_e7c187ded919e1 1-81
+apps/admin/__tests__/server/runtime.test.ts
+  s_4a3ad1ff241292::t_cbb50cc02ef41b 53
+  s_4a3ad1ff241292::t_6fbbb6d7e0bf44 1-52,54-55
+apps/admin/src/routes/index.tsx
+  s_4a3ad1ff241292::t_5052302e3a822a 6,8,10-13
+  s_4a3ad1ff241292::t_01b8cf55cb7737 3
+  s_4a3ad1ff241292::t_4cff2d714d1748 4,7
+apps/web/__tests__/server/api-app.test.ts
+  s_4a3ad1ff241292::t_01e532b831e69f 1-2,4-43,60-81
+  s_4a3ad1ff241292::t_1e0806b7230703 3,44-59
+apps/admin/package.json
+  s_4a3ad1ff241292::t_956322cebe043e 1-6,13-15,27,35-36,42,44-45,47-48
+  s_4a3ad1ff241292::t_c40e6a92a1b610 16-19,28-34,38-41,43,46
+  s_4a3ad1ff241292::t_e7c187ded919e1 22,24-25
+  s_4a3ad1ff241292::t_abf830afd5698d 9
+  s_4a3ad1ff241292::t_d4ad91b4a23eb8 26
+  s_4a3ad1ff241292::t_5052302e3a822a 7-8,20-21,23
+  s_4a3ad1ff241292::t_09038117b8af70 11
+  s_4a3ad1ff241292::t_6bccc13999a2a0 10,12,37
+README.md
+  s_4a3ad1ff241292::t_956322cebe043e 17,50
+  s_4a3ad1ff241292::t_5052302e3a822a 18,40
+apps/admin/src/tanstack-start.d.ts
+  s_4a3ad1ff241292::t_5052302e3a822a 1
+packages/auth/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 23,26
+packages/observability/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 21,23-24
+apps/admin/src/features/system-health/system-health-panels.tsx
+  s_4a3ad1ff241292::t_ab412b8d07ddc1 2-137
+  s_4a3ad1ff241292::t_bd2af03209a439 1
+tooling/scripts/src/cli.ts
+  s_4a3ad1ff241292::t_bd7bff4a89526b 21
+apps/web/__tests__/server/file-storage-handler.test.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 9
+apps/web/server/services.server.ts
+  s_4a3ad1ff241292::t_e340bb09657743 9,20-24,29-32,54-64,69,76-83,87,90
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 1-8,10-19,25-28,33-53,65-68,70-75,84-86,88-89,91-121
+packages/api-client/src/client.ts
+  s_4a3ad1ff241292::t_b53308768000ae 1,22
+apps/web/__tests__/server/request-handler.test.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 19,22
+  s_4a3ad1ff241292::t_3da26ecb76f219 26
+apps/web/__tests__/server/startup.test.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 7
+packages/storage/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 22,24-25
+tooling/scripts/src/clean.ts
+  s_4a3ad1ff241292::t_2e5a43554a43b0 10-14
+apps/admin/src/styles.css
+  s_4a3ad1ff241292::t_7063cb1b57ea5e 20-26
+  s_4a3ad1ff241292::t_956322cebe043e 1-8,10-19,27-33
+  s_4a3ad1ff241292::t_5052302e3a822a 9
+apps/web/src/server.ts
+  s_4a3ad1ff241292::t_8c748c35873877 3-4,6
+packages/api-client/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 17,21-22
+apps/web/__tests__/server/lifecycle.test.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 7
+packages/health/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 18,20-21
+apps/web/playwright.config.ts
+  s_4a3ad1ff241292::t_f48ed03826203d 15,19-20,24
+tooling/scripts/src/harness/verify.ts
+  s_4a3ad1ff241292::t_bd7bff4a89526b 10,58-59,67-69
+package.json
+  s_4a3ad1ff241292::t_c40e6a92a1b610 47,49,55,57-67,69-70
+  s_4a3ad1ff241292::t_bf621f085ebe0f 48,56
+  s_4a3ad1ff241292::t_0b39353fbc2bbb 50-54
+  s_4a3ad1ff241292::t_956322cebe043e 14
+apps/web/server/app.ts
+  s_4a3ad1ff241292::t_8c748c35873877 2-3
+  s_4a3ad1ff241292::t_1e0806b7230703 1,4-9
+apps/web/__tests__/server/health-handler.test.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 3
+apps/admin/__tests__/server/request-handler.test.ts
+  s_4a3ad1ff241292::t_f339d1120e29ad 1-76
+packages/api-server/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 22-23,25-26
+packages/rpc/package.json
+  s_4a3ad1ff241292::t_353fd70ad0fedf 18,21,23-24
+apps/admin/e2e/system-health.spec.ts
+  s_4a3ad1ff241292::t_6bccc13999a2a0 1-70
+tooling/scripts/__tests__/catalog.test.ts
+  s_4a3ad1ff241292::t_bd7bff4a89526b 1-66
+apps/admin/__tests__/server/api/app.test.ts
+  s_4a3ad1ff241292::t_f339d1120e29ad 66-78
+  s_4a3ad1ff241292::t_8785ec74645a51 3
+  s_4a3ad1ff241292::t_80d0f8c8ec6f26 6-18
+  s_4a3ad1ff241292::t_1dbf54a58d9f51 1-2,4-5,19-65,79
+apps/admin/server/rpc/runtime.server.ts
+  s_4a3ad1ff241292::t_e7c187ded919e1 1-20
+apps/admin/src/features/system-health/use-system-health.ts
+  s_4a3ad1ff241292::t_ab412b8d07ddc1 1-48
+apps/web/server/origin-policy.server.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 1-48
+apps/web/__tests__/server/api-policy.test.ts
+  s_4a3ad1ff241292::t_c2c773c7a9bac3 3-4
+apps/admin/server/api/health.server.ts
+  s_4a3ad1ff241292::t_140d06715a3106 1-26
+apps/admin/server/rpc/router.ts
+  s_4a3ad1ff241292::t_d6752e66e0a91c 1-17
+apps/admin/server/services.server.ts
+  s_4a3ad1ff241292::t_caa37616e00ecf 1-43
+apps/admin/src/features/system-health/format.ts
+  s_4a3ad1ff241292::t_d9faf588688714 1-24
+bun.lock
+  s_4a3ad1ff241292::t_e10538a8239b07 13-49,59,61-62,69,76-78,81,83-85,87-88,96-100,113-118,121-127,129,132,142,146-147,161-162,164-165,180,183,195,197-198,213,215-216,229,233-234,244,246-247,257,259-260,271,273-274,288-289,291-293,296,308,310-311,319,322,324-325,339,341-342,356,359,363,365,367,370,385,387-388,396-416,419,938,1040,1044,1134,1254-1255
+apps/web/src/routeTree.gen.ts
+  s_4a3ad1ff241292::t_4928105dbf2084 50,52-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.17",
+  "base_commit_sha": "0c332e79e1f0d11dd089f7d5911d54a0bd315f37",
+  "prompts": {},
+  "sessions": {
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
