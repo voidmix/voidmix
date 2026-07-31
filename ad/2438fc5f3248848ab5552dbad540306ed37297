@@ -1,0 +1,157 @@
+apps/web/server/services.server.ts
+  s_24e0da68ceacce::t_050e28f70c92c4 15,65
+packages/i18n/src/build/paraglide/compiler/output-structure/message-modules.ts
+  s_24e0da68ceacce::t_9f6befaf0dffe8 200,202
+apps/desktop/src-tauri/src/lib.rs
+  s_24e0da68ceacce::t_4db8f7df828cf1 1-2,15-19,22-23,26-27
+  s_24e0da68ceacce::t_9de6c7725f4fca 6,20,28,31,39,80
+packages/api-server/__tests__/router.test.ts
+  s_24e0da68ceacce::t_eaf94e57b7cf34 58-89
+  s_24e0da68ceacce::t_aff484da503f73 90-103
+apps/web/src/routes/login.tsx
+  s_24e0da68ceacce::t_050e28f70c92c4 5,22
+README.md
+  s_24e0da68ceacce::t_9f6befaf0dffe8 4-5
+packages/i18n/__tests__/vite-hmr.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 25,92
+tooling/test-utils/src/db.ts
+  s_24e0da68ceacce::t_9f6befaf0dffe8 22,29
+apps/web/src/routes/reset-password.tsx
+  s_24e0da68ceacce::t_fd15fe35396196 45
+  s_24e0da68ceacce::t_3e2a29871d18e8 37,42
+apps/admin/src/features/admin/client/dashboard/stats-cards.tsx
+  s_24e0da68ceacce::t_9f6befaf0dffe8 44
+packages/i18n/src/build/paraglide/vite.ts
+  s_24e0da68ceacce::t_9f6befaf0dffe8 20-21
+packages/i18n/__tests__/vite.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 43,56,69
+apps/web/src/routes/__root.tsx
+  s_24e0da68ceacce::t_7344684f81904b 8-10,24-55,67-74
+apps/web/src/components/public-header.tsx
+  s_24e0da68ceacce::t_594c56d01f1c96 3-4,8-13,15-16,18-60,63-81,83-84,88-90
+  s_24e0da68ceacce::t_fd15fe35396196 82,85-87
+apps/web/src/routes/verify-email.tsx
+  s_24e0da68ceacce::t_fd15fe35396196 45
+apps/desktop/src/components/app-sidebar.tsx
+  s_24e0da68ceacce::t_9de6c7725f4fca 72,228,233,236-239,242,246-258,260-267,269,271
+packages/ui/__tests__/styles.test.ts
+  s_24e0da68ceacce::t_f98f136b1f704a 27-30
+packages/storage/__tests__/factory.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 80,93,107
+packages/rpc/src/index.ts
+  s_24e0da68ceacce::t_1a398f986fd281 14
+apps/web/__tests__/routes/login.test.ts
+  s_24e0da68ceacce::t_050e28f70c92c4 11-14,47
+apps/admin/src/routes/__root.tsx
+  s_24e0da68ceacce::t_9f6befaf0dffe8 21,27
+docs/ROADMAP.md
+  s_24e0da68ceacce::t_9f6befaf0dffe8 5-6,18,20-21
+packages/api-server/src/runtime.ts
+  s_24e0da68ceacce::t_eaf94e57b7cf34 13,24,51
+packages/rpc/src/context.ts
+  s_24e0da68ceacce::t_1a398f986fd281 20-21,27,37,41
+apps/web/src/routes/index.tsx
+  s_24e0da68ceacce::t_fd15fe35396196 74,78-83,258
+  s_24e0da68ceacce::t_78d8f54698bab2 162-170
+  s_24e0da68ceacce::t_0b12d475da7844 62,90
+  s_24e0da68ceacce::t_2abcd131b057a7 69,73,107,129-130,148,155
+  s_24e0da68ceacce::t_c4f37ad61eb12e 64
+  s_24e0da68ceacce::t_068f8b910daad2 3-14,17,23-55,61,63,65-68,70-72,75-77,84-86,88-89,91-106,108-128,131-147,149-154,156-161,171-185,188,190-200,202-210,216-240,244-257,259-262
+packages/ui/__tests__/components.test.tsx
+  s_24e0da68ceacce::t_f98f136b1f704a 27,36-52
+apps/web/src/components/app-shell.tsx
+  s_24e0da68ceacce::t_9ed7756ecfee72 44-47
+  s_24e0da68ceacce::t_b0b273f9c9f1a6 36-37,40,43,48-49,51,53,64-65,70,72-77,85,93-112,114-115,117-122
+  s_24e0da68ceacce::t_fd15fe35396196 69,116
+apps/web/src/routes/forgot-password.tsx
+  s_24e0da68ceacce::t_3e2a29871d18e8 38
+packages/i18n/__tests__/project.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 21,84
+apps/admin/src/features/admin/client/dashboard/dashboard.tsx
+  s_24e0da68ceacce::t_9f6befaf0dffe8 22-25,27,34
+apps/web/src/components/auth-form.tsx
+  s_24e0da68ceacce::t_3e2a29871d18e8 87
+packages/ui/src/components/logo.tsx
+  s_24e0da68ceacce::t_f98f136b1f704a 13,16-19,21,27,29,31,38-57,59-65,68-70
+apps/web/src/routes/llms[.]txt.ts
+  s_24e0da68ceacce::t_3e5ffd362aaec4 5,7,14-15
+PRODUCT.md
+  s_24e0da68ceacce::t_9f6befaf0dffe8 9-10
+apps/desktop/src-tauri/tauri.conf.json
+  s_24e0da68ceacce::t_9de6c7725f4fca 15-20,30-32,35,38
+docs/db/migrations.md
+  s_24e0da68ceacce::t_9f6befaf0dffe8 6-8
+packages/ui/src/styles.css
+  s_24e0da68ceacce::t_f98f136b1f704a 47-50,91-100,105-106,122,130-131,135,142-151,156-157,173,181-182,186
+packages/i18n/__tests__/compiler.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 144,147
+packages/admin/__tests__/context.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 27
+apps/web/src/components/public-footer.tsx
+  s_24e0da68ceacce::t_9ed7756ecfee72 8
+  s_24e0da68ceacce::t_594c56d01f1c96 4-7,9-36,40-41,44-87
+packages/i18n/__tests__/helpers/build.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 24
+packages/api-server/src/system-router.ts
+  s_24e0da68ceacce::t_eaf94e57b7cf34 2,6-7,12-20
+packages/i18n/src/build/project.ts
+  s_24e0da68ceacce::t_9f6befaf0dffe8 30
+apps/web/src/routes/_app.dashboard.tsx
+  s_24e0da68ceacce::t_fd15fe35396196 51
+apps/web/src/components/auth-shell.tsx
+  s_24e0da68ceacce::t_3e2a29871d18e8 3-21,33-41,44-46,48-50,52-64,66-70,72-78,81-83,85-86,91-101
+apps/desktop/src/routes/__root.tsx
+  s_24e0da68ceacce::t_9de6c7725f4fca 20-25,61
+packages/credits/__tests__/router.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 29,55,60
+packages/rpc/__tests__/context.test.ts
+  s_24e0da68ceacce::t_1a398f986fd281 16-24,26
+apps/admin/messages/zh.json
+  s_24e0da68ceacce::t_d8e50dc05163aa 303,306,312,318,327-328,450,468,595,627,817-818,820,826,833-834,836-837,845,849-850,852,858,863-864,866,869,872,903,905,907,909,911,913,1089,1115
+apps/desktop/src/routes/login.tsx
+  s_24e0da68ceacce::t_7cbdb3001ca48c 3
+  s_24e0da68ceacce::t_947c023cf2b87f 1-2,13-21,23-33,35-52,57,64,68-76,82-95,99-101,103,106-115,118-123,125-166,168-218,223,225-226,228
+apps/admin/tsconfig.json
+  s_24e0da68ceacce::t_9f6befaf0dffe8 8
+apps/admin/messages/en.json
+  s_24e0da68ceacce::t_d8e50dc05163aa 303,306,312,318,327-328,450,468,595,627,817-818,820,826,833-834,836-837,845,849-850,852,858,863-864,866,869,872,903,905,907,909,911,913,1080,1089,1115
+apps/web/public/manifest.webmanifest
+  s_24e0da68ceacce::t_7344684f81904b 1-17
+packages/i18n/THIRD_PARTY_NOTICES.md
+  s_24e0da68ceacce::t_9f6befaf0dffe8 13
+packages/admin/__tests__/routes.test.ts
+  s_24e0da68ceacce::t_d8e50dc05163aa 66
+apps/admin/src/features/admin/shared/client/stat-tile.tsx
+  s_24e0da68ceacce::t_df5cde7759b617 38-40
+  s_24e0da68ceacce::t_9f6befaf0dffe8 22-23,32
+apps/web/src/components/user-menu.tsx
+  s_24e0da68ceacce::t_fd15fe35396196 49
+packages/api-server/__tests__/runtime.test.ts
+  s_24e0da68ceacce::t_eaf94e57b7cf34 21,30,50
+apps/desktop/src/routes/settings.tsx
+  s_24e0da68ceacce::t_e08bca1a9e671e 3-14,16,23-34,36-50,53-145
+  s_24e0da68ceacce::t_8d9db412f6e31c 2
+apps/admin/src/layouts/admin/index.tsx
+  s_24e0da68ceacce::t_9f6befaf0dffe8 3,190-191,193-195,197-199,226-227,242,248
+apps/desktop/src/routes/index.tsx
+  s_24e0da68ceacce::t_d934590b3db4c9 4,36-39,117,150,154-157,160,162-164,167-168,171,178-183,202-203,215
+  s_24e0da68ceacce::t_bcbf81b5946e01 15-23,85,88,91,97-114,152-153,184-201
+apps/admin/public/logo.svg
+  s_24e0da68ceacce::t_d8e50dc05163aa 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "ad2438fc5f3248848ab5552dbad540306ed37297",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
