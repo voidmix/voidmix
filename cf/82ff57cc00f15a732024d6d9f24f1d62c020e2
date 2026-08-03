@@ -1,0 +1,74 @@
+apps/web/tsconfig.json
+  s_d74e0a51d9eaf4::t_1a13dccc262433 6
+  s_d74e0a51d9eaf4::t_3c2c73f26b84d4 7
+apps/web/src/components/user-menu.tsx
+  s_d74e0a51d9eaf4::t_f477f704029693 2,19,37,42,58,79,100,106
+apps/web/src/components/locale-switcher.tsx
+  s_d74e0a51d9eaf4::t_4c24141b4324f3 35
+  s_d74e0a51d9eaf4::t_bcc483b2d9167d 1-34,36-58
+apps/web/src/components/cookie-consent.tsx
+  s_d74e0a51d9eaf4::t_20c496cee285f2 2,7-8,28,42,50,52,54,62,65,71
+apps/web/src/routes/__root.tsx
+  s_d74e0a51d9eaf4::t_bcc483b2d9167d 4,9,38,40,46
+apps/web/src/routes/index.tsx
+  s_d74e0a51d9eaf4::t_4c24141b4324f3 130-131
+  s_d74e0a51d9eaf4::t_66555ab02237c6 2,20,29-30,34-35,39-40,42,46-47,50-51,54-55,57,60-61,71,73,75,79,88,95,104,108,113,117,121,125,129,137-138,141,146-149,163,167,172,181,184,186,199,202,211-212,224,227,237-238,253,255,260
+apps/web/vite.config.ts
+  s_d74e0a51d9eaf4::t_3c2c73f26b84d4 2,15,45
+apps/web/messages/en.json
+  s_d74e0a51d9eaf4::t_e3c4cc7345270c 20
+  s_d74e0a51d9eaf4::t_bcc483b2d9167d 96-97
+  s_d74e0a51d9eaf4::t_f477f704029693 9-15
+  s_d74e0a51d9eaf4::t_3c2c73f26b84d4 1-8,16-19,21-95,98-103
+apps/web/src/server.ts
+  s_d74e0a51d9eaf4::t_4c24141b4324f3 13-15
+  s_d74e0a51d9eaf4::t_bcc483b2d9167d 9
+apps/web/.gitignore
+  s_d74e0a51d9eaf4::t_e3c4cc7345270c 16
+apps/web/playwright.config.ts
+  s_d74e0a51d9eaf4::t_8131634fedf151 2-3,23-24
+apps/web/src/components/root-providers.tsx
+  s_d74e0a51d9eaf4::t_bcc483b2d9167d 1-24
+apps/web/src/lib/i18n.ts
+  s_d74e0a51d9eaf4::t_bcc483b2d9167d 8-46
+  s_d74e0a51d9eaf4::t_4c24141b4324f3 1-7
+apps/web/messages/zh.json
+  s_d74e0a51d9eaf4::t_bcc483b2d9167d 96-97
+  s_d74e0a51d9eaf4::t_f477f704029693 9-15
+  s_d74e0a51d9eaf4::t_e3c4cc7345270c 20
+  s_d74e0a51d9eaf4::t_3c2c73f26b84d4 1-8,16-19,21-95,98-103
+apps/web/package.json
+  s_d74e0a51d9eaf4::t_3c2c73f26b84d4 8,30
+apps/web/project.inlang/settings.json
+  s_d74e0a51d9eaf4::t_3c2c73f26b84d4 1-13
+apps/web/e2e/home.spec.ts
+  s_d74e0a51d9eaf4::t_12eeb72b2c423c 23-25
+  s_d74e0a51d9eaf4::t_b886a41c7fe4b3 14-22,26-32
+apps/web/src/components/public-header.tsx
+  s_d74e0a51d9eaf4::t_e3c4cc7345270c 38
+  s_d74e0a51d9eaf4::t_787dac156baacf 14-15
+  s_d74e0a51d9eaf4::t_20c496cee285f2 2,9-11,16-17,23-24,45,55,60,72,83,94,103,109
+apps/web/src/components/public-footer.tsx
+  s_d74e0a51d9eaf4::t_4c24141b4324f3 92-94
+  s_d74e0a51d9eaf4::t_20c496cee285f2 2,5-6,8,10,14,17,19,21-23,27,29-31,35,37-40,47,55,61,65-66,72,81,95
+  s_d74e0a51d9eaf4::t_514bc3b2860837 15
+  s_d74e0a51d9eaf4::t_1a81fef6fb14b1 16
+bun.lock
+  s_d74e0a51d9eaf4::t_085f8add264d44 149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "cf82ff57cc00f15a732024d6d9f24f1d62c020e2",
+  "prompts": {},
+  "sessions": {
+    "s_d74e0a51d9eaf4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc56b-4178-7ee2-86db-8858612da5a9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
