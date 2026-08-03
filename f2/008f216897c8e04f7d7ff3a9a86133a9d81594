@@ -1,0 +1,192 @@
+packages/mail/package.json
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 8
+packages/mail/src/types.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 24-66,69-76
+packages/authorization/package.json
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 8-10
+packages/api-server/src/runtime.ts
+  s_d74e0a51d9eaf4::t_abb0f2f9eec551 6
+apps/web/server/avatar-file-service.server.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 3-4
+packages/cache/package.json
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 9-10
+packages/account/src/server/account-context.ts
+  s_d74e0a51d9eaf4::t_cd0255552818a9 7-22
+packages/admin/src/server/services/dashboard.ts
+  s_d74e0a51d9eaf4::t_f64806c4c54f54 3
+packages/mail/src/internal-types.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 1-28
+packages/auth/src/server/context.ts
+  s_d74e0a51d9eaf4::t_abb0f2f9eec551 1-2
+packages/cache/src/types.ts
+  s_d74e0a51d9eaf4::t_f64806c4c54f54 49-50
+packages/mail/src/contact.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 3
+packages/auth/src/server/config.ts
+  s_d74e0a51d9eaf4::t_abb0f2f9eec551 1-2,6
+packages/mail/src/send.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 1-2
+packages/jobs/package.json
+  s_d74e0a51d9eaf4::t_106967f56c598d 8,11
+packages/mail/__tests__/fixtures/samples.ts
+  s_d74e0a51d9eaf4::t_2dfa11dd98affa 15
+packages/mail/src/organization.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 3
+packages/mail/src/emails/password-reset.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+packages/health/src/types.ts
+  s_d74e0a51d9eaf4::t_8b40bbab8d2514 1
+packages/mail/src/auth.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 8,10-16
+packages/authorization/src/validator.ts
+  s_d74e0a51d9eaf4::t_a683e55c768aca 1
+packages/mail/src/emails/org-role-changed.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+packages/mail/src/render.ts
+  s_d74e0a51d9eaf4::t_ac51db1a889efd 1
+packages/mail/src/emails/otp.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+packages/storage/src/factory.ts
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 10-11
+packages/account/package.json
+  s_d74e0a51d9eaf4::t_707515d8a791b4 8
+apps/web/src/components/app-shell.tsx
+  s_d74e0a51d9eaf4::t_e23d17a0f2a40f 7
+packages/mail/src/service.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 8-10
+packages/mail/src/emails/org-removed.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+packages/storage/package.json
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 8-10
+packages/mail/src/mailer.ts
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 7-8
+packages/jobs/src/constants.ts
+  s_d74e0a51d9eaf4::t_106967f56c598d 1-20
+packages/jobs/src/schemas.ts
+  s_d74e0a51d9eaf4::t_106967f56c598d 1-35
+packages/jobs/src/serialization.ts
+  s_d74e0a51d9eaf4::t_8b40bbab8d2514 3
+  s_d74e0a51d9eaf4::t_106967f56c598d 2
+packages/authorization/src/admin/types.ts
+  s_d74e0a51d9eaf4::t_a683e55c768aca 23-29
+  s_d74e0a51d9eaf4::t_9dcb2fc2e0cc75 46-47
+packages/auth/src/server/membership.ts
+  s_d74e0a51d9eaf4::t_abb0f2f9eec551 1-2
+apps/web/src/lib/routes.ts
+  s_d74e0a51d9eaf4::t_707515d8a791b4 2
+packages/admin/src/shared/schemas/notifications.ts
+  s_d74e0a51d9eaf4::t_ea5fcb7d23cc5c 5,8
+packages/mail/src/emails/contact.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+apps/web/src/features/settings/profile-settings-card.tsx
+  s_d74e0a51d9eaf4::t_e23d17a0f2a40f 20
+packages/admin/src/shared/schemas/jobs.ts
+  s_d74e0a51d9eaf4::t_106967f56c598d 2
+packages/credits/src/read-models.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 1-2
+  s_d74e0a51d9eaf4::t_f64806c4c54f54 4
+packages/auth/src/server/audit.ts
+  s_d74e0a51d9eaf4::t_abb0f2f9eec551 2-3
+packages/admin/src/server/serializers/jobs.ts
+  s_d74e0a51d9eaf4::t_f64806c4c54f54 1
+packages/credits/src/types.ts
+  s_d74e0a51d9eaf4::t_f64806c4c54f54 1
+packages/mail/src/emails/welcome.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+tooling/test-utils/src/types.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 22
+packages/storage/src/drivers/s3.ts
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 3-4
+tooling/test-utils/src/context.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 1
+packages/notice/src/server/cache.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 1-2
+apps/web/package.json
+  s_d74e0a51d9eaf4::t_707515d8a791b4 20
+apps/web/__tests__/server/avatar-file-service.test.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 1-2
+packages/authorization/src/admin/validator.ts
+  s_d74e0a51d9eaf4::t_2b0bccc6595562 2
+packages/storage/src/errors.ts
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 1-6
+apps/admin/src/layouts/admin/index.tsx
+  s_d74e0a51d9eaf4::t_e23d17a0f2a40f 64
+packages/authorization/__tests__/rbac.test.ts
+  s_d74e0a51d9eaf4::t_17696470147029 12
+packages/jobs/src/index.ts
+  s_d74e0a51d9eaf4::t_92c07ad7a071e6 1
+  s_d74e0a51d9eaf4::t_106967f56c598d 3,14-21
+packages/rpc/src/context.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 1
+packages/audit/package.json
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 8-9
+packages/organization/src/types.ts
+  s_d74e0a51d9eaf4::t_9dcb2fc2e0cc75 1-14
+packages/auth/src/server/setup-state.ts
+  s_d74e0a51d9eaf4::t_abb0f2f9eec551 2-3
+apps/admin/src/features/admin/client/notifications/notification-broadcast.tsx
+  s_d74e0a51d9eaf4::t_ea5fcb7d23cc5c 2,24,26-27,29
+packages/authorization/src/types.ts
+  s_d74e0a51d9eaf4::t_a683e55c768aca 22-28
+  s_d74e0a51d9eaf4::t_9dcb2fc2e0cc75 51-52
+packages/mail/src/emails/email-verification.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+packages/credits/package.json
+  s_d74e0a51d9eaf4::t_5e4ac4ea92d2ce 9-10
+packages/account/src/shared/route-session.ts
+  s_d74e0a51d9eaf4::t_707515d8a791b4 1,28,38-39
+  s_d74e0a51d9eaf4::t_3f3e6bc707e156 3-18,20,22-27,30-31
+apps/admin/src/lib/admin-route-context.ts
+  s_d74e0a51d9eaf4::t_707515d8a791b4 2
+tooling/test-utils/src/cache.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 1,13
+packages/jobs/src/server.ts
+  s_d74e0a51d9eaf4::t_106967f56c598d 5
+apps/admin/src/features/admin/client/routes.ts
+  s_d74e0a51d9eaf4::t_ea5fcb7d23cc5c 20,58-59
+  s_d74e0a51d9eaf4::t_584a193eaba5a3 60
+packages/mail/src/emails/magic-link.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+packages/organization/src/server/deps.ts
+  s_d74e0a51d9eaf4::t_e23d17a0f2a40f 17,30,32,43-46
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 5
+  s_d74e0a51d9eaf4::t_d8fe70f740c362 18,31
+  s_d74e0a51d9eaf4::t_0b1685c29efefc 8,57
+  s_d74e0a51d9eaf4::t_8b40bbab8d2514 16
+  s_d74e0a51d9eaf4::t_cd0255552818a9 20,52,55
+  s_d74e0a51d9eaf4::t_f548162923a3c2 56
+packages/mail/src/emails/org-invitation.tsx
+  s_d74e0a51d9eaf4::t_2cd2f2a794ac35 5
+packages/jobs/src/types.ts
+  s_d74e0a51d9eaf4::t_106967f56c598d 3-9,61,71,73,120
+packages/jobs/src/job-service.ts
+  s_d74e0a51d9eaf4::t_92c07ad7a071e6 18-26
+  s_d74e0a51d9eaf4::t_106967f56c598d 5,16-17
+packages/admin/src/server/authorization.ts
+  s_d74e0a51d9eaf4::t_17696470147029 3
+  s_d74e0a51d9eaf4::t_8b40bbab8d2514 2
+apps/web/src/features/settings/settings-types.ts
+  s_d74e0a51d9eaf4::t_e23d17a0f2a40f 2
+packages/admin/src/server/context.ts
+  s_d74e0a51d9eaf4::t_bdfb7fe1ce10a4 1
+  s_d74e0a51d9eaf4::t_ea5fcb7d23cc5c 35-41,69
+  s_d74e0a51d9eaf4::t_f64806c4c54f54 9,19-23,26-30,34
+bun.lock
+  s_d74e0a51d9eaf4::t_86bf4dcc29ac93 140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "f2008f216897c8e04f7d7ff3a9a86133a9d81594",
+  "prompts": {},
+  "sessions": {
+    "s_d74e0a51d9eaf4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc56b-4178-7ee2-86db-8858612da5a9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
