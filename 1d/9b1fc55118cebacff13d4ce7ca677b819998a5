@@ -1,0 +1,23 @@
+.github/workflows/security.yml
+  s_d74e0a51d9eaf4::t_5afb4e62134aab 34,37-47,53,62,65-68
+.github/workflows/ci.yml
+  s_d74e0a51d9eaf4::t_5afb4e62134aab 26-27,69,76-77
+.github/workflows/supply-chain.yml
+  s_d74e0a51d9eaf4::t_5afb4e62134aab 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "1d9b1fc55118cebacff13d4ce7ca677b819998a5",
+  "prompts": {},
+  "sessions": {
+    "s_d74e0a51d9eaf4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc56b-4178-7ee2-86db-8858612da5a9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
