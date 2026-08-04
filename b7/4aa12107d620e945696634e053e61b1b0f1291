@@ -1,0 +1,25 @@
+apps/web/src/routes/index.tsx
+  s_d04ed08162a767::t_54fa1c92e591a7 98
+  s_d04ed08162a767::t_3fa6ef0ad2adac 166-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "b74aa12107d620e945696634e053e61b1b0f1291",
+  "prompts": {},
+  "humans": {
+    "h_c4259206f43666": {
+      "author": "Zack <lorenx@163.com>"
+    }
+  },
+  "sessions": {
+    "s_d04ed08162a767": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3b9f62b-692f-4507-bf91-d28e928559d0",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
