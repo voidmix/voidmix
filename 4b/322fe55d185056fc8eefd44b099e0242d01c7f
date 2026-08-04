@@ -1,0 +1,366 @@
+.agents/skills/hallmark/references/themes/lumen.md
+  s_d04ed08162a767::t_cfe228e5034be5 103,110-112,115,122-123,126,131-132,144-145,196,199,205-206,213-214,217,265,267,287-295,306,399-400,402-403,422,425,428-431,435-437,440,442
+  s_d04ed08162a767::t_c52c645c7e9f5b 7
+  s_d04ed08162a767::t_0c470542bec65f 1-6,8-102,104-109,113-114,116-121,124-125,127-130,133-143,146-195,197-198,200-204,207-212,215-216,218-264,266,268-286,296-305,307-398,401,405-421,423-424,426-427,432-434,438-439,441,443-478
+  s_d04ed08162a767::t_4718e08881f7cb 404,479-528
+.agents/skills/hallmark/references/study.md
+  s_d04ed08162a767::t_cfe228e5034be5 17-469
+  s_d04ed08162a767::t_ec4cd2fbced75b 1-16,470-509
+.agents/skills/hallmark/references/imagery-kit.md
+  s_d04ed08162a767::t_cfe228e5034be5 17-133
+  s_d04ed08162a767::t_cb296b6dbe2f1b 1-16,134-197
+.agents/skills/hallmark/references/components/ft4-dense-typographic.md
+  s_d04ed08162a767::t_0c470542bec65f 1-7,9-10
+  s_d04ed08162a767::t_cfe228e5034be5 8
+  s_d04ed08162a767::t_c2cab6ce7d982d 11-14
+.agents/skills/hallmark/references/components/n7-brutal-slab.md
+  s_d04ed08162a767::t_cfe228e5034be5 10-19
+  s_d04ed08162a767::t_034f3c2f226f82 1-9,20-50
+.agents/skills/hallmark/references/components/ft3-index-style-category-list.md
+  s_d04ed08162a767::t_cfe228e5034be5 8-10
+  s_d04ed08162a767::t_d6365c6bb9b733 1-7,11-28
+.agents/skills/hallmark/references/components/t2-logo-wall-hairline.md
+  s_d04ed08162a767::t_0c470542bec65f 1-15,19
+  s_d04ed08162a767::t_cfe228e5034be5 16-18
+  s_d04ed08162a767::t_8b6fdc9614d61e 20-33
+.agents/skills/hallmark/references/microinteractions.md
+  s_d04ed08162a767::t_cfe228e5034be5 26-238
+  s_d04ed08162a767::t_bfd95ea9b860a0 1-25,239-273
+.agents/skills/hallmark/references/components/f2-sticky-scroll-stack.md
+  s_d04ed08162a767::t_cfe228e5034be5 8-19
+  s_d04ed08162a767::t_e9c5f27194bc7b 1-7,20-36
+.agents/skills/hallmark/references/components/n5-floating-pill.md
+  s_d04ed08162a767::t_cfe228e5034be5 6-14,26
+  s_d04ed08162a767::t_f12ff8ec7091bf 1-5,15-25,27-36
+.agents/skills/hallmark/references/components/h8-mockup-split-browser-framed.md
+  s_d04ed08162a767::t_cfe228e5034be5 19-22
+  s_d04ed08162a767::t_f02bf3c8284d64 1-18,23-46
+.agents/skills/hallmark/references/hero-enrichment.md
+  s_d04ed08162a767::t_cfe228e5034be5 14-47,110,112-145,242-376,452
+  s_d04ed08162a767::t_3b2b99bba6518d 102,206
+  s_d04ed08162a767::t_48df299b9cd189 1-13,48-101,103-109,111,146-205,207-241,377-451,453-599
+.agents/skills/hallmark/references/macrostructures/16-feature-stack.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_f4780bfc7d0715 24
+.agents/skills/hallmark/references/export-formats.md
+  s_d04ed08162a767::t_cfe228e5034be5 18-310
+  s_d04ed08162a767::t_4d53d1c34d962e 1-17,311-331
+.agents/skills/hallmark/references/macrostructures/20-ecosystem-index.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_d635005b01cdaf 24
+.agents/skills/hallmark/references/interaction-and-states.md
+  s_d04ed08162a767::t_cfe228e5034be5 7-199
+  s_d04ed08162a767::t_1a880c0323b7a5 1-6,200-212
+.agents/skills/hallmark/references/responsive.md
+  s_d04ed08162a767::t_cfe228e5034be5 30-77
+  s_d04ed08162a767::t_216663bea1b7ac 1-29,78-156
+.agents/skills/hallmark/references/themes/carnival.md
+  s_d04ed08162a767::t_0c470542bec65f 1-4,6-160,163-172,174-269,276-291,299-301
+  s_d04ed08162a767::t_cfe228e5034be5 161-162,173,270-275,292-298
+  s_d04ed08162a767::t_c52c645c7e9f5b 5
+  s_d04ed08162a767::t_5c5ae2593ced7c 302-336
+.agents/skills/hallmark/references/themes/cobalt.md
+  s_d04ed08162a767::t_cfe228e5034be5 27,97,100-102,119-121,124-127,130-133,137-139,142
+  s_d04ed08162a767::t_0c470542bec65f 1-4,6-26,28-96,99,103-118,122-123,128-129,135-136,140-141,143-145
+  s_d04ed08162a767::t_c52c645c7e9f5b 5,146
+  s_d04ed08162a767::t_aecb70a7723be7 98,134,147-183
+.agents/skills/hallmark/references/component-cookbook.md
+  s_d04ed08162a767::t_cfe228e5034be5 100-244
+  s_d04ed08162a767::t_38c610e03853c2 1-99,245-258
+.agents/skills/hallmark/references/macrostructures/19-map-diagram.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_55f678885379c4 24
+.agents/skills/hallmark/references/floating-nav.md
+  s_d04ed08162a767::t_cfe228e5034be5 13-67
+  s_d04ed08162a767::t_0fab6bb600b69a 1-12,68-100
+.agents/skills/hallmark/references/components/n6-newspaper-masthead.md
+  s_d04ed08162a767::t_cfe228e5034be5 11-21
+  s_d04ed08162a767::t_71eadf1f55a23f 1-10,22-57
+.agents/skills/hallmark/references/components/t4-numbered-stat-strip.md
+  s_d04ed08162a767::t_0c470542bec65f 1-14
+  s_d04ed08162a767::t_c08992406f569a 15
+.agents/skills/hallmark/references/structure.md
+  s_d04ed08162a767::t_cfe228e5034be5 15-153
+  s_d04ed08162a767::t_3d113dee79fcee 1-14,154-160
+.agents/skills/hallmark/references/components/s1-left-margin-numbered.md
+  s_d04ed08162a767::t_cfe228e5034be5 1-13
+  s_d04ed08162a767::t_9c6d5c21409872 14-21
+.agents/skills/hallmark/references/components/n2-floating-chip.md
+  s_d04ed08162a767::t_cfe228e5034be5 13
+  s_d04ed08162a767::t_b11265fed386d3 1-12,14-25
+.agents/skills/hallmark/references/components/f3-tabular-spec-sheet.md
+  s_d04ed08162a767::t_cfe228e5034be5 8-9
+  s_d04ed08162a767::t_144f374400a553 1-7,10-18
+.agents/skills/hallmark/references/components/n13-inline-cmdk-pill.md
+  s_d04ed08162a767::t_cfe228e5034be5 4-30,34
+  s_d04ed08162a767::t_5857918313069b 1-3,31-33,35-88
+.agents/skills/hallmark/references/color.md
+  s_d04ed08162a767::t_cfe228e5034be5 25-60
+  s_d04ed08162a767::t_2b51741c7c2e94 1-24,61-95
+.agents/skills/hallmark/references/components/ft8-marquee-scroll.md
+  s_d04ed08162a767::t_cfe228e5034be5 16-20
+  s_d04ed08162a767::t_019b4899b93281 1-15,21-52
+.agents/skills/hallmark/references/macrostructures/01-bento-grid.md
+  s_d04ed08162a767::t_cfe228e5034be5 26-29
+  s_d04ed08162a767::t_db65440548d083 1-25,30-39
+.agents/skills/hallmark/references/components/h2-split-diptych.md
+  s_d04ed08162a767::t_cfe228e5034be5 8-14
+  s_d04ed08162a767::t_539838c7a2a3ab 1-7,15-30
+.agents/skills/hallmark/references/components/n12-banner-retract.md
+  s_d04ed08162a767::t_cfe228e5034be5 6-20,29
+  s_d04ed08162a767::t_7862308d1b8fe2 1-5,21-28,30-65
+.agents/skills/hallmark/references/components/c2-inline-form-as-cta.md
+  s_d04ed08162a767::t_cfe228e5034be5 11-12,16
+  s_d04ed08162a767::t_c8a02d2b604888 1-10,13-15,17-27
+.agents/skills/hallmark/references/copy.md
+  s_d04ed08162a767::t_cfe228e5034be5 169
+  s_d04ed08162a767::t_315de47e778611 1-168,170-182
+.agents/skills/hallmark/references/components/t1-pull-quote-with-marginalia.md
+  s_d04ed08162a767::t_0c470542bec65f 2-11
+  s_d04ed08162a767::t_cfe228e5034be5 1
+  s_d04ed08162a767::t_94d1cc4210e767 12
+.agents/skills/hallmark/references/components/h4-stat-led.md
+  s_d04ed08162a767::t_cfe228e5034be5 13
+  s_d04ed08162a767::t_68cfc3ebf15fcc 1-12,14-20
+.agents/skills/hallmark/references/components/n1-wordmark-2-links.md
+  s_d04ed08162a767::t_cfe228e5034be5 1-9
+  s_d04ed08162a767::t_2b884072ea6290 10-15
+.agents/skills/hallmark/references/components/n8-terminal-command.md
+  s_d04ed08162a767::t_cfe228e5034be5 5-15,19
+  s_d04ed08162a767::t_c9473ca21c5094 1-4,16-18,20-53
+.agents/skills/hallmark/references/typography.md
+  s_d04ed08162a767::t_cfe228e5034be5 21-201
+  s_d04ed08162a767::t_7ec2944534126a 1-20,202-243
+.agents/skills/hallmark/references/verbs/redesign.md
+  s_d04ed08162a767::t_0c470542bec65f 1-64,67-68,70,76-78,81-128,135,137-138,140-141,145-147,149-154,163-170,173-176,178-187,198-266
+  s_d04ed08162a767::t_cfe228e5034be5 65-66,69,71-75,79-80,129-134,136,139,142-143,148,155-162,171-172,177,188-197
+  s_d04ed08162a767::t_0db4c5df71e595 144,267-300
+.agents/skills/hallmark/references/themes/hum.md
+  s_d04ed08162a767::t_cfe228e5034be5 72,75-78,80-85,124,127,132-134,142-143,145-150,170,209,212,215-216,228,232-233,235,332-333,335-336,354,356,360-362,365-369,372,376,378
+  s_d04ed08162a767::t_c52c645c7e9f5b 5
+  s_d04ed08162a767::t_0c470542bec65f 1-4,6-71,74,79,86-123,125-126,128-131,135-141,144,151-169,171-208,210-211,213-214,217-227,229-231,234,236-331,334,337-353,355,357-359,363-364,370,373-375,377,379-402
+  s_d04ed08162a767::t_803076d9f412e0 73,371,403-510
+.agents/skills/hallmark/references/components/f4-step-sequence.md
+  s_d04ed08162a767::t_0c470542bec65f 1-7,10-11
+  s_d04ed08162a767::t_cfe228e5034be5 8-9
+  s_d04ed08162a767::t_16ce1b83706ee6 12-20
+.agents/skills/hallmark/references/components/h6-photographic-fold.md
+  s_d04ed08162a767::t_cfe228e5034be5 13-15
+  s_d04ed08162a767::t_c82ef9ed6fbc6e 1-12,16-29
+.agents/skills/hallmark/references/components/h1-marquee.md
+  s_d04ed08162a767::t_cfe228e5034be5 1-13
+  s_d04ed08162a767::t_17e54ca070cce8 14-24
+.agents/skills/hallmark/references/slop-test.md
+  s_d04ed08162a767::t_cfe228e5034be5 19-22
+  s_d04ed08162a767::t_ae60ac69512c5f 1-18,23-192
+.agents/skills/hallmark/references/motion.md
+  s_d04ed08162a767::t_cfe228e5034be5 21-87
+  s_d04ed08162a767::t_953d285706566f 1-20,88-125
+.agents/skills/hallmark/references/verbs/audit.md
+  s_d04ed08162a767::t_0c470542bec65f 1-24
+  s_d04ed08162a767::t_caa4053535d23f 25
+.agents/skills/hallmark/references/components/c1-outlined-chip.md
+  s_d04ed08162a767::t_cfe228e5034be5 1-10
+  s_d04ed08162a767::t_a601b8b5f6717e 11-20
+.agents/skills/hallmark/references/components/c4-sticky-bottom-bar.md
+  s_d04ed08162a767::t_cfe228e5034be5 13
+  s_d04ed08162a767::t_4850605a853961 1-12,14-29
+.agents/skills/hallmark/references/macrostructures/11-catalogue.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_b1f46c543cda28 24
+.agents/skills/hallmark/references/custom-theme.md
+  s_d04ed08162a767::t_cfe228e5034be5 245-251
+  s_d04ed08162a767::t_3b2b99bba6518d 254-362
+  s_d04ed08162a767::t_c624ebf3b41eda 1-244,252-253,363-378
+.agents/skills/hallmark/references/macrostructures/21-component-playground.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_956140cb1ac481 24
+skills-lock.json
+  s_d04ed08162a767::t_0c470542bec65f 10-15
+.agents/skills/hallmark/references/components/s3-sticky-pinned.md
+  s_d04ed08162a767::t_cfe228e5034be5 16
+  s_d04ed08162a767::t_98d272ac6e4cd2 1-15,17-28
+.agents/skills/hallmark/references/macrostructures/18-portfolio-grid.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_5bcab9ba787a30 24
+.agents/skills/hallmark/SKILL.md
+  s_d04ed08162a767::t_cfe228e5034be5 23-123,302-304
+  s_d04ed08162a767::t_17c1088931acf4 282
+  s_d04ed08162a767::t_99dcdc665e18b4 390-391
+  s_d04ed08162a767::t_22ebd6acee6910 1-22,124-281,283-301,305-389,392-598
+.agents/skills/hallmark/references/macrostructures/05-workbench.md
+  s_d04ed08162a767::t_cfe228e5034be5 26
+  s_d04ed08162a767::t_fee9f8cdbf4385 1-25,27-36
+.agents/skills/hallmark/references/components/n11-mega-menu.md
+  s_d04ed08162a767::t_cfe228e5034be5 11-34
+  s_d04ed08162a767::t_df7cc5203dd2b2 1-10,35-92
+.agents/skills/hallmark/references/custom-craft.md
+  s_d04ed08162a767::t_cfe228e5034be5 21-595
+  s_d04ed08162a767::t_9551e2795eadb5 1-20,596-815
+.agents/skills/hallmark/references/components/s4-inline-no-break.md
+  s_d04ed08162a767::t_cfe228e5034be5 7
+  s_d04ed08162a767::t_a1624ff40befe9 1-6,8-17
+.agents/skills/hallmark/references/components/n1b-saas-three-section.md
+  s_d04ed08162a767::t_cfe228e5034be5 4-26,30
+  s_d04ed08162a767::t_157949eedb6dae 1-3,27-29,31-88
+.agents/skills/hallmark/references/macrostructures/14-narrative-workflow.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_18a6022fcdb89c 24
+.agents/skills/hallmark/references/components/h9-custom-illustration-centerpiece.md
+  s_d04ed08162a767::t_cfe228e5034be5 22-23
+  s_d04ed08162a767::t_2a2f8925d2b0dd 1-21,24-41
+.agents/skills/hallmark/references/components/n9-edge-aligned-minimal.md
+  s_d04ed08162a767::t_cfe228e5034be5 10-11,15
+  s_d04ed08162a767::t_7ca7d93a10b10e 1-9,12-14,16-27
+.agents/skills/hallmark/references/components/t3-single-huge-quote.md
+  s_d04ed08162a767::t_0c470542bec65f 1-11
+  s_d04ed08162a767::t_d2b4283c3bb9c5 12
+.agents/skills/hallmark/references/components/ft5-statement.md
+  s_d04ed08162a767::t_cfe228e5034be5 16-18
+  s_d04ed08162a767::t_80edfed773d81b 1-15,19-40
+.agents/skills/hallmark/references/macrostructures/17-type-specimen.md
+  s_d04ed08162a767::t_0c470542bec65f 1-23
+  s_d04ed08162a767::t_6d97bfd430f883 24
+.agents/skills/hallmark/references/assets.md
+  s_d04ed08162a767::t_cfe228e5034be5 13-396
+  s_d04ed08162a767::t_4e85ed11096d2a 1-12,397-418
+.agents/skills/hallmark/references/layout-and-space.md
+  s_d04ed08162a767::t_cfe228e5034be5 19-92
+  s_d04ed08162a767::t_63ecc5293885b6 1-18,93-116
+.agents/skills/hallmark/references/components/f1-bento-grid.md
+  s_d04ed08162a767::t_cfe228e5034be5 1-18
+  s_d04ed08162a767::t_67ce5ad8685993 19-37
+.agents/skills/hallmark/references/design-md.md
+  s_d04ed08162a767::t_cfe228e5034be5 23-85
+  s_d04ed08162a767::t_469c28f3914fd1 1-22,86-125
+.agents/skills/hallmark/references/components/ft7-newsletter-first.md
+  s_d04ed08162a767::t_cfe228e5034be5 16-21,25
+  s_d04ed08162a767::t_9c7e8c9801e625 1-15,22-24,26-53
+.agents/skills/hallmark/references/components/f6-product-card-grid.md
+  s_d04ed08162a767::t_cfe228e5034be5 22-32
+  s_d04ed08162a767::t_1846620836cb3d 1-21,33-94
+.agents/skills/hallmark/references/components/h7-demo-video-clipped-by-viewport-edge.md
+  s_d04ed08162a767::t_cfe228e5034be5 12-23,27
+  s_d04ed08162a767::t_d8f9f29bfc6dd8 1-11,24-26,28-53
+.agents/skills/hallmark/references/components/n10-floating-on-scroll-morph.md
+  s_d04ed08162a767::t_cfe228e5034be5 10
+  s_d04ed08162a767::t_07e74512aa9347 1-9,11-22
+.agents/skills/hallmark/references/components/ft1-mast-headed.md
+  s_d04ed08162a767::t_cfe228e5034be5 1
+  s_d04ed08162a767::t_2d7a5f1ec8d980 2-13
+.agents/skills/hallmark/references/components/s2-hanging.md
+  s_d04ed08162a767::t_0c470542bec65f 1-11,13
+  s_d04ed08162a767::t_cfe228e5034be5 12
+  s_d04ed08162a767::t_d90b16f49ec30b 14-17
+.agents/skills/hallmark/references/components/ft6-letter-close.md
+  s_d04ed08162a767::t_cfe228e5034be5 9-16
+  s_d04ed08162a767::t_5aa31cd09d4829 1-8,17-37
+.agents/skills/hallmark/references/components/n3-side-rail.md
+  s_d04ed08162a767::t_cfe228e5034be5 9-13
+  s_d04ed08162a767::t_43e3ccbb436094 1-8,14-28
+.agents/skills/hallmark/references/anti-patterns.md
+  s_d04ed08162a767::t_06cc75722431cd 1-418
+.agents/skills/hallmark/references/components/c3-typographic-link.md
+  s_d04ed08162a767::t_f5d2232f99af3b 1-9
+.agents/skills/hallmark/references/components/f5-annotated-screenshot.md
+  s_d04ed08162a767::t_d2c3c3f83ff172 1-12
+.agents/skills/hallmark/references/components/ft2-inline-rule-single-line.md
+  s_d04ed08162a767::t_af7ccda4cf00e8 1-11
+.agents/skills/hallmark/references/components/h3-quote-led.md
+  s_d04ed08162a767::t_cfbfa3ba30b92d 1-12
+.agents/skills/hallmark/references/components/h5-letter-hero.md
+  s_d04ed08162a767::t_23022236145944 1-12
+.agents/skills/hallmark/references/components/n4-hidden-behind-k.md
+  s_d04ed08162a767::t_5db5729cc1e00a 1-10
+.agents/skills/hallmark/references/components/s5-bottom-anchored.md
+  s_d04ed08162a767::t_2233903a6874a4 1-14
+.agents/skills/hallmark/references/contract.md
+  s_d04ed08162a767::t_f5354d70a7a7cf 1-25
+.agents/skills/hallmark/references/genres/atmospheric.md
+  s_d04ed08162a767::t_39862b88735f88 1-69
+.agents/skills/hallmark/references/genres/editorial.md
+  s_d04ed08162a767::t_3316e91464da1c 1-72
+.agents/skills/hallmark/references/genres/modern-minimal.md
+  s_d04ed08162a767::t_7b101df7f8b76a 1-71
+.agents/skills/hallmark/references/genres/playful.md
+  s_d04ed08162a767::t_9b4c24ea9ca39b 1-70
+.agents/skills/hallmark/references/macrostructures.md
+  s_d04ed08162a767::t_39f0cb89d67149 1-89
+.agents/skills/hallmark/references/macrostructures/02-long-document.md
+  s_d04ed08162a767::t_bea1266afa5c4e 1-35
+.agents/skills/hallmark/references/macrostructures/03-marquee-hero.md
+  s_d04ed08162a767::t_5fe9be04e464b3 1-32
+.agents/skills/hallmark/references/macrostructures/04-stat-led.md
+  s_d04ed08162a767::t_84e9b81db537c0 1-35
+.agents/skills/hallmark/references/macrostructures/06-conversational-faq.md
+  s_d04ed08162a767::t_91d53b804ddbae 1-34
+.agents/skills/hallmark/references/macrostructures/07-manifesto.md
+  s_d04ed08162a767::t_ee2067eab17a5a 1-33
+.agents/skills/hallmark/references/macrostructures/08-photographic.md
+  s_d04ed08162a767::t_053fd2c16169a2 1-35
+.agents/skills/hallmark/references/macrostructures/09-quote-led.md
+  s_d04ed08162a767::t_d3a6988d468c87 1-33
+.agents/skills/hallmark/references/macrostructures/10-specimen.md
+  s_d04ed08162a767::t_638f2bd5c49c91 1-33
+.agents/skills/hallmark/references/macrostructures/12-letter.md
+  s_d04ed08162a767::t_65d672256bf66b 1-24
+.agents/skills/hallmark/references/macrostructures/13-index-first.md
+  s_d04ed08162a767::t_acaf88d6e276cd 1-24
+.agents/skills/hallmark/references/macrostructures/15-split-studio.md
+  s_d04ed08162a767::t_96b5a7bc442fda 1-24
+.agents/skills/hallmark/references/preview-examples.md
+  s_d04ed08162a767::t_10c1e8e2f46c18 1-53
+.agents/skills/hallmark/references/vendor/LICENSE
+  s_d04ed08162a767::t_d81b79b883ebbe 1-21
+.agents/skills/hallmark/references/vendor/README.md
+  s_d04ed08162a767::t_ed2fd78815fcfa 1-31
+.agents/skills/hallmark/references/vendor/css/tokens.css
+  s_d04ed08162a767::t_e4f13a3fb6f535 1-1212
+.agents/skills/hallmark/references/vendor/docs/recipes.md
+  s_d04ed08162a767::t_7e0655710c9c10 1-186
+.agents/skills/hallmark/references/vendor/docs/study-examples.md
+  s_d04ed08162a767::t_f37e5394f7a3b1 1-179
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/index.html
+  s_d04ed08162a767::t_4fe65a54c41fd9 1-418
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/script.js
+  s_d04ed08162a767::t_e080f8346038ba 1-301
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/styles.css
+  s_d04ed08162a767::t_578ebe1864647f 1-1238
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/tokens.css
+  s_d04ed08162a767::t_e3567e5e0b0c47 1-79
+.agents/skills/hallmark/references/vendor/tests/03-maple-bakery/brief.md
+  s_d04ed08162a767::t_af4ae9b9e93e3a 1-64
+.agents/skills/hallmark/references/vendor/tests/03-maple-bakery/index.html
+  s_d04ed08162a767::t_372335a3ec1b5b 1-183
+.agents/skills/hallmark/references/vendor/tests/03-maple-bakery/style.css
+  s_d04ed08162a767::t_7bd6f45d168810 1-268
+.agents/skills/hallmark/references/vendor/tests/05-tracejam-saas/brief.md
+  s_d04ed08162a767::t_ab246e30aef8df 1-63
+.agents/skills/hallmark/references/vendor/tests/05-tracejam-saas/index.html
+  s_d04ed08162a767::t_20152b8f7fa054 1-260
+.agents/skills/hallmark/references/vendor/tests/05-tracejam-saas/style.css
+  s_d04ed08162a767::t_b39ae558c1e5fd 1-563
+.claude/skills/hallmark
+  s_d04ed08162a767::t_9a9982dc4eefd3 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "4b322fe55d185056fc8eefd44b099e0242d01c7f",
+  "prompts": {},
+  "humans": {
+    "h_c4259206f43666": {
+      "author": "Zack <lorenx@163.com>"
+    }
+  },
+  "sessions": {
+    "s_d04ed08162a767": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3b9f62b-692f-4507-bf91-d28e928559d0",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
