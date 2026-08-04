@@ -1,0 +1,33 @@
+tooling/test-utils/__tests__/migration.test.ts
+  s_bd94372328216f::t_853fa8cab579cb 41,50,55-56,60,62-70,76
+packages/database/drizzle/20260804032851_famous_captain_britain/snapshot.json
+  s_bd94372328216f::t_e71f400476ccaa 1-2784
+packages/database/__tests__/schema.test.ts
+  s_bd94372328216f::t_8c50df68a5e90c 5,47
+packages/database/src/schema/relations.ts
+  s_bd94372328216f::t_8c50df68a5e90c 3
+  s_bd94372328216f::t_f11d79c7ad1464 5-22
+packages/database/drizzle/20260804032851_famous_captain_britain/migration.sql
+  s_bd94372328216f::t_e71f400476ccaa 1-217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "0fa2bf075f17c5e1a5ddd02c5ba03ffc9356ceee",
+  "prompts": {},
+  "humans": {
+    "h_c4259206f43666": {
+      "author": "Zack <lorenx@163.com>"
+    }
+  },
+  "sessions": {
+    "s_bd94372328216f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fca7e-212f-70a3-8983-460f2bcb5f92",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
