@@ -1,0 +1,44 @@
+apps/web/src/routes/index.tsx
+  s_d04ed08162a767::t_b9839de5891f63 3-4,18,22,26,32-35
+  s_d04ed08162a767::t_b8aa462c2b68d3 169-179,183-190,192-194
+  s_d04ed08162a767::t_02303008955d77 68-86,89,91,96-147,150-151,157,160
+  s_d04ed08162a767::t_12844eb4c728cc 87-88
+apps/web/e2e/home.spec.ts
+  s_d04ed08162a767::t_58c882e5f3eeb1 11-14,22,29,35,52
+  s_d04ed08162a767::t_0b05be901ea620 53-55
+  s_7c572da4d32e1c::t_f41807ac890f02 65-68
+apps/web/messages/en.json
+  s_d04ed08162a767::t_31b9bc8104fc76 27-29,32-35,38,40-42
+apps/web/messages/zh.json
+  s_d04ed08162a767::t_2eebf45d426e81 28
+  s_d04ed08162a767::t_89c32105ceb001 27,29,32-35,38,40-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "e38e68b8a9d47375514361e5c4d05d5d3e5b7b45",
+  "prompts": {},
+  "humans": {
+    "h_c4259206f43666": {
+      "author": "Zack <lorenx@163.com>"
+    }
+  },
+  "sessions": {
+    "s_7c572da4d32e1c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a289fd89d0d1b1f50",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_d04ed08162a767": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3b9f62b-692f-4507-bf91-d28e928559d0",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
