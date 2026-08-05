@@ -1,0 +1,33 @@
+packages/database/src/schema/auth.ts
+  s_958590984c2116::t_753adf82bbf739 62,81
+packages/database/__tests__/seed.test.ts
+  s_958590984c2116::t_753adf82bbf739 25
+apps/web/src/routes/login.tsx
+  s_958590984c2116::t_1ea399a4529c74 37-48
+apps/web/e2e/auth.setup.ts
+  s_958590984c2116::t_1ea399a4529c74 8-19,29-46
+apps/web/src/components/auth-form.tsx
+  s_958590984c2116::t_1ea399a4529c74 3,17-21,24,32,42-50,77-95,168-179
+apps/web/e2e/auth.spec.ts
+  s_958590984c2116::t_d5d48c036ae8d5 14-17
+packages/database/__tests__/schema.test.ts
+  s_958590984c2116::t_753adf82bbf739 27,41
+packages/database/src/seed/data.ts
+  s_958590984c2116::t_753adf82bbf739 411
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "513777cf2dc025b809fd4decfa6c0239f525bd34",
+  "prompts": {},
+  "sessions": {
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
