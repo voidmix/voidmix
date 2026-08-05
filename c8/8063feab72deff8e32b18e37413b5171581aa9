@@ -1,0 +1,88 @@
+packages/admin/__tests__/schemas.test.ts
+  s_958590984c2116::t_fcf0142c97973a 6-8,44-73
+packages/database/drizzle/20260805032945_unknown_beast/migration.sql
+  s_958590984c2116::t_8ef5189a20dada 1-32
+packages/database/drizzle/20260805032945_unknown_beast/snapshot.json
+  s_958590984c2116::t_8ef5189a20dada 1-3136
+apps/admin/src/features/admin/client/dashboard/monitoring-charts.tsx
+  s_958590984c2116::t_2764f75d1835dd 1-28,36-100,102-147,149-175,182-203
+  s_958590984c2116::t_b38bdcf918a501 29-35
+  s_958590984c2116::t_d9907e607fc5dc 101,148,176-181
+packages/admin/src/shared/types.ts
+  s_958590984c2116::t_d61af12b8f295b 17-19,42-44
+apps/admin/src/features/admin/client/rpc.ts
+  s_958590984c2116::t_e3e4dac2cc6885 19-20,116-128,131-133
+  s_958590984c2116::t_d9907e607fc5dc 129-130
+packages/admin/src/shared/schemas/dashboard.ts
+  s_958590984c2116::t_d61af12b8f295b 10-43
+packages/database/src/monitoring.ts
+  s_958590984c2116::t_8b39c3aeb009f3 1-2,4,7-15,32-36,68-127,129-130
+  s_958590984c2116::t_d9907e607fc5dc 22-25,44-51
+  s_958590984c2116::t_c52d3a97bc13f0 128
+  s_958590984c2116::t_c43c2814351156 3,5-6,16-21,26-31,37-43,52-67
+apps/admin/src/features/admin/api/query-helpers.ts
+  s_958590984c2116::t_e3e4dac2cc6885 34-35
+packages/database/src/schema.ts
+  s_958590984c2116::t_8b39c3aeb009f3 6
+packages/admin/src/server/services/dashboard.ts
+  s_958590984c2116::t_d44d9826ca37c2 1-12,26-46,52,61,76,79,86,91-121,131-145
+  s_958590984c2116::t_d9907e607fc5dc 87-90,122-130
+apps/admin/src/routes/(admin)/-dashboard-page.tsx
+  s_958590984c2116::t_703ffc86ab718b 13-14,21-27,43-44,52
+packages/database/__tests__/schema.test.ts
+  s_958590984c2116::t_fcf0142c97973a 6,68-79
+  s_958590984c2116::t_8b39c3aeb009f3 52-66
+  s_958590984c2116::t_fe5735ac055562 67
+  s_958590984c2116::t_fb2bf1e7b5f45a 80
+packages/admin/__tests__/dashboard-service.test.ts
+  s_958590984c2116::t_fcf0142c97973a 90-160,168
+  s_958590984c2116::t_d9907e607fc5dc 161-167
+apps/admin/src/features/admin/client/dashboard/monitoring-config-card.tsx
+  s_958590984c2116::t_d9907e607fc5dc 21-24
+  s_958590984c2116::t_2764f75d1835dd 1-9,11-20,25-38,40-113
+  s_958590984c2116::t_b38bdcf918a501 10,39
+apps/admin/src/features/admin/client/dashboard/dashboard.tsx
+  s_958590984c2116::t_703ffc86ab718b 34-35
+packages/database/src/schema/monitoring.ts
+  s_958590984c2116::t_c43c2814351156 2,30-49,51-54,93-94
+  s_958590984c2116::t_22447ddbc977ca 17-29,74,87
+  s_958590984c2116::t_8b39c3aeb009f3 1,3-16,55-62,64-73,75-86,88,90-92,95-96
+  s_958590984c2116::t_d9907e607fc5dc 50,63,89
+docs/operations/observability.md
+  s_958590984c2116::t_b382fe948818f0 26-39
+packages/admin/src/server/routes/dashboard.ts
+  s_958590984c2116::t_d9907e607fc5dc 44-46,63-66
+  s_958590984c2116::t_cb58be47343bef 1-7,9-43,47-62,67-68,73,76-102
+apps/admin/src/features/admin/client/dashboard/stats-cards.tsx
+  s_958590984c2116::t_703ffc86ab718b 3,35-40,44,50
+packages/admin/__tests__/routes.test.ts
+  s_958590984c2116::t_8fc8e4780fcf00 16-19,41-48,55,159-172,176-207
+  s_958590984c2116::t_57afdbadbb140b 173-175
+  s_958590984c2116::t_97805ad250d891 208
+apps/admin/messages/en.json
+  s_958590984c2116::t_49d80dc837f659 204-207,209-225
+  s_958590984c2116::t_b38bdcf918a501 208
+packages/database/package.json
+  s_958590984c2116::t_8b39c3aeb009f3 12
+packages/database/src/index.ts
+  s_958590984c2116::t_8b39c3aeb009f3 6
+apps/admin/messages/zh.json
+  s_958590984c2116::t_49d80dc837f659 204-207,209-225
+  s_958590984c2116::t_b38bdcf918a501 208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c88063feab72deff8e32b18e37413b5171581aa9",
+  "prompts": {},
+  "sessions": {
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
