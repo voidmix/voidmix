@@ -1,0 +1,94 @@
+.claude/agents/api-auth.md
+  s_b3b2965ea3ac2a::t_f47fdfd07f06cf 3,7,16,30-35
+  s_b3b2965ea3ac2a::t_f50a5a1e01ad00 28
+.claude/agents/ui-dev.md
+  s_b3b2965ea3ac2a::t_f47fdfd07f06cf 7,30,37-41
+  s_b3b2965ea3ac2a::t_f50a5a1e01ad00 9
+.codex/agents/api-auth.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.codex/agents/i18n-dev.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.claude/agents/i18n-dev.md
+  s_958590984c2116::t_ae4dbf42df897c 1-19
+packages/tooling/scripts/src/cli.ts
+  s_b3b2965ea3ac2a::t_911ca5d62f9438 21-24
+AGENTS.md
+  s_b3b2965ea3ac2a::t_911ca5d62f9438 213-220,222-224
+  s_b3b2965ea3ac2a::t_3c71c927a03db2 195-196,203-212,221,225-228,255-260,271-273
+  s_b3b2965ea3ac2a::t_4394b8c26878d0 244-245
+package.json
+  s_b3b2965ea3ac2a::t_2266a743517988 58
+.codex/agents/domain-dev.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.claude/agents/domain-dev.md
+  s_958590984c2116::t_ae4dbf42df897c 1-20
+packages/tooling/scripts/src/harness/verify.ts
+  s_b3b2965ea3ac2a::t_04ede666ccd7a2 1,6,10,12-14
+packages/tooling/scripts/package.json
+  s_b3b2965ea3ac2a::t_2266a743517988 20
+.codex/agents/db-migrate.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.gitignore
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 34-38
+.codex/agents/ui-dev.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+vite.config.ts
+  s_b3b2965ea3ac2a::t_5ededad1bee617 6-7
+.claude/agents/db-migrate.md
+  s_b3b2965ea3ac2a::t_f50a5a1e01ad00 16
+  s_b3b2965ea3ac2a::t_f47fdfd07f06cf 9,18-23
+.codex/agents/desktop-dev.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.claude/agents/desktop-dev.md
+  s_b3b2965ea3ac2a::t_3cc1b48509f6d2 13,16-20
+.codex/agents/web-dev.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.codex/agents/vp-verify.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.codex/agents/admin-dev.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+.claude/agents/jobs-runtime.md
+  s_958590984c2116::t_ae4dbf42df897c 1-20
+.claude/agents/admin-dev.md
+  s_958590984c2116::t_ae4dbf42df897c 1-21
+.claude/agents/vp-verify.md
+  s_b3b2965ea3ac2a::t_f47fdfd07f06cf 3,7,11-12,14-17,24,26
+.claude/agents/web-dev.md
+  s_b3b2965ea3ac2a::t_f50a5a1e01ad00 17
+  s_b3b2965ea3ac2a::t_3cc1b48509f6d2 3,14-15,18-22
+.codex/agents/jobs-runtime.toml
+  s_b3b2965ea3ac2a::t_727ede6ddaa305 1-5
+packages/tooling/scripts/src/harness/agents-integrity.ts
+  s_b3b2965ea3ac2a::t_04ede666ccd7a2 1-3,6-101,104,107-112,114-128,130-132,134-149,153-186
+  s_b3b2965ea3ac2a::t_5671e7d1275343 102-103,105-106,113,129,150-152
+  s_b3b2965ea3ac2a::t_0b4ce9da659f37 4-5,133
+packages/tooling/scripts/__tests__/agents-integrity.test.ts
+  s_b3b2965ea3ac2a::t_0f30ea5a950076 1-32,37-52,57-72
+  s_b3b2965ea3ac2a::t_911ca5d62f9438 33-36,53-56
+bun.lock
+  s_b3b2965ea3ac2a::t_5f8f352e0c78c4 599,690,1018-1019
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c8c05cc7d9ce0b84b52838cc86db3e55c084faa5",
+  "prompts": {},
+  "sessions": {
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_b3b2965ea3ac2a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fd117-d83a-7ea1-a7f2-730e633d1352",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
