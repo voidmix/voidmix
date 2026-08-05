@@ -1,0 +1,42 @@
+packages/mail/src/emails/welcome.tsx
+  s_958590984c2116::t_f31e175cda92b2 1,6,36-37,40,44-46,54
+packages/mail/src/emails/email-verification.tsx
+  s_958590984c2116::t_f31e175cda92b2 1,6,39,43-45,50
+packages/mail/src/emails/magic-link.tsx
+  s_958590984c2116::t_f31e175cda92b2 1,6,42
+  s_958590984c2116::t_cc6def09912ccb 36
+packages/mail/src/emails/password-reset.tsx
+  s_958590984c2116::t_f31e175cda92b2 1,6,39,43-45,52
+packages/mail/src/emails/org-role-changed.tsx
+  s_958590984c2116::t_f31e175cda92b2 6,45
+packages/mail/src/emails/otp.tsx
+  s_958590984c2116::t_f31e175cda92b2 6,40,44
+packages/mail/src/emails/org-invitation.tsx
+  s_958590984c2116::t_f31e175cda92b2 1,6,54,63
+  s_958590984c2116::t_5d69fac52cb358 64
+packages/mail/src/emails/org-removed.tsx
+  s_958590984c2116::t_f31e175cda92b2 6,39
+packages/mail/src/emails/contact.tsx
+  s_958590984c2116::t_f31e175cda92b2 6,64
+packages/mail/src/emails/layout.tsx
+  s_958590984c2116::t_c3d63cb5ecf820 1-14,17,24-26,28,32-33,35-57,65-80,82,84-85,88,90-116,118-127,130,132-137,139,141,144,146-147,151,156-158,160-177,180-192,194-199
+  s_958590984c2116::t_cc6def09912ccb 34
+packages/mail/__tests__/__snapshots__/templates.test.ts.snap
+  s_958590984c2116::t_73e717c1848d1f 5,12,19,26,33,40,47,54,61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "501b2afd16fe311f773733559f7e128928e6316c",
+  "prompts": {},
+  "sessions": {
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
