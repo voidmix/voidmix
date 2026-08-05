@@ -1,0 +1,21 @@
+.github/workflows/ci.yml
+  s_2bf98a569d4942::t_5f89b090d1920d 5-7,10
+.github/workflows/security.yml
+  s_2bf98a569d4942::t_5f89b090d1920d 5-7,34,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "d4c95f8bf7c7fea9b10288adf1e088afad5f86fc",
+  "prompts": {},
+  "sessions": {
+    "s_2bf98a569d4942": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fd04c-1af8-79e1-a1b3-e6c8f0e050c2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
