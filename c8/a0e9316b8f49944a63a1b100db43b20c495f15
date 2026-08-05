@@ -1,0 +1,19 @@
+.github/workflows/supply-chain.yml
+  s_2bf98a569d4942::t_daad5579bb9bc7 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c8a0e9316b8f49944a63a1b100db43b20c495f15",
+  "prompts": {},
+  "sessions": {
+    "s_2bf98a569d4942": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fd04c-1af8-79e1-a1b3-e6c8f0e050c2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
