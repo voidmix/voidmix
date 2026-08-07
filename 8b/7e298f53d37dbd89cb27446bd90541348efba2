@@ -1,0 +1,38 @@
+apps/web/src/routes/signup.tsx
+  s_fcf4e03e306d31::t_cc085a0c34023d 76
+apps/web/messages/zh.json
+  s_fcf4e03e306d31::t_a2eae313daac1e 74-80
+  s_fcf4e03e306d31::t_85d37338367583 62
+apps/web/src/components/home-composer.tsx
+  s_fcf4e03e306d31::t_6ce2692cfd05c4 466-482
+  s_fcf4e03e306d31::t_b4dafd5c0fc672 21
+  s_fcf4e03e306d31::t_77860a1f28cfe0 152,158,166,170
+  s_fcf4e03e306d31::t_2f1229de3a9c25 204-218
+  s_fcf4e03e306d31::t_b9c64aec9c0d3c 460-465
+  s_fcf4e03e306d31::t_896bac096d3f4a 39-45,59
+  s_fcf4e03e306d31::t_2f8dbea2634bc9 76
+apps/web/src/routes/index.tsx
+  s_fcf4e03e306d31::t_aebc1e5de186c0 221,232-239
+  s_fcf4e03e306d31::t_91cf83847aabae 103,114
+  s_fcf4e03e306d31::t_21a14d8b5cfe33 53-66,70-71
+  s_fcf4e03e306d31::t_7fff2ce99395c1 35-36
+apps/web/messages/en.json
+  s_fcf4e03e306d31::t_094e3b102b0ac7 62
+  s_fcf4e03e306d31::t_2765085d722f00 74-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "8b7e298f53d37dbd89cb27446bd90541348efba2",
+  "prompts": {},
+  "sessions": {
+    "s_fcf4e03e306d31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "839f6b7e-11db-4a23-a7fd-e6e41340dbdc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
