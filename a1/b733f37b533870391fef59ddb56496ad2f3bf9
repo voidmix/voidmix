@@ -1,0 +1,23 @@
+packages/notice/package.json
+  s_91db6c778ee124::t_f7c30c9de8f410 9
+packages/organization/package.json
+  s_91db6c778ee124::t_90bac13fb5caf6 10
+packages/account/package.json
+  s_91db6c778ee124::t_5eeaf08725a0a8 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a1b733f37b533870391fef59ddb56496ad2f3bf9",
+  "prompts": {},
+  "sessions": {
+    "s_91db6c778ee124": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a9f7bc7-cacb-4695-b3f7-3f8a707aa551",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
