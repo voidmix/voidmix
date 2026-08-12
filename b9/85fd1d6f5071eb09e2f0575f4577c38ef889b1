@@ -1,0 +1,22 @@
+apps/web/src/routes/index.tsx
+  s_3008a892f2914e::t_c4b35573b5633e 141
+  s_3008a892f2914e::t_a9bb37d3e91e9d 3-4
+  s_3008a892f2914e::t_937b3c1f9eda0c 131-139
+  s_3008a892f2914e::t_27e792b1841546 129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b985fd1d6f5071eb09e2f0575f4577c38ef889b1",
+  "prompts": {},
+  "sessions": {
+    "s_3008a892f2914e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8233a44-05e2-4895-891e-2b1dd545e4e5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
