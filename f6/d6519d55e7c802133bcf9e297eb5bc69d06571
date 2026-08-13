@@ -1,0 +1,40 @@
+pnpm-workspace.yaml
+  s_e83edb637e8c81::t_405913c38e861f 75
+apps/admin/Dockerfile
+  s_e83edb637e8c81::t_146c8d9e04b6d3 3,6,8,13-14,36,38,43-44,46-48,53,55,57
+apps/admin/package.json
+  s_e83edb637e8c81::t_42b449dcccd7d2 11
+apps/web/package.json
+  s_e83edb637e8c81::t_9684322fc5380f 10-11
+  s_e83edb637e8c81::t_d87374f10102b6 61
+apps/admin/vite.config.ts
+  s_e83edb637e8c81::t_031b6f09bd6228 60
+apps/web/vite.config.ts
+  s_e83edb637e8c81::t_d57414233ce47f 70
+  s_e83edb637e8c81::t_1038357fcf17b2 48-53
+apps/web/scripts/build-migrate.mjs
+  s_e83edb637e8c81::t_7b05b58d9d2780 1-16
+apps/web/Dockerfile
+  s_e83edb637e8c81::t_1b872708e19c16 3,7,9,14-15,36,38,43-44,47,58-59,61,63
+  s_e83edb637e8c81::t_c5906e9f4b57b6 49-53
+apps/web/railway.toml
+  s_e83edb637e8c81::t_b76cd55ac9432c 8
+pnpm-lock.yaml
+  s_e83edb637e8c81::t_8aa43621f65ea2 183-185,780-782
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f6d6519d55e7c802133bcf9e297eb5bc69d06571",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
