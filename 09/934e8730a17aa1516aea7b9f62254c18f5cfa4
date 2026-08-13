@@ -1,0 +1,19 @@
+apps/admin/e2e/access-control.member.spec.ts
+  s_e83edb637e8c81::t_2ba8ee9816a3d6 3-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "09934e8730a17aa1516aea7b9f62254c18f5cfa4",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
