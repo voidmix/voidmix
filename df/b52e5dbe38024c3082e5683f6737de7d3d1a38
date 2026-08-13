@@ -1,0 +1,36 @@
+packages/mail/scripts/preview.ts
+  s_e83edb637e8c81::t_a89cd9e268418e 4
+apps/web/package.json
+  s_e83edb637e8c81::t_60a0c6d678551f 8
+packages/i18n/package.json
+  s_e83edb637e8c81::t_0964ed1c2392f1 14
+  s_e83edb637e8c81::t_9993a883889c43 29
+packages/mail/package.json
+  s_e83edb637e8c81::t_16ee9c673c1516 13
+  s_e83edb637e8c81::t_65e2c2d6dfb47c 28
+apps/cli/package.json
+  s_e83edb637e8c81::t_c4e9578e6d13b8 24
+  s_e83edb637e8c81::t_083a16c5598705 7-8
+apps/admin/package.json
+  s_e83edb637e8c81::t_ed59246c7c3d20 9
+apps/desktop/src-tauri/tauri.conf.json
+  s_e83edb637e8c81::t_c5ce6be2cedaef 7,9
+pnpm-lock.yaml
+  s_e83edb637e8c81::t_1280c95149ba0a 504-506,1246-1248,1339-1341
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dfb52e5dbe38024c3082e5683f6737de7d3d1a38",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
