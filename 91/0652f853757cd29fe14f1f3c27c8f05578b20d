@@ -1,0 +1,41 @@
+apps/desktop/src/features/settings/account-settings.tsx
+  s_aaaccda6882788::t_d297cb13a43dda 1-61
+apps/desktop/__tests__/features/settings/account-settings.test.ts
+  s_aaaccda6882788::t_46415643853859 1-127
+apps/desktop/src/features/settings/security-settings.tsx
+  s_aaaccda6882788::t_25f210533012be 1-242
+apps/desktop/__tests__/lib/routes.test.ts
+  s_aaaccda6882788::t_042268c572d05a 1-81
+apps/desktop/src/api.ts
+  s_aaaccda6882788::t_6af49b4b0f9014 1,8
+apps/desktop/package.json
+  s_aaaccda6882788::t_079de204253b60 20
+  s_aaaccda6882788::t_f5e9335d9cedcb 21
+apps/desktop/__tests__/features/settings/security-settings.test.ts
+  s_aaaccda6882788::t_a62ba0568afe79 1-217
+apps/desktop/src/lib/routes.ts
+  s_aaaccda6882788::t_fc01b11344a7d7 1-27
+apps/desktop/src/routes/settings.tsx
+  s_aaaccda6882788::t_ae744fd8240a81 66-67
+  s_aaaccda6882788::t_0b0558563a8777 196-227
+  s_aaaccda6882788::t_0c4d91beb32993 3,13,16,22-24,27-35,37-47
+  s_aaaccda6882788::t_a8b15e5521b3a9 103
+pnpm-lock.yaml
+  s_aaaccda6882788::t_07128b42477e4c 537-542,683-685,863-917
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "910652f853757cd29fe14f1f3c27c8f05578b20d",
+  "prompts": {},
+  "sessions": {
+    "s_aaaccda6882788": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ef8db82a-8167-4774-8c96-2b5048b3f97a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
