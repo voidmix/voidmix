@@ -1,0 +1,45 @@
+packages/mail/src/emails/otp.tsx
+  s_20a1585c9f8c45::t_edbddcf0c3c6ce 1
+packages/mail/src/emails/org-removed.tsx
+  s_20a1585c9f8c45::t_e2d611fb07bf76 1
+packages/mail/package.json
+  s_20a1585c9f8c45::t_50137cfa177ff7 20
+packages/mail/src/emails/magic-link.tsx
+  s_20a1585c9f8c45::t_1a40b9c1d00443 1
+packages/mail/src/emails/password-reset.tsx
+  s_20a1585c9f8c45::t_d5117e2fff7b4a 1
+packages/mail/src/emails/org-role-changed.tsx
+  s_20a1585c9f8c45::t_a8511ecfbcd6f1 1
+packages/mail/src/emails/layout.tsx
+  s_20a1585c9f8c45::t_f4e40e00fe6509 14
+packages/mail/src/emails/email-verification.tsx
+  s_20a1585c9f8c45::t_530a23ba8b9b3c 1
+packages/mail/src/emails/org-invitation.tsx
+  s_20a1585c9f8c45::t_27121d8a96697a 1
+pnpm-workspace.yaml
+  s_20a1585c9f8c45::t_f73f40eb0995b1 91
+packages/mail/src/emails/welcome.tsx
+  s_20a1585c9f8c45::t_100428403ce613 1
+packages/mail/src/emails/contact.tsx
+  s_20a1585c9f8c45::t_80083a443a678f 1
+packages/mail/__tests__/__snapshots__/templates.test.ts.snap
+  s_20a1585c9f8c45::t_88eaea235c106d 5,12,19,26,33,40,47,54,61
+pnpm-lock.yaml
+  s_20a1585c9f8c45::t_62de1fb6b0825a 216-218,1390-1392,1989-1993,2037-2040,3773-3775,4400-4402,4438-4440,5010-5013,5096-5098,5110-5113,5278-5281,5336-5339,5348-5351,5480-5487,5599-5602,5810-5817,5838-5841,6375-6378,6543-6546,6609-6612,6617-6620,6697-6700,6777-6781,6965-6968,7114-7121,7171-7174,7387-7397,7516-7521,7687-7690,8058-8060,8496-8499,8552-8563,9879-9880,10609-10612,10642-10645,11005-11009,11071-11075,11089-11090,11218-11221,11272-11273,11289-11300,11387-11392,11466-11469,11525-11543,11560-11561,12037-12038,12175-12179,12221-12222,12225-12228,12288-12289,12378-12383,12654-12655,12800-12830,12872-12873,13131-13160,13277-13282,13433-13434,13662-13663
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dec0479cdb9937769b5821795ae27ce68a829bc3",
+  "prompts": {},
+  "sessions": {
+    "s_20a1585c9f8c45": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5e30f8f3-3e66-4dfa-9f41-4ced9de7931b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
