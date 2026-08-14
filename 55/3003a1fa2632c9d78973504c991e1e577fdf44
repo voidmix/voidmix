@@ -1,0 +1,25 @@
+AGENTS.md
+  s_aaaccda6882788::t_a47516c5bfcdc8 234
+  s_aaaccda6882788::t_0f84881e9c27cf 226-233,235-237
+README.md
+  s_aaaccda6882788::t_24a71c7c667ee7 51
+docs/architecture/packages.md
+  s_aaaccda6882788::t_c2390cd0cb2030 46-48
+  s_aaaccda6882788::t_b5e28a85394a76 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "553003a1fa2632c9d78973504c991e1e577fdf44",
+  "prompts": {},
+  "sessions": {
+    "s_aaaccda6882788": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ef8db82a-8167-4774-8c96-2b5048b3f97a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
