@@ -1,0 +1,24 @@
+docs/architecture/deployment.md
+  s_8b653907b24a72::t_29ca9f2222ff82 66
+  s_8b653907b24a72::t_14177c56274103 59-65
+apps/admin/vite.config.ts
+  s_8b653907b24a72::t_14177c56274103 17
+apps/web/vite.config.ts
+  s_8b653907b24a72::t_14177c56274103 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "98f44147fbf948df990533d3ea6d8a5c392cd676",
+  "prompts": {},
+  "sessions": {
+    "s_8b653907b24a72": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00d8e-a5f4-7622-a2a7-af5f904bcd34",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
