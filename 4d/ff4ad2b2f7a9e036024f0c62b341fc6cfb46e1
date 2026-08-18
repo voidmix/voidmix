@@ -1,0 +1,38 @@
+packages/scripts/package.json
+  s_43da0cedef6956::t_52fcfdb16ce3b0 19
+packages/scripts/src/root.ts
+  s_43da0cedef6956::t_6557ff4ea1e01e 20
+packages/ui/shadcn-components.json
+  s_43da0cedef6956::t_f850604ddf880a 1-3
+packages/scripts/src/commands/shadcn.test.ts
+  s_43da0cedef6956::t_5adbb49dfc5601 1-74
+docs/architecture/tooling.md
+  s_43da0cedef6956::t_eb74fc655ccf0d 97-99
+  s_43da0cedef6956::t_4b210967872a84 135-139
+  s_43da0cedef6956::t_fed059382d9fa7 80
+  s_43da0cedef6956::t_0f8f730afded08 131-134
+  s_43da0cedef6956::t_e3ae2e4d44f2e7 140
+package.json
+  s_43da0cedef6956::t_fe369ce898ed6a 88-89
+packages/ui/components.json
+  s_43da0cedef6956::t_0e9089a3029696 17
+  s_43da0cedef6956::t_8314c62fda295b 16
+packages/scripts/src/commands/shadcn.ts
+  s_43da0cedef6956::t_4f55f5b1c251b7 1-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4dff4ad2b2f7a9e036024f0c62b341fc6cfb46e1",
+  "prompts": {},
+  "sessions": {
+    "s_43da0cedef6956": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "db732d08-eb7f-4515-bef4-c07f91642ff2",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
