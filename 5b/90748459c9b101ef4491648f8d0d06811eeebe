@@ -1,0 +1,27 @@
+package.json
+  s_43da0cedef6956::t_bb979e8ab980a8 16-17
+  s_43da0cedef6956::t_6e9f435cf23a1b 51
+  s_43da0cedef6956::t_f5020558343ee2 37-39,42-43
+  s_43da0cedef6956::t_e30be0cea2d1cf 56
+  s_43da0cedef6956::t_590209d4bde638 23
+apps/desktop/src-tauri/Cargo.lock
+  s_43da0cedef6956::t_dfeafc2b6750a1 4956,4958,4973,4975,4988,4990,5001,5003
+bun.lock
+  s_43da0cedef6956::t_4dc906309b0105 291-292,298,309-311,314-315,327-328,384,386,616,704,706,708,710,712,714,716,718,720,722,724,726,728,730,732,806,816,1100,1228,1230,1290,1292,1328,1372,1410,1420-1421
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5b90748459c9b101ef4491648f8d0d06811eeebe",
+  "prompts": {},
+  "sessions": {
+    "s_43da0cedef6956": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "db732d08-eb7f-4515-bef4-c07f91642ff2",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
