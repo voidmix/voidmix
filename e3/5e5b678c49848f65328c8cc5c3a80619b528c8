@@ -1,0 +1,19 @@
+README.md
+  s_13ef6ec6613d82::t_09f0a02f4d7c6c 3-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e35e5b678c49848f65328c8cc5c3a80619b528c8",
+  "prompts": {},
+  "sessions": {
+    "s_13ef6ec6613d82": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a01594-3c47-7861-a0b7-918a31b43abe",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
