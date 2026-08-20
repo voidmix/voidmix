@@ -1,0 +1,43 @@
+docs/architecture/decisions/0002-vite-plus-sole-orchestrator.md
+  s_7e3e0a5e104ebe::t_0f4d1a6f2cfc17 1-34,36-56
+  s_7e3e0a5e104ebe::t_cef246835a27e5 35
+packages/scripts/src/policy/links.ts
+  s_7e3e0a5e104ebe::t_d670fcca06355b 58-82
+packages/scripts/src/policy/checks.ts
+  s_7e3e0a5e104ebe::t_04c0324551191b 110-114,119-125,127-128,132-133
+  s_7e3e0a5e104ebe::t_5021153a3fe3e1 4
+  s_7e3e0a5e104ebe::t_7bed976aff2c9a 115-118
+docs/development/agents.md
+  s_7e3e0a5e104ebe::t_b668d21f9fced9 3-7,9-10,12,14-18,20-21,23-124,127-135
+docs/README.md
+  s_7e3e0a5e104ebe::t_f84f859ac2a237 20-21
+  s_7e3e0a5e104ebe::t_b95122f57d80b7 29-30
+docs/architecture/README.md
+  s_7e3e0a5e104ebe::t_3bbc34415bb6dd 101
+packages/scripts/src/policy/links.test.ts
+  s_7e3e0a5e104ebe::t_a8638554cacc19 3
+  s_7e3e0a5e104ebe::t_de3a8211f36e3c 61-93
+docs/architecture/decisions/README.md
+  s_7e3e0a5e104ebe::t_6e2e9a40d900c0 1-31
+docs/architecture/decisions/0001-base-ui-over-radix.md
+  s_7e3e0a5e104ebe::t_4927b1ec6a17d9 1-53
+docs/architecture/decisions/template.md
+  s_7e3e0a5e104ebe::t_cef246835a27e5 15
+  s_7e3e0a5e104ebe::t_cc73568aeb18c0 1-14,16-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1cfd0e81297832440bf6f28956f904aaf19ffd41",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
