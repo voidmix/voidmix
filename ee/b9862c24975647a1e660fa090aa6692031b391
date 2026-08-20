@@ -1,0 +1,38 @@
+CONTRIBUTING.md
+  s_7e3e0a5e104ebe::t_b7ed557fa276ce 3-6,8-12,14,16-17,19-21,25,32-33,37-39
+skills/voidmix-infra/SKILL.md
+  s_7e3e0a5e104ebe::t_6e444911e9cc0f 51,53-54,58-60,62-70
+  s_7e3e0a5e104ebe::t_33ef11d88e39bf 80
+AGENTS.md
+  s_7e3e0a5e104ebe::t_d2c0c5eed4fdba 118,127-132
+  s_7e3e0a5e104ebe::t_6d90955df254ea 69-77
+docs/architecture/README.md
+  s_7e3e0a5e104ebe::t_33ef11d88e39bf 44
+  s_7e3e0a5e104ebe::t_80476923f95ad4 41-43,45
+packages/scripts/src/policy/workspaces.ts
+  s_7e3e0a5e104ebe::t_33ef11d88e39bf 130,139-143,177,189
+  s_7e3e0a5e104ebe::t_890abe44d8516a 5-12,32,50,164
+docs/development/agents.md
+  s_7e3e0a5e104ebe::t_b2d9bca3ed0a64 57-58,69-80,83-87
+packages/scripts/src/policy/workspaces.test.ts
+  s_7e3e0a5e104ebe::t_33ef11d88e39bf 72,207
+  s_7e3e0a5e104ebe::t_a608de7e8c33ca 108
+packages/scripts/src/policy/checks.ts
+  s_7e3e0a5e104ebe::t_39f4155cb547f7 279-283,287-288
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "eeb9862c24975647a1e660fa090aa6692031b391",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
