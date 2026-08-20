@@ -1,0 +1,77 @@
+packages/db/AGENTS.md
+  s_7e3e0a5e104ebe::t_6dd20d96362270 10-14
+  s_7e3e0a5e104ebe::t_19e876a9dc7761 1-9,15-61
+packages/logger/AGENTS.md
+  s_7e3e0a5e104ebe::t_022e68773f8f97 1-11,18-51
+  s_7e3e0a5e104ebe::t_6dd20d96362270 12-17
+packages/tsconfig/AGENTS.md
+  s_7e3e0a5e104ebe::t_5326a42f30bd5f 1-8,16-41
+  s_7e3e0a5e104ebe::t_6dd20d96362270 9-15
+apps/desktop/AGENTS.md
+  s_7e3e0a5e104ebe::t_3256f888ea46dd 1-59
+apps/api/AGENTS.md
+  s_7e3e0a5e104ebe::t_bd299833c710b9 1-66
+e2e/AGENTS.md
+  s_7e3e0a5e104ebe::t_517a9dce4c12e8 1-50
+skills/voidmix-infra/references/orpc-procedures.md
+  s_7e3e0a5e104ebe::t_6dd20d96362270 10,12,31,94
+AGENTS.md
+  s_7e3e0a5e104ebe::t_967b9ea57307b1 5-7,11-17,19-20
+  s_7e3e0a5e104ebe::t_4c01ad8ec889fc 22,33-34
+  s_7e3e0a5e104ebe::t_146d7c8d4c992f 25-29,32
+  s_7e3e0a5e104ebe::t_99eedb76cb0937 99-100,103-104,111
+  s_7e3e0a5e104ebe::t_72bf0589abb677 78-84
+  s_7e3e0a5e104ebe::t_f06162e73f4f12 112-115
+  s_7e3e0a5e104ebe::t_23090551474073 119-123
+  s_7e3e0a5e104ebe::t_6269a232d9c42b 21
+  s_7e3e0a5e104ebe::t_4f9bbb3edfb456 35
+docs/architecture/applications.md
+  s_7e3e0a5e104ebe::t_ee7b574f40fcb9 3-7
+packages/scripts/AGENTS.md
+  s_7e3e0a5e104ebe::t_1b9e90394ed5ec 1-61
+docs/development/testing.md
+  s_7e3e0a5e104ebe::t_7dab8c7efe026e 8-9
+packages/auth/AGENTS.md
+  s_7e3e0a5e104ebe::t_6dd20d96362270 10-11,18
+  s_7e3e0a5e104ebe::t_3f2f360d573ee3 1-9,12-17,19-42
+docs/architecture/packages.md
+  s_7e3e0a5e104ebe::t_3762ac80c8798f 129-133
+  s_7e3e0a5e104ebe::t_4119ce9b2c02fa 3-7
+packages/client/AGENTS.md
+  s_7e3e0a5e104ebe::t_376becb8fada3e 1-10,13-42
+  s_7e3e0a5e104ebe::t_6dd20d96362270 11-12
+skills/voidmix-infra/SKILL.md
+  s_7e3e0a5e104ebe::t_6dd20d96362270 73-83
+packages/domain/AGENTS.md
+  s_7e3e0a5e104ebe::t_6dd20d96362270 11-12,41
+  s_7e3e0a5e104ebe::t_b13e8c8cd9c417 1-10,13-40,42-56
+packages/contracts/AGENTS.md
+  s_7e3e0a5e104ebe::t_c032e1e5b81bfc 1-9,12-53
+  s_7e3e0a5e104ebe::t_6dd20d96362270 10-11
+apps/web/AGENTS.md
+  s_7e3e0a5e104ebe::t_3f1febeb8be743 1-63
+packages/ui/AGENTS.md
+  s_7e3e0a5e104ebe::t_6dd20d96362270 10-11,13-16
+  s_7e3e0a5e104ebe::t_9c83bc2e2609ba 1-9,12,17-60
+apps/admin/AGENTS.md
+  s_7e3e0a5e104ebe::t_33b6fb9b3a6342 1-63
+packages/env/AGENTS.md
+  s_7e3e0a5e104ebe::t_6dd20d96362270 10-13
+  s_7e3e0a5e104ebe::t_efc407266e4035 1-9,14-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "812bd6d0ad58c02d8f42348243095ba8f9aa9250",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
