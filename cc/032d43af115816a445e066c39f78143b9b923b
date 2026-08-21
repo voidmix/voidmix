@@ -1,0 +1,19 @@
+CONTRIBUTING.md
+  s_7e3e0a5e104ebe::t_c9dcaa413f06e3 28-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "cc032d43af115816a445e066c39f78143b9b923b",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
