@@ -1,0 +1,66 @@
+docs/development/testing.md
+  s_d21bbf6c4a4d17::t_6ddd5f86c51934 25-26
+packages/scripts/src/policy/manifests.test.ts
+  s_d21bbf6c4a4d17::t_a6f982ae579471 246-249
+  s_d21bbf6c4a4d17::t_0ed8a65ef3246c 245,250-300
+  s_d21bbf6c4a4d17::t_fc7457af418e9c 6
+packages/scripts/AGENTS.md
+  s_d21bbf6c4a4d17::t_3b0b11e6e241d5 19
+docs/architecture/tooling.md
+  s_d21bbf6c4a4d17::t_3efce338369949 170
+  s_d21bbf6c4a4d17::t_d3e42fe0a75995 103-104
+  s_d21bbf6c4a4d17::t_1bf1c1a3911e05 150-169,171-176
+packages/scripts/src/policy/manifests.ts
+  s_d21bbf6c4a4d17::t_1d8bbdaa709040 299-302,304,307,309,318,322-325,327
+  s_d21bbf6c4a4d17::t_df778d7ad19b07 273-298,303,305-306,308,310-317,319-321,326,328-329
+packages/scripts/src/policy/runtime.ts
+  s_d21bbf6c4a4d17::t_fc088b55f9e4a8 216
+  s_d21bbf6c4a4d17::t_2fbe540e4c19c5 1
+packages/scripts/src/policy/fixes.ts
+  s_d21bbf6c4a4d17::t_538ebe6d40a0c2 1-60
+packages/scripts/src/policy/ignores.test.ts
+  s_d21bbf6c4a4d17::t_47ebef6e58130d 3
+  s_d21bbf6c4a4d17::t_cba7c11bc6eff6 92-118
+packages/scripts/src/policy/checks.ts
+  s_d21bbf6c4a4d17::t_418b8ea43aafb4 157
+  s_d21bbf6c4a4d17::t_a49cc2069d028a 65-66
+  s_d21bbf6c4a4d17::t_195d456b5a0d39 12
+packages/scripts/src/policy/tsconfig.ts
+  s_d21bbf6c4a4d17::t_b7f9c188eec2fe 6-18
+  s_d21bbf6c4a4d17::t_6ddc4b7f56c8a7 184,195-214,216-225
+  s_d21bbf6c4a4d17::t_2d2c60aec4ac28 43-48,50-51,53-71,74,76,226
+  s_d21bbf6c4a4d17::t_ca1ee4bb8dcdf6 104
+  s_d21bbf6c4a4d17::t_144095ce5d8ab6 72-73
+  s_d21bbf6c4a4d17::t_df2dec22e41709 171
+  s_d21bbf6c4a4d17::t_eb775f3ce84bff 215
+packages/scripts/src/policy/tsconfig.test.ts
+  s_d21bbf6c4a4d17::t_79ab7cde633cd5 3-7
+  s_d21bbf6c4a4d17::t_9b6a0eb8651ca5 143-186,191-203
+  s_d21bbf6c4a4d17::t_d70a536152bf10 187-190
+package.json
+  s_d21bbf6c4a4d17::t_9a901f4be17063 73
+packages/scripts/src/policy/command.ts
+  s_d21bbf6c4a4d17::t_a4d89858b25d2d 11-18,33-36,44-53
+  s_d21bbf6c4a4d17::t_8dd367a1a10cf2 20-32,37-43
+packages/scripts/src/policy/ignores.ts
+  s_d21bbf6c4a4d17::t_79b4c5323f2776 84-104,110-136
+  s_d21bbf6c4a4d17::t_1d9a0698a4fe0c 44-58,137
+AGENTS.md
+  s_d21bbf6c4a4d17::t_0e51ca4dc90ac7 125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "890ee99961c4e429830976ec2252fbf0949013d2",
+  "prompts": {},
+  "sessions": {
+    "s_d21bbf6c4a4d17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31f37d36-5bcd-4ca6-baf8-f8f473a64ae5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
