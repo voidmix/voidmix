@@ -1,0 +1,34 @@
+packages/scripts/src/policy/runtime.ts
+  s_d21bbf6c4a4d17::t_ebb496c295e0b4 212
+  s_d21bbf6c4a4d17::t_c5750a36932e15 180-192
+packages/scripts/src/policy/manifests.ts
+  s_d21bbf6c4a4d17::t_eb1bda2664671a 1-159,171-276,279-289
+  s_d21bbf6c4a4d17::t_6bfa7d4e1a2943 277-278
+  s_d21bbf6c4a4d17::t_8a5d791861fc8d 160-170
+packages/scripts/src/policy/checks.ts
+  s_d21bbf6c4a4d17::t_0023fdf9585769 43-47
+  s_d21bbf6c4a4d17::t_23aafa6ead54cb 6-10
+  s_d21bbf6c4a4d17::t_e20c17d7032538 328,333
+  s_d21bbf6c4a4d17::t_a75ad56ff462af 123-145
+  s_d21bbf6c4a4d17::t_e6b6dcb444eddb 354
+  s_d21bbf6c4a4d17::t_b9c708a82c66f1 42
+packages/scripts/src/policy/manifests.test.ts
+  s_d21bbf6c4a4d17::t_9361f743fa70ca 85-89
+  s_d21bbf6c4a4d17::t_0815bfc1dda076 1-84,90-268
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "3fbf85fbecd0a64c81a49137df17dabe184e57f2",
+  "prompts": {},
+  "sessions": {
+    "s_d21bbf6c4a4d17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31f37d36-5bcd-4ca6-baf8-f8f473a64ae5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
