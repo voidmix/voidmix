@@ -1,0 +1,39 @@
+CONTRIBUTING.md
+  s_d21bbf6c4a4d17::t_85cd83a86278e5 16-19,21-23,27
+packages/scripts/src/commands/verify.ts
+  s_d21bbf6c4a4d17::t_b9a570cc188fdf 11-19,26-35
+  s_d21bbf6c4a4d17::t_f94484d9025a0c 53-56
+  s_d21bbf6c4a4d17::t_b6ae18a258a5d3 36
+.github/workflows/ci.yml
+  s_d21bbf6c4a4d17::t_07f07de9dddbe7 18-28
+AGENTS.md
+  s_d21bbf6c4a4d17::t_9fba2f9f876acc 113,119-122,129-133
+  s_d21bbf6c4a4d17::t_95ed23d01829c7 123-128
+  s_d21bbf6c4a4d17::t_a0542a055eca86 134
+docs/architecture/tooling.md
+  s_d21bbf6c4a4d17::t_164d77c4b88e12 106-107
+packages/scripts/src/commands/workflows.test.ts
+  s_d21bbf6c4a4d17::t_68a4e4256e2461 53-56,62-63,69-70,78-88
+  s_d21bbf6c4a4d17::t_21779c5b4705bc 89-90
+docs/development/testing.md
+  s_d21bbf6c4a4d17::t_95ed23d01829c7 14-22
+  s_d21bbf6c4a4d17::t_a774fccefbe380 10-13,23-38
+  s_d21bbf6c4a4d17::t_dc468e54880db2 40
+  s_d21bbf6c4a4d17::t_2dfe43727a564f 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "b466b1387ed3ebffbbd26b29129d2cc00dca21ee",
+  "prompts": {},
+  "sessions": {
+    "s_d21bbf6c4a4d17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31f37d36-5bcd-4ca6-baf8-f8f473a64ae5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
