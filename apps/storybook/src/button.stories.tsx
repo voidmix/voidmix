@@ -30,3 +30,20 @@ export const Destructive: Story = {
     variant: "danger",
   },
 };
+
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex items-center gap-3">
+      <Button size="small">Small</Button>
+      <Button size="medium">Medium</Button>
+      <Button size="large">Large</Button>
+    </div>
+  ),
+};
+
+export const Disabled: Story = {
+  args: {
+    children: "Unavailable",
+    disabled: true,
+  },
+};

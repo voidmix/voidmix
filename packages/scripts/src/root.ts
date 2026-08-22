@@ -9,6 +9,8 @@ export const rootCommand = defineCommand({
   subCommands: {
     env: () => import("./commands/env.js").then(({ envCommand }) => envCommand),
     doctor: () => import("./doctor/command.js").then(({ doctorCommand }) => doctorCommand),
+    deps: () => import("./deps/command.js").then(({ depsCommand }) => depsCommand),
+    skills: () => import("./skills/command.js").then(({ skillsCommand }) => skillsCommand),
     policy: () => import("./policy/command.js").then(({ policyCommand }) => policyCommand),
     clean: () => import("./commands/clean.js").then(({ cleanCommand }) => cleanCommand),
     db: () => import("./database/command.js").then(({ databaseCommand }) => databaseCommand),

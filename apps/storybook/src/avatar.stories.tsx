@@ -29,3 +29,11 @@ export const Large: Story = {
     size: "large",
   },
 };
+
+export const WithLocalImage: Story = {
+  args: {
+    name: "Grace Hopper",
+    imageUrl:
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='96' height='96' fill='%23d7ff45'/%3E%3Ccircle cx='48' cy='36' r='18' fill='%230b0d0c'/%3E%3Cpath d='M20 88c4-20 16-30 28-30s24 10 28 30' fill='%230b0d0c'/%3E%3C/svg%3E",
+  },
+};

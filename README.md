@@ -1,7 +1,7 @@
 # Voidmix
 
 [![CI](https://github.com/voidmix/voidmix/actions/workflows/ci.yml/badge.svg)](https://github.com/voidmix/voidmix/actions/workflows/ci.yml)
-[![Bun 1.3.14](https://img.shields.io/badge/Bun-1.3.14-fbf0df?logo=bun&logoColor=000)](https://bun.sh/)
+[![Bun 1.4.0](https://img.shields.io/badge/Bun-1.4.0-fbf0df?logo=bun&logoColor=000)](https://bun.sh/)
 [![Node.js 24.18.0](https://img.shields.io/badge/Node.js-24.18.0-339933?logo=nodedotjs&logoColor=fff)](https://nodejs.org/)
 [![TypeScript 7.0.2](https://img.shields.io/badge/TypeScript-7.0.2-3178c6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-d22128?logo=apache&logoColor=fff)](./LICENSE)
@@ -53,7 +53,7 @@ deliberately deferred until a real asynchronous job needs its own lifecycle.
 
 ## Requirements
 
-- Bun 1.3.14
+- Bun 1.4.0
 - Node.js 24.18.0
 - Rust/Cargo for desktop builds
 - PostgreSQL for persistent API data

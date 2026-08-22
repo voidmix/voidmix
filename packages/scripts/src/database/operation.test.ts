@@ -70,7 +70,8 @@ describe("database commands", () => {
   });
 
   it("seeds users and always closes the connection", async () => {
-    const users = userRepository();
+    const save = vi.fn(async () => undefined);
+    const users = userRepository({ save });
     const close = vi.fn(async () => undefined);
     const ensureAdmin = vi.fn(async () => user({ id: "admin-id" }));
 
@@ -86,7 +87,7 @@ describe("database commands", () => {
       email: "owner@voidmix.local",
       displayName: "Local Owner",
     });
-    expect(users.save).toHaveBeenCalledWith(
+    expect(save).toHaveBeenCalledWith(
       expect.objectContaining({ id: "local-user-id", email: "user@voidmix.local" }),
     );
     expect(close).toHaveBeenCalledOnce();

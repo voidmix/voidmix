@@ -20,3 +20,9 @@ export const CustomLabel: Story = {
     label: "Voidmix Admin",
   },
 };
+
+export const ThemeAware: Story = {
+  args: {
+    label: "Theme-aware brand",
+  },
+};

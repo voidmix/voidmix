@@ -9,16 +9,16 @@ function dependencies(overrides: Partial<DoctorDependencies> = {}): DoctorDepend
     readFile: vi.fn(async () =>
       JSON.stringify({
         name: "voidmix",
-        packageManager: "bun@1.3.14",
+        packageManager: "bun@1.4.0",
         devEngines: {
-          packageManager: { name: "bun", version: "1.3.14" },
+          packageManager: { name: "bun", version: "1.4.0" },
           runtime: { name: "node", version: "24.18.0" },
         },
       }),
     ),
     pathExists: vi.fn(async () => true),
     probe: vi.fn(async (command) => {
-      if (command[0] === "bun") return "1.3.14\n";
+      if (command[0] === "bun") return "1.4.0\n";
       if (command[0] === "node") return "v24.18.0\n";
       return `${command[0]} available`;
     }),
@@ -58,7 +58,7 @@ describe("runDoctor", () => {
     const output = renderDoctorReport(report);
 
     expect(report.errors).toBe(2);
-    expect(output).toContain("expected 1.3.14, found 1.3.13");
+    expect(output).toContain("expected 1.4.0, found 1.3.13");
     expect(output).toContain("DATABASE_URL: Invalid URL");
     expect(output).not.toContain("postgres://");
   });
@@ -67,7 +67,7 @@ describe("runDoctor", () => {
     const report = await runDoctor(
       dependencies({
         probe: vi.fn(async (command) => {
-          if (command[0] === "bun") return "1.3.14";
+          if (command[0] === "bun") return "1.4.0";
           if (command[0] === "node") return "24.18.0";
           throw new Error("missing");
         }),

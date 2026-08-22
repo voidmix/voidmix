@@ -56,6 +56,7 @@ justifies its lifecycle and resource cost.
   calls.
 - Loads the shared Tailwind v4 tokens and `packages/ui/src/styles.css` so
   stories exercise the same design system as the applications.
+- Provides a Light/Dark toolbar backed by `@voidmix/ui`'s `ThemeProvider`.
 - Is not a production runtime or deployment target.
 
 ## API

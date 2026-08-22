@@ -8,6 +8,12 @@
   "type": "module",
   "scripts": {
     "doctor": "vmx doctor",
+    "deps:dedupe": "vmx deps dedupe",
+    "deps:dedupe:check": "vmx deps dedupe --check",
+    "deps:audit": "vmx deps audit",
+    "deps:check": "vmx deps check",
+    "deps:update": "vmx deps update",
+    "skills:update": "vmx skills update",
     "policy": "vmx policy",
     "clean": "vmx clean",
     "db:migrate": "vmx db migrate",

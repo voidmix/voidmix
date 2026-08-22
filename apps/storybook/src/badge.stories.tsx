@@ -31,3 +31,22 @@ export const Neutral: Story = {
     withDot: false,
   },
 };
+
+export const AllTones: Story = {
+  render: () => (
+    <div className="flex flex-wrap items-center gap-2">
+      <Badge tone="neutral" withDot>
+        Neutral
+      </Badge>
+      <Badge tone="positive" withDot>
+        Positive
+      </Badge>
+      <Badge tone="warning" withDot>
+        Warning
+      </Badge>
+      <Badge tone="accent" withDot>
+        Accent
+      </Badge>
+    </div>
+  ),
+};

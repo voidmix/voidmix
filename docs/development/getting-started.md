@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Bun `1.3.14`
+- Bun `1.4.0`
 - Node.js `24.18.0`
 - Rust/Cargo for Desktop development and packaging
 - PostgreSQL when persistent data is required
@@ -59,6 +59,9 @@ bun run doctor
 bun run clean
 bun run deps:check
 bun run deps:update
+bun run deps:dedupe:check
+bun run deps:audit
+bun run skills:update
 bun run check
 bun run test
 bun run build

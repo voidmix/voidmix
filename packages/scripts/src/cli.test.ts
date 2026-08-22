@@ -32,6 +32,7 @@ describe("vmx CLI", () => {
     expect(help.stdout).toContain("admin");
     expect(help.stdout).toContain("desktop");
     expect(help.stdout).toContain("doctor");
+    expect(help.stdout).toContain("deps");
     expect(version.status).toBe(0);
     expect(version.stdout).toBe("0.0.0\n");
   });
@@ -43,6 +44,11 @@ describe("vmx CLI", () => {
     ],
     [["admin", "--help"], ["create"]],
     [["desktop", "--help"], ["build"]],
+    [
+      ["deps", "--help"],
+      ["check", "update", "dedupe", "audit"],
+    ],
+    [["skills", "--help"], ["update"]],
   ])("shows nested help for %s", (args, expectedCommands) => {
     const result = runCli(args);
 

@@ -106,6 +106,8 @@ Shared visual primitives and design-system utilities:
 - shadcn `base-nova` component conventions.
 - Phosphor Icons for renderer surfaces.
 - Tailwind CSS v4 variables and theme tokens.
+- SSR-safe `ThemeProvider`, `ThemeScript`, and `useTheme` for light, dark, and
+  system themes.
 - `Button`, `Badge`, `Avatar`, and `BrandMark`.
 - `cn` and CVA helpers for composition.
 - Shared Void, Cloud, Signal Lime, semantic state, focus, radius, and motion

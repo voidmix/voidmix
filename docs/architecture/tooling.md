@@ -95,6 +95,12 @@ the local `core.hooksPath`; no hook configuration is committed.
 ```text
 env -- <command>       run a child command with root development env files
 doctor                  check core and optional development prerequisites
+deps dedupe             remove duplicate dependency versions from bun.lock
+deps dedupe --check     check for removable duplicates without changing files
+deps audit              audit dependencies for known vulnerabilities
+deps check              check for compatible dependency updates
+deps update             write compatible updates and refresh bun.lock
+skills update           update installed repository skills
 clean                  remove rebuildable outputs and tool caches
 db migrate             apply Drizzle migrations
 db seed                seed development/test data
@@ -115,12 +121,23 @@ workspace/catalog resolver:
 ```text
 bun run deps:check      fail when compatible dependency updates are available
 bun run deps:update     write compatible updates, then refresh bun.lock
+bun run deps:dedupe     remove duplicate versions already present in bun.lock
+bun run deps:dedupe:check
+                        fail when Bun can remove duplicate versions
+bun run deps:audit      fail when Bun reports known dependency vulnerabilities
+bun run skills:update   update installed repository skills non-interactively
 ```
 
 The update command scans all workspaces and Bun catalogs in `minor` mode. It
 includes exact pins, but deliberately excludes Bun/Node runtime versions and
 the Vitest 4 packages that must stay aligned with the pinned Vite+ release.
 Major upgrades and toolchain exceptions remain manual decisions.
+
+The Bun commands are explicit maintenance operations rather than part of
+`doctor` or `verify`. `deps:dedupe` may rewrite only Bun's lockfile; its
+`--check` form is read-only. `deps:audit` is read-only and does not apply
+upgrades. CI can run the two checking aliases when dependency health should be
+a separate blocking gate.
 
 Commands must support CI/non-interactive execution, explicit exit codes, and
 structured logging. Destructive database operations are restricted to local

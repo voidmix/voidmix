@@ -50,7 +50,7 @@ or `packages/` without a `package.json`.
 
 ## Toolchain
 
-- Use Bun `1.3.14` for installation, the lockfile, and repository scripts.
+- Use Bun `1.4.0` for installation, the lockfile, and repository scripts.
 - Use the root Bun catalogs for third-party dependency versions and
   `workspace:*` for internal packages.
 - Do not introduce another task orchestrator alongside Vite+.

@@ -7,13 +7,13 @@ Page layout and product-specific composition stay in the owning application.
 
 ## Interface
 
-| Path                   | Purpose                                                        |
-| ---------------------- | -------------------------------------------------------------- |
-| `.`                    | `Button`, `Badge`, `Avatar`, `BrandMark`, and their prop types |
-| `./styles.css`         | what applications import: tokens plus the `vm-` rules          |
-| `./styles/globals.css` | the shadcn-owned Tailwind entry and oklch token block          |
-| `./components/*`       | generated shadcn components                                    |
-| `./lib/*`              | `cn` and CVA helpers                                           |
+| Path                   | Purpose                                                   |
+| ---------------------- | --------------------------------------------------------- |
+| `.`                    | Primitives, theme provider, helpers, and their prop types |
+| `./styles.css`         | what applications import: tokens plus the `vm-` rules     |
+| `./styles/globals.css` | the shadcn-owned Tailwind entry and oklch token block     |
+| `./components/*`       | generated shadcn components                               |
+| `./lib/*`              | `cn` and CVA helpers                                      |
 
 ## Ownership
 
@@ -45,9 +45,10 @@ Page layout and product-specific composition stay in the owning application.
   hand-written CSS. Caller `className` always merges last.
 - Register every export in the `src/index.ts` barrel, alphabetically, value and
   type together.
-- **`vitest.config.ts` only collects `src/**/*.component.test.tsx`.** A plain
-  `*.test.tsx` here never runs, and `--passWithNoTests` hides that. Component
-  tests also need the file-level `/** @vitest-environment jsdom */` directive.
+- **`vitest.config.ts` includes all `src/**/*.{test,spec}.{ts,tsx}` files.** The
+  four layer scripts select unit, integration, component, or coverage runs;
+  `--passWithNoTests` can still hide a filter that matches nothing. Component
+  tests need the file-level `/** @vitest-environment jsdom */` directive.
 - Running `shadcn add` from an application writes into that app's `@/components`,
   not here. Reusable primitives belong in this package.
 
