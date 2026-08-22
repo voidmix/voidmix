@@ -10,10 +10,17 @@ composition root, never imported by a package.
 ```text
 src/
   main.tsx          renderer entry
-  App.tsx           app shell and Outlet
+  App.tsx           compatibility exports for feature pages
   router.tsx        code-based route tree built with createRoute/addChildren
   env.ts            desktop environment composition
-  lib/cloud.ts      cloud connection helpers
+  features/
+    shell/           Tauri-aware desktop shell
+    overview/        overview page composition
+    activity/        activity page composition
+    devices/         devices page composition
+    settings/        settings page composition
+  lib/cloud.ts      stable cloud facade and formatting helper
+  lib/cloud/        remote source, preview source, validation, and types
   lib/desktop.ts    Tauri bridge helpers
 src-tauri/
   src/main.rs, src/lib.rs   Rust entry and app setup
@@ -33,6 +40,8 @@ src-tauri/
 - **This app uses code-based routing** (`createRoute` / `addChildren` in
   `src/router.tsx`), unlike `apps/web` and `apps/admin` which are file-based. Do
   not copy this pattern into those apps, and do not copy theirs into here.
+- Route construction mounts feature pages directly. Keep page-specific UI under
+  `src/features/<feature>/`; do not grow `App.tsx` into a page aggregator.
 - `check` runs **two** typecheck passes (`typecheck` and `typecheck:node`) because
   the renderer and the Node-side config have separate tsconfigs. Both must pass.
 - Rust changes additionally require `cargo fmt --check`, `cargo check`, and
@@ -46,6 +55,8 @@ src-tauri/
   fails, `src/lib/cloud.ts` renders a deterministic preview snapshot so renderer
   and Tauri work do not require a running API. Keep that fallback observable
   rather than silent.
+- `lib/cloud/source.ts` selects between the remote and demo adapters; pages must
+  consume `loadCloudSnapshot()` and never implement transport or fallback logic.
 - Closing the main window hides it instead of exiting; the tray menu shows,
   hides, or quits. `src-tauri/src/lib.rs` owns that behaviour and reports it to
   the renderer as `trayEnabled`, which is false in a plain browser preview.

@@ -1,6 +1,6 @@
 import "@voidmix/ui/styles.css";
 
-import { ThemeProvider } from "@voidmix/ui";
+import { ThemeProvider } from "@voidmix/ui/theme";
 import type { Decorator, Preview } from "@storybook/react-vite";
 
 const withThemeProvider: Decorator = (Story, context) => {

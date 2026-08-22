@@ -7,20 +7,21 @@ Page layout and product-specific composition stay in the owning application.
 
 ## Interface
 
-| Path                   | Purpose                                                   |
-| ---------------------- | --------------------------------------------------------- |
-| `.`                    | Primitives, theme provider, helpers, and their prop types |
-| `./styles.css`         | what applications import: tokens plus the `vm-` rules     |
-| `./styles/globals.css` | the shadcn-owned Tailwind entry and oklch token block     |
-| `./components/*`       | generated shadcn components                               |
-| `./lib/*`              | `cn` and CVA helpers                                      |
+| Path                   | Purpose                                               |
+| ---------------------- | ----------------------------------------------------- |
+| `./components/ui/*`    | Tree-shakable generated shadcn components             |
+| `./avatar`, `./logo`   | Compatibility/product-specific wrapper exports        |
+| `.`                    | Empty compatibility entrypoint                        |
+| `./styles.css`         | what applications import: the shared base-nova tokens |
+| `./styles/globals.css` | the shadcn-owned Tailwind entry and oklch token block |
+| `./lib/*`              | `cn` and CVA helpers                                  |
 
 ## Ownership
 
 - Own Base UI interactive primitives, shadcn `base-nova` conventions, Phosphor
   icons, Tailwind v4 tokens, and the `cn`/CVA composition helpers.
-- Own the design vocabulary documented in the root [`DESIGN.md`](../../DESIGN.md):
-  Void, Cloud, Signal Lime, semantic states, focus, radius, and motion.
+- Own the base-nova design vocabulary: semantic tokens, focus, radius, and
+  motion.
 - Own no page layout, route tree, or application navigation.
 
 ## Constraints
@@ -31,20 +32,19 @@ Page layout and product-specific composition stay in the owning application.
 - Maintain keyboard behavior, focus states, reduced-motion support, and useful
   accessible names on every interactive primitive.
 - There are **two file layouts, and picking wrong loses work**:
-  - hand-written primitives are flat kebab-case files in `src/` (copy `badge.tsx`);
-  - shadcn-generated components live in `src/components/ui/` with a one-line
-    re-export shim at `src/<name>.tsx` (see `button.tsx`).
+  - hand-written primitives are flat kebab-case files in `src/` (for example
+    `avatar.tsx` and `logo.tsx`);
+  - shadcn-generated components live directly in `src/components/ui/` and are
+    imported through `@voidmix/ui/components/ui/<name>`.
 - **`bun run shadcn:update` passes `--overwrite`.** `src/components/ui/button.tsx`
-  carries substantial hand edits (a `vm-button` base class, the
-  `primary`/`secondary`/`danger` variants, aliased sizes, a `type="button"`
-  default) that the refresh will silently destroy. Diff after every run.
+  carries the repository's `primary`/`secondary`/`danger` variants, aliased
+  sizes, and a `type="button"` default. Diff after every run.
 - Primitives are plain functions with no `forwardRef` (React 19). Props re-expose
   variants as named unions rather than spreading `VariantProps`.
-- `className` composes as `cn(variants({...}), "vm-<name>", modifiers, className)`
-  — Tailwind utilities from CVA **plus** a `vm-` class hooking into the
-  hand-written CSS. Caller `className` always merges last.
-- Register every export in the `src/index.ts` barrel, alphabetically, value and
-  type together.
+- `className` composes as `cn(variants({...}), modifiers, className)`.
+  Caller `className` always merges last.
+- Add every public component to `package.json` as an explicit subpath export;
+  keep `src/index.ts` empty so consumers do not pull a component barrel.
 - **`vitest.config.ts` includes all `src/**/*.{test,spec}.{ts,tsx}` files.** The
   four layer scripts select unit, integration, component, or coverage runs;
   `--passWithNoTests` can still hide a filter that matches nothing. Component

@@ -62,6 +62,12 @@ Promote a component to `packages/ui` when a second application needs it — not
 before. A component used by two features in the same app moves up to that app,
 not to the shared package.
 
+Route modules should not own page fixtures, transport clients, fallback policy,
+or large presentation trees. Keep those behind feature-local interfaces so a
+route change only changes composition. When a feature has more than one data
+source, keep the source adapters beside the feature and expose one small facade
+to the page.
+
 ## Tests
 
 Tests are co-located with the code and the layer is encoded in the filename:
@@ -69,6 +75,11 @@ Tests are co-located with the code and the layer is encoded in the filename:
 component. There is no parallel `tests/` tree; each workspace's
 `vitest.config.ts` depends on this convention. See
 [testing](./testing.md) for the layer table and the Vite+/Vitest boundary.
+
+TanStack file-based route directories use the framework's ignored-file prefix
+for route-adjacent tests (for example, `src/routes/-__root.test.ts`). Vitest
+still collects these files, while the route generator leaves them out of the
+generated route tree.
 
 Write fixtures as override factories rather than literals, so a test states only
 what it cares about:

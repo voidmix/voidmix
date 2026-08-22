@@ -14,7 +14,8 @@ src/
   routeTree.gen.ts   generated — do not edit
   routes/
     __root.tsx       createRootRoute with head() and shellComponent
-    index.tsx        home page
+    index.tsx        route declaration and HomePage mount
+  features/home/     home page composition, view data, and feature components
   styles.css         hand-written application CSS
 tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ```
@@ -30,6 +31,9 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - File-based routing. Add `src/routes/<path>.tsx` exporting
   `export const Route = createFileRoute("/path")({ component: X })`. The route
   tree regenerates on the next `dev` or `build`.
+- Route modules stay thin: route declaration and feature mounting only. Page
+  components, static view data, and page-specific composition belong under
+  `src/features/<feature>/`.
 - **`routeTree.gen.ts` is generated; never hand-edit it.** `.prettierignore`
   keeps the formatter away from it for the same reason.
 - The root route uses **`shellComponent`**, not `component`. `RootDocument`

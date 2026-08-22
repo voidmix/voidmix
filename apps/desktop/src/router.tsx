@@ -1,5 +1,9 @@
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
-import { ActivityPage, DesktopShell, DevicesPage, OverviewPage, SettingsPage } from "./App";
+import { ActivityPage } from "./features/activity/page";
+import { DevicesPage } from "./features/devices/page";
+import { OverviewPage } from "./features/overview/page";
+import { SettingsPage } from "./features/settings/page";
+import { DesktopShell } from "./features/shell/desktop-shell";
 
 const rootRoute = createRootRoute({ component: DesktopShell });
 

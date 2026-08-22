@@ -10,6 +10,8 @@ duplicating them here.
 `apps/web` is the public/product-facing TanStack Start application.
 
 - Uses `@voidmix/ui` and owns Web-specific routes, metadata, SSR, and content.
+- Route files only mount feature pages; the home composition and view data live
+  under `apps/web/src/features/home/`.
 - Runs on port `3000` in development.
 - Produces a TanStack Start server bundle and a browser bundle.
 - Accesses backend functionality through the shared typed client.
@@ -21,6 +23,8 @@ console.
 
 - Runs on port `3001` in development.
 - Owns Admin navigation, tables, filters, layouts, and route trees.
+- Route files only mount the admin shell and user-directory feature. The users
+  facade composes separate API, preview, and fallback adapters.
 - Uses `@voidmix/client` for the API and may use deterministic preview data
   during local UI development.
 - Does not enforce final authorization in the browser; the API does.
@@ -38,10 +42,14 @@ audit event.
 - Uses a Vite SPA rather than TanStack Start SSR.
 - Rust owns tray behavior, notifications, window lifecycle, and native
   commands.
+- The renderer mounts feature pages directly from `src/features/`; `App.tsx` is
+  only a compatibility export surface.
 - Closing the main window hides it to the tray; the tray can show, hide, or
   quit the application.
 - The first release targets macOS and Windows.
 - The first version is cloud-backed and does not provide offline sync.
+- `src/lib/cloud/source.ts` selects the remote or deterministic demo source;
+  page components do not own transport, validation, or fallback behavior.
 
 The native seam lives in `apps/desktop/src-tauri/src/lib.rs`. A separate
 background agent/process is intentionally deferred until a real requirement

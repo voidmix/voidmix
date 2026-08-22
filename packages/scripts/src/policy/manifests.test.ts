@@ -4,10 +4,10 @@ import {
   canonicalScripts,
   deriveWorkspaceShape,
   fixWorkspaceManifest,
-  validateTestWiring,
   validateWorkspaceManifest,
   type WorkspaceShape,
 } from "./manifests.js";
+import { validateTestWiring } from "./manifests/wiring.js";
 
 const location = "packages/example/package.json";
 

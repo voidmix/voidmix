@@ -5,9 +5,12 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./avatar": "./src/avatar.tsx",
+    "./logo": "./src/logo.tsx",
+    "./theme": "./src/theme/index.ts",
     "./styles.css": "./src/styles.css",
     "./styles/globals.css": "./src/styles/globals.css",
-    "./components/*": "./src/components/*.tsx",
+    "./components/ui/*": "./src/components/ui/*.tsx",
     "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {

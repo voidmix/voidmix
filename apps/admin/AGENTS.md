@@ -14,10 +14,21 @@ src/
   routeTree.gen.ts          generated — do not edit
   routes/
     __root.tsx              createRootRoute with head() and shellComponent
-    index.tsx               user administration page
+    index.tsx               route declaration and feature mounts
+  features/admin-shell.tsx  admin-specific shell and navigation
   features/users/
-    client.ts               createApiClient singleton, DTO mappers, seed fallback
-    use-admin-users.ts       useAdminUsers(client) hook
+    page.tsx                user directory feature composition
+    metric-grid.tsx         user metrics
+    directory-toolbar.tsx   search and status filters
+    directory.tsx           directory layout
+    user-table.tsx          table rendering and states
+    user-row.tsx            row presentation and actions
+    client.ts               facade composing API and preview adapters
+    api-adapter.ts          API client and DTO mapping
+    preview-adapter.ts      deterministic seed adapter
+    fallback-adapter.ts     API failure selection and logging
+    types.ts                feature interfaces and view-model types
+    use-admin-users.ts      useAdminUsers(client) hook
   styles.css                hand-written application CSS
 ```
 
@@ -30,10 +41,11 @@ src/
 
 ## Constraints
 
-- Feature layout is `src/features/<feature>/{client.ts,use-<thing>.ts}`. The
-  `client.ts` module owns the `createApiClient` singleton, the DTO → view-model
-  mapper, and the fixture fallback; the `use-<thing>.ts` hook takes the client as
-  a parameter so it stays injectable. Components receive props.
+- Route modules stay thin and only mount feature pages. Feature components receive
+  explicit state and callbacks through props.
+- The users facade keeps `AdminUsersClient` stable while API transport, preview
+  seed data, and fallback logging remain separate adapters. The hook takes the
+  client as a parameter so it stays injectable.
 - **This app does not enforce authorization and must not pretend to.** It sends a
   hardcoded actor from `VITE_ACTOR_ID`/`VITE_ACTOR_ROLE` as request headers, and
   `apps/api` performs the final check. Any client-side guard is cosmetic; never

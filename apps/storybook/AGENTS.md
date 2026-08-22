@@ -22,8 +22,8 @@ visual documentation without becoming a product application.
 ## Constraints
 
 - Keep stories deterministic and network-free.
-- Use the shared `@voidmix/ui/styles.css` entry so Tailwind tokens and `vm-*`
-  primitive styles match the applications.
+- Use the shared `@voidmix/ui/styles.css` entry so the base-nova Tailwind
+  tokens and primitive styles match the applications.
 - Add stories for reusable UI primitives before adding stories for application
   composition.
 - Storybook is development tooling, not a production runtime or deployment

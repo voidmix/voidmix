@@ -240,8 +240,8 @@ listed in `packages/ui/shadcn-components.json`, refreshing them to the latest
 upstream version. Add a component's name to that file's `components` array
 when you pull it in with the shadcn CLI so future updates keep it in sync.
 `--overwrite` regenerates the file from the vanilla upstream template, so it
-discards any project-specific edits layered on top (custom variants, the
-legacy `vm-*` class hooks in `packages/ui/src/styles.css`, added prop types).
+discards any project-specific edits layered on top (custom variants or added
+prop types).
 Always review the diff after running it and manually re-apply project
 customizations before committing; never run it unattended.
 

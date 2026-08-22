@@ -6,7 +6,11 @@ import userEvent from "@testing-library/user-event";
 import { cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vite-plus/test";
 
-import { Avatar, Button } from "./index";
+import { Avatar } from "./avatar";
+import { Badge } from "./components/ui/badge";
+import { Button } from "./components/ui/button";
+import { Card, CardContent } from "./components/ui/card";
+import { Separator } from "./components/ui/separator";
 
 afterEach(() => cleanup());
 
@@ -40,5 +44,28 @@ describe("Avatar", () => {
     render(<Avatar name="Ada Lovelace" />);
 
     expect(screen.getByRole("img", { name: "Ada Lovelace" })).toHaveTextContent("AL");
+  });
+});
+
+describe("Badge", () => {
+  it("uses the base-nova variant API", () => {
+    render(<Badge variant="secondary">Active</Badge>);
+
+    expect(screen.getByText("Active")).toHaveAttribute("data-slot", "badge");
+    expect(screen.getByText("Active")).toHaveClass("bg-secondary");
+  });
+});
+
+describe("layout primitives", () => {
+  it("exposes base-nova card and separator slots", () => {
+    render(
+      <Card>
+        <CardContent>Workspace summary</CardContent>
+        <Separator />
+      </Card>,
+    );
+
+    expect(screen.getByText("Workspace summary")).toHaveAttribute("data-slot", "card-content");
+    expect(screen.getByRole("separator")).toHaveAttribute("data-slot", "separator");
   });
 });

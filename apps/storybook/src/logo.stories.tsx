@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { BrandMark } from "@voidmix/ui";
+import { Logo } from "@voidmix/ui/logo";
 
 const meta = {
-  title: "Primitives/BrandMark",
-  component: BrandMark,
+  title: "Primitives/Logo",
+  component: Logo,
   tags: ["autodocs"],
   args: {
     label: "Voidmix",
   },
-} satisfies Meta<typeof BrandMark>;
+} satisfies Meta<typeof Logo>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -23,6 +23,6 @@ export const CustomLabel: Story = {
 
 export const ThemeAware: Story = {
   args: {
-    label: "Theme-aware brand",
+    label: "Theme-aware logo",
   },
 };

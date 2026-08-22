@@ -18,7 +18,8 @@ src/admin/          command and administrator operation
 src/doctor/         command, checks, runtime probes, report rendering
 src/deps/           Bun dependency maintenance commands and operations
 src/skills/         repository skill maintenance commands and operations
-src/policy/         command, checks, fixes, per-convention pure modules, report
+src/policy/         command, orchestration, checks/<rule-domain>, manifest rules,
+                    fixes, per-convention pure modules, report
 src/verify/         Nitro runtime verification
 ```
 
@@ -54,6 +55,10 @@ Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skill
   Tests are intentionally not wrapped.
 - Use domain directories for naming context (`database/policy.ts`,
   `doctor/checks.ts`) instead of repeating prefixes in filenames.
+- `policy/checks.ts` only orchestrates injected rule domains. Workspace, docs,
+  skills, TypeScript, and manifest checks live under `policy/checks/`; manifest
+  script/dependency rules live under `policy/manifests/`. Preserve the public
+  `runPolicy` and manifest-rule interfaces when splitting internals.
 - Dependency maintenance is explicit: `vmx deps dedupe` may rewrite `bun.lock`,
   `vmx deps dedupe --check` is read-only, and `vmx deps audit` is read-only.
 - Never print secret values loaded by the env runner.

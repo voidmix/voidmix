@@ -1,7 +1,7 @@
 :root {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-family: Geist, ui-sans-serif, system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -50,25 +50,18 @@ textarea:focus-visible {
 
 .app-shell {
   --accent: var(--primary);
-  --accent-hover: color-mix(in oklch, var(--primary) 82%, var(--foreground));
+  --accent-hover: color-mix(in oklch, var(--primary) 90%, var(--foreground));
   --void: var(--background);
-  --sidebar: var(--secondary);
+  --sidebar: var(--muted);
   --raised: var(--card);
-  --raised-strong: var(--muted);
+  --raised-strong: var(--accent);
   --line: var(--border);
   --line-strong: var(--input);
   --text: var(--foreground);
   --muted: var(--muted-foreground);
-  --muted-strong: color-mix(in oklch, var(--foreground) 78%, var(--muted-foreground));
+  --muted-strong: var(--secondary-foreground);
   --info: var(--muted-foreground);
   --warning: var(--destructive);
-  --vm-accent: var(--accent);
-  --vm-accent-hover: var(--accent-hover);
-  --vm-accent-ink: var(--primary-foreground);
-  --vm-surface-raised: var(--raised);
-  --vm-line: var(--line);
-  --vm-text: var(--text);
-  --vm-text-muted: var(--muted-strong);
   background: var(--void);
   display: grid;
   grid-template-columns: 15rem minmax(0, 1fr) 18rem;
@@ -96,7 +89,7 @@ textarea:focus-visible {
   width: fit-content;
 }
 
-.app-brand .vm-brand {
+.app-brand [data-slot="logo"] {
   color: var(--text);
   font-size: 1.08rem;
 }
@@ -186,17 +179,6 @@ textarea:focus-visible {
   color: currentColor;
 }
 
-.app-shell .vm-button--primary:hover,
-.app-shell .vm-button--default:hover {
-  background: var(--accent-hover);
-}
-
-.app-shell .vm-badge--positive {
-  background: color-mix(in oklch, var(--primary) 10%, transparent);
-  border-color: color-mix(in oklch, var(--primary) 24%, var(--border));
-  color: var(--primary);
-}
-
 .workspace-nav,
 .recent-list {
   display: flex;
@@ -241,7 +223,7 @@ textarea:focus-visible {
 }
 
 .workspace-nav__item.is-current {
-  background: color-mix(in oklch, var(--primary) 11%, transparent);
+  background: var(--accent);
   color: var(--accent);
 }
 
@@ -355,7 +337,7 @@ textarea:focus-visible {
   gap: 0.35rem;
 }
 
-.topbar-actions > button:not(.vm-button) {
+.topbar-actions > button:not([data-slot="button"]) {
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
@@ -368,13 +350,13 @@ textarea:focus-visible {
   width: 2.15rem;
 }
 
-.topbar-actions > button:not(.vm-button):hover {
+.topbar-actions > button:not([data-slot="button"]):hover {
   background: var(--raised);
   border-color: var(--line);
   color: var(--text);
 }
 
-.topbar-actions .vm-button {
+.topbar-actions [data-slot="button"] {
   margin-left: 0.45rem;
 }
 
@@ -433,7 +415,7 @@ textarea:focus-visible {
 
 .prompt-panel:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 14%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
 .prompt-panel__input {
@@ -551,7 +533,7 @@ textarea:focus-visible {
 
 .thread-card__icon {
   align-items: center;
-  background: color-mix(in oklch, var(--primary) 10%, transparent);
+  background: var(--muted);
   border-radius: 0.45rem;
   color: var(--accent);
   display: flex;
@@ -909,7 +891,7 @@ textarea:focus-visible {
     padding: 0 1rem;
   }
 
-  .topbar-actions .vm-button {
+  .topbar-actions [data-slot="button"] {
     display: none;
   }
 

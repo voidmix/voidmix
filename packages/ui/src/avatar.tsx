@@ -1,5 +1,6 @@
-import { Avatar as BaseAvatar } from "@base-ui/react/avatar";
 import type { ComponentPropsWithoutRef } from "react";
+
+import { Avatar as BaseAvatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
 
 export interface AvatarProps extends ComponentPropsWithoutRef<"span"> {
   name: string;
@@ -9,6 +10,11 @@ export interface AvatarProps extends ComponentPropsWithoutRef<"span"> {
 
 export function Avatar({ name, imageUrl, size = "medium", className, ...props }: AvatarProps) {
   const { style, ...restProps } = props;
+  const baseSize = {
+    small: "sm",
+    medium: "default",
+    large: "lg",
+  }[size] as "sm" | "default" | "lg";
   const initials = name
     .split(/\s+/)
     .slice(0, 2)
@@ -16,16 +22,16 @@ export function Avatar({ name, imageUrl, size = "medium", className, ...props }:
     .join("")
     .toUpperCase();
   return (
-    <BaseAvatar.Root
+    <BaseAvatar
       aria-label={name}
-      className={["vm-avatar", `vm-avatar--${size}`, className].filter(Boolean).join(" ")}
-      data-slot="avatar"
+      className={className}
       role="img"
+      size={baseSize}
       {...restProps}
       {...(style === undefined ? {} : { style })}
     >
-      {imageUrl ? <BaseAvatar.Image alt="" data-slot="avatar-image" src={imageUrl} /> : null}
-      <BaseAvatar.Fallback data-slot="avatar-fallback">{initials}</BaseAvatar.Fallback>
-    </BaseAvatar.Root>
+      {imageUrl ? <AvatarImage alt="" src={imageUrl} /> : null}
+      <AvatarFallback>{initials}</AvatarFallback>
+    </BaseAvatar>
   );
 }

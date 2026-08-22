@@ -108,15 +108,22 @@ Shared visual primitives and design-system utilities:
 - Tailwind CSS v4 variables and theme tokens.
 - SSR-safe `ThemeProvider`, `ThemeScript`, and `useTheme` for light, dark, and
   system themes.
-- `Button`, `Badge`, `Avatar`, and `BrandMark`.
+- Base-nova `Button`, `Badge`, `Avatar`, `Card`, `DropdownMenu`, `Menubar`, and
+  `Separator` components, plus the product-specific `Logo`.
 - `cn` and CVA helpers for composition.
-- Shared Void, Cloud, Signal Lime, semantic state, focus, radius, and motion
-  vocabulary documented in the root `DESIGN.md`.
+- Shared base-nova semantic colors, focus, radius, and motion tokens from
+  `packages/ui/src/styles/globals.css`.
 
 Each renderer has a `components.json` that targets the shared UI package with
 `style: "base-nova"`, `rsc: false`, and `iconLibrary: "phosphor"`. Page layout,
 route trees, and product-specific visual composition remain in their owning
 application so migration can happen incrementally.
+
+Import generated UI primitives through their explicit
+`@voidmix/ui/components/ui/<component>` subpath. The package root intentionally
+does not re-export components so bundlers can tree-shake each primitive
+independently. Product wrappers such as `Avatar` and `Logo` retain their own
+top-level subpaths.
 
 ## `@voidmix/scripts`
 
@@ -137,6 +144,11 @@ concern can be tested without bootstrapping the complete CLI: pure operations
 accept injectable dependencies, renderers are separate from the data they print,
 and command adapters stay thin. `packages/scripts/AGENTS.md` records the source
 layout and the conventions new modules must follow.
+
+Policy orchestration lives in `src/policy/checks.ts`, while workspace, manifest,
+documentation, skill, and TypeScript rules live in injected modules under
+`src/policy/checks/` and `src/policy/manifests/`. Splitting those rule domains
+must not change `runPolicy` or its finding output.
 
 ## `@voidmix/tsconfig`
 
