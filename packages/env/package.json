@@ -1,0 +1,28 @@
+{
+  "name": "@voidmix/env",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./runtime": "./src/runtime.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:integration": "vitest run --passWithNoTests integration.test",
+    "test:component": "vitest run --passWithNoTests component.test",
+    "test:coverage": "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
+    "build": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "type-fest": "catalog:tooling",
+    "zod": "catalog:backend"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "catalog:tooling",
+    "@voidmix/tsconfig": "workspace:*",
+    "vitest": "catalog:tooling"
+  }
+}

@@ -1,0 +1,5 @@
+# Voidmix Admin is an internal operations console. It must never be indexed.
+# This is a courtesy signal to well-behaved crawlers, not an access control:
+# authorization is enforced by the API, not by this file.
+User-agent: *
+Disallow: /

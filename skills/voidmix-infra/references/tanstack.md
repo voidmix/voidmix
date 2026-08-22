@@ -1,0 +1,79 @@
+# TanStack Router and Start
+
+Read this **before** acting on `tanstack-router-best-practices` or
+`tanstack-start-best-practices` under `.agents/skills/`. Those are vendored
+upstream bytes: useful, but wrong in specific places for this repository. Never
+edit them — `skills update` would overwrite the edit and invalidate the lockfile
+hash. Corrections live here instead.
+
+## Why they are vendored at all
+
+Neither `apps/web` nor `apps/admin` contains a single loader, `beforeLoad`,
+server function, nested layout, or route guard. There is no in-repo precedent to
+copy, so these skills are the reference for those patterns. `apps/desktop` uses
+code-based routing and is not the model for the file-based apps.
+
+## Correction 1: use `.validator()`, not `.inputValidator()`
+
+The vendored skills contain inconsistent validator examples. The current
+installed types in `@tanstack/start-client-core` mark `.validator()` as the
+canonical API and `.inputValidator()` as deprecated:
+
+```ts
+// dist/esm/createServerFn.d.ts
+export interface ServerFnValidator<…> {
+  validator: ValidatorFn<…>;
+  /** @deprecated Use `validator` instead. */
+  inputValidator: ValidatorFn<…>;
+}
+```
+
+**`.validator()` is current; `.inputValidator()` is deprecated.** Confirm
+against installed types rather than second-hand documentation when the
+TanStack version changes.
+
+## Correction 3: ignore `rules/auth-session-management.md`
+
+It hand-rolls sessions with TanStack Start's `useSession` and Prisma-style
+queries (`db.users.findUnique`). Neither matches this repository: sessions are
+resolved behind `apps/api/src/session.ts`'s `SessionResolver` seam, roles and
+permissions come from `@voidmix/auth`, and persistence is Drizzle behind
+repository interfaces owned by `@voidmix/domain`.
+
+Its cookie-hardening table (`httpOnly`, `secure`, `sameSite`, `maxAge`, a 32-plus
+character secret) and the "store minimal data, rotate on privilege change"
+principles are sound and transferable. The code is not.
+
+## Correction 4: authorization stays server-side
+
+`rules/auth-route-protection.md` shows `beforeLoad` throwing `redirect()` for
+unauthenticated users. The pattern is fine for navigation, but in this repository
+a client guard is never enforcement: `apps/api` performs the final check through
+`requirePermission`, and `apps/admin` deliberately ships a hardcoded development
+actor. Adding a route guard does not let you drop the server check.
+
+## What to trust in them
+
+- `tanstack-router-best-practices/rules/load-ensure-query-data.md` — the
+  `ensureQueryData` and `setupRouterSsrQueryIntegration` wiring, and the
+  `ensureQueryData` versus `prefetchQuery` versus `fetchQuery` decision table.
+  Note this repository has no TanStack Query dependency yet; adding one is a new
+  decision, not a given.
+- `load-use-loaders.md` — the loader argument surface (`params`, `context`,
+  `abortController`, `cause`, `deps`, `preload`) and that nested loaders run in
+  parallel by default.
+- `ctx-root-context.md` — `createRootRouteWithContext` and router context typing.
+- `auth-route-protection.md` — pathless layout routes for grouped protection, and
+  capturing the post-login target in a validated search param.
+- `sf-input-validation.md` — the network-boundary-is-a-trust-boundary framing and
+  the mass-assignment example. Its `.validator()` usage is correct.
+
+## Verification after following either skill
+
+```bash
+bun run --cwd apps/<app> build   # the Start plugin rewrites routeTree.gen.ts
+bun run --cwd apps/<app> check
+```
+
+`noUnusedLocals` is on in `apps/web` and `apps/admin` only, so an unused import
+introduced while copying an example fails there and nowhere else.

@@ -1,0 +1,42 @@
+{
+  "name": "@voidmix/scripts",
+  "version": "0.0.0",
+  "private": true,
+  "bin": {
+    "vmx": "./src/cli.ts"
+  },
+  "type": "module",
+  "scripts": {
+    "doctor": "vmx doctor",
+    "policy": "vmx policy",
+    "clean": "vmx clean",
+    "db:migrate": "vmx db migrate",
+    "db:seed": "vmx db seed",
+    "db:studio": "vmx db studio",
+    "admin:create": "vmx admin create",
+    "generate": "vmx generate",
+    "desktop:build": "vmx desktop build",
+    "verify": "vmx verify",
+    "shadcn:update": "vmx shadcn update",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:integration": "vitest run --passWithNoTests integration.test",
+    "test:component": "vitest run --passWithNoTests component.test",
+    "test:coverage": "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
+    "build": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "catalog:tooling",
+    "@voidmix/db": "workspace:*",
+    "@voidmix/domain": "workspace:*",
+    "@voidmix/env": "workspace:*",
+    "@voidmix/logger": "workspace:*",
+    "citty": "catalog:tooling"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "catalog:tooling",
+    "@voidmix/tsconfig": "workspace:*",
+    "vitest": "catalog:tooling"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@voidmix/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/app.ts",
+    "./router": "./src/router.ts"
+  },
+  "scripts": {
+    "dev": "vmx env -- vp dev",
+    "start": "node --enable-source-maps scripts/start.mjs",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:integration": "vitest run --passWithNoTests integration.test",
+    "test:component": "vitest run --passWithNoTests component.test",
+    "test:coverage": "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
+    "build": "bun run check && vmx env -- vp build"
+  },
+  "dependencies": {
+    "@orpc/server": "catalog:",
+    "@voidmix/auth": "workspace:*",
+    "@voidmix/contracts": "workspace:*",
+    "@voidmix/db": "workspace:*",
+    "@voidmix/domain": "workspace:*",
+    "@voidmix/env": "workspace:*",
+    "@voidmix/logger": "workspace:*",
+    "hono": "catalog:backend"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "catalog:tooling",
+    "@voidmix/client": "workspace:*",
+    "@voidmix/tsconfig": "workspace:*",
+    "nitro": "catalog:backend",
+    "vite": "catalog:tooling",
+    "vite-plus": "catalog:tooling",
+    "vitest": "catalog:tooling"
+  }
+}

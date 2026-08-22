@@ -1,0 +1,143 @@
+# Shared Packages
+
+This document describes what each package is for and why its seam sits where it
+does. Each package's own `AGENTS.md` owns its export surface, constraints, and
+verification commands; keep those details there rather than duplicating them
+here.
+
+## `@voidmix/contracts`
+
+The runtime contract seam. It contains Zod schemas, DTOs, and the oRPC contract
+tree, but performs no network calls and exposes no database implementation.
+
+## `@voidmix/client`
+
+The transport adapter. `createApiClient({ baseUrl, headers, fetch })` returns a
+typed client generated from the shared contract. Web, Admin, and Desktop can
+provide platform-specific headers or fetch adapters without duplicating API
+types.
+
+## `@voidmix/domain`
+
+Framework-independent business rules and repository interfaces. It owns:
+
+- User and audit event types.
+- User listing and cursor pagination.
+- User status transitions.
+- Self-suspension and final-administrator protection.
+- Idempotent initial administrator creation.
+- Durable audit event creation.
+
+It does not import React, Hono, Nitro, or Drizzle.
+
+## `@voidmix/auth`
+
+The authorization vocabulary: roles (`user`, `admin`, `owner`), permissions,
+session types, and `hasPermission`.
+
+The API currently uses a development header session resolver. That resolver is
+the seam for a future production identity integration; the oRPC router and
+domain services should not need to change when the identity provider changes.
+
+## `@voidmix/env`
+
+The environment seam exposes `createEnv`, `defineEnv`, `Preset`, and
+`runtimeEnv`.
+
+- It validates values supplied by the runtime; it does not read `.env` files.
+- Packages declare owned variables through local presets.
+- Applications compose package presets with application-specific server,
+  client, and shared variables.
+- `VITE_` variables are statically constrained for browser use.
+- Blank strings normalize to `undefined`; defaults apply before validation.
+- Preset composition detects circular `extends` graphs.
+- Callers should not scatter direct `process.env` or `import.meta.env` reads.
+
+Representative composition:
+
+```ts
+const env = createEnv({
+  extends: [runtimeEnv, loggerEnv, databaseEnv],
+  server: {
+    ALLOWED_ORIGINS: z.string().default("http://localhost:3000"),
+  },
+});
+```
+
+## `@voidmix/db`
+
+The database adapter package.
+
+- Drizzle PostgreSQL schema lives in `src/schema.ts`.
+- `PostgresUserRepository` is the production adapter.
+- `InMemoryUserRepository` is the development/test adapter.
+- `audit_events.actor_id` and `audit_events.target_id` reference `users.id`
+  through separate named Drizzle relations (`actor` and `target`); both foreign
+  keys are indexed and use restrictive deletes so audit history cannot be
+  orphaned.
+- SQL migrations live under `drizzle/`.
+- Database tables and Drizzle details are not exposed to frontend apps.
+
+## `@voidmix/logger`
+
+The observability seam wraps Evlog so services share naming, environment
+detection, minimum levels, event shape, and redaction policy.
+
+- Node services call `configureLogger({ service })` once during startup.
+- Jobs and lifecycle hooks create a scoped wide event with
+  `logger({ operation })` and emit it after enrichment.
+- Hono and oRPC adapters produce one event with duration, request ID, actor,
+  authorization result, outcome, and status.
+- Scripts use the same structured event shape.
+- Tooling can provide an explicit `runtimeEnv` when logger configuration must
+  use a copied child environment instead of global `process.env`.
+- Web, Admin, and Desktop use the Vite client integration.
+- Authorization headers, cookies, passwords, secrets, tokens, and API keys are
+  redacted by default.
+
+Operational logs and Admin audit records are separate concepts. Logs are
+observability data; audit rows are durable product records.
+
+## `@voidmix/ui`
+
+Shared visual primitives and design-system utilities:
+
+- Base UI interactive primitives.
+- shadcn `base-nova` component conventions.
+- Phosphor Icons for renderer surfaces.
+- Tailwind CSS v4 variables and theme tokens.
+- `Button`, `Badge`, `Avatar`, and `BrandMark`.
+- `cn` and CVA helpers for composition.
+- Shared Void, Cloud, Signal Lime, semantic state, focus, radius, and motion
+  vocabulary documented in the root `DESIGN.md`.
+
+Each renderer has a `components.json` that targets the shared UI package with
+`style: "base-nova"`, `rsc: false`, and `iconLibrary: "phosphor"`. Page layout,
+route trees, and product-specific visual composition remain in their owning
+application so migration can happen incrementally.
+
+## `@voidmix/scripts`
+
+A private Bun CLI for procedural repository automation. Vite+ owns the task
+graph; Scripts owns operations that understand the repository or database.
+Runtime applications must never import this package.
+
+The existing `vmx` bin also exposes `vmx env -- <command>`. This
+development/build runner uses Dotenvx's programming API to load root
+`.env.local` and `.env` into a copied child environment, preserves the caller's
+working directory and stdio, forwards termination signals, and avoids loading
+the same files again in nested runner calls. The internal marker is scoped to
+the repository root, remains a runner implementation detail, and is not part of
+any business schema.
+
+The Citty command tree is split into lightweight domain command modules so each
+concern can be tested without bootstrapping the complete CLI: pure operations
+accept injectable dependencies, renderers are separate from the data they print,
+and command adapters stay thin. `packages/scripts/AGENTS.md` records the source
+layout and the conventions new modules must follow.
+
+## `@voidmix/tsconfig`
+
+Shared strict TypeScript presets. They define compiler behavior but never own
+consumer `include`, `exclude`, `paths`, output directories, or project
+references. See [Toolchain](./tooling.md) for the preset matrix.

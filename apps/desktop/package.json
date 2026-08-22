@@ -1,0 +1,47 @@
+{
+  "name": "@voidmix/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vmx env -- vp dev",
+    "build": "bun run check && vmx env -- vp build",
+    "preview": "vmx env -- vp preview",
+    "check": "bun run typecheck && bun run typecheck:node",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
+    "test": "vitest run",
+    "test:unit": "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:integration": "vitest run --passWithNoTests integration.test",
+    "test:component": "vitest run --passWithNoTests component.test",
+    "test:coverage": "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "catalog:frontend",
+    "@tanstack/react-router": "catalog:",
+    "@tauri-apps/api": "catalog:desktop",
+    "@tauri-apps/plugin-opener": "catalog:desktop",
+    "@voidmix/client": "workspace:*",
+    "@voidmix/env": "workspace:*",
+    "@voidmix/logger": "workspace:*",
+    "@voidmix/ui": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "catalog:desktop",
+    "@types/node": "catalog:tooling",
+    "@types/react": "catalog:tooling",
+    "@types/react-dom": "catalog:tooling",
+    "@vitejs/plugin-react": "catalog:tooling",
+    "@vitest/coverage-v8": "catalog:tooling",
+    "@voidmix/tsconfig": "workspace:*",
+    "typescript": "catalog:tooling",
+    "vite": "catalog:tooling",
+    "vite-plus": "catalog:tooling",
+    "vitest": "catalog:tooling"
+  }
+}

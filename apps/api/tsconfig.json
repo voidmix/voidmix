@@ -1,0 +1,11 @@
+{
+  "extends": "@voidmix/tsconfig/node.json",
+  "include": [
+    "src/**/*.ts",
+    "plugins/**/*.ts",
+    "server.ts",
+    "nitro.config.ts",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@voidmix/storybook",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "bun run check && storybook build",
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@voidmix/ui": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "catalog:tooling",
+    "@storybook/addon-docs": "catalog:tooling",
+    "@storybook/react-vite": "catalog:tooling",
+    "@tailwindcss/vite": "catalog:frontend",
+    "@types/react": "catalog:tooling",
+    "@types/react-dom": "catalog:tooling",
+    "@voidmix/tsconfig": "workspace:*",
+    "storybook": "catalog:tooling",
+    "typescript": "catalog:tooling",
+    "vite": "catalog:tooling"
+  }
+}
