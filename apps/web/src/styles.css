@@ -64,7 +64,7 @@ textarea:focus-visible {
   --warning: var(--destructive);
   background: var(--void);
   display: grid;
-  grid-template-columns: 15rem minmax(0, 1fr) 18rem;
+  grid-template-columns: 15rem minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -224,7 +224,7 @@ textarea:focus-visible {
 
 .workspace-nav__item.is-current {
   background: var(--accent);
-  color: var(--accent);
+  color: var(--primary-foreground);
 }
 
 .workspace-nav__item b {
@@ -337,37 +337,19 @@ textarea:focus-visible {
   gap: 0.35rem;
 }
 
-.topbar-actions > button:not([data-slot="button"]) {
-  align-items: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 0.4rem;
-  color: var(--muted);
-  cursor: pointer;
-  display: flex;
-  height: 2.15rem;
-  justify-content: center;
-  width: 2.15rem;
-}
-
-.topbar-actions > button:not([data-slot="button"]):hover {
-  background: var(--raised);
-  border-color: var(--line);
-  color: var(--text);
-}
-
 .topbar-actions [data-slot="button"] {
   margin-left: 0.45rem;
 }
 
 .main-column {
   margin: 0 auto;
-  max-width: 52rem;
-  padding: 5rem 2.5rem 7rem;
+  max-width: 78rem;
+  padding: 3.5rem clamp(1.25rem, 4vw, 4rem) 5rem;
+  width: 100%;
 }
 
 .welcome-block {
-  margin-bottom: 2.2rem;
+  margin-bottom: 2rem;
 }
 
 .live-kicker {
@@ -387,7 +369,7 @@ textarea:focus-visible {
 }
 
 .welcome-block h1 {
-  font-size: clamp(2rem, 4vw, 2.9rem);
+  font-size: 2.5rem;
   font-weight: 780;
   letter-spacing: -0.035em;
   line-height: 1.05;
@@ -411,6 +393,17 @@ textarea:focus-visible {
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease;
+}
+
+.home-content-grid {
+  align-items: start;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 0.85fr);
+}
+
+.home-primary {
+  min-width: 0;
 }
 
 .prompt-panel:focus-within {
@@ -483,7 +476,7 @@ textarea:focus-visible {
 }
 
 .activity-section {
-  margin-top: 4rem;
+  margin-top: 3rem;
 }
 
 .section-heading {
@@ -659,30 +652,18 @@ textarea:focus-visible {
 
 .context-panel {
   background: var(--sidebar);
-  border-left: 1px solid var(--line);
-  min-height: 100vh;
-  padding: 1.65rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  min-height: 0;
+  padding: 1.15rem;
+  position: sticky;
+  top: 1.5rem;
 }
 
 .context-heading {
   align-items: flex-start;
   display: flex;
   justify-content: space-between;
-}
-
-.context-heading > button {
-  background: transparent;
-  border: 0;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  padding: 0;
-}
-
-.context-heading > button:hover {
-  color: var(--text);
 }
 
 .context-status {
@@ -819,8 +800,12 @@ textarea:focus-visible {
     grid-template-columns: 14rem minmax(0, 1fr);
   }
 
+  .home-content-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .context-panel {
-    display: none;
+    position: static;
   }
 }
 
@@ -901,6 +886,10 @@ textarea:focus-visible {
 
   .welcome-block h1 {
     font-size: 2.15rem;
+  }
+
+  .home-content-grid {
+    gap: 2.5rem;
   }
 
   .thread-card {

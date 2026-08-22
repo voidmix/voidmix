@@ -1,4 +1,4 @@
-import { ArrowUpRight, Bell, MagnifyingGlass } from "@phosphor-icons/react";
+import { Bell, MagnifyingGlass } from "@phosphor-icons/react";
 import { Button } from "@voidmix/ui/components/ui/button";
 
 import { ActivitySection } from "./activity-section";
@@ -25,9 +25,6 @@ export function HomePage() {
             <Button aria-label="Open notifications" size="icon" variant="ghost">
               <Bell aria-hidden="true" />
             </Button>
-            <Button variant="secondary">
-              Open workspace <ArrowUpRight aria-hidden="true" weight="bold" />
-            </Button>
           </div>
         </header>
 
@@ -41,12 +38,15 @@ export function HomePage() {
             <p>Ask about the launch, find a decision, or start the next piece of work.</p>
           </section>
 
-          <PromptPanel />
-          <ActivitySection />
+          <div className="home-content-grid">
+            <div className="home-primary">
+              <PromptPanel />
+              <ActivitySection />
+            </div>
+            <ProjectContext />
+          </div>
         </div>
       </section>
-
-      <ProjectContext />
     </main>
   );
 }

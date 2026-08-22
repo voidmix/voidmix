@@ -13,9 +13,6 @@ export function ProjectContext() {
           <span>Current project</span>
           <h2>Northstar launch</h2>
         </div>
-        <Button aria-label="More project actions" size="icon" variant="ghost">
-          ···
-        </Button>
       </div>
 
       <div className="context-status">
