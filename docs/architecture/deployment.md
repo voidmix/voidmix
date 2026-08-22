@@ -22,7 +22,7 @@ bun run db:seed
 bun run db:studio
 ```
 
-When `DATABASE_URL` is absent, the API uses an in-memory development repository.
+The API requires `DATABASE_URL` in every runtime environment.
 
 ## Containers and Railway
 
@@ -44,16 +44,20 @@ the service config path.
 - A separately deployed Admin build receives `VITE_API_URL` at build time.
 
 Production startup does not use the private `vmx` CLI. Railway and other
-platforms inject values through `process.env`. The Node containers also accept
-an optional shared mount at `/app/.env` through Node 24's
-`--env-file-if-exists` flag; `.dockerignore` excludes local `.env` and
-`.env.local` files from image build contexts.
+platforms inject values through `process.env`; a `/app/.env` file is optional,
+not required. The container entrypoints load that file only when it exists, so
+missing optional files do not produce startup warnings. `.dockerignore`
+excludes local `.env` and `.env.local` files from image build contexts.
 
 `VITE_*` values are compiled into browser bundles. Docker or Railway must
 provide them during the build stage; a runtime `/app/.env` mount cannot change
 an already-built client bundle. Dotenvx is only a local development/build file
 loader, while `@voidmix/env` performs application schema validation after
 values enter the process.
+
+The API environment schema requires `DATABASE_URL` during startup. The in-memory
+repository remains available only to direct `createApiApp` tests that inject it
+explicitly; it is not a runtime fallback.
 
 Web, Admin, and API explicitly select Nitro's `node-server` preset and emit
 self-contained Node server bundles. Explicitly selecting the preset prevents a

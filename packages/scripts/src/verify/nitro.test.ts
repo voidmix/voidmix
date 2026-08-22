@@ -52,6 +52,7 @@ describe("verifyNitroRuntimes", () => {
       cwd: "/repo/apps/example/.output",
       env: expect.objectContaining({
         ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3001",
+        DATABASE_URL: "postgres://voidmix:verify@example.invalid:5432/voidmix",
         LOG_LEVEL: "error",
         LOG_PRETTY: "false",
         NITRO_HOST: "127.0.0.1",
@@ -61,7 +62,10 @@ describe("verifyNitroRuntimes", () => {
         PORT: "43210",
       }),
     });
-    expect(options?.env).not.toHaveProperty("DATABASE_URL");
+    expect(options?.env).toHaveProperty(
+      "DATABASE_URL",
+      "postgres://voidmix:verify@example.invalid:5432/voidmix",
+    );
   });
 
   it("rejects output built for a non-Node preset", async () => {

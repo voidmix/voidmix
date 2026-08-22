@@ -84,9 +84,9 @@ function resolveServerEntry(outputDirectory: string, serverEntry: string): strin
 function createRuntimeEnvironment(processEnv: NodeJS.ProcessEnv, port: number): NodeJS.ProcessEnv {
   const environment = { ...processEnv };
   delete environment.DATABASE_URL;
-  delete environment.DATABASE_LOCAL_URL;
   return {
     ...environment,
+    DATABASE_URL: "postgres://voidmix:verify@example.invalid:5432/voidmix",
     ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3001",
     LOG_LEVEL: "error",
     LOG_PRETTY: "false",

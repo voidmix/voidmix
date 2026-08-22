@@ -2,7 +2,11 @@ import { createApiClient } from "@voidmix/client";
 import { InMemoryUserRepository } from "@voidmix/db";
 import type { User } from "@voidmix/domain";
 import { configureLogger } from "@voidmix/logger";
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it, vi } from "vite-plus/test";
+
+vi.hoisted(() => {
+  process.env.DATABASE_URL = "postgres://voidmix:test@example.invalid:5432/voidmix";
+});
 
 import { createApiApp } from "./app.js";
 

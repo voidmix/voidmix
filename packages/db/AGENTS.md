@@ -46,8 +46,7 @@ under `drizzle/`.
 - **Never hand-edit `drizzle/*.sql` or `drizzle/meta/`.** Generate them. The
   journal's `idx` does not match the filename number, so do not invent names.
 - `drizzle.config.ts` calls `getDatabaseEnv()` at module load, so `drizzle-kit`
-  fails at import time when the environment is invalid. URL resolution is
-  `DATABASE_URL ?? DATABASE_LOCAL_URL`.
+  fails at import time when `DATABASE_URL` is missing or invalid.
 - `db seed` and `db studio` are restricted to development and test by
   `@voidmix/scripts`; `db migrate` only requires a database URL.
 - A new audit-action value is also declared in `@voidmix/domain` (literal union)

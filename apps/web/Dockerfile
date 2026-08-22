@@ -19,4 +19,4 @@ COPY --chown=node:node --from=build /app/apps/web/.output ./.output
 USER node
 EXPOSE 3000
 
-CMD ["node", "--env-file-if-exists=/app/.env", "--enable-source-maps", ".output/server/index.mjs"]
+CMD ["sh", "-c", "if [ -f /app/.env ]; then exec node --env-file=/app/.env --enable-source-maps .output/server/index.mjs; else exec node --enable-source-maps .output/server/index.mjs; fi"]

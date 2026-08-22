@@ -18,4 +18,4 @@ COPY --chown=node:node --from=build /app/apps/api/scripts ./scripts
 USER node
 EXPOSE 3002
 
-CMD ["node", "--env-file-if-exists=/app/.env", "--enable-source-maps", "scripts/start.mjs"]
+CMD ["sh", "-c", "if [ -f /app/.env ]; then exec node --env-file=/app/.env --enable-source-maps scripts/start.mjs; else exec node --enable-source-maps scripts/start.mjs; fi"]

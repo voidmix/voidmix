@@ -19,9 +19,9 @@ bun run generate
 bun run dev
 ```
 
-Without `DATABASE_URL`, the API starts with an in-memory repository. Use
-`VOIDMIX_ACTOR_ID=owner-local` or the `x-voidmix-user-id` request header to
-select the local development actor.
+`DATABASE_URL` is required by the API and should point to the local PostgreSQL
+service or another reachable PostgreSQL instance. Use `VOIDMIX_ACTOR_ID=owner-local`
+or the `x-voidmix-user-id` request header to select the local development actor.
 
 ## Environment files
 

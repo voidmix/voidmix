@@ -73,10 +73,10 @@ workspace scripts run through `vmx env -- <command>`, which loads root
 the shell. Unit tests do not use this runner and must provide their environment
 explicitly.
 
-The API defaults to an in-memory repository when `DATABASE_URL` is not set,
-so the UI can be explored without provisioning PostgreSQL. Use
-`VOIDMIX_ACTOR_ID=owner-local` or the `x-voidmix-user-id` request header to select the
-development actor.
+The API requires `DATABASE_URL` at startup. Use the local PostgreSQL service
+from the commands below, or point it at another PostgreSQL instance. Use
+`VOIDMIX_ACTOR_ID=owner-local` or the `x-voidmix-user-id` request header to
+select the development actor.
 
 ## Common commands
 
@@ -118,6 +118,5 @@ bun run db:seed
 bun run db:studio
 ```
 
-Without `DATABASE_URL`, the API uses an in-memory development repository. The
-Admin app calls the shared oRPC client first and falls back to local preview
+The Admin app calls the shared oRPC client first and falls back to local preview
 data when the API is unavailable.

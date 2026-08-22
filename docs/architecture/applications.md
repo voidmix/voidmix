@@ -83,9 +83,9 @@ admin.users.updateStatus
 admin.audit.list
 ```
 
-`GET /health` is available for service probes. Without `DATABASE_URL`, the API
-uses a seeded in-memory repository so local applications can run without
-PostgreSQL.
+`GET /health` is available for service probes. `DATABASE_URL` is required for
+the runtime API; the seeded in-memory repository is reserved for direct app
+tests that inject it explicitly.
 
 The oRPC beta transport uses GET for read-only procedures and POST for status
 updates. The client and Fetch handler batch concurrent reads, deduplicate

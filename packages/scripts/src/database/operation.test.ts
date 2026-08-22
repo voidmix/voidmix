@@ -41,22 +41,12 @@ function userRepository(overrides: Partial<UserRepository> = {}): UserRepository
 }
 
 describe("database commands", () => {
-  it("requires DATABASE_URL for migrations", async () => {
-    const migrate = vi.fn(async () => undefined);
-    // `createEnv` layers the values it is handed *over* `process.env` rather than
-    // replacing it, so a case about a missing variable has to remove it from the
-    // ambient environment. Without this the test passes only where DATABASE_URL
-    // happens to be unset, and `DATABASE_URL=… bun run test` fails for no reason
-    // the reader can see.
+  it("requires DATABASE_URL before migrations can be configured", () => {
     vi.stubEnv("DATABASE_URL", undefined);
 
-    await expect(
-      runMigrate(getDatabaseScriptsEnv({ NODE_ENV: "test" }), {
-        migrate,
-        log: vi.fn(),
-      }),
-    ).rejects.toThrow("DATABASE_URL is required");
-    expect(migrate).not.toHaveBeenCalled();
+    expect(() => getDatabaseScriptsEnv({ NODE_ENV: "test" })).toThrow(
+      "DATABASE_URL: Invalid input: expected string, received undefined",
+    );
 
     vi.unstubAllEnvs();
   });
