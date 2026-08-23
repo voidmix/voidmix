@@ -14,7 +14,7 @@ const config = defineConfig({
       }),
       tailwindcss(),
       tanstackStart(),
-      nitro({ preset: "node-server" }),
+      nitro({ preset: "node-server", traceDeps: ["react"] }),
       viteReact(),
     ]) ?? [],
   server: { port: 3000, strictPort: true },

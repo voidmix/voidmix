@@ -28,11 +28,13 @@ function dependencies() {
 describe("verifyNitroRuntimes", () => {
   it("checks node-server metadata and starts the output with Node", async () => {
     const deps = dependencies();
+    const cleanup = vi.fn(async () => undefined);
 
     await verifyNitroRuntimes(deps, {
       allocatePort: async () => 43210,
       readMetadata: async () =>
         JSON.stringify({ preset: "node-server", serverEntry: "server/index.mjs" }),
+      stageOutput: async () => ({ cleanup, directory: "/isolated/.output" }),
       targets: [target],
     });
 
@@ -45,13 +47,13 @@ describe("verifyNitroRuntimes", () => {
       expect.any(String),
     ]);
     expect(command?.slice(4)).toEqual([
-      "file:///repo/apps/example/.output/server/index.mjs",
+      "file:///isolated/.output/server/index.mjs",
       "/health",
       "Example",
       "ready",
     ]);
     expect(options).toEqual({
-      cwd: "/repo/apps/example/.output",
+      cwd: "/isolated/.output",
       env: expect.objectContaining({
         ALLOWED_ORIGINS: "http://localhost:3000",
         DATABASE_URL: "postgres://voidmix:verify@example.invalid:5432/voidmix",
@@ -68,6 +70,7 @@ describe("verifyNitroRuntimes", () => {
       "DATABASE_URL",
       "postgres://voidmix:verify@example.invalid:5432/voidmix",
     );
+    expect(cleanup).toHaveBeenCalledOnce();
   });
 
   it("rejects output built for a non-Node preset", async () => {

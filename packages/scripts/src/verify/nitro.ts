@@ -1,6 +1,7 @@
-import { readFile } from "node:fs/promises";
+import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
 import { createServer } from "node:net";
 import { isAbsolute, join, relative, resolve } from "node:path";
+import { tmpdir } from "node:os";
 import { pathToFileURL } from "node:url";
 
 import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
@@ -20,7 +21,13 @@ interface NitroMetadata {
 interface NitroRuntimeVerificationOptions {
   allocatePort?: () => Promise<number>;
   readMetadata?: (path: string) => Promise<string>;
+  stageOutput?: (sourceDirectory: string) => Promise<NitroRuntimeStage>;
   targets?: readonly NitroRuntimeTarget[];
+}
+
+interface NitroRuntimeStage {
+  cleanup(): Promise<void>;
+  directory: string;
 }
 
 const defaultTargets: readonly NitroRuntimeTarget[] = [
@@ -126,36 +133,61 @@ export async function allocateLocalPort(): Promise<number> {
   return address.port;
 }
 
+async function stageNitroOutput(sourceDirectory: string): Promise<NitroRuntimeStage> {
+  const stagingRoot = await mkdtemp(join(tmpdir(), "voidmix-nitro-runtime-"));
+  const directory = join(stagingRoot, ".output");
+
+  try {
+    await cp(sourceDirectory, directory, { recursive: true });
+  } catch (error) {
+    await rm(stagingRoot, { force: true, recursive: true });
+    throw error;
+  }
+
+  return {
+    directory,
+    cleanup: () => rm(stagingRoot, { force: true, recursive: true }),
+  };
+}
+
 export async function verifyNitroRuntimes(
   dependencies: RepositoryProcessDependencies,
   options: NitroRuntimeVerificationOptions = {},
 ): Promise<void> {
   const allocatePort = options.allocatePort ?? allocateLocalPort;
   const readMetadata = options.readMetadata ?? ((path) => readFile(path, "utf8"));
+  const stageOutput = options.stageOutput ?? stageNitroOutput;
 
   for (const target of options.targets ?? defaultTargets) {
-    const outputDirectory = join(dependencies.repositoryRoot, target.directory, ".output");
-    const metadata = parseMetadata(await readMetadata(join(outputDirectory, "nitro.json")), target);
-    const serverEntry = resolveServerEntry(outputDirectory, metadata.serverEntry);
-    const port = await allocatePort();
+    const sourceDirectory = join(dependencies.repositoryRoot, target.directory, ".output");
+    const metadata = parseMetadata(await readMetadata(join(sourceDirectory, "nitro.json")), target);
+    resolveServerEntry(sourceDirectory, metadata.serverEntry);
+    const stage = await stageOutput(sourceDirectory);
 
-    dependencies.log("info", "verify.runtime.started", { service: target.name });
-    await dependencies.runCommand(
-      [
-        "node",
-        "--input-type=module",
-        "--eval",
-        nitroProbe,
-        pathToFileURL(serverEntry).href,
-        target.pathname,
-        target.name,
-        target.expectedText ?? "",
-      ],
-      {
-        cwd: outputDirectory,
-        env: createRuntimeEnvironment(dependencies.processEnv, port),
-      },
-    );
-    dependencies.log("info", "verify.runtime.completed", { service: target.name });
+    try {
+      const serverEntry = resolveServerEntry(stage.directory, metadata.serverEntry);
+      const port = await allocatePort();
+
+      dependencies.log("info", "verify.runtime.started", { service: target.name });
+      await dependencies.runCommand(
+        [
+          "node",
+          "--input-type=module",
+          "--eval",
+          nitroProbe,
+          pathToFileURL(serverEntry).href,
+          target.pathname,
+          target.name,
+          target.expectedText ?? "",
+        ],
+        {
+          cwd: stage.directory,
+          env: createRuntimeEnvironment(dependencies.processEnv, port),
+        },
+      );
+      dependencies.log("info", "verify.runtime.completed", { service: target.name });
+    } finally {
+      await stage.cleanup();
+    }
   }
 }
