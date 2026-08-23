@@ -62,10 +62,10 @@ Each workspace must complete its local TypeScript check independently. The root
 Vite+ task graph runs checks, tests, and builds across all applications and
 packages. `bun run verify` deliberately sets `NITRO_PRESET=bun` for its build
 graph to prove that each Node deployment owns an explicit preset. After the
-build, it reads each Web, Admin, and API `.output/nitro.json`, requires the
-`node-server` preset, starts the generated server with the repository's Node
-runtime on a temporary loopback port, and requires HTTP 200 from `/`, `/`, and
-`/health` respectively. The probe removes database URLs from its child
+build, it reads each Web and API `.output/nitro.json`, requires the `node-server`
+preset, starts the generated server with the repository's Node runtime on a
+temporary loopback port, and requires HTTP 200 from `/` and `/health`
+respectively. The probe removes database URLs from its child
 environment and never connects to a database.
 
 ## Vite+/Vitest configuration boundary
@@ -138,9 +138,9 @@ run `bun run policy` for the paste-ready fix in each workspace.
 Node workspaces use the Node test environment. `packages/ui` is the only
 workspace that uses `jsdom`; its setup is local to the package so DOM globals
 do not leak into server, desktop, or library type checks. E2E tests live in the
-private `@voidmix/e2e` workspace and use Playwright projects for Web (`3000`)
-and Admin (`3001`). The Playwright config starts both servers through its
-`webServer` entries and reuses already-running servers during local iteration.
+private `@voidmix/e2e` workspace and use separate Playwright projects for the
+public Web surface and protected Admin routes. Both run against the integrated
+Web server on port `3000`, which the config reuses during local iteration.
 
 Run a single browser project or inspect its report with:
 
@@ -154,12 +154,13 @@ bun run --cwd e2e test:report
 
 - Browser, Node, React library, and Bun-specific types do not leak across
   workspace boundaries.
-- Web, Admin, and Desktop share contracts/client types but not route trees.
+- Web and Desktop share contracts/client types but not route trees; Admin routes
+  belong to Web's generated route tree.
 - Ordinary users cannot access protected Admin procedures.
 - Admin writes produce audit records and enforce self/final-admin protections.
 - Database scripts are tested against disposable development/test data.
-- CI builds Web/Admin/API on Linux and Desktop packages on macOS and Windows.
+- CI builds Web/API on Linux and Desktop packages on macOS and Windows.
 - CI runs each Vitest layer separately and uploads workspace coverage reports as
   an artifact without enforcing a minimum threshold.
-- CI runs Web/Admin Playwright smoke tests in a separate Linux E2E job after
+- CI runs public Web and protected Admin-route Playwright smoke tests in a separate Linux E2E job after
   installing Chromium.

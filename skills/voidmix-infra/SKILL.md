@@ -2,7 +2,7 @@
 name: voidmix-infra
 description: >
   Project-specific workflows and footguns for the Voidmix monorepo. Use when
-  changing apps/web, apps/admin, apps/api, apps/desktop, or any @voidmix package —
+  changing apps/web, apps/api, apps/desktop, or any @voidmix package —
   oRPC contracts and procedures, Drizzle schema and migrations, domain rules,
   TanStack Start routes, packages/ui primitives, auth and permissions, audit
   records, logging, or the test and verification loop.
@@ -59,12 +59,12 @@ things that mislead in the moment and belong to no single rule:
   surface is `packages/contracts` plus `packages/client`.
 - **`check` is `tsc --noEmit` only** — it does not lint or format. Those are
   `bun run lint` and `bun run format` (`format:fix` to rewrite).
-- **`noUnusedLocals` / `noUnusedParameters` are on in `apps/web` and
-  `apps/admin` only**, so an unused import fails `check` there and nowhere else.
+- **`noUnusedLocals` / `noUnusedParameters` are on in `apps/web`**, so an
+  unused import fails its `check` even when another workspace would allow it.
 - **`routeTree.gen.ts` is written by `@tanstack/start-plugin-core`, not by
   `tsr generate`.** The router CLI omits the Start `Register` footer, so running it
   standalone produces a worse file that still passes `tsc` and that the next
-  `dev` or `build` silently repairs. Neither app has a `generate-routes` script.
+  `dev` or `build` silently repairs. Web has no `generate-routes` script.
 - **Never use a globally installed `vp`.** Its bundled Vitest is a different
   physical dependency tree from the workspace's `vite-plus/test` and fails with
   `Cannot read properties of undefined (reading 'config')`. `vp test` (built-in)

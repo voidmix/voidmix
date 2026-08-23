@@ -63,6 +63,21 @@ function setup(role: "user" | "owner", actorId: string) {
 }
 
 describe("API", () => {
+  it("mounts the injected auth handler with credentialed CORS", async () => {
+    const app = createApiApp({
+      authHandler: async () => new Response("auth-ok"),
+      allowedOrigins: ["http://admin.voidmix.test"],
+    });
+    const response = await app.request("/api/auth/get-session", {
+      headers: { Origin: "http://admin.voidmix.test" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe("auth-ok");
+    expect(response.headers.get("access-control-allow-credentials")).toBe("true");
+    expect(response.headers.get("access-control-allow-origin")).toBe("http://admin.voidmix.test");
+  });
+
   it("serves health through Hono and oRPC", async () => {
     const { app, client } = setup("owner", "owner-1");
     expect((await app.request("/health")).status).toBe(200);

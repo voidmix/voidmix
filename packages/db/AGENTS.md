@@ -26,8 +26,9 @@ under `drizzle/`.
 
 ## Constraints
 
-- Never expose tables or Drizzle types to frontend applications. Web, Admin, and
-  Desktop reach the backend through `@voidmix/client` and `@voidmix/contracts`.
+- Never expose tables or Drizzle types to frontend applications. Web (including
+  its Admin routes) and Desktop reach the backend through `@voidmix/client` and
+  `@voidmix/contracts`.
 - **Both repositories must be updated together** when `UserRepository` changes,
   or `implements UserRepository` fails.
 - `InMemoryUserRepository` must **clone on read and on write**

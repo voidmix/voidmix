@@ -1,0 +1,7 @@
+{
+  "extends": "@voidmix/tsconfig/react-library.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["src", "scripts"]
+}

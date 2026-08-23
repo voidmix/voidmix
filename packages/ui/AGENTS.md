@@ -37,8 +37,9 @@ Page layout and product-specific composition stay in the owning application.
   - shadcn-generated components live directly in `src/components/ui/` and are
     imported through `@voidmix/ui/components/ui/<name>`.
 - **`bun run shadcn:update` passes `--overwrite`.** `src/components/ui/button.tsx`
-  carries the repository's `primary`/`secondary`/`danger` variants, aliased
-  sizes, and a `type="button"` default. Diff after every run.
+  carries the repository's `primary`/`secondary`/`danger` variants and a
+  `type="button"` default; its size names stay aligned with base-nova. Diff
+  after every run.
 - Primitives are plain functions with no `forwardRef` (React 19). Props re-expose
   variants as named unions rather than spreading `VariantProps`.
 - `className` composes as `cn(variants({...}), modifiers, className)`.

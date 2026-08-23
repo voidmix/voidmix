@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 
 import "@testing-library/jest-dom/vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vite-plus/test";
@@ -10,7 +10,10 @@ import { Avatar } from "./avatar";
 import { Badge } from "./components/ui/badge";
 import { Button } from "./components/ui/button";
 import { Card, CardContent } from "./components/ui/card";
+import { Field, FieldError, FieldLabel } from "./components/ui/field";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group";
 import { Separator } from "./components/ui/separator";
+import { Toaster, toast } from "./components/ui/toast";
 
 afterEach(() => cleanup());
 
@@ -67,5 +70,65 @@ describe("layout primitives", () => {
 
     expect(screen.getByText("Workspace summary")).toHaveAttribute("data-slot", "card-content");
     expect(screen.getByRole("separator")).toHaveAttribute("data-slot", "separator");
+  });
+});
+
+describe("form primitives", () => {
+  it("associates a field label with its input and exposes an error", () => {
+    render(
+      <Field data-invalid="true">
+        <FieldLabel htmlFor="account-email">Email</FieldLabel>
+        <InputGroup className="h-9">
+          <InputGroupInput id="account-email" aria-invalid="true" type="email" />
+          <InputGroupAddon align="inline-end">Required</InputGroupAddon>
+        </InputGroup>
+        <FieldError>Email is required.</FieldError>
+      </Field>,
+    );
+
+    expect(screen.getByRole("textbox", { name: "Email" })).toHaveAttribute(
+      "data-slot",
+      "input-group-control",
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent("Email is required.");
+  });
+
+  it("focuses the grouped input when its addon is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <InputGroup>
+        <InputGroupInput aria-label="Workspace" />
+        <InputGroupAddon>@</InputGroupAddon>
+      </InputGroup>,
+    );
+
+    await user.click(screen.getByText("@"));
+    expect(screen.getByRole("textbox", { name: "Workspace" })).toHaveFocus();
+  });
+});
+
+describe("Toast", () => {
+  it("renders high-priority error feedback through the shared manager", async () => {
+    render(<Toaster />);
+
+    act(() => {
+      toast.add({
+        title: "Sign in failed",
+        description: "Check your email and password.",
+        type: "error",
+        priority: "high",
+        timeout: 0,
+      });
+    });
+
+    expect(
+      await screen.findByText("Sign in failed", { selector: '[data-slot="toast-title"]' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText("Check your email and password.", {
+        selector: '[data-slot="toast-description"]',
+      }),
+    ).toBeVisible();
+    expect(document.querySelector('[data-slot="toast-close"]')).toBeVisible();
   });
 });

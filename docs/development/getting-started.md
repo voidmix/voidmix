@@ -20,8 +20,9 @@ bun run dev
 ```
 
 `DATABASE_URL` is required by the API and should point to the local PostgreSQL
-service or another reachable PostgreSQL instance. Use `VOIDMIX_ACTOR_ID=owner-local`
-or the `x-voidmix-user-id` request header to select the local development actor.
+service or another reachable PostgreSQL instance. Admin authentication uses the
+Better Auth cookie session; local auth emails are logged when Resend is not
+configured.
 
 ## Environment files
 
@@ -97,7 +98,7 @@ bun run db:studio
 
 ```text
 Web      http://localhost:3000
-Admin    http://localhost:3001
+Admin    http://localhost:3000/admin
 API      http://localhost:3002
 Desktop  Vite dev server on port 1420 when launched through Tauri
 ```

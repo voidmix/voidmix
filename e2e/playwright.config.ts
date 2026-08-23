@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const webUrl = "http://127.0.0.1:3000";
-const adminUrl = "http://127.0.0.1:3001";
 
 export default defineConfig({
   testDir: "./tests",
@@ -23,7 +22,7 @@ export default defineConfig({
     {
       name: "admin",
       testMatch: /admin\.spec\.ts/,
-      use: { baseURL: adminUrl },
+      use: { baseURL: webUrl },
     },
   ],
   webServer: [
@@ -35,19 +34,6 @@ export default defineConfig({
         VITE_API_URL: "http://127.0.0.1:3002",
       },
       url: webUrl,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
-    {
-      command: "bun run --cwd apps/admin dev -- --host 127.0.0.1",
-      cwd: repositoryRoot,
-      env: {
-        NODE_ENV: "test",
-        VITE_API_URL: "http://127.0.0.1:3002",
-        VITE_ACTOR_ID: "owner-local",
-        VITE_ACTOR_ROLE: "owner",
-      },
-      url: adminUrl,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

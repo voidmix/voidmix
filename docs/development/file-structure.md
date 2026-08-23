@@ -38,7 +38,7 @@ type belongs beside the thing it describes until a second consumer exists.
 
 ```text
 apps/<name>/
-  src/routes/         route modules only: metadata, validation, loaders, mounting
+  src/routes/         route modules only: metadata, validation, loaders, layouts, mounting
   src/features/<f>/   the implementation a route mounts
   src/env.ts          this app's environment composition
   src/router.tsx      router construction and type registration
@@ -46,8 +46,9 @@ apps/<name>/
   AGENTS.md
 ```
 
-**A route file is not a component library.** It declares the route and mounts a
-feature. Components, hooks, and the browser-side API facade live under
+**A route file is not a component library.** It declares the route and may
+compose a small number of feature entrypoints with route-level layout. Feature
+components, hooks, state, fixtures, and the browser-side API facade live under
 `src/features/<feature>/`:
 
 ```text
@@ -58,15 +59,24 @@ src/features/users/
   components/           only once the feature has more than about three components
 ```
 
+Feature roots keep view data, fixtures, types, tests, styles, and any substantial
+feature entrypoint. Do not add a `page.tsx` that only wraps two feature
+components; let the route compose them directly. When a feature grows beyond
+about three internal presentation components, move those components into its
+local `components/` directory without adding a barrel export. TanStack
+file-based route groups use parenthesized directories such as `(auth)` and
+`(app)`; a `route.tsx` inside the directory defines the group layout without
+adding the group name to the URL.
+
 Promote a component to `packages/ui` when a second application needs it — not
 before. A component used by two features in the same app moves up to that app,
 not to the shared package.
 
 Route modules should not own page fixtures, transport clients, fallback policy,
-or large presentation trees. Keep those behind feature-local interfaces so a
-route change only changes composition. When a feature has more than one data
-source, keep the source adapters beside the feature and expose one small facade
-to the page.
+local state, or large presentation trees. Keep those behind feature-local
+interfaces so a route change only changes composition. When a feature has more
+than one data source, keep the source adapters beside the feature and expose one
+small facade to the route or feature entrypoint.
 
 ## Tests
 

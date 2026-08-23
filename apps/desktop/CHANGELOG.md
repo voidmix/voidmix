@@ -1,8 +1,8 @@
 # Changelog — Voidmix Desktop
 
 This file exists for `apps/desktop` alone, because it is the only surface with a
-version users see: a Tauri bundle they install and later upgrade. Web, Admin, and
-API are continuously deployed from `canary` and have no release to describe, so
+version users see: a Tauri bundle they install and later upgrade. Web (including
+Admin routes) and API are continuously deployed from `canary` and have no release to describe, so
 they have no changelog — git history already records their changes.
 
 Entries describe what changed **for someone running the application**. Internal

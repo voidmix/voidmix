@@ -8,7 +8,7 @@ const meta = {
   args: {
     children: "Continue",
     variant: "primary",
-    size: "medium",
+    size: "default",
   },
 } satisfies Meta<typeof Button>;
 
@@ -34,9 +34,10 @@ export const Destructive: Story = {
 export const Sizes: Story = {
   render: () => (
     <div className="flex items-center gap-3">
-      <Button size="small">Small</Button>
-      <Button size="medium">Medium</Button>
-      <Button size="large">Large</Button>
+      <Button size="xs">Extra small</Button>
+      <Button size="sm">Small</Button>
+      <Button>Default</Button>
+      <Button size="lg">Large</Button>
     </div>
   ),
 };

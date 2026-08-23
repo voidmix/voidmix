@@ -13,10 +13,11 @@ server.ts                  Nitro entry
 nitro.config.ts            build and preset configuration
 plugins/lifecycle.ts       startup and shutdown wide events
 src/
-  app.ts                   Hono app, CORS, RPCHandler mount, dev repository fallback
+  app.ts                   Hono app, auth/CORS, RPCHandler mount, dev repository fallback
+  auth/config.ts           Better Auth composition and explicit Drizzle mapping
   router.ts                oRPC handlers, requirePermission, mapDomainError
   runtime.ts               production wiring: Postgres repository, session resolver, logger
-  session.ts               SessionResolver and the development header resolver
+  session.ts               SessionResolver, Better Auth adapter, and development header resolver
   env.ts                   API environment composition
   app.integration.test.ts  in-process contract → client → router → domain test
 ```
@@ -25,6 +26,8 @@ src/
 
 - Own procedure handlers, permission enforcement, domain-error mapping, session
   resolution, CORS, and the request logging split.
+- Better Auth and cookie session handling belong here as the composition root;
+  `@voidmix/auth` remains only the dependency-free RBAC vocabulary.
 - Own no business rule (that is `@voidmix/domain`) and no wire shape (that is
   `@voidmix/contracts`).
 

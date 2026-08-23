@@ -28,6 +28,7 @@ export interface CreateApiAppOptions {
   id?: () => string;
   onError?: (error: unknown) => void;
   loggerConfig?: EvlogConfig;
+  authHandler?: (request: Request) => Promise<Response>;
 }
 
 type ApiEnv = {
@@ -65,9 +66,7 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
     },
   );
   const resolveSession = options.resolveSession ?? resolveHeaderSession;
-  const origins = new Set(
-    options.allowedOrigins ?? ["http://localhost:3000", "http://localhost:3001"],
-  );
+  const origins = new Set(options.allowedOrigins ?? ["http://localhost:3000"]);
   const app = new Hono<ApiEnv>();
 
   app.use("*", requestId());
@@ -100,6 +99,18 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
       credentials: true,
     }),
   );
+  app.use(
+    "/api/auth/*",
+    cors({
+      origin: (origin) => (origins.has(origin) ? origin : null),
+      allowHeaders: ["Content-Type", "Authorization"],
+      allowMethods: ["GET", "POST", "OPTIONS"],
+      credentials: true,
+    }),
+  );
+  if (options.authHandler) {
+    app.on(["GET", "POST"], "/api/auth/*", (context) => options.authHandler!(context.req.raw));
+  }
   app.get("/health", (context) =>
     context.json({ status: "ok", timestamp: (options.now?.() ?? new Date()).toISOString() }),
   );

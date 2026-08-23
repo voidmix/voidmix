@@ -4,6 +4,7 @@ import { verifyNitroRuntimes, type NitroRuntimeTarget } from "./nitro.js";
 
 const target = {
   directory: "apps/example",
+  expectedText: "ready",
   name: "Example",
   pathname: "/health",
 } as const satisfies NitroRuntimeTarget;
@@ -47,11 +48,12 @@ describe("verifyNitroRuntimes", () => {
       "file:///repo/apps/example/.output/server/index.mjs",
       "/health",
       "Example",
+      "ready",
     ]);
     expect(options).toEqual({
       cwd: "/repo/apps/example/.output",
       env: expect.objectContaining({
-        ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3001",
+        ALLOWED_ORIGINS: "http://localhost:3000",
         DATABASE_URL: "postgres://voidmix:verify@example.invalid:5432/voidmix",
         LOG_LEVEL: "error",
         LOG_PRETTY: "false",

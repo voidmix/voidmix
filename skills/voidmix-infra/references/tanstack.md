@@ -8,10 +8,11 @@ hash. Corrections live here instead.
 
 ## Why they are vendored at all
 
-Neither `apps/web` nor `apps/admin` contains a single loader, `beforeLoad`,
-server function, nested layout, or route guard. There is no in-repo precedent to
-copy, so these skills are the reference for those patterns. `apps/desktop` uses
-code-based routing and is not the model for the file-based apps.
+`apps/web` uses parenthesized `(auth)`, `(app)`, and nested `(admin)` route-group
+directories, with `route.tsx` as each group layout. `(app)/route.tsx` contains
+the Better Auth client session gate, while `(app)/(admin)/route.tsx` owns the
+AdminShell layout. Web still has no loader, `beforeLoad`, or server-function
+precedent. `apps/desktop` uses code-based routing and is not the model for Web.
 
 ## Correction 1: use `.validator()`, not `.inputValidator()`
 
@@ -49,8 +50,9 @@ principles are sound and transferable. The code is not.
 `rules/auth-route-protection.md` shows `beforeLoad` throwing `redirect()` for
 unauthenticated users. The pattern is fine for navigation, but in this repository
 a client guard is never enforcement: `apps/api` performs the final check through
-`requirePermission`, and `apps/admin` deliberately ships a hardcoded development
-actor. Adding a route guard does not let you drop the server check.
+`requirePermission`. Web's `(app)/route.tsx` layout may redirect unauthenticated
+navigation, but adding or changing that guard never lets you drop the server
+check.
 
 ## What to trust in them
 
@@ -75,5 +77,5 @@ bun run --cwd apps/<app> build   # the Start plugin rewrites routeTree.gen.ts
 bun run --cwd apps/<app> check
 ```
 
-`noUnusedLocals` is on in `apps/web` and `apps/admin` only, so an unused import
-introduced while copying an example fails there and nowhere else.
+`noUnusedLocals` is on in `apps/web`, so an unused import introduced while
+copying an example fails its check.

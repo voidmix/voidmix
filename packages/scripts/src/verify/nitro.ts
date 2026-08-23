@@ -7,6 +7,7 @@ import type { RepositoryProcessDependencies } from "../runtime/process-dependenc
 
 export interface NitroRuntimeTarget {
   directory: string;
+  expectedText?: string;
   name: string;
   pathname: string;
 }
@@ -22,14 +23,13 @@ interface NitroRuntimeVerificationOptions {
   targets?: readonly NitroRuntimeTarget[];
 }
 
-const defaultTargets = [
-  { directory: "apps/web", name: "Web", pathname: "/" },
-  { directory: "apps/admin", name: "Admin", pathname: "/" },
+const defaultTargets: readonly NitroRuntimeTarget[] = [
+  { directory: "apps/web", expectedText: "Ask Voidmix", name: "Web", pathname: "/" },
   { directory: "apps/api", name: "API", pathname: "/health" },
-] as const satisfies readonly NitroRuntimeTarget[];
+];
 
 const nitroProbe = [
-  "const [entryUrl, pathname, name] = process.argv.slice(1);",
+  "const [entryUrl, pathname, name, expectedText = ''] = process.argv.slice(1);",
   'const host = process.env.NITRO_HOST ?? "127.0.0.1";',
   "const port = process.env.NITRO_PORT ?? process.env.PORT;",
   'const url = new URL(pathname, "http://" + host + ":" + port);',
@@ -40,9 +40,14 @@ const nitroProbe = [
   "  while (Date.now() < deadline) {",
   "    try {",
   "      const response = await fetch(url, { signal: AbortSignal.timeout(1_000) });",
-  "      await response.body?.cancel();",
-  "      if (response.status === 200) process.exit(0);",
-  '      lastFailure = "received HTTP " + response.status;',
+  "      const body = await response.text();",
+  "      if (response.status !== 200) {",
+  '        lastFailure = "received HTTP " + response.status;',
+  "      } else if (expectedText && !body.includes(expectedText)) {",
+  '        lastFailure = "response did not contain expected text";',
+  "      } else {",
+  "        process.exit(0);",
+  "      }",
   "    } catch (error) {",
   "      lastFailure = error instanceof Error ? error.message : String(error);",
   "    }",
@@ -87,7 +92,12 @@ function createRuntimeEnvironment(processEnv: NodeJS.ProcessEnv, port: number): 
   return {
     ...environment,
     DATABASE_URL: "postgres://voidmix:verify@example.invalid:5432/voidmix",
-    ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3001",
+    ALLOWED_ORIGINS: "http://localhost:3000",
+    AUTH_SECRET: "verify-only-secret-that-is-long-enough-for-better-auth",
+    AUTH_URL: "http://127.0.0.1:" + port,
+    RESEND_API_KEY: "verify-resend-key",
+    MAIL_FROM: "verify@voidmix.local",
+    MAIL_FROM_NAME: "Voidmix Verify",
     LOG_LEVEL: "error",
     LOG_PRETTY: "false",
     NITRO_HOST: "127.0.0.1",
@@ -139,6 +149,7 @@ export async function verifyNitroRuntimes(
         pathToFileURL(serverEntry).href,
         target.pathname,
         target.name,
+        target.expectedText ?? "",
       ],
       {
         cwd: outputDirectory,

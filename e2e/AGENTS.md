@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Browser end-to-end smoke tests for Web and Admin. A private workspace that is
-deliberately separate from Vitest.
+Browser end-to-end smoke tests for Web's public and protected Admin surfaces. A
+private workspace that is deliberately separate from Vitest.
 
 ## Interface
 
@@ -17,8 +17,8 @@ Scripts: `e2e` (the run), `test:ui`, `test:report`, `check`.
 
 ## Ownership
 
-- Own the Playwright projects, their `baseURL`s, and the `webServer` configuration
-  that starts both applications.
+- Own the Playwright projects, their shared `baseURL`, and the `webServer`
+  configuration that starts Web.
 - Own no unit or integration coverage. Those live beside the code they test.
 
 ## Constraints
@@ -33,10 +33,9 @@ Scripts: `e2e` (the run), `test:ui`, `test:report`, `check`.
 - Spec files live in `tests/` and are named `*.spec.ts`, matched per project by
   `testMatch`. A file that matches neither project's pattern runs in no project
   and reports nothing.
-- `webServer` owns application startup: both servers bind `127.0.0.1` on ports
-  3000 and 3001 with `NODE_ENV=test`, and Admin receives its actor through
-  `VITE_ACTOR_ID`/`VITE_ACTOR_ROLE`. Keep the ports aligned with each app's
-  `strictPort` dev configuration or startup fails rather than falling back.
+- `webServer` owns application startup on `127.0.0.1:3000` with
+  `NODE_ENV=test`. Both Playwright projects use that server; the Admin smoke
+  verifies the unauthenticated `/admin` redirect without spoofed actor headers.
 - `reuseExistingServer` is off in CI and on locally. Do not invert that.
 - Assert through roles and accessible names rather than CSS selectors, so the
   tests keep verifying accessibility alongside behaviour.

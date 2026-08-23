@@ -29,17 +29,17 @@ request.
 
 ```text
 apps/web        TanStack Start user application
-apps/admin      TanStack Start administration console
 apps/desktop    Tauri 2 desktop client
 apps/api        Vite+ + Nitro + Hono + oRPC API
 apps/storybook  Storybook UI component workbench
-e2e             Playwright Web/Admin smoke tests
+e2e             Playwright Web smoke tests, including protected Admin routes
 
 packages/ui         Shared visual primitives
 packages/client     Typed oRPC client
 packages/contracts  Runtime API contracts
 packages/domain     Framework-independent business rules
 packages/auth       Sessions, roles, and permissions
+packages/mail       Typed auth email templates and transports
 packages/env        Runtime-aware environment presets
 packages/db         Drizzle schema and repository adapters
 packages/logger     Evlog configuration and runtime adapters
@@ -74,9 +74,9 @@ the shell. Unit tests do not use this runner and must provide their environment
 explicitly.
 
 The API requires `DATABASE_URL` at startup. Use the local PostgreSQL service
-from the commands below, or point it at another PostgreSQL instance. Use
-`VOIDMIX_ACTOR_ID=owner-local` or the `x-voidmix-user-id` request header to
-select the development actor.
+from the commands below, or point it at another PostgreSQL instance. Admin
+authentication uses Better Auth cookies; local auth mail is logged when Resend
+is not configured.
 
 ## Common commands
 
@@ -118,5 +118,5 @@ bun run db:seed
 bun run db:studio
 ```
 
-The Admin app calls the shared oRPC client first and falls back to local preview
-data when the API is unavailable.
+The integrated `/admin` surface calls the shared oRPC client first and falls
+back to local preview data when the API is unavailable.

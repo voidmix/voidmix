@@ -13,8 +13,8 @@ tree, but performs no network calls and exposes no database implementation.
 ## `@voidmix/client`
 
 The transport adapter. `createApiClient({ baseUrl, headers, fetch })` returns a
-typed client generated from the shared contract. Web, Admin, and Desktop can
-provide platform-specific headers or fetch adapters without duplicating API
+typed client generated from the shared contract. Web's Admin feature and
+Desktop can provide platform-specific fetch adapters without duplicating API
 types.
 
 ## `@voidmix/domain`
@@ -35,9 +35,16 @@ It does not import React, Hono, Nitro, or Drizzle.
 The authorization vocabulary: roles (`user`, `admin`, `owner`), permissions,
 session types, and `hasPermission`.
 
-The API currently uses a development header session resolver. That resolver is
-the seam for a future production identity integration; the oRPC router and
-domain services should not need to change when the identity provider changes.
+The API owns the Better Auth adapter and production cookie session resolver.
+The development header resolver remains available for injected tests and local
+preview only; the oRPC router and domain services do not depend on the provider.
+
+## `@voidmix/mail`
+
+Typed auth mail delivery for verification, password reset, and welcome emails.
+React Email templates always provide HTML and plain-text output. Resend is the
+production transport; development and test use a logger transport without
+network access. The package exposes only server-side mail interfaces.
 
 ## `@voidmix/env`
 
@@ -91,7 +98,7 @@ detection, minimum levels, event shape, and redaction policy.
 - Scripts use the same structured event shape.
 - Tooling can provide an explicit `runtimeEnv` when logger configuration must
   use a copied child environment instead of global `process.env`.
-- Web, Admin, and Desktop use the Vite client integration.
+- Web and Desktop use the Vite client integration.
 - Authorization headers, cookies, passwords, secrets, tokens, and API keys are
   redacted by default.
 

@@ -1,0 +1,35 @@
+{
+  "name": "@voidmix/mail",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": "./src/server.ts",
+    "./types": "./src/types.ts",
+    "./env": "./src/env.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:integration": "vitest run --passWithNoTests integration.test",
+    "test:component": "vitest run --passWithNoTests component.test",
+    "test:coverage": "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
+    "preview:email": "bun scripts/preview.ts"
+  },
+  "dependencies": {
+    "@voidmix/env": "workspace:*",
+    "@voidmix/logger": "workspace:*",
+    "react": "catalog:",
+    "react-email": "catalog:frontend",
+    "resend": "catalog:frontend"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:tooling",
+    "@types/react": "catalog:tooling",
+    "@voidmix/tsconfig": "workspace:*",
+    "typescript": "catalog:tooling",
+    "vite-plus": "catalog:tooling",
+    "vitest": "catalog:tooling"
+  }
+}

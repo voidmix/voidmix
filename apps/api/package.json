@@ -19,6 +19,7 @@
     "build": "bun run check && vmx env -- vp build"
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "catalog:",
     "@orpc/server": "catalog:",
     "@voidmix/auth": "workspace:*",
     "@voidmix/contracts": "workspace:*",
@@ -26,6 +27,8 @@
     "@voidmix/domain": "workspace:*",
     "@voidmix/env": "workspace:*",
     "@voidmix/logger": "workspace:*",
+    "@voidmix/mail": "workspace:*",
+    "better-auth": "catalog:",
     "hono": "catalog:backend"
   },
   "devDependencies": {

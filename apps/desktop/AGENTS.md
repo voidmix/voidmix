@@ -38,8 +38,8 @@ src-tauri/
 ## Constraints
 
 - **This app uses code-based routing** (`createRoute` / `addChildren` in
-  `src/router.tsx`), unlike `apps/web` and `apps/admin` which are file-based. Do
-  not copy this pattern into those apps, and do not copy theirs into here.
+  `src/router.tsx`), unlike the file-based `apps/web`. Do not copy this pattern
+  into Web, and do not copy Web's route files into here.
 - Route construction mounts feature pages directly. Keep page-specific UI under
   `src/features/<feature>/`; do not grow `App.tsx` into a page aggregator.
 - `check` runs **two** typecheck passes (`typecheck` and `typecheck:node`) because

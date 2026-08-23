@@ -23,6 +23,15 @@ export const recentThreads = [
   "Q3 campaign brief",
 ] as const;
 
+export const featuredActivity = {
+  title: "Final cut / v18",
+  detail: "Review the color pass and close the last delivery decision.",
+  meta: "Northstar / Launch film · Updated 8 min ago",
+  state: "On track",
+  tone: "complete",
+  featured: true,
+} as const;
+
 export const activity = [
   {
     title: "Approve final color pass",
@@ -44,7 +53,9 @@ export const activity = [
   },
 ] as const;
 
-export type ActivityTone = (typeof activity)[number]["tone"];
+export const activityItems = [featuredActivity, ...activity] as const;
+
+export type ActivityTone = (typeof activityItems)[number]["tone"];
 
 export const operators = [
   { name: "Mina Cole", role: "Creative lead" },
@@ -56,14 +67,37 @@ export function navigationHref(item: { label: string; current: boolean }): strin
   return item.current ? "#overview" : `#${item.label.toLowerCase()}`;
 }
 
+export const mobileNavigationItems = navigation.map((item) => ({
+  label: item.label,
+  icon: item.icon,
+  current: item.current,
+  href: navigationHref(item),
+  ...("count" in item ? { count: item.count } : {}),
+}));
+
 export function navigationClassName(item: { current: boolean }): string {
-  return cn("workspace-nav__item", item.current && "is-current");
+  return cn(
+    "flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-[0.76rem] text-muted-foreground transition-colors hover:bg-card hover:text-foreground [&_svg]:size-4",
+    item.current &&
+      "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+  );
 }
 
-export function activityIndicatorClassName(tone: ActivityTone): string {
-  return `activity-row__indicator activity-row__indicator--${tone}`;
+export function activityIndicatorClassName(tone: ActivityTone, featured = false): string {
+  return cn(
+    "grid size-2 place-items-center rounded-full bg-input",
+    tone === "warning" && "bg-destructive",
+    tone === "live" && "bg-muted-foreground",
+    tone === "complete" && "bg-primary",
+    featured && "size-9 rounded-lg bg-input text-primary [&_svg]:size-4",
+  );
 }
 
 export function activityStateClassName(tone: ActivityTone): string {
-  return `activity-row__state activity-row__state--${tone}`;
+  return cn(
+    "text-[0.68rem] whitespace-nowrap text-muted-foreground",
+    tone === "warning" && "text-destructive",
+    tone === "live" && "text-muted-foreground",
+    tone === "complete" && "text-primary",
+  );
 }

@@ -7,6 +7,8 @@ describe("web root route", () => {
     const head = await Route.options.head?.({} as never);
 
     expect(Route.isRoot).toBe(true);
+    expect(Route.options.errorComponent).toBeDefined();
+    expect(Route.options.notFoundComponent).toBeDefined();
     expect(head?.meta).toEqual(
       expect.arrayContaining([
         { title: "Voidmix | Creative work, one live signal" },

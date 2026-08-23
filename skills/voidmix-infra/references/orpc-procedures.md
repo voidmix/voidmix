@@ -1,7 +1,7 @@
 # oRPC Procedures
 
 Use this when adding, changing, or removing a procedure on the API surface, or
-when exposing new data to Web or Admin.
+when exposing new data to Web's public or Admin features.
 
 ## Ownership
 
@@ -18,8 +18,8 @@ when exposing new data to Web or Admin.
   client methods. It may be edited for protocol upgrades, transport wiring, or
   oRPC plugins; new procedures still appear on `createApiClient(...)`
   automatically.
-- Browser-side facades and hooks live in
-  `apps/admin/src/features/<feature>/{client.ts,use-<thing>.ts}`.
+- Browser-side Admin facades and hooks live under
+  `apps/web/src/features/admin/<feature>/`.
 
 ## Order of edits
 
@@ -78,12 +78,12 @@ when exposing new data to Web or Admin.
 - New request header → also add it to `allowHeaders` in `apps/api/src/app.ts`.
   Existing latent bug worth not replicating: `x-voidmix-display-name` is read in
   `apps/api/src/session.ts` but missing from that list.
-- **Calling the API from `apps/web` is not wired yet.** `apps/web/package.json`
-  has no `@voidmix/client` dependency and `apps/web/src/env.ts` has no
-  `VITE_API_URL`. Copy `apps/admin/src/env.ts` and run `bun install`.
-- Admin does not gate its UI; it hardcodes an actor via
-  `VITE_ACTOR_ID`/`VITE_ACTOR_ROLE` sent as request headers. Per `AGENTS.md` the
-  API performs the final check — a client-side guard is cosmetic, never enforcement.
+- Web is wired to the API through `@voidmix/client` and `VITE_API_URL`.
+  Authenticated browser requests include credentials; never restore actor
+  identity headers as a production authentication mechanism.
+- Web's `(app)/route.tsx` session gate is navigation assistance only. Per
+  `AGENTS.md`, the API performs the final check; a client-side guard never
+  replaces `requirePermission`.
 
 ## Verification
 

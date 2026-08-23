@@ -1,5 +1,7 @@
 import type { Role, Session } from "@voidmix/auth";
 
+import type { ApiAuth } from "./auth/config.js";
+
 import { env, type ApiEnvironment } from "./env.js";
 
 const validRoles = new Set<Role>(["user", "admin", "owner"]);
@@ -35,3 +37,26 @@ export function createHeaderSessionResolver(
 }
 
 export const resolveHeaderSession = createHeaderSessionResolver();
+
+type BetterAuthSession = Awaited<ReturnType<ApiAuth["api"]["getSession"]>>;
+
+export function toVoidmixSession(value: BetterAuthSession): Session | null {
+  if (!value) return null;
+  const user = value.user as typeof value.user & { role?: unknown; status?: unknown };
+  if (!validRoles.has(user.role as Role) || user.status === "suspended") return null;
+
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.name,
+      role: user.role as Role,
+    },
+    expiresAt: value.session.expiresAt,
+  };
+}
+
+export function createBetterAuthSessionResolver(auth: ApiAuth): SessionResolver {
+  return async (request) =>
+    toVoidmixSession(await auth.api.getSession({ headers: request.headers }));
+}

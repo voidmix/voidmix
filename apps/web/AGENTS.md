@@ -14,16 +14,24 @@ src/
   routeTree.gen.ts   generated — do not edit
   routes/
     __root.tsx       createRootRoute with head() and shellComponent
-    index.tsx        route declaration and HomePage mount
-  features/home/     home page composition, view data, and feature components
-  styles.css         hand-written application CSS
+    index.tsx        route declaration and home feature composition
+    (auth)/route.tsx public authentication group layout
+    (auth)/          login, registration, reset, and verification routes
+    (app)/route.tsx  authenticated group layout and session gate
+    (app)/(admin)/route.tsx  AdminShell layout within the authenticated group
+    (app)/(admin)/admin.tsx  protected Admin user-directory mount at /admin
+  features/home/     home view data, components/, and feature CSS
+  features/chat/     chat entry, fixtures, types, components/, and CSS
+  features/auth/     Better Auth forms
+  features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
+  styles.css         global reset, token entry, and feature stylesheet imports
 tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ```
 
 ## Ownership
 
-- Own page routing, React composition, SSR shell, and application-specific
-  visual composition.
+- Own public pages, authentication UI, protected Admin routes, React
+  composition, SSR shell, and application-specific visual composition.
 - Own no shared primitive — those belong in `@voidmix/ui`.
 
 ## Constraints
@@ -31,22 +39,31 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - File-based routing. Add `src/routes/<path>.tsx` exporting
   `export const Route = createFileRoute("/path")({ component: X })`. The route
   tree regenerates on the next `dev` or `build`.
-- Route modules stay thin: route declaration and feature mounting only. Page
-  components, static view data, and page-specific composition belong under
-  `src/features/<feature>/`.
+- Route modules stay thin: route declaration, route-level layout, and composition
+  of a small number of feature entrypoints. Feature components, state, static
+  view data, and business behavior belong under `src/features/<feature>/`.
+- Keep feature view data, fixtures, types, tests, and styles at the feature root.
+  Once a feature has more than about three internal presentation components,
+  place those components in a feature-local `components/` directory.
+- TanStack route groups use parenthesized directories such as `(auth)` and
+  `(app)`. A group's `route.tsx` is its layout and the group name does not appear
+  in the URL.
 - **`routeTree.gen.ts` is generated; never hand-edit it.** `.prettierignore`
   keeps the formatter away from it for the same reason.
 - The root route uses **`shellComponent`**, not `component`. `RootDocument`
   renders the whole `<html>` document including `<HeadContent />` and
   `<Scripts />`; do not move either into a separate wrapper.
-- `noUnusedLocals` and `noUnusedParameters` are enabled here and in `apps/admin`
-  only, so an unused import fails `check` in this app and nowhere else.
-- **This app is not wired to the API yet.** There is no `@voidmix/client`
-  dependency and no `VITE_API_URL` in `src/env.ts`. Calling the API requires
-  adding both — copy `apps/admin/src/env.ts` and run `bun install`.
-- **There is no loader, `beforeLoad`, server-function, nested-layout, or route-guard
-  precedent anywhere in this app.** Introducing one is a new convention, not a
-  pattern to follow. `apps/desktop` uses code-based routing and is not the model.
+- `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
+  import fails `check`.
+- `VITE_API_URL` configures both the Better Auth client and `@voidmix/client`.
+  Browser requests include credentials; the API remains the final authentication
+  and authorization boundary.
+- `(app)/route.tsx` is the established client-side session gate. It is
+  navigation aid, not authorization enforcement. There is still no loader,
+  `beforeLoad`, or server function precedent in this app.
+- `(app)/(admin)/route.tsx` owns the AdminShell layout. Keep the authenticated
+  group focused on session navigation and keep `/admin` page mounting in the
+  nested Admin group.
 - Stylesheets: `import "@voidmix/ui/styles.css"` plus
   `import appCss from "../styles.css?url"` fed through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is

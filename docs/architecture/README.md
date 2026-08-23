@@ -2,13 +2,14 @@
 
 > Status: implemented scaffold, updated August 15, 2026.
 
-Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud
-web application, an operations console, a Tauri desktop client, and a typed
-Nitro + Hono API.
+Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud Web
+application with an integrated operations console, a Tauri desktop client, and
+a typed Nitro + Hono API.
 
 ## Design goals
 
-- Keep Web, Admin, Desktop, API, and the UI workbench independently runnable.
+- Keep Web, Desktop, API, and the UI workbench independently runnable while
+  isolating Admin as a protected Web feature.
 - Share contracts, domain rules, UI primitives, and API clients without
   sharing platform-specific route trees.
 - Keep server-side business rules behind small, stable interfaces.
@@ -21,8 +22,7 @@ Nitro + Hono API.
 
 ```mermaid
 flowchart LR
-  web["Web / TanStack Start"] --> client["@voidmix/client"]
-  admin["Admin / TanStack Start"] --> client
+  web["Web + Admin / TanStack Start"] --> client["@voidmix/client"]
   desktop["Desktop / Tauri 2"] --> client
   client --> rpc["oRPC contracts"]
   rpc --> api["Nitro + Hono API"]
@@ -33,8 +33,8 @@ flowchart LR
   db --> postgres[("PostgreSQL")]
 ```
 
-The API is the business boundary. Web, Admin, and Desktop never access the
-database directly.
+The API is the business boundary. Web and Desktop never access the database
+directly.
 
 ## Workspace layout
 
@@ -56,15 +56,14 @@ own application configuration.
 
 ```text
 apps/web      ─┐
-apps/admin     ├──> client ───> contracts
-apps/desktop  ─┘
+apps/desktop  ─┴──> client ───> contracts
 
 apps/storybook ───> ui
 
 apps/api ───> Nitro + Hono + auth + domain + db + contracts
 apps/api ───> logger
-apps/web/admin/desktop ───> logger (Vite client integration)
-apps/api/admin/web/desktop ───> env
+apps/web/desktop ───> logger (Vite client integration)
+apps/api/web/desktop ───> env
 packages/db/logger/scripts ───> env
 packages/db ───> domain
 packages/scripts ───> db + domain + logger

@@ -7,7 +7,7 @@ deployment boundaries, and coding-agent guidance.
 
 - [Architecture overview](./architecture/README.md) — system shape, workspace
   map, dependency direction, and design rules.
-- [Applications](./architecture/applications.md) — Web, Admin, Desktop, API,
+- [Applications](./architecture/applications.md) — Web (including Admin), Desktop, API,
   and Storybook: what each is for, how it is built, and how it is deployed.
 - [Shared packages](./architecture/packages.md) — contracts, client, domain,
   auth, env, DB, logger, UI, scripts, and TypeScript presets.
@@ -24,6 +24,8 @@ deployment boundaries, and coding-agent guidance.
 
 - [Getting started](./development/getting-started.md) — requirements, setup,
   local services, and common commands.
+- [Environment](./development/environment.md) — API, Better Auth, and mail
+  environment boundaries.
 - [Testing and verification](./development/testing.md) — workspace checks, CI
   expectations, and the Vite+/Vitest plugin boundary.
 - [File structure](./development/file-structure.md) — where a new file goes

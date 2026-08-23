@@ -5,4 +5,12 @@ export {
   PostgresUserRepository,
   type DatabaseConnection,
 } from "./postgres.js";
-export { auditEvents, relations, schema, users } from "./schema.js";
+export {
+  auditEvents,
+  authAccounts,
+  authSessions,
+  authVerifications,
+  relations,
+  schema,
+  users,
+} from "./schema.js";

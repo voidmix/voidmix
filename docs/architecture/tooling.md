@@ -7,7 +7,7 @@ Bun       dependency installation, lockfile, tests, and repository scripts
 Vite+     development commands, task ordering, caching, checks, builds,
           linting, and formatting
 Nitro     API and TanStack Start server build/deployment shell
-Node.js   initial Web, Admin, and API production runtime
+Node.js   initial Web and API production runtime
 Rust      Tauri native runtime
 ```
 
@@ -53,8 +53,8 @@ was already stale — so read the workspace file instead.
 
 A preset owns every option every consumer wants, including the ambient `types`
 default and the unused-symbol checks. A workspace file therefore holds only
-`include` plus the options that genuinely differ: `apps/web` and `apps/admin`
-widen `types` because their `include` covers `vite.config.ts`, and
+`include` plus the options that genuinely differ: `apps/web` widens `types`
+because its `include` covers `vite.config.ts`, and
 `packages/client` widens `lib` for DOM APIs. Restating an inherited value is a
 `bun run policy` error, because the copy stops tracking the preset the moment the
 preset changes.
@@ -260,8 +260,9 @@ of a potentially different global `vp` binary.
 ## Browser verification
 
 The private `@voidmix/e2e` workspace owns Playwright configuration and browser
-smoke tests. Its projects target Web on port `3000` and Admin on port `3001`;
-the Playwright `webServer` entries start those apps for local and CI runs.
+smoke tests. Its public Web and protected Admin projects both target the
+integrated Web app on port `3000`; one Playwright `webServer` entry starts it for
+local and CI runs.
 Browser tests are not part of the default `bun run test` graph. Use
 `bun run test:e2e`, and install Chromium with
 `bun run --cwd e2e playwright install chromium`

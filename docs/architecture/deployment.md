@@ -4,14 +4,14 @@
 
 ```text
 web       Node container
-admin     Node container
 api       Hono/Nitro Node container
 postgres  independent service
 desktop   macOS and Windows installers
 ```
 
-Web, Admin, and API are independently deployable. Desktop consumes the cloud
-API and is distributed through Tauri installers rather than a server platform.
+Web and API are independently deployable. Web includes the public, auth, and
+Admin browser routes. Desktop consumes the cloud API and is distributed through
+Tauri installers rather than a server platform.
 
 ## Local PostgreSQL
 
@@ -30,7 +30,6 @@ Each deployable Node service owns its container and Railway configuration:
 
 ```text
 apps/web/Dockerfile       apps/web/railway.toml
-apps/admin/Dockerfile     apps/admin/railway.toml
 apps/api/Dockerfile       apps/api/railway.toml
 ```
 
@@ -38,10 +37,10 @@ The Railway service root remains the monorepo root so the Docker build can read
 workspace packages and `bun.lock`. Select the matching nested `railway.toml` as
 the service config path.
 
-- Web and Admin serve Nitro's `.output/server/index.mjs` on Railway's `PORT`.
+- Web serves Nitro's `.output/server/index.mjs` on Railway's `PORT`.
 - API starts through `apps/api/scripts/start.mjs` and exposes `/health`.
 - API requires production values for `DATABASE_URL` and `ALLOWED_ORIGINS`.
-- A separately deployed Admin build receives `VITE_API_URL` at build time.
+- Web receives `VITE_API_URL` at build time for auth and Admin requests.
 
 Production startup does not use the private `vmx` CLI. Railway and other
 platforms inject values through `process.env`; a `/app/.env` file is optional,
@@ -59,19 +58,19 @@ The API environment schema requires `DATABASE_URL` during startup. The in-memory
 repository remains available only to direct `createApiApp` tests that inject it
 explicitly; it is not a runtime fallback.
 
-Web, Admin, and API explicitly select Nitro's `node-server` preset and emit
+Web and API explicitly select Nitro's `node-server` preset and emit
 self-contained Node server bundles. Explicitly selecting the preset prevents a
 deployment-level `NITRO_PRESET` value from emitting a Bun server that cannot
 run in the Node 24 runtime. Runtime stages copy generated artifacts with
-`node:node` ownership before switching to the unprivileged `node` user. Web and
-Admin images contain only the application package manifest and `.output`; they
-do not run a second filtered workspace install or copy repository
-`node_modules`. Their containers set `NITRO_HOST=0.0.0.0`, read Railway's
-injected `PORT`, and declare the exact Node start command in `railway.toml`.
+`node:node` ownership before switching to the unprivileged `node` user. The Web
+image contains only the application package manifest and `.output`; it does not
+run a second filtered workspace install or copy repository `node_modules`. Its
+container sets `NITRO_HOST=0.0.0.0`, reads Railway's injected `PORT`, and
+declares the exact Node start command in `railway.toml`.
 
 ## Runtime policy
 
-Node.js is the initial production runtime for Web, Admin, and API. Bun remains
+Node.js is the initial production runtime for Web and API. Bun remains
 the package manager and script runtime. Move a production runtime to Bun only
 after compatibility tests pass and a representative benchmark demonstrates a
 meaningful improvement.

@@ -7,32 +7,30 @@ duplicating them here.
 
 ## Web
 
-`apps/web` is the public/product-facing TanStack Start application.
+`apps/web` is the public/product-facing TanStack Start application and the
+browser composition root for authentication and Admin operations.
 
 - Uses `@voidmix/ui` and owns Web-specific routes, metadata, SSR, and content.
-- Route files only mount feature pages; the home composition and view data live
-  under `apps/web/src/features/home/`.
+- Route files declare URLs and may compose a small number of feature entrypoints;
+  the home route directly mounts the home navbar and chat shell.
+- Feature roots keep components, state, data, fixtures, tests, and styles;
+  larger features place internal presentation components under a local
+  `components/` directory.
+- The home prompt is implemented by the feature-local chat shell under
+  `apps/web/src/features/chat/`. Its preview starts with an empty composer and
+  creates deterministic local responses after submission; it does not call the
+  API.
+- Authentication pages are grouped under `(auth)/route.tsx` and retain the
+  public `/login`, `/register`, `/reset-password`, and `/verify-email` URLs.
+- `(app)/route.tsx` owns the browser session gate. The nested `(admin)` group
+  mounts the Admin shell and `/admin` user directory, while the API remains authoritative for
+  authentication, authorization, suspended users, and audit rules.
+- Admin-specific adapters, tables, filters, and layouts stay isolated under
+  `apps/web/src/features/admin`; fusion removes a deployment unit without
+  turning those modules into public-home concerns.
 - Runs on port `3000` in development.
 - Produces a TanStack Start server bundle and a browser bundle.
 - Accesses backend functionality through the shared typed client.
-
-## Admin
-
-`apps/admin` is an independently built and deployed TanStack Start operations
-console.
-
-- Runs on port `3001` in development.
-- Owns Admin navigation, tables, filters, layouts, and route trees.
-- Route files only mount the admin shell and user-directory feature. The users
-  facade composes separate API, preview, and fallback adapters.
-- Uses `@voidmix/client` for the API and may use deterministic preview data
-  during local UI development.
-- Does not enforce final authorization in the browser; the API does.
-
-The current Admin surface supports user search, status filtering, and account
-activation or suspension. API-side domain rules prevent self-suspension and
-disabling the final active administrator. Every Admin write produces a durable
-audit event.
 
 ## Desktop
 
@@ -79,6 +77,8 @@ middleware and routing layer, and the oRPC Fetch handler is mounted under
   `NITRO_PORT`.
 - `src/app.ts` is directly testable without starting Nitro.
 - `src/runtime.ts` owns database and logger initialization.
+- `src/auth/` owns Better Auth configuration, cookie sessions, and mail callbacks;
+  the API remains the only final authentication and authorization boundary.
 - `plugins/lifecycle.ts` closes runtime resources through Nitro's `close` hook.
 
 Current procedures:
@@ -106,3 +106,8 @@ plugin.
 The API emits one Evlog wide event per HTTP/oRPC operation. Hono instruments
 non-RPC routes, while the oRPC adapter records procedures and errors for
 `/rpc/**` without double-logging the request.
+
+Better Auth is mounted at `/api/auth/*` with credentialed CORS. Admin uses the
+HTTP-only cookie session; the public Web app remains unauthenticated. Auth email
+verification, password reset, and welcome messages are sent through the typed
+`@voidmix/mail` service.
