@@ -188,6 +188,7 @@ apps/web/src/routes/(app)/(admin)/admin/settings/auth.tsx
   s_76febb9fa3dd88::t_e0cf373832277f 1-13
 packages/api-runtime/src/app.ts
   s_76febb9fa3dd88::t_ad6a5a309ca773 1,12-14,15-16,20,74-76
+  s_76febb9fa3dd88::t_2c8a988a3fecee 30-32,50-52
 packages/api-runtime/src/index.ts
   s_76febb9fa3dd88::t_57b0e98881a2ef 3
 packages/scripts/AGENTS.md
@@ -199,6 +200,7 @@ packages/api-runtime/src/app.integration.test.ts
   s_76febb9fa3dd88::t_9efabbf2692a96 2,10,25-32,88,90-107,109-111,112-114,123-124,136-137,207-211,213-219,272-277,279,282-283,287-299,344-353
   s_76febb9fa3dd88::t_1842c3bda3534b 281,313-342
   s_76febb9fa3dd88::t_309142e1f37904 354
+  s_76febb9fa3dd88::t_2c8a988a3fecee 3-8,43-57,61-63,69,71-78
 packages/domain/AGENTS.md
   s_76febb9fa3dd88::t_5f9f2fb3ffe095 19,48-50
   s_76febb9fa3dd88::t_1b94e3d0195215 45
