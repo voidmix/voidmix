@@ -29,7 +29,7 @@ and no barrel to update.
 - DTOs are declared at the bottom as `export type FooDto = z.infer<typeof fooSchema>`.
 - **Dates stay native `Date`.** Use `z.date()`; never serialize to ISO strings.
   `src/index.test.ts` exists solely to lock this in.
-- The contract tree and `apps/api`'s router tree must match **exactly**. Adding
+- The contract tree and `@voidmix/api-runtime`'s router tree must match **exactly**. Adding
   to one without the other is a type error deep inside `os.router()` whose
   message does not point at your edit.
 - **A status or audit-action value is declared in three places with no shared
@@ -49,5 +49,5 @@ for the full edit order across contracts, domain, db, and the API.
 ```bash
 bun run --cwd packages/contracts check
 bun run --cwd packages/contracts test
-bun run --cwd apps/api test        # the contract's real consumer
+bun run --cwd packages/api-runtime test   # the contract's real consumer
 ```

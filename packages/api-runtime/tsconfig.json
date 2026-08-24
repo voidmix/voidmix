@@ -1,0 +1,7 @@
+{
+  "extends": "@voidmix/tsconfig/node.json",
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
+}

@@ -4,9 +4,8 @@ import { verifyNitroRuntimes, type NitroRuntimeTarget } from "./nitro.js";
 
 const target = {
   directory: "apps/example",
-  expectedText: "ready",
   name: "Example",
-  pathname: "/health",
+  probes: [{ expectedText: "ready", pathname: "/" }, { pathname: "/health" }],
 } as const satisfies NitroRuntimeTarget;
 
 function dependencies() {
@@ -48,9 +47,8 @@ describe("verifyNitroRuntimes", () => {
     ]);
     expect(command?.slice(4)).toEqual([
       "file:///isolated/.output/server/index.mjs",
-      "/health",
       "Example",
-      "ready",
+      JSON.stringify(target.probes),
     ]);
     expect(options).toEqual({
       cwd: "/isolated/.output",

@@ -23,7 +23,7 @@ document is stale, then update the document in the same change.
 
 ```text
 apps        web, desktop, api, storybook    composition roots; never imported
-adapters    client, contracts, ui       the surface apps are allowed to use
+adapters    api-runtime, client, contracts, ui  surfaces apps are allowed to use
 core        db, domain, auth, mail      db implements interfaces owned by domain
 foundation  env, logger, tsconfig       no dependency on anything above
 tooling     scripts, e2e                never imported by runtime code
@@ -41,7 +41,8 @@ or `packages/` without a `package.json`.
 - `@voidmix/domain` stays independent of React, Hono, Nitro, and Drizzle.
 - `@voidmix/db` hides Drizzle implementation details behind repository
   interfaces owned by the domain.
-- The API performs final authentication and authorization checks.
+- `@voidmix/api-runtime` performs final authentication and authorization checks;
+  Web and the standalone API are hosting shells for that boundary.
 - Admin-specific routes, tables, filters, and layouts stay in
   `apps/web/src/features/admin`
   until another real consumer justifies extraction.

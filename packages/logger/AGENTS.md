@@ -47,5 +47,5 @@ environment detection, minimum levels, event shape, and redaction policy.
 ```bash
 bun run --cwd packages/logger check
 bun run --cwd packages/logger test
-bun run --cwd apps/api test:integration   # asserts one event per request
+bun run --cwd packages/api-runtime test:integration   # one event per request
 ```

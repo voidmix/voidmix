@@ -2,72 +2,40 @@
 
 ## Purpose
 
-The backend composition root. It implements the shared contract, performs the
-final authentication and authorization checks, and is never imported by a
-package.
+The temporary standalone Nitro compatibility host for `@voidmix/api-runtime`.
+It remains independently deployable while Web is the default API host.
 
 ## Interface
 
 ```text
-server.ts                  Nitro entry
-nitro.config.ts            build and preset configuration
-plugins/lifecycle.ts       startup and shutdown wide events
-src/
-  app.ts                   Hono app, auth/CORS, RPCHandler mount, dev repository fallback
-  auth/config.ts           Better Auth composition and explicit Drizzle mapping
-  router.ts                oRPC handlers, requirePermission, mapDomainError
-  runtime.ts               production wiring: Postgres repository, session resolver, logger
-  session.ts               SessionResolver, Better Auth adapter, and development header resolver
-  env.ts                   API environment composition
-  app.integration.test.ts  in-process contract → client → router → domain test
+server.ts              Web-format Nitro entry delegating to the shared runtime
+src/env.ts             host-specific environment composition (AUTH_URL 3002)
+src/runtime.ts         memoized runtime and close boundary
+plugins/lifecycle.ts   startup validation and shutdown hook
 ```
 
 ## Ownership
 
-- Own procedure handlers, permission enforcement, domain-error mapping, session
-  resolution, CORS, and the request logging split.
-- Better Auth and cookie session handling belong here as the composition root;
-  `@voidmix/auth` remains only the dependency-free RBAC vocabulary.
-- Own no business rule (that is `@voidmix/domain`) and no wire shape (that is
-  `@voidmix/contracts`).
+- Own port 3002, the standalone Node artifact, Docker/Railway compatibility,
+  and host lifecycle wiring.
+- Own no Hono route, oRPC procedure, auth adapter, session mapping, domain rule,
+  or database composition; those belong to `@voidmix/api-runtime`.
 
 ## Constraints
 
-- **`requirePermission(context, "...")` is opt-in per handler, not middleware.**
-  The `.use()` chain only wires logging. A new admin procedure without the call
-  is **fully public, with no type error and no failing test.** Add the call and a
-  matching "rejects ordinary users" case for every protected procedure.
-- `mapDomainError`'s switch is exhaustive with no `default`, so a new
-  `DomainError` code is a compile error here. Add the `case`.
-- The whole router is mounted as one `RPCHandler` at `/rpc/*`. Individual
-  procedures need no route entry.
-- The Fetch handler enables beta request/response compression,
-  request/response headers, a 1 MiB request-body limit, safe GET reads with
-  CSRF protection, batching, and a 15-second handler deadline. Keep mutations
-  on POST.
-- Hono evlog uses `exclude: ["/rpc/**"]` and oRPC evlog uses
-  `include: ["/rpc/**"]`, producing **exactly one wide event per request**.
-  Breaking that split double-logs; the integration test asserts the event count.
-- Enrich the current event with `context.log?.set({ actor, target, outcome })`.
-  One event per request, never multiple log lines and never `console.log`.
-- A new request header must also be added to `allowHeaders` in `src/app.ts`.
-  `x-voidmix-display-name` is read in `src/session.ts` but missing from that
-  list — an existing gap, not a pattern to copy.
-- `createHeaderSessionResolver` is the development seam for a future identity
-  provider. Keep the `SessionResolver` type as the boundary so the router and
-  domain do not change when the provider does.
-- Audit rows are written from `@voidmix/domain` only, never from a handler.
-- `exactOptionalPropertyTypes` requires conditional spread:
-  `{ limit: input.limit, ...(input.query ? { query: input.query } : {}) }`.
-
-See [`skills/voidmix-infra/references/orpc-procedures.md`](../../skills/voidmix-infra/references/orpc-procedures.md)
-for the end-to-end edit order and the integration-test idiom.
+- Never import Web or duplicate runtime code from `@voidmix/api-runtime`.
+- Initialize exactly one runtime per process and close it idempotently through
+  Nitro's `close` hook.
+- Keep the standalone `AUTH_URL` default at `http://localhost:3002`; production
+  must provide its public URL explicitly.
+- Preserve `/api/auth/*`, `/rpc/*`, and `/health` for compatibility consumers.
+- Configure the process logger once with service `api`; request logging is
+  configured by the shared runtime.
 
 ## Verification
 
 ```bash
 bun run --cwd apps/api check
 bun run --cwd apps/api test
-bun run --cwd apps/api test:integration
-bun run verify                       # Nitro build plus a /health smoke check
+bun run --cwd apps/api build
 ```

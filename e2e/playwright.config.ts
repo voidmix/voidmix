@@ -30,8 +30,12 @@ export default defineConfig({
       command: "bun run --cwd apps/web dev -- --host 127.0.0.1",
       cwd: repositoryRoot,
       env: {
+        ALLOWED_ORIGINS: webUrl,
+        AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
+        AUTH_URL: webUrl,
+        DATABASE_URL:
+          process.env.DATABASE_URL ?? "postgres://voidmix:e2e@example.invalid:5432/voidmix",
         NODE_ENV: "test",
-        VITE_API_URL: "http://127.0.0.1:3002",
       },
       url: webUrl,
       reuseExistingServer: !process.env.CI,

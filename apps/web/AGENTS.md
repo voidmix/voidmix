@@ -24,6 +24,7 @@ src/
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
+  server/api/        Nitro handler, runtime singleton, and lifecycle host wiring
   styles.css         global reset, token entry, and feature stylesheet imports
 tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ```
@@ -55,9 +56,12 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   `<Scripts />`; do not move either into a separate wrapper.
 - `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
   import fails `check`.
-- `VITE_API_URL` configures both the Better Auth client and `@voidmix/client`.
-  Browser requests include credentials; the API remains the final authentication
-  and authorization boundary.
+- Better Auth and `@voidmix/client` use same-origin `/api/auth/*` and `/rpc/*`
+  requests with credentials. Desktop remains the absolute-origin API consumer.
+- Nitro mounts `@voidmix/api-runtime` only at `/api/auth/**`, `/rpc/**`, and
+  `/health`; never add a catch-all Hono handler that can swallow TanStack routes.
+- `src/server/api/runtime.ts` owns one memoized runtime per process. The lifecycle
+  plugin initializes it at startup and closes it through Nitro's `close` hook.
 - `(app)/route.tsx` is the established client-side session gate. It is
   navigation aid, not authorization enforcement. There is still no loader,
   `beforeLoad`, or server function precedent in this app.
@@ -67,7 +71,8 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Stylesheets: `import "@voidmix/ui/styles.css"` plus
   `import appCss from "../styles.css?url"` fed through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is
-  evlog → tailwindcss → tanstackStart → nitro → viteReact.
+  evlog → nitro → tailwindcss → tanstackStart → viteReact. Nitro uses explicit
+  Web-format routes with directory scanning and its automatic server entry off.
 - Import extensions are inconsistent per file (`../env.js` vs `./routeTree.gen`).
   Mirror the neighbouring import rather than reasoning about it.
 - Keep `vite.config.ts` and `vitest.config.ts` separate. Loading the application

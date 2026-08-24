@@ -19,6 +19,7 @@
     "@phosphor-icons/react": "catalog:frontend",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-start": "catalog:",
+    "@voidmix/api-runtime": "workspace:*",
     "@voidmix/client": "workspace:*",
     "@voidmix/env": "workspace:*",
     "@voidmix/logger": "workspace:*",

@@ -1,20 +1,13 @@
 import { createApiRuntime, type ApiRuntime } from "@voidmix/api-runtime";
-import { configureLogger, logger } from "@voidmix/logger";
+import { logger } from "@voidmix/logger";
 
-import { env } from "./env.js";
+import { env } from "../../env.js";
 
-const loggerConfig = configureLogger({
-  service: "api",
-  environment: env.NODE_ENV,
-  ...(env.LOG_PRETTY !== undefined ? { pretty: env.LOG_PRETTY } : {}),
-  ...(env.LOG_LEVEL !== undefined ? { minLevel: env.LOG_LEVEL } : {}),
-});
 let runtimePromise: Promise<ApiRuntime> | undefined;
 
-export function getApiRuntime(): Promise<ApiRuntime> {
+export function getWebApiRuntime(): Promise<ApiRuntime> {
   runtimePromise ??= createApiRuntime({
     environment: env,
-    loggerConfig,
     onError: (error) => {
       const log = logger({ operation: "api.error" });
       log.error(error instanceof Error ? error : String(error));
@@ -24,7 +17,7 @@ export function getApiRuntime(): Promise<ApiRuntime> {
   return runtimePromise;
 }
 
-export async function closeApiRuntime(): Promise<void> {
+export async function closeWebApiRuntime(): Promise<void> {
   const runtime = await runtimePromise;
   await runtime?.close();
 }

@@ -1,10 +1,10 @@
 # Architecture Overview
 
-> Status: implemented scaffold, updated August 15, 2026.
+> Status: implemented scaffold, updated August 23, 2026.
 
 Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud Web
-application with an integrated operations console, a Tauri desktop client, and
-a typed Nitro + Hono API.
+application with an integrated operations console and Hono API, plus a Tauri
+desktop client.
 
 ## Design goals
 
@@ -25,7 +25,9 @@ flowchart LR
   web["Web + Admin / TanStack Start"] --> client["@voidmix/client"]
   desktop["Desktop / Tauri 2"] --> client
   client --> rpc["oRPC contracts"]
-  rpc --> api["Nitro + Hono API"]
+  rpc --> api["@voidmix/api-runtime"]
+  web --> api
+  apiHost["Standalone API compatibility host"] --> api
   api --> logger["@voidmix/logger / Evlog"]
   api --> auth["Auth + RBAC"]
   api --> domain["Domain services"]
@@ -60,8 +62,9 @@ apps/desktop  ─┴──> client ───> contracts
 
 apps/storybook ───> ui
 
-apps/api ───> Nitro + Hono + auth + domain + db + contracts
-apps/api ───> logger
+apps/web ─┐
+apps/api ─┴──> api-runtime ───> Hono + auth + domain + db + contracts
+api-runtime ───> logger
 apps/web/desktop ───> logger (Vite client integration)
 apps/api/web/desktop ───> env
 packages/db/logger/scripts ───> env

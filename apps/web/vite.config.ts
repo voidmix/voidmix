@@ -12,9 +12,25 @@ const config = defineConfig({
       evlog({
         service: "web",
       }),
+      nitro({
+        compatibilityDate: "2026-08-23",
+        devServer: { hostname: "localhost" },
+        plugins: ["./src/server/api/lifecycle.ts"],
+        preset: "node-server",
+        routes: {
+          "/api/auth/**": {
+            handler: "./src/server/api/handler.ts",
+            format: "web",
+          },
+          "/rpc/**": { handler: "./src/server/api/handler.ts", format: "web" },
+          "/health": { handler: "./src/server/api/handler.ts", format: "web" },
+        },
+        serverDir: false,
+        serverEntry: false,
+        traceDeps: ["react"],
+      }),
       tailwindcss(),
       tanstackStart(),
-      nitro({ preset: "node-server", traceDeps: ["react"] }),
       viteReact(),
     ]) ?? [],
   server: { port: 3000, strictPort: true },

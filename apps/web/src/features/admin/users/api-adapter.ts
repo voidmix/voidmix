@@ -1,6 +1,5 @@
 import { createApiClient, type ApiClient } from "@voidmix/client";
 
-import { env } from "../../../env.js";
 import type { AdminUser, AdminUsersClient, UserRole, UserStatus } from "./types";
 
 type ApiUser = {
@@ -26,7 +25,6 @@ export function toAdminUser(user: ApiUser): AdminUser {
 
 function createConfiguredApiClient() {
   return createApiClient({
-    baseUrl: env.VITE_API_URL,
     fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
   });
 }

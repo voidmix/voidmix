@@ -1,3 +1,7 @@
-import { apiRuntime } from "./src/runtime.js";
+import { getApiRuntime } from "./src/runtime.js";
 
-export default apiRuntime.app;
+export default {
+  async fetch(request: Request): Promise<Response> {
+    return (await getApiRuntime()).app.fetch(request);
+  },
+};

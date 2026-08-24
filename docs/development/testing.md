@@ -63,10 +63,10 @@ Vite+ task graph runs checks, tests, and builds across all applications and
 packages. `bun run verify` deliberately sets `NITRO_PRESET=bun` for its build
 graph to prove that each Node deployment owns an explicit preset. After the
 build, it reads each Web and API `.output/nitro.json`, requires the `node-server`
-preset, starts the generated server with the repository's Node runtime on a
-temporary loopback port, and requires HTTP 200 from `/` and `/health`
-respectively. The probe removes database URLs from its child
-environment and never connects to a database.
+preset, and starts each generated server with the repository's Node runtime on
+a temporary loopback port. One Web process must serve both `/` and `/health`;
+the standalone compatibility output must also serve `/health`. The probe
+supplies a non-routable database URL and exercises no database query.
 
 ## Vite+/Vitest configuration boundary
 

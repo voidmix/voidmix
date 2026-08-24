@@ -37,9 +37,9 @@ TanStack version changes.
 
 It hand-rolls sessions with TanStack Start's `useSession` and Prisma-style
 queries (`db.users.findUnique`). Neither matches this repository: sessions are
-resolved behind `apps/api/src/session.ts`'s `SessionResolver` seam, roles and
-permissions come from `@voidmix/auth`, and persistence is Drizzle behind
-repository interfaces owned by `@voidmix/domain`.
+resolved behind `packages/api-runtime/src/session.ts`'s `SessionResolver` seam,
+roles and permissions come from `@voidmix/auth`, and persistence is Drizzle
+behind repository interfaces owned by `@voidmix/domain`.
 
 Its cookie-hardening table (`httpOnly`, `secure`, `sameSite`, `maxAge`, a 32-plus
 character secret) and the "store minimal data, rotate on privilege change"
@@ -49,10 +49,10 @@ principles are sound and transferable. The code is not.
 
 `rules/auth-route-protection.md` shows `beforeLoad` throwing `redirect()` for
 unauthenticated users. The pattern is fine for navigation, but in this repository
-a client guard is never enforcement: `apps/api` performs the final check through
-`requirePermission`. Web's `(app)/route.tsx` layout may redirect unauthenticated
-navigation, but adding or changing that guard never lets you drop the server
-check.
+a client guard is never enforcement: `@voidmix/api-runtime` performs the final
+check through `requirePermission`. Web's `(app)/route.tsx` layout may redirect
+unauthenticated navigation, but adding or changing that guard never lets you
+drop the server check.
 
 ## What to trust in them
 

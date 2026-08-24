@@ -1,8 +1,4 @@
-import { describe, expect, it, vi } from "vite-plus/test";
-
-vi.hoisted(() => {
-  process.env.DATABASE_URL = "postgres://voidmix:test@example.invalid:5432/voidmix";
-});
+import { describe, expect, it } from "vite-plus/test";
 
 import { toVoidmixSession } from "./session.js";
 

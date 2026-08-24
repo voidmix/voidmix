@@ -2,11 +2,7 @@ import { createApiClient } from "@voidmix/client";
 import { InMemoryUserRepository } from "@voidmix/db";
 import type { User } from "@voidmix/domain";
 import { configureLogger } from "@voidmix/logger";
-import { describe, expect, it, vi } from "vite-plus/test";
-
-vi.hoisted(() => {
-  process.env.DATABASE_URL = "postgres://voidmix:test@example.invalid:5432/voidmix";
-});
+import { describe, expect, it } from "vite-plus/test";
 
 import { createApiApp } from "./app.js";
 
@@ -154,6 +150,7 @@ describe("API", () => {
       operation: "/health",
       requestId: "health-request-1",
       permissionResult: "not_checked",
+      service: "api",
       status: 200,
     });
     expect(rpcEvents).toHaveLength(1);
@@ -163,6 +160,7 @@ describe("API", () => {
       user: { id: "owner-1", role: "owner" },
       permission: { name: "admin.users.write" },
       permissionResult: "granted",
+      service: "api",
       actor: { type: "user", id: "owner-1" },
       target: { type: "user", id: "user-1" },
       outcome: "success",

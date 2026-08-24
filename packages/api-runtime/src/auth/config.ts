@@ -4,11 +4,11 @@ import { authAccounts, authSessions, authVerifications, users } from "@voidmix/d
 import type { Mailer } from "@voidmix/mail/types";
 import { betterAuth } from "better-auth";
 
-import type { ApiEnvironment } from "../env.js";
+import type { ApiRuntimeEnvironment } from "../env.js";
 
 export interface CreateApiAuthOptions {
   connection: DatabaseConnection;
-  environment: ApiEnvironment;
+  environment: ApiRuntimeEnvironment;
   mailer: Mailer;
 }
 

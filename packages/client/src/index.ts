@@ -16,7 +16,7 @@ export type ApiClient = ContractRouterClient<typeof apiContract>;
 export type ApiHeaders = Record<string, string | undefined>;
 
 export interface CreateApiClientOptions {
-  baseUrl: string;
+  baseUrl?: string;
   headers?: ApiHeaders | (() => ApiHeaders | Promise<ApiHeaders>);
   fetch?: typeof globalThis.fetch;
 }
@@ -34,9 +34,10 @@ export function createApiClient(options: CreateApiClientOptions): ApiClient {
       request.method === "GET" || request.method === "QUERY",
     context: (items: Array<{ context: object }>) => items[0]?.context ?? {},
   };
+  const baseUrl = options.baseUrl?.replace(/\/$/, "");
   const link = new RPCLink({
     url: "/rpc",
-    origin: options.baseUrl.replace(/\/$/, "") as `http://${string}` | `https://${string}`,
+    ...(baseUrl ? { origin: baseUrl } : {}),
     method: (_requestOptions, path) => (path.at(-1) === "updateStatus" ? "POST" : "GET"),
     plugins: [
       new DedupeLinkPlugin({ groups: [readRequestGroup] }),

@@ -32,7 +32,7 @@ transported or stored.
 - `now` and `id` are injectable with defaults. This is what makes tests
   deterministic — do not reach for `new Date()` or a UUID library inline.
 - `DomainError` carries a **closed string-literal union** `code` as its first
-  constructor argument. Adding a code is a compile error in `apps/api`'s
+  constructor argument. Adding a code is a compile error in `@voidmix/api-runtime`'s
   `mapDomainError`, whose switch is exhaustive with no `default`. Let it guide you.
 - `getX` returns `T | null` and never throws; mutators return the updated entity
   or `void`.
@@ -52,5 +52,5 @@ transported or stored.
 ```bash
 bun run --cwd packages/domain check
 bun run --cwd packages/domain test
-bun run --cwd apps/api test        # exercises the usecases through the router
+bun run --cwd packages/api-runtime test   # exercises usecases through the router
 ```

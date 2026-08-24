@@ -20,21 +20,12 @@
       "name": "@voidmix/api",
       "version": "0.0.0",
       "dependencies": {
-        "@better-auth/drizzle-adapter": "catalog:",
-        "@orpc/server": "catalog:",
-        "@voidmix/auth": "workspace:*",
-        "@voidmix/contracts": "workspace:*",
-        "@voidmix/db": "workspace:*",
-        "@voidmix/domain": "workspace:*",
+        "@voidmix/api-runtime": "workspace:*",
         "@voidmix/env": "workspace:*",
         "@voidmix/logger": "workspace:*",
-        "@voidmix/mail": "workspace:*",
-        "better-auth": "catalog:",
-        "hono": "catalog:backend",
       },
       "devDependencies": {
         "@vitest/coverage-v8": "catalog:tooling",
-        "@voidmix/client": "workspace:*",
         "@voidmix/tsconfig": "workspace:*",
         "nitro": "catalog:backend",
         "vite": "catalog:tooling",
@@ -99,6 +90,7 @@
         "@phosphor-icons/react": "catalog:frontend",
         "@tanstack/react-router": "catalog:",
         "@tanstack/react-start": "catalog:",
+        "@voidmix/api-runtime": "workspace:*",
         "@voidmix/client": "workspace:*",
         "@voidmix/env": "workspace:*",
         "@voidmix/logger": "workspace:*",
@@ -134,6 +126,29 @@
         "@types/node": "catalog:tooling",
         "@voidmix/tsconfig": "workspace:*",
         "typescript": "catalog:tooling",
+      },
+    },
+    "packages/api-runtime": {
+      "name": "@voidmix/api-runtime",
+      "version": "0.0.0",
+      "dependencies": {
+        "@better-auth/drizzle-adapter": "catalog:",
+        "@orpc/server": "catalog:",
+        "@voidmix/auth": "workspace:*",
+        "@voidmix/contracts": "workspace:*",
+        "@voidmix/db": "workspace:*",
+        "@voidmix/domain": "workspace:*",
+        "@voidmix/env": "workspace:*",
+        "@voidmix/logger": "workspace:*",
+        "@voidmix/mail": "workspace:*",
+        "better-auth": "catalog:",
+        "hono": "catalog:backend",
+      },
+      "devDependencies": {
+        "@vitest/coverage-v8": "catalog:tooling",
+        "@voidmix/client": "workspace:*",
+        "@voidmix/tsconfig": "workspace:*",
+        "vitest": "catalog:tooling",
       },
     },
     "packages/auth": {
@@ -1028,6 +1043,8 @@
     "@vitest/utils": ["@vitest/utils@4.1.10", "", { "dependencies": { "@vitest/pretty-format": "4.1.10", "convert-source-map": "^2.0.0", "tinyrainbow": "^3.1.0" } }, "sha512-fy9am/HWxbaGt/Sawrp90vt6Y6jQwf1RX77cz3uwoJwJVMli/e1IEwRPnMNJ7vKfPTwo0diXifkpPvwH9v7nGA=="],
 
     "@voidmix/api": ["@voidmix/api@workspace:apps/api"],
+
+    "@voidmix/api-runtime": ["@voidmix/api-runtime@workspace:packages/api-runtime"],
 
     "@voidmix/auth": ["@voidmix/auth@workspace:packages/auth"],
 

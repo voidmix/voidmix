@@ -12,10 +12,17 @@ tree, but performs no network calls and exposes no database implementation.
 
 ## `@voidmix/client`
 
-The transport adapter. `createApiClient({ baseUrl, headers, fetch })` returns a
-typed client generated from the shared contract. Web's Admin feature and
-Desktop can provide platform-specific fetch adapters without duplicating API
-types.
+The transport adapter. `createApiClient({ baseUrl?, headers, fetch })` returns a
+typed client generated from the shared contract. Web omits `baseUrl` for
+same-origin `/rpc`; Desktop supplies an absolute cloud origin.
+
+## `@voidmix/api-runtime`
+
+The server-side transport and composition adapter shared by Web and the
+temporary standalone API host. It owns Hono routes, oRPC handlers, Better Auth
+session resolution, permission enforcement, CORS, mail composition, and the
+single pooled database runtime. It exports factories and an environment preset,
+but owns no Nitro listener or process lifecycle.
 
 ## `@voidmix/domain`
 
@@ -35,9 +42,10 @@ It does not import React, Hono, Nitro, or Drizzle.
 The authorization vocabulary: roles (`user`, `admin`, `owner`), permissions,
 session types, and `hasPermission`.
 
-The API owns the Better Auth adapter and production cookie session resolver.
-The development header resolver remains available for injected tests and local
-preview only; the oRPC router and domain services do not depend on the provider.
+`@voidmix/api-runtime` owns the Better Auth adapter and production cookie
+session resolver. The development header resolver remains available for
+injected tests and local preview only; the oRPC router and domain services do
+not depend on the provider.
 
 ## `@voidmix/mail`
 

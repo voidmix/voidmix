@@ -15,7 +15,7 @@ the single grant lookup that answers whether a session may do something.
 
 - Own the closed sets of roles and permissions, the grant table that maps one to
   the other, and the shape of a session.
-- Own no session _resolution_ and no enforcement. `apps/api` resolves sessions
+- Own no session _resolution_ and no enforcement. `@voidmix/api-runtime` resolves sessions
   and calls `hasPermission`; this package only answers the question.
 
 ## Constraints
@@ -29,14 +29,14 @@ the single grant lookup that answers whether a session may do something.
   `owner` via `new Set(permissions)` — check that this is what you intended.
 - `hasPermission(session: Session | null, permission)` accepts `null` and returns
   `false` for it. Callers must still distinguish "no session" (401) from
-  "insufficient role" (403); `apps/api`'s `requirePermission` does that.
+  "insufficient role" (403); `@voidmix/api-runtime`'s `requirePermission` does that.
 - Do not add session storage, token parsing, cookie handling, or an identity
-  provider client here. Those belong behind `apps/api`'s `SessionResolver` seam.
+  provider client here. Those belong behind `@voidmix/api-runtime`'s `SessionResolver` seam.
 
 ## Verification
 
 ```bash
 bun run --cwd packages/auth check
 bun run --cwd packages/auth test
-bun run --cwd apps/api test:integration   # asserts a non-admin is rejected
+bun run --cwd packages/api-runtime test:integration   # rejects a non-admin
 ```

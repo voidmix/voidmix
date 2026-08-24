@@ -45,6 +45,10 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
     ...(options.id ? { id: options.id } : {}),
   });
   const loggerConfig = options.loggerConfig ?? createLoggerConfig({ service: "api" });
+  const middlewareOptions = {
+    ...toMiddlewareOptions(loggerConfig),
+    routes: { "/**": { service: "api" } },
+  };
   const handler = withEvlog(
     new RPCHandler(router, {
       plugins: [
@@ -61,7 +65,7 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
         method === "POST" || (method === "GET" && path.at(-1) !== "updateStatus"),
     }),
     {
-      ...toMiddlewareOptions(loggerConfig),
+      ...middlewareOptions,
       include: ["/rpc/**"],
     },
   );
@@ -70,7 +74,7 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
   const app = new Hono<ApiEnv>();
 
   app.use("*", requestId());
-  app.use("*", honoEvlog({ ...toMiddlewareOptions(loggerConfig), exclude: ["/rpc/**"] }));
+  app.use("*", honoEvlog({ ...middlewareOptions, exclude: ["/rpc/**"] }));
   app.use("*", async (context, next) => {
     const log = context.get("log");
     if (log) {

@@ -7,8 +7,8 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-d22128?logo=apache&logoColor=fff)](./LICENSE)
 
 Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud
-web app, an operations console, a Tauri desktop client, and a typed Nitro +
-Hono API.
+web app with an embedded typed Hono API, an operations console, and a Tauri
+desktop client.
 
 Dependency versions are centralized with Bun Catalogs in the root
 `package.json`: the default catalog covers React/TanStack/oRPC, while named
@@ -30,11 +30,12 @@ request.
 ```text
 apps/web        TanStack Start user application
 apps/desktop    Tauri 2 desktop client
-apps/api        Vite+ + Nitro + Hono + oRPC API
+apps/api        Temporary standalone Nitro API compatibility host
 apps/storybook  Storybook UI component workbench
 e2e             Playwright Web smoke tests, including protected Admin routes
 
 packages/ui         Shared visual primitives
+packages/api-runtime Shared Hono, oRPC, Better Auth, and database composition
 packages/client     Typed oRPC client
 packages/contracts  Runtime API contracts
 packages/domain     Framework-independent business rules
@@ -73,7 +74,7 @@ workspace scripts run through `vmx env -- <command>`, which loads root
 the shell. Unit tests do not use this runner and must provide their environment
 explicitly.
 
-The API requires `DATABASE_URL` at startup. Use the local PostgreSQL service
+The Web/API runtime requires `DATABASE_URL` at startup. Use the local PostgreSQL service
 from the commands below, or point it at another PostgreSQL instance. Admin
 authentication uses Better Auth cookies; local auth mail is logged when Resend
 is not configured.
@@ -118,5 +119,5 @@ bun run db:seed
 bun run db:studio
 ```
 
-The integrated `/admin` surface calls the shared oRPC client first and falls
-back to local preview data when the API is unavailable.
+The integrated `/admin` surface calls the Web service's same-origin oRPC API
+first and falls back to local preview data when the API is unavailable.

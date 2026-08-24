@@ -8,8 +8,12 @@ import type { RepositoryProcessDependencies } from "../runtime/process-dependenc
 
 export interface NitroRuntimeTarget {
   directory: string;
-  expectedText?: string;
   name: string;
+  probes: readonly NitroRuntimeProbe[];
+}
+
+export interface NitroRuntimeProbe {
+  expectedText?: string;
   pathname: string;
 }
 
@@ -31,36 +35,46 @@ interface NitroRuntimeStage {
 }
 
 const defaultTargets: readonly NitroRuntimeTarget[] = [
-  { directory: "apps/web", expectedText: "Ask Voidmix", name: "Web", pathname: "/" },
-  { directory: "apps/api", name: "API", pathname: "/health" },
+  {
+    directory: "apps/web",
+    name: "Web",
+    probes: [{ expectedText: "Ask Voidmix", pathname: "/" }, { pathname: "/health" }],
+  },
+  { directory: "apps/api", name: "API compatibility host", probes: [{ pathname: "/health" }] },
 ];
 
 const nitroProbe = [
-  "const [entryUrl, pathname, name, expectedText = ''] = process.argv.slice(1);",
+  "const [entryUrl, name, rawProbes] = process.argv.slice(1);",
+  "const probes = JSON.parse(rawProbes);",
   'const host = process.env.NITRO_HOST ?? "127.0.0.1";',
   "const port = process.env.NITRO_PORT ?? process.env.PORT;",
-  'const url = new URL(pathname, "http://" + host + ":" + port);',
-  "const deadline = Date.now() + 10_000;",
-  'let lastFailure = "server did not become ready";',
   "try {",
   "  await import(entryUrl);",
-  "  while (Date.now() < deadline) {",
-  "    try {",
-  "      const response = await fetch(url, { signal: AbortSignal.timeout(1_000) });",
-  "      const body = await response.text();",
-  "      if (response.status !== 200) {",
-  '        lastFailure = "received HTTP " + response.status;',
-  "      } else if (expectedText && !body.includes(expectedText)) {",
-  '        lastFailure = "response did not contain expected text";',
-  "      } else {",
-  "        process.exit(0);",
+  "  for (const probe of probes) {",
+  "    const url = new URL(probe.pathname, 'http://' + host + ':' + port);",
+  "    const deadline = Date.now() + 10_000;",
+  "    let lastFailure = 'server did not become ready';",
+  "    let completed = false;",
+  "    while (Date.now() < deadline) {",
+  "      try {",
+  "        const response = await fetch(url, { signal: AbortSignal.timeout(1_000) });",
+  "        const body = await response.text();",
+  "        if (response.status !== 200) {",
+  "          lastFailure = 'received HTTP ' + response.status;",
+  "        } else if (probe.expectedText && !body.includes(probe.expectedText)) {",
+  "          lastFailure = 'response did not contain expected text';",
+  "        } else {",
+  "          completed = true;",
+  "          break;",
+  "        }",
+  "      } catch (error) {",
+  "        lastFailure = error instanceof Error ? error.message : String(error);",
   "      }",
-  "    } catch (error) {",
-  "      lastFailure = error instanceof Error ? error.message : String(error);",
+  "      await new Promise((resolve) => setTimeout(resolve, 100));",
   "    }",
-  "    await new Promise((resolve) => setTimeout(resolve, 100));",
+  "    if (!completed) throw new Error(probe.pathname + ': ' + lastFailure);",
   "  }",
-  "  throw new Error(lastFailure);",
+  "  process.exit(0);",
   "} catch (error) {",
   "  const message = error instanceof Error ? error.message : String(error);",
   '  console.error("Nitro runtime check failed for " + name + ": " + message);',
@@ -176,9 +190,8 @@ export async function verifyNitroRuntimes(
           "--eval",
           nitroProbe,
           pathToFileURL(serverEntry).href,
-          target.pathname,
           target.name,
-          target.expectedText ?? "",
+          JSON.stringify(target.probes),
         ],
         {
           cwd: stage.directory,

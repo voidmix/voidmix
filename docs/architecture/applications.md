@@ -23,14 +23,18 @@ browser composition root for authentication and Admin operations.
 - Authentication pages are grouped under `(auth)/route.tsx` and retain the
   public `/login`, `/register`, `/reset-password`, and `/verify-email` URLs.
 - `(app)/route.tsx` owns the browser session gate. The nested `(admin)` group
-  mounts the Admin shell and `/admin` user directory, while the API remains authoritative for
-  authentication, authorization, suspended users, and audit rules.
+  mounts the Admin shell and `/admin` user directory, while
+  `@voidmix/api-runtime` remains authoritative for authentication,
+  authorization, suspended users, and audit rules.
 - Admin-specific adapters, tables, filters, and layouts stay isolated under
   `apps/web/src/features/admin`; fusion removes a deployment unit without
   turning those modules into public-home concerns.
 - Runs on port `3000` in development.
 - Produces a TanStack Start server bundle and a browser bundle.
-- Accesses backend functionality through the shared typed client.
+- Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
+  through explicit Nitro Web-format routes.
+- Uses the shared typed client with same-origin cookie requests.
+- Requires `DATABASE_URL` and the server Auth/Mail environment at startup.
 
 ## Desktop
 
@@ -65,20 +69,17 @@ justifies its lifecycle and resource cost.
 - Provides a Light/Dark toolbar backed by `@voidmix/ui`'s `ThemeProvider`.
 - Is not a production runtime or deployment target.
 
-## API
+## API compatibility host
 
-`apps/api` uses Nitro as its server and deployment shell. Hono is the HTTP
-middleware and routing layer, and the oRPC Fetch handler is mounted under
-`/rpc`.
+`apps/api` is a temporary standalone Nitro deployment shell for
+`@voidmix/api-runtime`. Web is the default API host; the compatibility service
+retains port 3002 and the same endpoint paths for external migrations.
 
 - Development runs on port `3002`.
 - Production emits Nitro's Node output under `.output/server/`.
 - `scripts/start.mjs` starts the service while honoring `PORT` and
   `NITRO_PORT`.
-- `src/app.ts` is directly testable without starting Nitro.
-- `src/runtime.ts` owns database and logger initialization.
-- `src/auth/` owns Better Auth configuration, cookie sessions, and mail callbacks;
-  the API remains the only final authentication and authorization boundary.
+- `src/runtime.ts` memoizes the shared runtime and owns process logger setup.
 - `plugins/lifecycle.ts` closes runtime resources through Nitro's `close` hook.
 
 Current procedures:
@@ -91,9 +92,9 @@ admin.users.updateStatus
 admin.audit.list
 ```
 
-`GET /health` is available for service probes. `DATABASE_URL` is required for
-the runtime API; the seeded in-memory repository is reserved for direct app
-tests that inject it explicitly.
+`GET /health` is available on both Web and the compatibility service. The
+runtime requires `DATABASE_URL`; the seeded in-memory repository is reserved
+for direct `@voidmix/api-runtime` tests that inject it explicitly.
 
 The oRPC beta transport uses GET for read-only procedures and POST for status
 updates. The client and Fetch handler batch concurrent reads, deduplicate
