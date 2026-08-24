@@ -2,22 +2,21 @@ import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mocks = vi.hoisted(() => {
   const close = vi.fn(async () => undefined);
+  const fetch = vi.fn(async () => new Response("ok"));
   return {
     close,
-    createApiRuntime: vi.fn(async () => ({
-      app: { fetch: vi.fn() },
-      close,
-    })),
+    fetch,
+    createApiRuntime: vi.fn(async () => ({ app: { fetch }, close })),
   };
-});
-
-vi.hoisted(() => {
-  process.env.AUTH_URL = "http://localhost:3002";
-  process.env.DATABASE_URL = "postgres://voidmix:test@example.invalid:5432/voidmix";
 });
 
 vi.mock("@voidmix/api-runtime", () => ({
   createApiRuntime: mocks.createApiRuntime,
+}));
+
+vi.mock("@voidmix/logger", () => ({
+  configureLogger: vi.fn(() => ({ service: "api" })),
+  logger: vi.fn(() => ({ error: vi.fn(), emit: vi.fn(), set: vi.fn() })),
 }));
 
 describe("standalone API runtime host", () => {
@@ -36,5 +35,15 @@ describe("standalone API runtime host", () => {
     expect(first).toBe(second);
     expect(mocks.createApiRuntime).toHaveBeenCalledOnce();
     expect(mocks.close).toHaveBeenCalledOnce();
+  });
+
+  it("forwards Nitro Web requests to the shared runtime", async () => {
+    const { default: handler } = await import("./app.js");
+    const request = new Request("http://localhost:3002/health");
+
+    const response = await handler.fetch(request);
+
+    expect(await response.text()).toBe("ok");
+    expect(mocks.fetch).toHaveBeenCalledWith(request);
   });
 });

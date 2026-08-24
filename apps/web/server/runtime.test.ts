@@ -10,17 +10,8 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.hoisted(() => {
-  process.env.AUTH_URL = "http://localhost:3000";
-  process.env.DATABASE_URL = "postgres://voidmix:test@example.invalid:5432/voidmix";
-});
-
 vi.mock("@voidmix/api-runtime", () => ({
   createApiRuntime: mocks.createApiRuntime,
-}));
-
-vi.mock("@voidmix/logger", () => ({
-  logger: vi.fn(() => ({ error: vi.fn(), emit: vi.fn() })),
 }));
 
 describe("Web API runtime host", () => {
@@ -42,7 +33,7 @@ describe("Web API runtime host", () => {
   });
 
   it("forwards Nitro Web requests to Hono", async () => {
-    const { default: handler } = await import("./handler.js");
+    const { default: handler } = await import("./app.js");
     const request = new Request("http://localhost:3000/health");
 
     const response = await handler.fetch(request);

@@ -1,10 +1,11 @@
 import { createApiClient } from "@voidmix/client";
 import { InMemoryUserRepository } from "@voidmix/db";
-import type { User } from "@voidmix/domain";
+import type { User, UserRepository } from "@voidmix/domain";
 import { configureLogger } from "@voidmix/logger";
 import { describe, expect, it } from "vite-plus/test";
 
 import { createApiApp } from "./app.js";
+import { createHeaderSessionResolver } from "./session.js";
 
 const seed: User[] = [
   {
@@ -25,9 +26,31 @@ const seed: User[] = [
   },
 ];
 
+function createTestApiApp(
+  options: {
+    users?: UserRepository;
+    allowedOrigins?: readonly string[];
+    authHandler?: (request: Request) => Promise<Response>;
+    id?: () => string;
+  } = {},
+) {
+  return createApiApp({
+    users: options.users ?? new InMemoryUserRepository(seed),
+    resolveSession: createHeaderSessionResolver(),
+    allowedOrigins: options.allowedOrigins ?? ["http://voidmix.test"],
+    authHandler:
+      options.authHandler ??
+      (async () => new Response("Auth handler is not configured.", { status: 404 })),
+    ...(options.id ? { id: options.id } : {}),
+  });
+}
+
 function setup(role: "user" | "owner", actorId: string) {
   const repository = new InMemoryUserRepository(seed);
-  const app = createApiApp({ users: repository, id: () => `id-${repository.auditEvents.length}` });
+  const app = createTestApiApp({
+    users: repository,
+    id: () => `id-${repository.auditEvents.length}`,
+  });
   let rpcRequests = 0;
   let lastResponse: Response | undefined;
   const client = createApiClient({
@@ -60,7 +83,7 @@ function setup(role: "user" | "owner", actorId: string) {
 
 describe("API", () => {
   it("mounts the injected auth handler with credentialed CORS", async () => {
-    const app = createApiApp({
+    const app = createTestApiApp({
       authHandler: async () => new Response("auth-ok"),
       allowedOrigins: ["http://admin.voidmix.test"],
     });
@@ -72,6 +95,22 @@ describe("API", () => {
     expect(await response.text()).toBe("auth-ok");
     expect(response.headers.get("access-control-allow-credentials")).toBe("true");
     expect(response.headers.get("access-control-allow-origin")).toBe("http://admin.voidmix.test");
+  });
+
+  it("does not advertise test actor headers through production CORS", async () => {
+    const app = createTestApiApp({ allowedOrigins: ["http://desktop.voidmix.test"] });
+    const response = await app.request("/rpc/health", {
+      method: "OPTIONS",
+      headers: {
+        Origin: "http://desktop.voidmix.test",
+        "Access-Control-Request-Method": "GET",
+      },
+    });
+
+    const allowHeaders = response.headers.get("access-control-allow-headers") ?? "";
+    expect(allowHeaders).toContain("X-Request-ID");
+    expect(allowHeaders).not.toContain("X-Voidmix-User-Id");
+    expect(allowHeaders).not.toContain("X-Voidmix-Role");
   });
 
   it("serves health through Hono and oRPC", async () => {
@@ -135,7 +174,12 @@ describe("API", () => {
       },
     });
     const { app, client } = setup("owner", "owner-1");
-    await app.request("/health", { headers: { "x-request-id": "health-request-1" } });
+    await app.request("/health", {
+      headers: {
+        "x-request-id": "health-request-1",
+        "x-voidmix-user-id": "spoofed-user",
+      },
+    });
     await client.admin.users.updateStatus({
       userId: "user-1",
       status: "suspended",

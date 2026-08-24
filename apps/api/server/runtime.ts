@@ -1,5 +1,5 @@
 import { createApiRuntime, type ApiRuntime } from "@voidmix/api-runtime";
-import { configureLogger, logger } from "@voidmix/logger";
+import { configureLogger } from "@voidmix/logger";
 
 import { env } from "./env.js";
 
@@ -12,15 +12,7 @@ const loggerConfig = configureLogger({
 let runtimePromise: Promise<ApiRuntime> | undefined;
 
 export function getApiRuntime(): Promise<ApiRuntime> {
-  runtimePromise ??= createApiRuntime({
-    environment: env,
-    loggerConfig,
-    onError: (error) => {
-      const log = logger({ operation: "api.error" });
-      log.error(error instanceof Error ? error : String(error));
-      log.emit();
-    },
-  });
+  runtimePromise ??= createApiRuntime({ environment: env, loggerConfig });
   return runtimePromise;
 }
 

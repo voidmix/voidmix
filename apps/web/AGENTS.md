@@ -9,7 +9,7 @@ imported by a package.
 
 ```text
 src/
-  env.ts             public Web configuration and server runtime env
+  env.ts             browser-safe Web configuration and logger values
   router.tsx         getRouter(), scroll restoration, preload defaults, Register
   routeTree.gen.ts   generated — do not edit
   routes/
@@ -24,7 +24,11 @@ src/
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
-  server/api/        Nitro handler, runtime singleton, and lifecycle host wiring
+server/
+  env.ts             server-only API/Auth/Mail environment composition
+  app.ts             Nitro Web-format handler
+  runtime.ts         memoized shared API runtime
+  runtime.plugin.ts  Nitro startup and shutdown lifecycle
   styles.css         global reset, token entry, and feature stylesheet imports
 tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ```
@@ -60,8 +64,10 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   requests with credentials. Desktop remains the absolute-origin API consumer.
 - Nitro mounts `@voidmix/api-runtime` only at `/api/auth/**`, `/rpc/**`, and
   `/health`; never add a catch-all Hono handler that can swallow TanStack routes.
-- `src/server/api/runtime.ts` owns one memoized runtime per process. The lifecycle
-  plugin initializes it at startup and closes it through Nitro's `close` hook.
+- `server/runtime.ts` owns one memoized runtime per process. The lifecycle plugin
+  initializes it at startup and closes it through Nitro's `close` hook.
+- `server/env.ts` is never imported by browser modules. Keep database, Auth, mail,
+  and allowed-origin values on the server side of the Web bundle.
 - `(app)/route.tsx` is the established client-side session gate. It is
   navigation aid, not authorization enforcement. There is still no loader,
   `beforeLoad`, or server function precedent in this app.

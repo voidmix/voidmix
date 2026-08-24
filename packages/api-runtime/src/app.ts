@@ -8,8 +8,7 @@ import {
   ResponseHeadersHandlerPlugin,
   TimeoutHandlerPlugin,
 } from "@orpc/server/plugins";
-import { InMemoryUserRepository } from "@voidmix/db";
-import type { User, UserRepository } from "@voidmix/domain";
+import type { UserRepository } from "@voidmix/domain";
 import { createLoggerConfig, toMiddlewareOptions, type EvlogConfig } from "@voidmix/logger";
 import { evlog as honoEvlog, type EvlogVariables } from "@voidmix/logger/hono";
 import { withEvlog } from "@voidmix/logger/orpc";
@@ -18,17 +17,16 @@ import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 
 import { createApiRouter, type ApiContext } from "./router.js";
-import { resolveHeaderSession, type SessionResolver } from "./session.js";
+import type { SessionResolver } from "./session.js";
 
 export interface CreateApiAppOptions {
-  users?: UserRepository;
-  resolveSession?: SessionResolver;
-  allowedOrigins?: readonly string[];
+  users: UserRepository;
+  resolveSession: SessionResolver;
+  allowedOrigins: readonly string[];
+  authHandler: (request: Request) => Promise<Response>;
   now?: () => Date;
   id?: () => string;
-  onError?: (error: unknown) => void;
   loggerConfig?: EvlogConfig;
-  authHandler?: (request: Request) => Promise<Response>;
 }
 
 type ApiEnv = {
@@ -37,10 +35,9 @@ type ApiEnv = {
   };
 };
 
-export function createApiApp(options: CreateApiAppOptions = {}) {
-  const users = options.users ?? createDevelopmentRepository();
+export function createApiApp(options: CreateApiAppOptions) {
   const router = createApiRouter({
-    users,
+    users: options.users,
     ...(options.now ? { now: options.now } : {}),
     ...(options.id ? { id: options.id } : {}),
   });
@@ -69,8 +66,7 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
       include: ["/rpc/**"],
     },
   );
-  const resolveSession = options.resolveSession ?? resolveHeaderSession;
-  const origins = new Set(options.allowedOrigins ?? ["http://localhost:3000"]);
+  const origins = new Set(options.allowedOrigins);
   const app = new Hono<ApiEnv>();
 
   app.use("*", requestId());
@@ -81,9 +77,7 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
       log.set({
         operation: context.req.path,
         requestId: context.get("requestId"),
-        user: context.req.header("x-voidmix-user-id")
-          ? { id: context.req.header("x-voidmix-user-id") }
-          : null,
+        user: null,
         permissionResult: "not_checked",
       });
     }
@@ -93,13 +87,8 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
     "/rpc/*",
     cors({
       origin: (origin) => (origins.has(origin) ? origin : null),
-      allowHeaders: [
-        "Content-Type",
-        "Authorization",
-        "X-Voidmix-User-Id",
-        "X-Voidmix-Role",
-        "X-Voidmix-Email",
-      ],
+      allowHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
+      allowMethods: ["GET", "POST", "OPTIONS"],
       credentials: true,
     }),
   );
@@ -112,12 +101,14 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
       credentials: true,
     }),
   );
-  if (options.authHandler) {
-    app.on(["GET", "POST"], "/api/auth/*", (context) => options.authHandler!(context.req.raw));
-  }
-  app.get("/health", (context) =>
-    context.json({ status: "ok", timestamp: (options.now?.() ?? new Date()).toISOString() }),
-  );
+  app.on(["GET", "POST"], "/api/auth/*", (context) => options.authHandler(context.req.raw));
+  app.get("/health", (context) => {
+    context.header("Cache-Control", "no-store");
+    return context.json({
+      status: "ok",
+      timestamp: (options.now?.() ?? new Date()).toISOString(),
+    });
+  });
   app.use("/rpc/*", async (context, next) => {
     const requestId = context.get("requestId");
     const request = context.req.raw;
@@ -125,7 +116,7 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
       prefix: "/rpc",
       context: {
         requestId,
-        session: await resolveSession(request),
+        session: await options.resolveSession(request),
       },
     });
 
@@ -134,7 +125,7 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
   });
   app.notFound((context) => context.json({ error: "NOT_FOUND" }, 404));
   app.onError((error, context) => {
-    options.onError?.(error);
+    context.get("log")?.error(error);
     return context.json(
       { error: "INTERNAL_SERVER_ERROR", requestId: context.get("requestId") },
       500,
@@ -142,26 +133,4 @@ export function createApiApp(options: CreateApiAppOptions = {}) {
   });
 
   return app;
-}
-
-export function createDevelopmentRepository(): InMemoryUserRepository {
-  const seed: User[] = [
-    {
-      id: "owner-local",
-      email: "owner@voidmix.local",
-      displayName: "Local Owner",
-      role: "owner",
-      status: "active",
-      createdAt: new Date("2026-01-01T00:00:00.000Z"),
-    },
-    {
-      id: "user-local",
-      email: "user@voidmix.local",
-      displayName: "Local User",
-      role: "user",
-      status: "active",
-      createdAt: new Date("2026-01-02T00:00:00.000Z"),
-    },
-  ];
-  return new InMemoryUserRepository(seed);
 }

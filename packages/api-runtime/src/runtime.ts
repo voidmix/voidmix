@@ -16,7 +16,6 @@ export interface ApiRuntime {
 export interface CreateApiRuntimeOptions {
   environment: ApiRuntimeEnvironment;
   loggerConfig?: EvlogConfig;
-  onError?: (error: unknown) => void;
 }
 
 export async function createApiRuntime({
@@ -27,7 +26,6 @@ export async function createApiRuntime({
     ...(environment.LOG_PRETTY !== undefined ? { pretty: environment.LOG_PRETTY } : {}),
     ...(environment.LOG_LEVEL !== undefined ? { minLevel: environment.LOG_LEVEL } : {}),
   }),
-  onError,
 }: CreateApiRuntimeOptions): Promise<ApiRuntime> {
   const connection = connectDatabase(environment.DATABASE_URL);
 
@@ -51,7 +49,6 @@ export async function createApiRuntime({
         authHandler: auth.handler,
         resolveSession: createBetterAuthSessionResolver(auth),
         loggerConfig,
-        ...(onError ? { onError } : {}),
       }),
       close(): Promise<void> {
         closePromise ??= connection.close();

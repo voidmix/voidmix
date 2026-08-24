@@ -30,7 +30,13 @@ depending on Nitro or an application.
 - Hono logs non-RPC requests and oRPC logs `/rpc/**`; preserve one wide event
   per request and never log credentials or session tokens.
 - Keep the header session resolver as an explicit development/test seam. The
-  production runtime always uses Better Auth and rejects suspended users.
+  production runtime always uses Better Auth and rejects suspended users. The
+  resolver is not part of the package root interface.
+- `createApiApp` requires explicit users, session resolver, origin policy, and
+  Auth handler injection. Seed repositories and header sessions belong only in
+  tests; there is no production default identity.
+- Request logs never derive user identity from actor headers. Authenticated user
+  context is attached by the oRPC session resolver after Better Auth validation.
 
 See [`../../skills/voidmix-infra/references/orpc-procedures.md`](../../skills/voidmix-infra/references/orpc-procedures.md)
 for procedure changes.

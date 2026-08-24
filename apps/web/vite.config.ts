@@ -15,18 +15,20 @@ const config = defineConfig({
       nitro({
         compatibilityDate: "2026-08-23",
         devServer: { hostname: "localhost" },
-        plugins: ["./src/server/api/lifecycle.ts"],
+        plugins: ["./server/runtime.plugin.ts"],
         preset: "node-server",
         routes: {
           "/api/auth/**": {
-            handler: "./src/server/api/handler.ts",
+            handler: "./server/app.ts",
             format: "web",
           },
-          "/rpc/**": { handler: "./src/server/api/handler.ts", format: "web" },
-          "/health": { handler: "./src/server/api/handler.ts", format: "web" },
+          "/rpc/**": { handler: "./server/app.ts", format: "web" },
+          "/health": { handler: "./server/app.ts", format: "web" },
         },
         serverDir: false,
         serverEntry: false,
+        // The node-server trace must retain React for the TanStack SSR entry.
+        // The runtime probe requests `/`, so removal is verified against the built artifact.
         traceDeps: ["react"],
       }),
       tailwindcss(),

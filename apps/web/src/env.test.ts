@@ -33,20 +33,21 @@ describe("web environment boundaries", () => {
     expect(Object.keys(env)).not.toContain("VITE_API_URL");
   });
 
-  it("keeps server logger values available on the server", () => {
+  it("keeps server logger values out of the browser interface", () => {
     const env = createEnv({
       ...webEnv,
-      isServer: true,
+      isServer: false,
       runtimeEnv: {
         NODE_ENV: "test",
-        DATABASE_URL: "postgres://voidmix:test@example.invalid:5432/voidmix",
         LOG_LEVEL: "warn",
         LOG_PRETTY: "true",
       },
     });
 
-    expect(env.LOG_LEVEL).toBe("warn");
-    expect(env.LOG_PRETTY).toBe(true);
-    expect(env.AUTH_URL).toBe("http://localhost:3000");
+    expect(() => Reflect.get(env, "LOG_LEVEL")).toThrow(
+      "Attempted to access a server-side environment variable on the client",
+    );
+    expect(Object.keys(env)).not.toContain("DATABASE_URL");
+    expect(Object.keys(env)).not.toContain("AUTH_URL");
   });
 });

@@ -1,7 +1,7 @@
 import { logger } from "@voidmix/logger";
 import { definePlugin } from "nitro";
 
-import { closeApiRuntime, getApiRuntime } from "../src/runtime.js";
+import { closeApiRuntime, getApiRuntime } from "./runtime.js";
 
 export default definePlugin(async (nitroApp) => {
   await getApiRuntime();

@@ -1,12 +1,10 @@
-import { apiRuntimeEnv } from "@voidmix/api-runtime/env";
-import { createEnv, type Preset, z } from "@voidmix/env";
+import { createEnv, type Preset } from "@voidmix/env";
+import { runtimeEnv } from "@voidmix/env/runtime";
+import { loggerEnv } from "@voidmix/logger/env";
 
 export const webEnv = {
   id: "web",
-  extends: [apiRuntimeEnv],
-  server: {
-    AUTH_URL: z.url().default("http://localhost:3000"),
-  },
+  extends: [runtimeEnv, loggerEnv],
 } as const satisfies Preset;
 
 export const env = createEnv(webEnv);

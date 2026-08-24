@@ -79,8 +79,8 @@ retains port 3002 and the same endpoint paths for external migrations.
 - Production emits Nitro's Node output under `.output/server/`.
 - `scripts/start.mjs` starts the service while honoring `PORT` and
   `NITRO_PORT`.
-- `src/runtime.ts` memoizes the shared runtime and owns process logger setup.
-- `plugins/lifecycle.ts` closes runtime resources through Nitro's `close` hook.
+- `server/runtime.ts` memoizes the shared runtime and owns the host lifecycle.
+- `server/runtime.plugin.ts` closes runtime resources through Nitro's `close` hook.
 
 Current procedures:
 

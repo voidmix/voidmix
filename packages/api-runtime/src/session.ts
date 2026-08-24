@@ -1,32 +1,21 @@
 import type { Role, Session } from "@voidmix/auth";
 
 import type { ApiAuth } from "./auth/config.js";
-import type { ApiRuntimeEnvironment } from "./env.js";
 
 const validRoles = new Set<Role>(["user", "admin", "owner"]);
 
 export type SessionResolver = (request: Request) => Promise<Session | null>;
 
-type HeaderSessionEnvironment = Pick<
-  ApiRuntimeEnvironment,
-  "VOIDMIX_ACTOR_ID" | "VOIDMIX_ACTOR_ROLE"
->;
-
 /**
- * Development-only authentication adapter. Production should replace this
- * with a Better Auth session resolver without changing the API router.
+ * Test-only authentication adapter. Production composes the Better Auth
+ * resolver through createApiRuntime.
  */
-export function createHeaderSessionResolver(
-  options: { environment?: HeaderSessionEnvironment } = {},
-): SessionResolver {
-  const environment = options.environment;
-
+export function createHeaderSessionResolver(): SessionResolver {
   return async (request) => {
-    const id = request.headers.get("x-voidmix-user-id") ?? environment?.VOIDMIX_ACTOR_ID;
+    const id = request.headers.get("x-voidmix-user-id");
     if (!id) return null;
 
-    const requestedRole =
-      request.headers.get("x-voidmix-role") ?? environment?.VOIDMIX_ACTOR_ROLE ?? "user";
+    const requestedRole = request.headers.get("x-voidmix-role") ?? "user";
     const role: Role = validRoles.has(requestedRole as Role) ? (requestedRole as Role) : "user";
 
     return {
@@ -40,8 +29,6 @@ export function createHeaderSessionResolver(
     };
   };
 }
-
-export const resolveHeaderSession = createHeaderSessionResolver();
 
 type BetterAuthSession = Awaited<ReturnType<ApiAuth["api"]["getSession"]>>;
 

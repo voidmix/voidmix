@@ -9,7 +9,7 @@ describe("createApiClient", () => {
   });
 
   it("supports a relative same-origin transport", () => {
-    const client = createApiClient({});
+    const client = createApiClient();
     expect(client.health).toBeTypeOf("function");
   });
 });

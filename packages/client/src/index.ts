@@ -21,7 +21,7 @@ export interface CreateApiClientOptions {
   fetch?: typeof globalThis.fetch;
 }
 
-export function createApiClient(options: CreateApiClientOptions): ApiClient {
+export function createApiClient(options: CreateApiClientOptions = {}): ApiClient {
   const toHeaders = (value: ApiHeaders): Headers => {
     const entries = Object.entries(value).filter(
       (entry): entry is [string, string] => typeof entry[1] === "string",

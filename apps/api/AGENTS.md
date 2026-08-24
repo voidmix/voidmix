@@ -8,10 +8,11 @@ It remains independently deployable while Web is the default API host.
 ## Interface
 
 ```text
-server.ts              Web-format Nitro entry delegating to the shared runtime
-src/env.ts             host-specific environment composition (AUTH_URL 3002)
-src/runtime.ts         memoized runtime and close boundary
-plugins/lifecycle.ts   startup validation and shutdown hook
+server/
+  app.ts               Web-format Nitro entry delegating to the shared runtime
+  env.ts               host-specific environment composition (AUTH_URL 3002)
+  runtime.ts           memoized runtime and close boundary
+  runtime.plugin.ts    startup validation and shutdown hook
 ```
 
 ## Ownership
@@ -31,6 +32,7 @@ plugins/lifecycle.ts   startup validation and shutdown hook
 - Preserve `/api/auth/*`, `/rpc/*`, and `/health` for compatibility consumers.
 - Configure the process logger once with service `api`; request logging is
   configured by the shared runtime.
+- Keep all Nitro host wiring under `server/`; `src/` is not a runtime source tree.
 
 ## Verification
 

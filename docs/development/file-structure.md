@@ -40,7 +40,8 @@ type belongs beside the thing it describes until a second consumer exists.
 apps/<name>/
   src/routes/         route modules only: metadata, validation, loaders, layouts, mounting
   src/features/<f>/   the implementation a route mounts
-  src/env.ts          this app's environment composition
+  src/env.ts          browser-safe app environment composition
+  server/             Nitro host wiring and server-only environment composition
   src/router.tsx      router construction and type registration
   public/             served verbatim at the site root — favicon, robots.txt
   AGENTS.md

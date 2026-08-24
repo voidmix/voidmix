@@ -20,8 +20,6 @@ export const apiRuntimeEnv = {
       .default("http://localhost:3000")
       .transform(splitOrigins)
       .pipe(z.array(z.url())),
-    VOIDMIX_ACTOR_ID: z.string().trim().min(1).optional(),
-    VOIDMIX_ACTOR_ROLE: z.enum(["user", "admin", "owner"]).default("user"),
     AUTH_SECRET: z.string().trim().min(32).default("voidmix-development-secret-change-me"),
     AUTH_URL: z.url(),
     AUTH_DOMAIN: z.string().trim().min(1).optional(),
@@ -32,8 +30,6 @@ export interface ApiRuntimeEnvironment {
   NODE_ENV: "development" | "production" | "test";
   DATABASE_URL: string;
   ALLOWED_ORIGINS: string[];
-  VOIDMIX_ACTOR_ID?: string | undefined;
-  VOIDMIX_ACTOR_ROLE: "user" | "admin" | "owner";
   AUTH_SECRET: string;
   AUTH_URL: string;
   AUTH_DOMAIN?: string | undefined;
