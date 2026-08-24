@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "445b1fc4-ee6b-467c-af06-ba7c8fb9fcf1",
+  "id": "15c65243-ed4a-4212-9ac1-239580880b28",
   "prevIds": [
     "3cfa51f4-fce9-4e37-9e36-40e7d2aeb51c"
   ],
@@ -1072,7 +1072,7 @@
       "columnsTo": [
         "id"
       ],
-      "onUpdate": "CASCADE",
+      "onUpdate": "NO ACTION",
       "onDelete": "RESTRICT",
       "name": "audit_events_target_user_id_users_id_fkey",
       "entityType": "fks",

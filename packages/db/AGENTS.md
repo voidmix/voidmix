@@ -57,11 +57,17 @@ under `drizzle/`.
 - Keep application relations in the single `defineRelations(schema, ...)`
   export. For multiple foreign keys between the same tables, use explicit
   aliases; audit events use `actor` and nullable `targetUser`.
-- **Never hand-edit `drizzle/*.sql` or `drizzle/meta/`.** Generate them. The
-  journal's `idx` does not match the filename number, so do not invent names.
+- **Never hand-edit generated migrations.** Each lives in its own
+  `drizzle/<timestamp>_<name>/` with `migration.sql` and `snapshot.json`
+  (Drizzle 1.0 RC; there is no `_journal.json`). Regenerate instead, and do not
+  invent directory names.
 - `generate` exits 2 with `missing_hints` when a diff is ambiguous — it cannot
   tell a rename from a create. Re-run with the `--hints '<json-array>'` it
   prints; `bun run generate` and `db push` forward flags for exactly this.
+- A foreign key on a **generated** column (`audit_events.target_user_id`) may
+  only use `restrict`/`no action`. PostgreSQL rejects any action that would have
+  to write the column, so `onUpdate: "cascade"` fails at migrate time, not at
+  generate time.
 - `drizzle.config.ts` calls `getDatabaseEnv()` at module load, so `drizzle-kit`
   fails at import time when `DATABASE_URL` is missing or invalid.
 - `db seed`, `db push`, `db clean`, and `db studio` are restricted to

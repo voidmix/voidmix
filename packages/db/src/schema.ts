@@ -125,10 +125,10 @@ export const auditEvents = pgTable(
     targetId: text("target_id").notNull(),
     targetUserId: text("target_user_id")
       .generatedAlwaysAs(sql`case when "target_type" = 'user' then "target_id" else null end`)
-      .references(() => users.id, {
-        onDelete: "restrict",
-        onUpdate: "cascade",
-      }),
+      // No `onUpdate`: PostgreSQL rejects a referential action that would have
+      // to write a generated column ("invalid ON UPDATE action for foreign key
+      // constraint containing generated column"). `restrict` never writes.
+      .references(() => users.id, { onDelete: "restrict" }),
     occurredAt: timestamp("occurred_at", { withTimezone: true, mode: "date" })
       .notNull()
       .defaultNow(),

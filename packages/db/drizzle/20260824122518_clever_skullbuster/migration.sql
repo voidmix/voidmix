@@ -21,6 +21,6 @@ ALTER TABLE "audit_events" ADD COLUMN "target_user_id" text GENERATED ALWAYS AS 
 CREATE INDEX "audit_events_target_user_id_idx" ON "audit_events" ("target_user_id");--> statement-breakpoint
 CREATE INDEX "system_secrets_updated_by_idx" ON "system_secrets" ("updated_by");--> statement-breakpoint
 CREATE INDEX "system_settings_updated_by_idx" ON "system_settings" ("updated_by");--> statement-breakpoint
-ALTER TABLE "audit_events" ADD CONSTRAINT "audit_events_target_user_id_users_id_fkey" FOREIGN KEY ("target_user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;--> statement-breakpoint
+ALTER TABLE "audit_events" ADD CONSTRAINT "audit_events_target_user_id_users_id_fkey" FOREIGN KEY ("target_user_id") REFERENCES "users"("id") ON DELETE RESTRICT;--> statement-breakpoint
 ALTER TABLE "system_secrets" ADD CONSTRAINT "system_secrets_updated_by_users_id_fkey" FOREIGN KEY ("updated_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;--> statement-breakpoint
 ALTER TABLE "system_settings" ADD CONSTRAINT "system_settings_updated_by_users_id_fkey" FOREIGN KEY ("updated_by") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
