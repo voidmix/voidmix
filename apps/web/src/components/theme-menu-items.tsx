@@ -1,0 +1,37 @@
+import { Desktop, Moon, Sun } from "@phosphor-icons/react";
+import {
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@voidmix/ui/components/ui/dropdown-menu";
+import { useTheme, type UserTheme } from "@voidmix/ui/theme";
+
+export const themeOptions: ReadonlyArray<{ icon: typeof Sun; label: string; value: UserTheme }> = [
+  { icon: Sun, label: "Light", value: "light" },
+  { icon: Moon, label: "Dark", value: "dark" },
+  { icon: Desktop, label: "System", value: "system" },
+];
+
+export const themeLabels: Record<UserTheme, string> = {
+  dark: "Dark",
+  light: "Light",
+  system: "System",
+};
+
+/**
+ * The theme choices as menu items, so a standalone switcher and a larger
+ * account menu can offer the same three options without restating them.
+ */
+export function ThemeMenuItems() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <DropdownMenuRadioGroup onValueChange={(value) => setTheme(value as UserTheme)} value={theme}>
+      {themeOptions.map((option) => (
+        <DropdownMenuRadioItem key={option.value} value={option.value}>
+          <option.icon aria-hidden="true" />
+          {option.label}
+        </DropdownMenuRadioItem>
+      ))}
+    </DropdownMenuRadioGroup>
+  );
+}
