@@ -9,6 +9,9 @@ here.
 
 The runtime contract seam. It contains Zod schemas, DTOs, and the oRPC contract
 tree, but performs no network calls and exposes no database implementation.
+Settings DTOs model effective values, sources, inherited safe values, and
+optional per-field mutations. The public Auth capability DTO intentionally
+contains only three booleans.
 
 ## `@voidmix/client`
 
@@ -20,9 +23,10 @@ same-origin `/rpc`; Desktop supplies an absolute cloud origin.
 
 The server-side transport and composition adapter shared by Web and the
 temporary standalone API host. It owns Hono routes, oRPC handlers, Better Auth
-session resolution, permission enforcement, CORS, mail composition, and the
-single pooled database runtime. It exports factories and an environment preset,
-but owns no Nitro listener or process lifecycle.
+session resolution, permission enforcement, CORS, mail composition, dynamic
+authentication-policy enforcement, and the single pooled database runtime. It
+exports factories and an environment preset, but owns no Nitro listener or
+process lifecycle.
 
 ## `@voidmix/domain`
 
@@ -34,6 +38,9 @@ Framework-independent business rules and repository interfaces. It owns:
 - Self-suspension and final-administrator protection.
 - Idempotent initial administrator creation.
 - Durable audit event creation.
+- Typed mail settings validation, availability checks, and audit creation.
+- Typed authentication policy normalization and audit creation.
+- Settings source/inheritance vocabulary and derived public Auth capabilities.
 
 It does not import React, Hono, Nitro, or Drizzle.
 
@@ -42,6 +49,12 @@ It does not import React, Hono, Nitro, or Drizzle.
 The authorization vocabulary: roles (`user`, `admin`, `owner`), permissions,
 session types, and `hasPermission`.
 
+The role grants are explicit permission allowlists; adding a permission to the
+vocabulary does not implicitly grant it to Admin or Owner.
+
+Authentication policy has separate permissions: Admin and Owner can read it,
+while only Owner can update it.
+
 `@voidmix/api-runtime` owns the Better Auth adapter and production cookie
 session resolver. The development header resolver remains available for
 injected tests and local preview only; the oRPC router and domain services do
@@ -49,10 +62,13 @@ not depend on the provider.
 
 ## `@voidmix/mail`
 
-Typed auth mail delivery for verification, password reset, and welcome emails.
+Typed auth mail delivery for verification, password reset, welcome, and
+administrator test emails.
 React Email templates always provide HTML and plain-text output. Resend is the
 production transport; development and test use a logger transport without
-network access. The package exposes only server-side mail interfaces.
+network access. Production throws `MailUnavailableError` at delivery time when
+configuration is unavailable, rather than failing process startup or silently
+using the logger transport. The package exposes only server-side mail interfaces.
 
 ## `@voidmix/env`
 
@@ -84,14 +100,29 @@ const env = createEnv({
 The database adapter package.
 
 - Drizzle PostgreSQL schema lives in `src/schema.ts`.
-- `PostgresUserRepository` is the production adapter.
-- `InMemoryUserRepository` is the development/test adapter.
-- `audit_events.actor_id` and `audit_events.target_id` reference `users.id`
-  through separate named Drizzle relations (`actor` and `target`); both foreign
-  keys are indexed and use restrictive deletes so audit history cannot be
-  orphaned.
+- `PostgresUserRepository` and `PostgresSystemSettingsRepository` are the
+  production adapters; matching in-memory adapters support development/tests.
+- `system_settings` stores typed ordinary configuration keys and
+  `system_secrets` stores write-only secret values. Both record the updater and
+  timestamp.
+- Authentication policy reuses `system_settings`: registration mode, an exact
+  email-domain allowlist encoded as JSON text, and the welcome, verification,
+  and password-reset email switches. Only typed repository methods can access
+  these fixed keys.
+- Resolution is field-scoped. Database values override mail environment/default
+  fallbacks; Auth values override built-in defaults. Omitted mutations retain a
+  row, `set`/`replace` upsert it, and `reset` deletes it. Admin views include
+  sources and safe inherited previews, while runtime resolvers omit that
+  presentation metadata and retain server-only secret material.
+- Audit targets distinguish `user` from `system_setting`. `actor_id` always
+  references a user; the generated nullable `target_user_id` preserves a
+  restrictive user foreign key while allowing `target_id = mail` for settings.
 - SQL migrations live under `drizzle/`.
 - Database tables and Drizzle details are not exposed to frontend apps.
+
+Authentication policy is read for every registration, verification-email,
+password-reset, and welcome-email decision. It is not cached for the process
+lifetime, so Owner changes apply without a restart.
 
 ## `@voidmix/logger`
 

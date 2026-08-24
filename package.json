@@ -57,6 +57,7 @@
         "@testing-library/react": "16.3.2",
         "@testing-library/user-event": "14.6.6",
         "@vitest/coverage-v8": "4.1.10",
+        "esbuild": "0.28.2",
         "jsdom": "30.0.1",
         "lightningcss": "1.33.0",
         "@tanstack/router-cli": "1.167.32",
@@ -82,6 +83,8 @@
     "policy:fix": "vmx policy --fix",
     "skills:update": "vmx skills update",
     "clean": "vmx clean",
+    "clean:all": "vmx clean --dependencies",
+    "clean:bun-cache": "vmx clean --bun-cache",
     "deps:check": "vmx deps check",
     "deps:update": "vmx deps update",
     "deps:dedupe": "vmx deps dedupe",
@@ -122,6 +125,7 @@
     "vitest": "catalog:tooling"
   },
   "overrides": {
+    "esbuild": "catalog:tooling",
     "lightningcss": "catalog:tooling",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9"
   },

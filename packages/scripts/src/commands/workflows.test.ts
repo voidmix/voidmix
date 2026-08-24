@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 
+import { runClean } from "./clean.js";
 import { runDesktopBuild } from "./desktop.js";
 import { runGenerate } from "./generate.js";
 import { runVerify } from "./verify.js";
@@ -20,6 +21,27 @@ function dependencies() {
 }
 
 describe("repository workflows", () => {
+  it("clears the Bun cache before removing optional repository dependencies", async () => {
+    const deps = {
+      ...dependencies(),
+      cleanRepository: vi.fn(async () => ["node_modules"]),
+    };
+
+    await runClean(deps, { bunCache: true, dependencies: true });
+
+    expect(deps.runCommand).toHaveBeenCalledWith(["bun", "pm", "cache", "rm"], {
+      cwd: "/repo",
+      env: deps.processEnv,
+    });
+    expect(deps.cleanRepository).toHaveBeenCalledWith("/repo", { dependencies: true });
+    expect(deps.log).toHaveBeenLastCalledWith("info", "clean.completed", {
+      bunCache: true,
+      dependencies: true,
+      removed: ["node_modules"],
+      removedCount: 1,
+    });
+  });
+
   it("generates database artifacts", async () => {
     const deps = dependencies();
 

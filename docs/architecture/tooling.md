@@ -101,7 +101,7 @@ deps audit              audit dependencies for known vulnerabilities
 deps check              check for compatible dependency updates
 deps update             write compatible updates and refresh bun.lock
 skills update           update installed repository skills
-clean                  remove rebuildable outputs and tool caches
+clean [options]        remove rebuildable outputs and tool caches; optionally dependencies or Bun's cache
 db migrate             apply Drizzle migrations
 db seed                seed development/test data
 db studio              open Drizzle Studio in development/test
@@ -219,9 +219,15 @@ that enters another checkout still resolves that repository's files. Schema
 parsing remains in root `env.ts` and happens after the process environment has
 been resolved.
 
-`bun run clean` removes build outputs, coverage and browser-test reports,
-TanStack/Vite+/Nitro/Vite caches, and the Tauri Cargo `target` directory. It
-does not remove dependencies, generated route trees, or Drizzle migrations.
+`bun run clean` removes ignored, rebuildable outputs (including
+`storybook-static`, Nitro output, TanStack storage, TypeScript build metadata,
+and package archives), coverage and browser-test reports, root and workspace
+tool caches, and Tauri's generated schemas and Cargo `target` directory. It
+preserves dependencies, logs, databases, generated route trees, and Drizzle
+migrations. `bun run clean:all` additionally removes every repository
+`node_modules` and `node_modules.bun` directory, while
+`bun run clean:bun-cache` runs the standard clean and also clears Bun's shared
+machine-wide install cache, affecting every checkout on that machine.
 Every root script for this package calls the `vmx` bin directly — `bun run
 db:migrate` is `vmx db migrate` — so the colon-separated names are aliases for
 nested CLI commands, and `bun run vmx <command>` reaches anything without one.

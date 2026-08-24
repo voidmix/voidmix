@@ -26,7 +26,7 @@ export function ChatShell() {
   if (!hasMessages) {
     return (
       <section className="flex flex-1 items-center justify-center py-12" id="ask-voidmix">
-        <div className="w-full max-w-2xl">
+        <div className="w-full">
           <Composer onSubmit={handleSubmit} />
           <p className="mt-3 text-center text-xs text-muted-foreground">
             Northstar preview data stays in this browser.

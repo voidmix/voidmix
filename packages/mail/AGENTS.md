@@ -18,8 +18,11 @@ scripts/         local deterministic email preview
 
 ## Ownership
 
-- Own verification, password reset, and welcome email content.
-- Use Resend when configured; use logger transport only in development/test.
+- Own verification, password reset, welcome, and administrator test email content.
+- Resolve injected mail configuration for every delivery. Use Resend when
+  configured; use logger transport only in development/test.
+- Production configuration errors occur at send time as `MailUnavailableError`;
+  they never prevent application startup.
 - Keep HTML and plain-text output together for every template.
 
 ## Constraints

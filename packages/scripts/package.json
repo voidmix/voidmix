@@ -16,6 +16,8 @@
     "skills:update": "vmx skills update",
     "policy": "vmx policy",
     "clean": "vmx clean",
+    "clean:all": "vmx clean --dependencies",
+    "clean:bun-cache": "vmx clean --bun-cache",
     "db:migrate": "vmx db migrate",
     "db:seed": "vmx db seed",
     "db:studio": "vmx db studio",

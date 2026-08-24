@@ -1,6 +1,8 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import type { DatabaseConnection } from "@voidmix/db";
 import { authAccounts, authSessions, authVerifications, users } from "@voidmix/db/schema";
+import type { AuthSettings } from "@voidmix/domain";
+import { logger } from "@voidmix/logger";
 import type { Mailer } from "@voidmix/mail/types";
 import { betterAuth } from "better-auth";
 
@@ -10,9 +12,15 @@ export interface CreateApiAuthOptions {
   connection: DatabaseConnection;
   environment: ApiRuntimeEnvironment;
   mailer: Mailer;
+  getAuthSettings: () => Promise<AuthSettings>;
 }
 
-export function createApiAuth({ connection, environment, mailer }: CreateApiAuthOptions) {
+export function createApiAuth({
+  connection,
+  environment,
+  mailer,
+  getAuthSettings,
+}: CreateApiAuthOptions) {
   const production = environment.NODE_ENV === "production";
   if (production && environment.AUTH_SECRET === "voidmix-development-secret-change-me") {
     throw new Error("AUTH_SECRET must be explicitly configured in production.");
@@ -40,7 +48,11 @@ export function createApiAuth({ connection, environment, mailer }: CreateApiAuth
       sendVerificationEmail: async ({ user, url }) =>
         mailer.sendVerification({ email: user.email, name: user.name, url }),
       afterEmailVerification: async (user) =>
-        mailer.sendWelcome({ email: user.email, name: user.name }),
+        sendWelcomeEmailIfEnabled({
+          user: { email: user.email, name: user.name },
+          mailer,
+          getAuthSettings,
+        }),
     },
     user: {
       modelName: "users",
@@ -81,6 +93,21 @@ export function createApiAuth({ connection, environment, mailer }: CreateApiAuth
   });
 
   return auth;
+}
+
+export async function sendWelcomeEmailIfEnabled(options: {
+  user: { email: string; name: string };
+  mailer: Mailer;
+  getAuthSettings: () => Promise<AuthSettings>;
+}): Promise<void> {
+  if (!(await options.getAuthSettings()).welcomeEmailEnabled) return;
+  try {
+    await options.mailer.sendWelcome(options.user);
+  } catch {
+    const log = logger({ operation: "auth.welcome-email" });
+    log.set({ recipient: options.user.email, outcome: "failure" });
+    log.warn("Welcome email delivery failed after verification");
+  }
 }
 
 export type ApiAuth = ReturnType<typeof createApiAuth>;

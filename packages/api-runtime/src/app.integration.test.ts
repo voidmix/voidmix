@@ -1,7 +1,13 @@
 import { createApiClient } from "@voidmix/client";
-import { InMemoryUserRepository } from "@voidmix/db";
-import type { User, UserRepository } from "@voidmix/domain";
+import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "@voidmix/db";
+import type {
+  MailSettingsFallback,
+  SystemSettingsRepository,
+  User,
+  UserRepository,
+} from "@voidmix/domain";
 import { configureLogger } from "@voidmix/logger";
+import type { Mailer } from "@voidmix/mail/types";
 import { describe, expect, it } from "vite-plus/test";
 
 import { createApiApp } from "./app.js";
@@ -17,6 +23,14 @@ const seed: User[] = [
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
   },
   {
+    id: "admin-1",
+    email: "admin@example.com",
+    displayName: "Admin",
+    role: "admin",
+    status: "active",
+    createdAt: new Date("2026-01-01T12:00:00.000Z"),
+  },
+  {
     id: "user-1",
     email: "user@example.com",
     displayName: "User",
@@ -26,16 +40,42 @@ const seed: User[] = [
   },
 ];
 
+const testMailFallback: MailSettingsFallback = {
+  enabled: { value: true, source: "default" },
+  from: { value: null, source: "missing" },
+  fromName: { value: "Voidmix", source: "default" },
+  templatesBaseUrl: { value: null, source: "missing" },
+  resendApiKey: { value: null, source: "missing" },
+};
+
+const testMailer: Mailer = {
+  sendVerification: async () => {},
+  sendPasswordReset: async () => {},
+  sendWelcome: async () => {},
+  sendTest: async () => {},
+};
+
 function createTestApiApp(
   options: {
     users?: UserRepository;
+    settings?: SystemSettingsRepository;
+    mailFallback?: MailSettingsFallback;
+    mailer?: Mailer;
     allowedOrigins?: readonly string[];
     authHandler?: (request: Request) => Promise<Response>;
     id?: () => string;
   } = {},
 ) {
+  const users = options.users ?? new InMemoryUserRepository(seed);
   return createApiApp({
-    users: options.users ?? new InMemoryUserRepository(seed),
+    users,
+    settings:
+      options.settings ??
+      new InMemorySystemSettingsRepository(
+        users instanceof InMemoryUserRepository ? { auditEvents: users.auditEvents } : {},
+      ),
+    mailFallback: options.mailFallback ?? testMailFallback,
+    mailer: options.mailer ?? testMailer,
     resolveSession: createHeaderSessionResolver(),
     allowedOrigins: options.allowedOrigins ?? ["http://voidmix.test"],
     authHandler:
@@ -45,12 +85,33 @@ function createTestApiApp(
   });
 }
 
-function setup(role: "user" | "owner", actorId: string) {
+function setup(role: "user" | "admin" | "owner", actorId: string, configured = true) {
   const repository = new InMemoryUserRepository(seed);
+  const settings = new InMemorySystemSettingsRepository({
+    ...(configured
+      ? {
+          settings: { "mail.from": "mail@example.com" },
+          secrets: { "mail.resend_api_key": "database-key" },
+        }
+      : {}),
+    auditEvents: repository.auditEvents,
+  });
+  const sentRecipients: string[] = [];
+  const mailer: Mailer = {
+    sendVerification: async () => {},
+    sendPasswordReset: async () => {},
+    sendWelcome: async () => {},
+    sendTest: async ({ email }) => {
+      sentRecipients.push(email);
+    },
+  };
   const app = createTestApiApp({
     users: repository,
+    settings,
+    mailer,
     id: () => `id-${repository.auditEvents.length}`,
   });
+  const actor = seed.find((user) => user.id === actorId);
   let rpcRequests = 0;
   let lastResponse: Response | undefined;
   const client = createApiClient({
@@ -59,6 +120,8 @@ function setup(role: "user" | "owner", actorId: string) {
       "x-request-id": "rpc-request-1",
       "x-voidmix-user-id": actorId,
       "x-voidmix-role": role,
+      "x-voidmix-email": actor?.email,
+      "x-voidmix-display-name": actor?.displayName,
     },
     fetch: async (input, init) => {
       const requestUrl =
@@ -70,6 +133,8 @@ function setup(role: "user" | "owner", actorId: string) {
   });
   return {
     repository,
+    settings,
+    sentRecipients,
     app,
     client,
     get rpcRequests() {
@@ -137,6 +202,154 @@ describe("API", () => {
     await expect(client.admin.users.list({ limit: 20 })).rejects.toMatchObject({
       code: "FORBIDDEN",
     });
+  });
+
+  it("rejects ordinary users from every mail settings procedure", async () => {
+    const { client } = setup("user", "user-1");
+    await expect(client.admin.settings.mail.get({})).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(
+      client.admin.settings.mail.update({
+        from: { action: "set", value: "mail@example.com" },
+      }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(client.admin.settings.mail.sendTest({})).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    });
+  });
+
+  it("rejects ordinary users from every auth settings procedure", async () => {
+    const { client } = setup("user", "user-1");
+    await expect(client.admin.settings.auth.get({})).rejects.toMatchObject({ code: "FORBIDDEN" });
+    await expect(
+      client.admin.settings.auth.update({
+        registrationMode: { action: "set", value: "closed" },
+      }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
+  it("lets admins read auth policy but reserves writes for owners", async () => {
+    const { client } = setup("admin", "admin-1");
+    await expect(client.admin.settings.auth.get({})).resolves.toMatchObject({
+      registrationMode: "open",
+    });
+    await expect(
+      client.admin.settings.auth.update({
+        registrationMode: { action: "set", value: "closed" },
+      }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
+  it("lets owners update typed auth policy with durable redacted audit metadata", async () => {
+    const { client, repository } = setup("owner", "owner-1");
+    const updated = await client.admin.settings.auth.update({
+      registrationMode: { action: "set", value: "closed" },
+      allowedEmailDomains: {
+        action: "set",
+        value: [" Example.COM ", "studio.example"],
+      },
+      welcomeEmailEnabled: { action: "set", value: false },
+      passwordResetEmailEnabled: { action: "set", value: false },
+    });
+
+    expect(updated).toMatchObject({
+      registrationMode: "closed",
+      allowedEmailDomains: ["example.com", "studio.example"],
+      welcomeEmailEnabled: false,
+      passwordResetEmailEnabled: false,
+    });
+    expect(repository.auditEvents).toHaveLength(1);
+    expect(repository.auditEvents[0]).toMatchObject({
+      action: "system.settings.updated",
+      targetType: "system_setting",
+      targetId: "auth",
+      metadata: { result: "updated" },
+    });
+    expect(repository.auditEvents[0]?.metadata.operations).toContain("auth.registration_mode:set");
+    expect(JSON.stringify(repository.auditEvents)).not.toContain("example.com");
+    expect(JSON.stringify(repository.auditEvents)).not.toContain('"closed"');
+  });
+
+  it.each(["admin", "owner"] as const)("lets %s manage and test mail settings", async (role) => {
+    const actorId = role === "admin" ? "admin-1" : "owner-1";
+    const { client, settings, sentRecipients, repository } = setup(role, actorId);
+    const before = await client.admin.settings.mail.get({});
+    expect(before).toMatchObject({
+      configurationState: "ready",
+      resendApiKey: { configured: true, source: "database" },
+    });
+    expect(before.resendApiKey).not.toHaveProperty("value");
+    expect(JSON.stringify(before)).not.toContain("database-key");
+
+    await client.admin.settings.mail.update({
+      from: { action: "set", value: "updated@example.com" },
+      fromName: { action: "set", value: "Updated sender" },
+      templatesBaseUrl: { action: "set", value: "https://mail.example.com" },
+    });
+    expect(settings.secrets.get("mail.resend_api_key")?.value).toBe("database-key");
+
+    const result = await client.admin.settings.mail.sendTest({});
+    expect(result.recipient).toBe(seed.find((user) => user.id === actorId)?.email);
+    expect(sentRecipients).toEqual([result.recipient]);
+    expect(repository.auditEvents.at(-1)).toMatchObject({
+      action: "system.mail.test.sent",
+      targetType: "system_setting",
+      targetId: "mail",
+      metadata: { recipient: result.recipient, result: "sent" },
+    });
+    expect(JSON.stringify(repository.auditEvents)).not.toContain("database-key");
+  });
+
+  it("serves only derived auth capabilities without a session", async () => {
+    const { app } = setup("owner", "owner-1");
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(client.public.auth.capabilities.get({})).resolves.toEqual({
+      registrationAvailable: true,
+      verificationEmailRequestAvailable: true,
+      passwordResetRequestAvailable: true,
+    });
+  });
+
+  it("recomputes public auth capabilities from current policy and mail readiness", async () => {
+    const ready = setup("owner", "owner-1");
+    const publicClient = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => ready.app.fetch(new Request(input, init)),
+    });
+
+    await ready.client.admin.settings.auth.update({
+      registrationMode: { action: "set", value: "closed" },
+      verificationEmailEnabled: { action: "set", value: false },
+      passwordResetEmailEnabled: { action: "set", value: false },
+    });
+    await expect(publicClient.public.auth.capabilities.get({})).resolves.toEqual({
+      registrationAvailable: false,
+      verificationEmailRequestAvailable: false,
+      passwordResetRequestAvailable: false,
+    });
+
+    const incomplete = setup("owner", "owner-1", false);
+    const incompletePublicClient = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => incomplete.app.fetch(new Request(input, init)),
+    });
+    await expect(incompletePublicClient.public.auth.capabilities.get({})).resolves.toEqual({
+      registrationAvailable: false,
+      verificationEmailRequestAvailable: false,
+      passwordResetRequestAvailable: false,
+    });
+  });
+
+  it("returns MAIL_NOT_CONFIGURED with HTTP 503 when testing without mail settings", async () => {
+    const result = setup("owner", "owner-1", false);
+    await expect(result.client.admin.settings.mail.sendTest({})).rejects.toMatchObject({
+      code: "MAIL_NOT_CONFIGURED",
+    });
+    expect(result.lastResponse?.status).toBe(503);
+    expect(result.sentRecipients).toEqual([]);
   });
 
   it("updates a user and writes an audit event", async () => {

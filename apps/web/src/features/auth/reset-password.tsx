@@ -7,10 +7,12 @@ import { useState, type FormEvent } from "react";
 
 import { authClient } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
+import { useAuthCapabilities } from "./capabilities";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 
 export function ResetPassword({ token }: { token?: string }) {
+  const capabilities = useAuthCapabilities();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [sent, setSent] = useState(false);
@@ -53,6 +55,24 @@ export function ResetPassword({ token }: { token?: string }) {
     } finally {
       setPending(false);
     }
+  }
+
+  if (!token && !capabilities.passwordResetRequestAvailable) {
+    return (
+      <AuthCard
+        description="Password reset email requests are not available with the current system and mail configuration."
+        footer={
+          <Link className="font-medium text-foreground hover:underline" to="/login">
+            Back to sign in
+          </Link>
+        }
+        title="Password reset unavailable"
+      >
+        <p className="text-sm leading-6 text-muted-foreground">
+          Existing reset links can still be used. Contact an administrator if you need access.
+        </p>
+      </AuthCard>
+    );
   }
 
   if (sent) {

@@ -25,8 +25,10 @@ the single grant lookup that answers whether a session may do something.
 - `roles` and `permissions` are `as const` tuples with types derived via
   `(typeof x)[number]`. Add a value to the tuple, never to a hand-written union.
 - The grant table is `Record<Role, ReadonlySet<Permission>>`, so a **missing role
-  is a compile error**. A new permission, however, silently lands in `admin` and
-  `owner` via `new Set(permissions)` — check that this is what you intended.
+  is a compile error**. Every role uses an explicit permission allowlist; adding
+  to `permissions` must never silently expand an existing role.
+- Auth settings deliberately split read from write: Admin and Owner may read;
+  only Owner may write. Keep this split when adding related procedures or UI.
 - `hasPermission(session: Session | null, permission)` accepts `null` and returns
   `false` for it. Callers must still distinguish "no session" (401) from
   "insufficient role" (403); `@voidmix/api-runtime`'s `requirePermission` does that.

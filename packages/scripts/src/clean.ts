@@ -2,32 +2,74 @@ import { lstat, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 
 const rootArtifacts = [
+  ".cache",
   ".tanstack",
+  ".vite",
   ".vite-plus",
   "coverage",
-  "playwright-report",
-  "test-results",
-] as const;
-
-const workspaceArtifacts = [
-  ".output",
-  ".tanstack",
-  "coverage",
-  "dist",
+  "node_modules/.cache",
   "node_modules/.nitro",
   "node_modules/.vite",
   "playwright-report",
   "test-results",
 ] as const;
 
-export async function cleanRepository(repositoryRoot: string): Promise<string[]> {
+const workspaceArtifacts = [
+  ".cache",
+  ".nitro",
+  ".output",
+  ".storage",
+  ".tanstack",
+  ".vite",
+  "coverage",
+  "dist",
+  "node_modules/.cache",
+  "node_modules/.nitro",
+  "node_modules/.vite",
+  "playwright-report",
+  "storybook-static",
+  "test-results",
+] as const;
+
+const artifactFilePatterns = [
+  /\.lcov$/,
+  /\.tgz$/,
+  /\.tsbuildinfo$/,
+  /^report\.\d+\.\d+\.\d+\.\d+\.json$/,
+] as const;
+
+export interface CleanRepositoryOptions {
+  dependencies?: boolean;
+}
+
+export async function cleanRepository(
+  repositoryRoot: string,
+  options: CleanRepositoryOptions = {},
+): Promise<string[]> {
   const workspaceRoots = await findWorkspaceRoots(repositoryRoot);
+  const artifactFiles = (
+    await Promise.all(
+      [repositoryRoot, ...workspaceRoots].map((directory) => findArtifactFiles(directory)),
+    )
+  ).flat();
   const candidates = [
     ...rootArtifacts.map((path) => join(repositoryRoot, path)),
     ...workspaceRoots.flatMap((workspaceRoot) =>
       workspaceArtifacts.map((path) => join(workspaceRoot, path)),
     ),
     join(repositoryRoot, "apps/desktop/src-tauri/target"),
+    join(repositoryRoot, "apps/desktop/src-tauri/gen/schemas"),
+    ...artifactFiles,
+    ...(options.dependencies
+      ? [
+          ...workspaceRoots.flatMap((workspaceRoot) => [
+            join(workspaceRoot, "node_modules"),
+            join(workspaceRoot, "node_modules.bun"),
+          ]),
+          join(repositoryRoot, "node_modules"),
+          join(repositoryRoot, "node_modules.bun"),
+        ]
+      : []),
   ];
   const removed: string[] = [];
 
@@ -38,6 +80,22 @@ export async function cleanRepository(repositoryRoot: string): Promise<string[]>
   }
 
   return removed;
+}
+
+async function findArtifactFiles(directory: string): Promise<string[]> {
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (isMissingPathError(error)) return [];
+    throw error;
+  }
+
+  return entries
+    .filter(
+      (entry) => entry.isFile() && artifactFilePatterns.some((pattern) => pattern.test(entry.name)),
+    )
+    .map((entry) => join(directory, entry.name));
 }
 
 async function findWorkspaceRoots(repositoryRoot: string): Promise<string[]> {

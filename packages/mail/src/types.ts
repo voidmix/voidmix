@@ -3,7 +3,17 @@ export type MailAddress = {
   name?: string;
 };
 
-export type MailTemplateKind = "email-verification" | "password-reset" | "welcome";
+export type MailTemplateKind = "email-verification" | "password-reset" | "welcome" | "test";
+
+export type MissingMailConfiguration = "RESEND_API_KEY" | "MAIL_FROM";
+
+export interface ResolvedMailConfiguration {
+  enabled: boolean;
+  from: string | null;
+  fromName: string;
+  templatesBaseUrl: string | null;
+  resendApiKey: string | null;
+}
 
 export type MailMessage = {
   template: MailTemplateKind;
@@ -59,4 +69,5 @@ export interface Mailer {
   sendVerification(input: SendLinkEmailInput): Promise<void>;
   sendPasswordReset(input: SendLinkEmailInput): Promise<void>;
   sendWelcome(input: SendWelcomeEmailInput): Promise<void>;
+  sendTest(input: SendWelcomeEmailInput): Promise<void>;
 }

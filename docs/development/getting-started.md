@@ -58,6 +58,7 @@ defaults, normalization, and validation. Unknown variables are ignored.
 bun run dev
 bun run doctor
 bun run clean
+bun run clean:all
 bun run deps:check
 bun run deps:update
 bun run deps:dedupe:check

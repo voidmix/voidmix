@@ -41,8 +41,10 @@ the service config path.
   `/health`, `/api/auth/*`, and `/rpc/*` on the same origin.
 - API starts through `apps/api/scripts/start.mjs` and preserves the same API
   paths on its compatibility origin.
-- Both hosts require production values for database, Auth, mail, and allowed
-  external origins. Browser clients do not require an API build-time URL.
+- Both hosts require production values for database, Auth, and allowed external
+  origins. Mail can come from Admin-managed database settings or compatibility
+  environment variables; missing mail does not prevent startup. Browser clients
+  do not require an API build-time URL.
 
 Production startup does not use the private `vmx` CLI. Railway and other
 platforms inject values through `process.env`; a `/app/.env` file is optional,

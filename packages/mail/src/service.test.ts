@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { getMailEnv } from "./env.js";
-import { createMailer } from "./service.js";
+import { createMailer, MailUnavailableError } from "./service.js";
 import type { MailTransport } from "./types.js";
 
 const developmentEnv = getMailEnv({
@@ -60,16 +60,39 @@ describe("mail environment", () => {
     });
   });
 
-  it("requires Resend and sender configuration in production", () => {
-    expect(() => getMailEnv({ NODE_ENV: "production" })).toThrow(
-      "Production mail configuration is missing: RESEND_API_KEY, MAIL_FROM",
-    );
-    expect(() =>
-      getMailEnv({
-        NODE_ENV: "production",
-        RESEND_API_KEY: "resend-key",
-        MAIL_FROM: "mail@example.com",
+  it("allows production startup and reports unavailable mail only when sending", async () => {
+    const env = getMailEnv({ NODE_ENV: "production" });
+    const mailer = createMailer({ env });
+
+    expect(env.MAIL_FROM).toBeNull();
+    await expect(mailer.sendWelcome({ email: "alex@example.com" })).rejects.toMatchObject({
+      code: "MAIL_NOT_CONFIGURED",
+      missing: ["RESEND_API_KEY", "MAIL_FROM"],
+    } satisfies Partial<MailUnavailableError>);
+  });
+
+  it("resolves the latest configuration for every send", async () => {
+    let from = "first@example.com";
+    const send = vi.fn<MailTransport["send"]>(async () => ({ ok: true, id: "sent" }));
+    const mailer = createMailer({
+      env: getMailEnv({ NODE_ENV: "production" }),
+      transport: { send },
+      resolveConfiguration: async () => ({
+        enabled: true,
+        from,
+        fromName: "Voidmix",
+        templatesBaseUrl: null,
+        resendApiKey: "resend-key",
       }),
-    ).not.toThrow();
+    });
+
+    await mailer.sendTest({ email: "alex@example.com" });
+    from = "second@example.com";
+    await mailer.sendTest({ email: "alex@example.com" });
+
+    expect(send.mock.calls.map(([message]) => message.from.email)).toEqual([
+      "first@example.com",
+      "second@example.com",
+    ]);
   });
 });

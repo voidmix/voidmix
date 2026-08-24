@@ -68,9 +68,12 @@ describe("vmx CLI", () => {
 
   it("shows help without initializing business environment schemas", () => {
     const environment = { ...runnerEnvironment, NODE_ENV: "invalid-for-schema" };
+    const cleanHelp = runCli(["clean", "--help"], environment);
 
     expect(runCli(["--help"], environment).status).toBe(0);
-    expect(runCli(["clean", "--help"], environment).status).toBe(0);
+    expect(cleanHelp.status).toBe(0);
+    expect(cleanHelp.stdout).toContain("--dependencies");
+    expect(cleanHelp.stdout).toContain("--bun-cache");
     expect(runCli(["doctor", "--help"], environment).status).toBe(0);
   });
 

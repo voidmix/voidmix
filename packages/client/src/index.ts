@@ -38,7 +38,8 @@ export function createApiClient(options: CreateApiClientOptions = {}): ApiClient
   const link = new RPCLink({
     url: "/rpc",
     ...(baseUrl ? { origin: baseUrl } : {}),
-    method: (_requestOptions, path) => (path.at(-1) === "updateStatus" ? "POST" : "GET"),
+    method: (_requestOptions, path) =>
+      ["updateStatus", "update", "sendTest"].includes(path.at(-1) ?? "") ? "POST" : "GET",
     plugins: [
       new DedupeLinkPlugin({ groups: [readRequestGroup] }),
       new BatchLinkPlugin({ groups: [readRequestGroup], maxSize: 10, mode: "buffered" }),

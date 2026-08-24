@@ -20,6 +20,8 @@ src/
     (app)/route.tsx  authenticated group layout and session gate
     (app)/(admin)/route.tsx  AdminShell layout within the authenticated group
     (app)/(admin)/admin.tsx  protected Admin user-directory mount at /admin
+    (app)/(admin)/admin/settings.tsx  mail settings mount at /admin/settings
+    (app)/(admin)/admin/settings/auth.tsx  auth policy at /admin/settings/auth
   features/home/     home view data, components/, and feature CSS
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
@@ -72,8 +74,20 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   navigation aid, not authorization enforcement. There is still no loader,
   `beforeLoad`, or server function precedent in this app.
 - `(app)/(admin)/route.tsx` owns the AdminShell layout. Keep the authenticated
-  group focused on session navigation and keep `/admin` page mounting in the
-  nested Admin group.
+  group focused on session navigation and keep `/admin` page mounting and typed
+  settings adapters in the nested Admin group. Settings API failures are shown
+  directly; do not add a preview/fallback adapter for system configuration.
+- Authentication settings are read-only for `admin` and writable only for
+  `owner` in the UI. That role check controls presentation only; the API
+  permission remains the authoritative boundary.
+- Admin settings forms display effective values, sources, and safe inherited
+  previews. Untouched fields are omitted, clearing ordinary mail text schedules
+  `reset`, and secret inputs stay blank: blank retains while the explicit remove
+  action resets the database override.
+- Public Auth pages consume only `public.auth.capabilities.get`. Registration and
+  tokenless reset entry points follow those booleans, an existing reset token
+  remains usable, and capability-request failures fail open so the server remains
+  the final policy boundary.
 - Stylesheets: `import "@voidmix/ui/styles.css"` plus
   `import appCss from "../styles.css?url"` fed through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is

@@ -23,7 +23,7 @@ src/policy/         command, orchestration, checks/<rule-domain>, manifest rules
 src/verify/         Nitro runtime verification
 ```
 
-Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skills update`, `clean`, `db migrate|seed|studio`,
+Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skills update`, `clean [--dependencies] [--bun-cache]`, `db migrate|seed|studio`,
 `admin create`, `generate`, `desktop build`, `policy`, `verify`,
 `shadcn update`.
 

@@ -1,15 +1,19 @@
-import { Receipt, ShieldCheck, SquaresFour, Stack, UsersThree } from "@phosphor-icons/react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { GearSix, SquaresFour, UsersThree } from "@phosphor-icons/react";
+import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { cn } from "@voidmix/ui/lib/utils";
-import { signOut } from "../../lib/auth-client";
+import { signOut, useSession } from "../../lib/auth-client";
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const matchRoute = useMatchRoute();
+  const session = useSession();
+  const role = (session.data?.user as { role?: string } | undefined)?.role;
+  const canManageSettings = role === "admin" || role === "owner";
 
   async function handleSignOut() {
     await signOut();
@@ -29,21 +33,36 @@ export function AdminShell({ children }: { children: ReactNode }) {
           aria-label="Admin navigation"
           className="flex flex-col gap-1 max-[760px]:flex-row max-[760px]:justify-end"
         >
-          <NavItem icon={<SquaresFour weight="regular" />} label="Overview" />
-          <NavItem active icon={<UsersThree weight="regular" />} label="Users" count="2,416" />
-          <NavItem icon={<Stack weight="regular" />} label="Workspaces" />
-          <NavItem hiddenOnSmall icon={<Receipt weight="regular" />} label="Billing" />
-          <NavItem hiddenOnSmall icon={<ShieldCheck weight="regular" />} label="Audit log" />
+          <NavItem
+            active={Boolean(matchRoute({ to: "/", fuzzy: false }))}
+            icon={<SquaresFour weight="regular" />}
+            label="Overview"
+            to="/"
+          />
+          <NavItem
+            active={Boolean(matchRoute({ to: "/admin", fuzzy: false }))}
+            icon={<UsersThree weight="regular" />}
+            label="Users"
+            to="/admin"
+          />
+          {canManageSettings ? (
+            <NavItem
+              active={Boolean(matchRoute({ to: "/admin/settings", fuzzy: true }))}
+              icon={<GearSix weight="regular" />}
+              label="Settings"
+              to="/admin/settings"
+            />
+          ) : null}
         </nav>
         <div className="mt-auto border-t pt-4 max-[760px]:hidden">
           <Badge className="mx-1.5 mb-4" variant="secondary">
             All systems normal
           </Badge>
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2.5 px-1.5 pt-1">
-            <Avatar name="Zack Operator" size="small" />
+            <Avatar name={session.data?.user.name ?? "Operator"} size="small" />
             <div className="flex flex-col gap-0.5 max-[1050px]:hidden">
-              <strong className="text-xs">Zack</strong>
-              <span className="text-[0.7rem] text-muted-foreground">Owner</span>
+              <strong className="text-xs">{session.data?.user.name ?? "Operator"}</strong>
+              <span className="text-[0.7rem] text-muted-foreground">{role ?? "User"}</span>
             </div>
             <Button
               aria-label="Open account menu"
@@ -88,33 +107,25 @@ export function AdminShell({ children }: { children: ReactNode }) {
 function NavItem({
   icon,
   label,
-  count,
+  to,
   active = false,
-  hiddenOnSmall = false,
 }: {
   icon: ReactNode;
   label: string;
-  count?: string;
+  to: "/" | "/admin" | "/admin/settings" | "/admin/settings/auth";
   active?: boolean;
-  hiddenOnSmall?: boolean;
 }) {
   return (
-    <a
+    <Link
       aria-current={active ? "page" : undefined}
       className={cn(
         "flex min-h-10 items-center gap-3 rounded-lg px-3 text-[0.8rem] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 max-[1050px]:justify-center max-[1050px]:px-0 max-[760px]:size-9 max-[760px]:min-h-0",
         active && "bg-accent text-accent-foreground",
-        hiddenOnSmall && "max-[480px]:hidden",
       )}
-      href={active ? "/admin" : "#"}
+      to={to}
     >
       <span className="flex text-base">{icon}</span>
       <span className="max-[1050px]:hidden">{label}</span>
-      {count ? (
-        <small className="ml-auto font-mono text-[0.65rem] text-muted-foreground max-[1050px]:hidden">
-          {count}
-        </small>
-      ) : null}
-    </a>
+    </Link>
   );
 }

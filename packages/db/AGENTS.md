@@ -19,8 +19,8 @@ under `drizzle/`.
 
 ## Ownership
 
-- Own the Drizzle schema, `PostgresUserRepository` (production),
-  `InMemoryUserRepository` (development and test), and migration execution.
+- Own the Drizzle schema, user and system-settings repositories in PostgreSQL
+  and memory, and migration execution.
 - Own no business rule and no interface definition — both belong to
   `@voidmix/domain`.
 
@@ -29,8 +29,21 @@ under `drizzle/`.
 - Never expose tables or Drizzle types to frontend applications. Web (including
   its Admin routes) and Desktop reach the backend through `@voidmix/client` and
   `@voidmix/contracts`.
-- **Both repositories must be updated together** when `UserRepository` changes,
-  or `implements UserRepository` fails.
+- PostgreSQL and in-memory implementations must be updated together when a
+  domain repository interface changes.
+- Auth policy reuses `system_settings` with the fixed keys
+  `auth.registration_mode`, `auth.allowed_email_domains`,
+  `mail.welcome_enabled`, `mail.verification_enabled`, and
+  `mail.password_reset_enabled`; it never exposes an arbitrary key/value API.
+- Auth policy updates and their redacted `system.settings.updated` audit event
+  are one transaction in PostgreSQL. A no-op update must not append an audit
+  event.
+- Mail and Auth mutations are partial. Omitted fields are untouched, `set` or
+  `replace` upserts one fixed key, and `reset` deletes that key so resolution
+  falls back to environment/default state. An absent reset is a no-op.
+- Settings audit metadata contains only changed field names, mutation operations,
+  and the result. Never include domain lists, effective policy values, or secret
+  material.
 - `InMemoryUserRepository` must **clone on read and on write**
   (`{ ...user }`, `{ ...event, metadata: { ...event.metadata } }`) so tests
   cannot mutate stored state.
@@ -43,7 +56,7 @@ under `drizzle/`.
   bottom of `src/schema.ts`, and in the named re-export barrel `src/index.ts`.
 - Keep application relations in the single `defineRelations(schema, ...)`
   export. For multiple foreign keys between the same tables, use explicit
-  aliases; audit events use `actor` and `target`.
+  aliases; audit events use `actor` and nullable `targetUser`.
 - **Never hand-edit `drizzle/*.sql` or `drizzle/meta/`.** Generate them. The
   journal's `idx` does not match the filename number, so do not invent names.
 - `drizzle.config.ts` calls `getDatabaseEnv()` at module load, so `drizzle-kit`

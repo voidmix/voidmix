@@ -1,6 +1,17 @@
 import { hasPermission, type Permission, type Session } from "@voidmix/auth";
 import { apiContract } from "@voidmix/contracts";
-import { createUserAdministration, DomainError, type UserRepository } from "@voidmix/domain";
+import {
+  createAuthSettingsAdministration,
+  createMailSettingsAdministration,
+  createPublicAuthCapabilities,
+  createUserAdministration,
+  DomainError,
+  type MailSettingsFallback,
+  type SystemSettingsRepository,
+  type UserRepository,
+} from "@voidmix/domain";
+import { MailUnavailableError } from "@voidmix/mail/server";
+import type { Mailer } from "@voidmix/mail/types";
 import { implement, ORPCError } from "@orpc/server";
 import type {
   RequestHeadersHandlerPluginContext,
@@ -17,6 +28,9 @@ export interface ApiContext
 
 export interface CreateApiRouterOptions {
   users: UserRepository;
+  settings: SystemSettingsRepository;
+  mailFallback: MailSettingsFallback;
+  mailer: Mailer;
   now?: () => Date;
   id?: () => string;
 }
@@ -26,6 +40,22 @@ export function createApiRouter(options: CreateApiRouterOptions) {
     users: options.users,
     ...(options.now ? { now: options.now } : {}),
     ...(options.id ? { id: options.id } : {}),
+  });
+  const mailSettings = createMailSettingsAdministration({
+    settings: options.settings,
+    fallback: options.mailFallback,
+    sendTest: (recipient) => options.mailer.sendTest(recipient),
+    ...(options.now ? { now: options.now } : {}),
+    ...(options.id ? { id: options.id } : {}),
+  });
+  const authSettings = createAuthSettingsAdministration({
+    settings: options.settings,
+    ...(options.now ? { now: options.now } : {}),
+    ...(options.id ? { id: options.id } : {}),
+  });
+  const publicAuthCapabilities = createPublicAuthCapabilities({
+    settings: options.settings,
+    mailFallback: options.mailFallback,
   });
   const os = implement(apiContract)
     .$context<ApiContext>()
@@ -41,6 +71,13 @@ export function createApiRouter(options: CreateApiRouterOptions) {
       status: "ok" as const,
       timestamp: options.now?.() ?? new Date(),
     })),
+    public: {
+      auth: {
+        capabilities: {
+          get: os.public.auth.capabilities.get.handler(() => publicAuthCapabilities.get()),
+        },
+      },
+    },
     admin: {
       users: {
         list: os.admin.users.list.handler(async ({ context, input }) => {
@@ -84,6 +121,104 @@ export function createApiRouter(options: CreateApiRouterOptions) {
           return administration.audit(input.limit);
         }),
       },
+      settings: {
+        auth: {
+          get: os.admin.settings.auth.get.handler(async ({ context }) => {
+            requirePermission(context, "admin.settings.auth.read");
+            return authSettings.get();
+          }),
+          update: os.admin.settings.auth.update.handler(async ({ context, input }) => {
+            const session = requirePermission(context, "admin.settings.auth.write");
+            context.log?.set({
+              actor: { type: "user", id: session.user.id },
+              target: { type: "system_setting", id: "auth" },
+              outcome: "started",
+            });
+            try {
+              const updated = await authSettings.update({
+                actorId: session.user.id,
+                settings: {
+                  ...(input.registrationMode !== undefined
+                    ? { registrationMode: input.registrationMode }
+                    : {}),
+                  ...(input.allowedEmailDomains !== undefined
+                    ? { allowedEmailDomains: input.allowedEmailDomains }
+                    : {}),
+                  ...(input.welcomeEmailEnabled !== undefined
+                    ? { welcomeEmailEnabled: input.welcomeEmailEnabled }
+                    : {}),
+                  ...(input.verificationEmailEnabled !== undefined
+                    ? { verificationEmailEnabled: input.verificationEmailEnabled }
+                    : {}),
+                  ...(input.passwordResetEmailEnabled !== undefined
+                    ? { passwordResetEmailEnabled: input.passwordResetEmailEnabled }
+                    : {}),
+                },
+              });
+              context.log?.set({ outcome: "success" });
+              return updated;
+            } catch (error) {
+              context.log?.set({ outcome: "failure" });
+              throw mapDomainError(error);
+            }
+          }),
+        },
+        mail: {
+          get: os.admin.settings.mail.get.handler(async ({ context }) => {
+            requirePermission(context, "admin.settings.mail.read");
+            return mailSettings.get();
+          }),
+          update: os.admin.settings.mail.update.handler(async ({ context, input }) => {
+            const session = requirePermission(context, "admin.settings.mail.write");
+            if (input.resendApiKey) {
+              requirePermission(context, "admin.settings.mail.secret.write");
+            }
+            context.log?.set({
+              actor: { type: "user", id: session.user.id },
+              target: { type: "system_setting", id: "mail" },
+              outcome: "started",
+            });
+            try {
+              const updated = await mailSettings.update({
+                actorId: session.user.id,
+                settings: {
+                  ...(input.enabled !== undefined ? { enabled: input.enabled } : {}),
+                  ...(input.from !== undefined ? { from: input.from } : {}),
+                  ...(input.fromName !== undefined ? { fromName: input.fromName } : {}),
+                  ...(input.templatesBaseUrl !== undefined
+                    ? { templatesBaseUrl: input.templatesBaseUrl }
+                    : {}),
+                  ...(input.resendApiKey !== undefined ? { resendApiKey: input.resendApiKey } : {}),
+                },
+              });
+              context.log?.set({ outcome: "success" });
+              return updated;
+            } catch (error) {
+              context.log?.set({ outcome: "failure" });
+              throw mapDomainError(error);
+            }
+          }),
+          sendTest: os.admin.settings.mail.sendTest.handler(async ({ context }) => {
+            const session = requirePermission(context, "admin.settings.mail.test");
+            context.log?.set({
+              actor: { type: "user", id: session.user.id },
+              target: { type: "system_setting", id: "mail" },
+              outcome: "started",
+            });
+            try {
+              const result = await mailSettings.sendTest({
+                actorId: session.user.id,
+                recipient: { email: session.user.email, name: session.user.displayName },
+              });
+              context.log?.set({ outcome: "success" });
+              return result;
+            } catch (error) {
+              context.log?.set({ outcome: "failure" });
+              throw mapDomainError(error);
+            }
+          }),
+        },
+      },
     },
   });
 }
@@ -101,6 +236,13 @@ function requirePermission(context: ApiContext, permission: Permission): Session
 }
 
 function mapDomainError(error: unknown): ORPCError<string, unknown> {
+  if (error instanceof MailUnavailableError) {
+    return new ORPCError("MAIL_NOT_CONFIGURED", {
+      message: error.message,
+      data: { missing: error.missing },
+      cause: error,
+    });
+  }
   if (!(error instanceof DomainError)) {
     return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
   }
@@ -113,5 +255,13 @@ function mapDomainError(error: unknown): ORPCError<string, unknown> {
       return new ORPCError("CONFLICT", { message: error.message, cause: error });
     case "EMAIL_ALREADY_EXISTS":
       return new ORPCError("CONFLICT", { message: error.message, cause: error });
+    case "BAD_REQUEST":
+      return new ORPCError("BAD_REQUEST", { message: error.message, cause: error });
+    case "MAIL_NOT_CONFIGURED":
+      return new ORPCError("MAIL_NOT_CONFIGURED", {
+        message: error.message,
+        data: { missing: [] },
+        cause: error,
+      });
   }
 }

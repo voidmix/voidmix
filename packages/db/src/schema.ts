@@ -1,4 +1,4 @@
-import { defineRelations } from "drizzle-orm";
+import { defineRelations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -12,7 +12,13 @@ import {
 
 export const roleEnum = pgEnum("role", ["user", "admin", "owner"]);
 export const userStatusEnum = pgEnum("user_status", ["active", "suspended"]);
-export const auditActionEnum = pgEnum("audit_action", ["user.status.changed", "admin.created"]);
+export const auditActionEnum = pgEnum("audit_action", [
+  "user.status.changed",
+  "admin.created",
+  "system.settings.updated",
+  "system.mail.test.sent",
+]);
+export const auditTargetTypeEnum = pgEnum("audit_target_type", ["user", "system_setting"]);
 
 export const users = pgTable(
   "users",
@@ -115,9 +121,14 @@ export const auditEvents = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "restrict", onUpdate: "cascade" }),
     action: auditActionEnum("action").notNull(),
-    targetId: text("target_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "restrict", onUpdate: "cascade" }),
+    targetType: auditTargetTypeEnum("target_type").notNull().default("user"),
+    targetId: text("target_id").notNull(),
+    targetUserId: text("target_user_id")
+      .generatedAlwaysAs(sql`case when "target_type" = 'user' then "target_id" else null end`)
+      .references(() => users.id, {
+        onDelete: "restrict",
+        onUpdate: "cascade",
+      }),
     occurredAt: timestamp("occurred_at", { withTimezone: true, mode: "date" })
       .notNull()
       .defaultNow(),
@@ -127,10 +138,47 @@ export const auditEvents = pgTable(
     index("audit_events_occurred_at_idx").on(table.occurredAt),
     index("audit_events_actor_id_idx").on(table.actorId),
     index("audit_events_target_id_idx").on(table.targetId),
+    index("audit_events_target_user_id_idx").on(table.targetUserId),
   ],
 );
 
-export const schema = { users, auditEvents, authSessions, authAccounts, authVerifications };
+export const systemSettings = pgTable(
+  "system_settings",
+  {
+    key: text("key").primaryKey(),
+    value: text("value").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedBy: text("updated_by").references(() => users.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+  },
+  (table) => [index("system_settings_updated_by_idx").on(table.updatedBy)],
+);
+
+export const systemSecrets = pgTable(
+  "system_secrets",
+  {
+    key: text("key").primaryKey(),
+    value: text("value").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedBy: text("updated_by").references(() => users.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+  },
+  (table) => [index("system_secrets_updated_by_idx").on(table.updatedBy)],
+);
+
+export const schema = {
+  users,
+  auditEvents,
+  authSessions,
+  authAccounts,
+  authVerifications,
+  systemSettings,
+  systemSecrets,
+};
 
 export const relations = defineRelations(schema, (r) => ({
   users: {
@@ -141,8 +189,16 @@ export const relations = defineRelations(schema, (r) => ({
     }),
     targetedAuditEvents: r.many.auditEvents({
       from: r.users.id,
-      to: r.auditEvents.targetId,
-      alias: "target",
+      to: r.auditEvents.targetUserId,
+      alias: "targetUser",
+    }),
+    updatedSystemSettings: r.many.systemSettings({
+      from: r.users.id,
+      to: r.systemSettings.updatedBy,
+    }),
+    updatedSystemSecrets: r.many.systemSecrets({
+      from: r.users.id,
+      to: r.systemSecrets.updatedBy,
     }),
     authSessions: r.many.authSessions({
       from: r.users.id,
@@ -160,11 +216,10 @@ export const relations = defineRelations(schema, (r) => ({
       alias: "actor",
       optional: false,
     }),
-    target: r.one.users({
-      from: r.auditEvents.targetId,
+    targetUser: r.one.users({
+      from: r.auditEvents.targetUserId,
       to: r.users.id,
-      alias: "target",
-      optional: false,
+      alias: "targetUser",
     }),
   },
   authSessions: {
@@ -174,4 +229,16 @@ export const relations = defineRelations(schema, (r) => ({
     user: r.one.users({ from: r.authAccounts.userId, to: r.users.id, optional: false }),
   },
   authVerifications: {},
+  systemSettings: {
+    updatedByUser: r.one.users({
+      from: r.systemSettings.updatedBy,
+      to: r.users.id,
+    }),
+  },
+  systemSecrets: {
+    updatedByUser: r.one.users({
+      from: r.systemSecrets.updatedBy,
+      to: r.users.id,
+    }),
+  },
 }));

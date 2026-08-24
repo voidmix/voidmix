@@ -1,7 +1,8 @@
-export { InMemoryUserRepository } from "./memory.js";
+export { InMemorySystemSettingsRepository, InMemoryUserRepository } from "./memory.js";
 export {
   connectDatabase,
   migrateDatabase,
+  PostgresSystemSettingsRepository,
   PostgresUserRepository,
   type DatabaseConnection,
 } from "./postgres.js";
@@ -12,5 +13,7 @@ export {
   authVerifications,
   relations,
   schema,
+  systemSecrets,
+  systemSettings,
   users,
 } from "./schema.js";

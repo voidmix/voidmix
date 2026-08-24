@@ -158,6 +158,19 @@ bun run --cwd e2e test:report
   belong to Web's generated route tree.
 - Ordinary users cannot access protected Admin procedures.
 - Admin writes produce audit records and enforce self/final-admin protections.
+- Mail settings enforce separate read, ordinary-write, secret-write, and test
+  permissions; read responses and audit metadata never expose the API key.
+- Auth settings reject ordinary users, allow Admin and Owner reads, and reserve
+  writes for Owner. Tests cover dynamic registration/domain/email-policy guards,
+  per-field set/reset/default restoration, redacted audits, and no-op updates.
+- The unauthenticated Auth capability procedure returns only three booleans;
+  public registration and tokenless reset UI follows them, fails open on request
+  failure, and keeps existing reset-token flows usable.
+- Settings tests distinguish omission (retain), `set`/`replace` (database
+  override), and `reset` (delete and inherit), including secret redaction and
+  source transitions.
+- Missing production mail configuration leaves health and login available while
+  mail-dependent Auth operations return `MAIL_NOT_CONFIGURED` with HTTP 503.
 - Database scripts are tested against disposable development/test data.
 - CI builds Web/API on Linux and Desktop packages on macOS and Windows.
 - CI runs each Vitest layer separately and uploads workspace coverage reports as

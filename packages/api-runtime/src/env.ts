@@ -35,7 +35,7 @@ export interface ApiRuntimeEnvironment {
   AUTH_DOMAIN?: string | undefined;
   RESEND_API_KEY?: string | undefined;
   MAIL_FROM?: string | undefined;
-  MAIL_FROM_NAME: string;
+  MAIL_FROM_NAME?: string | undefined;
   EMAIL_TEMPLATES_BASE_URL?: string | undefined;
   LOG_LEVEL?: LogLevel | undefined;
   LOG_PRETTY?: boolean | undefined;

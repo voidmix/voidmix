@@ -5,10 +5,12 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/component
 import { Input } from "@voidmix/ui/components/ui/input";
 import { signIn, signUp } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
+import { useAuthCapabilities } from "./capabilities";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
+  const capabilities = useAuthCapabilities();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,6 +65,24 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     }
   }
 
+  if (mode === "register" && !capabilities.registrationAvailable) {
+    return (
+      <AuthCard
+        description="New account registration is not available with the current system and mail configuration."
+        footer={
+          <Link className="font-medium text-foreground hover:underline" to="/login">
+            Back to sign in
+          </Link>
+        }
+        title="Registration unavailable"
+      >
+        <p className="text-sm leading-6 text-muted-foreground">
+          An administrator can reopen registration after verification email delivery is ready.
+        </p>
+      </AuthCard>
+    );
+  }
+
   return (
     <AuthCard
       description={
@@ -71,7 +91,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           : "Create an account with your work email to get started."
       }
       footer={
-        mode === "login" ? (
+        mode === "login" && capabilities.registrationAvailable ? (
           <span>
             New to Voidmix?{" "}
             <Link className="font-medium text-foreground hover:underline" to="/register">
@@ -121,7 +141,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           </Field>
           <PasswordField
             action={
-              mode === "login" ? (
+              mode === "login" && capabilities.passwordResetRequestAvailable ? (
                 <Link
                   className="text-[0.8125rem] text-muted-foreground hover:text-foreground hover:underline"
                   to="/reset-password"

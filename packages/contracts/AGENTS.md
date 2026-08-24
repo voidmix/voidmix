@@ -32,6 +32,12 @@ and no barrel to update.
 - The contract tree and `@voidmix/api-runtime`'s router tree must match **exactly**. Adding
   to one without the other is a type error deep inside `os.router()` whose
   message does not point at your edit.
+- Public Auth capabilities expose only registration, verification-request, and
+  password-reset-request booleans. Never add settings sources, domain lists,
+  missing mail fields, or secret state to that public DTO.
+- Settings updates use optional per-field mutation unions. Omitted fields retain
+  their database state; `reset` means delete the database override, not persist
+  an empty inherited value.
 - **A status or audit-action value is declared in three places with no shared
   source**: the literal union in `@voidmix/domain`, the `z.enum` here, and the
   `pgEnum` in `@voidmix/db`. Miss one and it fails at runtime (Zod output

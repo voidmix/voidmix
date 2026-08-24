@@ -18,6 +18,8 @@ import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
 import { Route as appadminAdminRouteImport } from './routes/(app)/(admin)/admin'
+import { Route as appadminAdminSettingsRouteImport } from './routes/(app)/(admin)/admin/settings'
+import { Route as appadminAdminSettingsAuthRouteImport } from './routes/(app)/(admin)/admin/settings/auth'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -61,6 +63,17 @@ const appadminAdminRoute = appadminAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => appadminRouteRoute,
 } as any)
+const appadminAdminSettingsRoute = appadminAdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => appadminAdminRoute,
+} as any)
+const appadminAdminSettingsAuthRoute =
+  appadminAdminSettingsAuthRouteImport.update({
+    id: '/auth',
+    path: '/auth',
+    getParentRoute: () => appadminAdminSettingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,7 +81,9 @@ export interface FileRoutesByFullPath {
   '/register': typeof authRegisterRoute
   '/reset-password': typeof authResetPasswordRoute
   '/verify-email': typeof authVerifyEmailRoute
-  '/admin': typeof appadminAdminRoute
+  '/admin': typeof appadminAdminRouteWithChildren
+  '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
+  '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -76,7 +91,9 @@ export interface FileRoutesByTo {
   '/register': typeof authRegisterRoute
   '/reset-password': typeof authResetPasswordRoute
   '/verify-email': typeof authVerifyEmailRoute
-  '/admin': typeof appadminAdminRoute
+  '/admin': typeof appadminAdminRouteWithChildren
+  '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
+  '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,7 +105,9 @@ export interface FileRoutesById {
   '/(auth)/register': typeof authRegisterRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
-  '/(app)/(admin)/admin': typeof appadminAdminRoute
+  '/(app)/(admin)/admin': typeof appadminAdminRouteWithChildren
+  '/(app)/(admin)/admin/settings': typeof appadminAdminSettingsRouteWithChildren
+  '/(app)/(admin)/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -99,6 +118,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/admin'
+    | '/admin/settings'
+    | '/admin/settings/auth'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -107,6 +128,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify-email'
     | '/admin'
+    | '/admin/settings'
+    | '/admin/settings/auth'
   id:
     | '__root__'
     | '/'
@@ -118,6 +141,8 @@ export interface FileRouteTypes {
     | '/(auth)/reset-password'
     | '/(auth)/verify-email'
     | '/(app)/(admin)/admin'
+    | '/(app)/(admin)/admin/settings'
+    | '/(app)/(admin)/admin/settings/auth'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -191,15 +216,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appadminAdminRouteImport
       parentRoute: typeof appadminRouteRoute
     }
+    '/(app)/(admin)/admin/settings': {
+      id: '/(app)/(admin)/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof appadminAdminSettingsRouteImport
+      parentRoute: typeof appadminAdminRoute
+    }
+    '/(app)/(admin)/admin/settings/auth': {
+      id: '/(app)/(admin)/admin/settings/auth'
+      path: '/auth'
+      fullPath: '/admin/settings/auth'
+      preLoaderRoute: typeof appadminAdminSettingsAuthRouteImport
+      parentRoute: typeof appadminAdminSettingsRoute
+    }
   }
 }
 
+interface appadminAdminSettingsRouteChildren {
+  appadminAdminSettingsAuthRoute: typeof appadminAdminSettingsAuthRoute
+}
+
+const appadminAdminSettingsRouteChildren: appadminAdminSettingsRouteChildren = {
+  appadminAdminSettingsAuthRoute: appadminAdminSettingsAuthRoute,
+}
+
+const appadminAdminSettingsRouteWithChildren =
+  appadminAdminSettingsRoute._addFileChildren(
+    appadminAdminSettingsRouteChildren,
+  )
+
+interface appadminAdminRouteChildren {
+  appadminAdminSettingsRoute: typeof appadminAdminSettingsRouteWithChildren
+}
+
+const appadminAdminRouteChildren: appadminAdminRouteChildren = {
+  appadminAdminSettingsRoute: appadminAdminSettingsRouteWithChildren,
+}
+
+const appadminAdminRouteWithChildren = appadminAdminRoute._addFileChildren(
+  appadminAdminRouteChildren,
+)
+
 interface appadminRouteRouteChildren {
-  appadminAdminRoute: typeof appadminAdminRoute
+  appadminAdminRoute: typeof appadminAdminRouteWithChildren
 }
 
 const appadminRouteRouteChildren: appadminRouteRouteChildren = {
-  appadminAdminRoute: appadminAdminRoute,
+  appadminAdminRoute: appadminAdminRouteWithChildren,
 }
 
 const appadminRouteRouteWithChildren = appadminRouteRoute._addFileChildren(

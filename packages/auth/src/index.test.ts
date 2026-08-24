@@ -19,4 +19,12 @@ describe("hasPermission", () => {
   it("denies administrative access to regular users", () => {
     expect(hasPermission(session("user"), "admin.users.read")).toBe(false);
   });
+
+  it("keeps the role grants explicit", () => {
+    expect(hasPermission(session("admin"), "admin.settings.mail.secret.write")).toBe(true);
+    expect(hasPermission(session("admin"), "admin.settings.auth.read")).toBe(true);
+    expect(hasPermission(session("admin"), "admin.settings.auth.write")).toBe(false);
+    expect(hasPermission(session("owner"), "admin.settings.auth.write")).toBe(true);
+    expect(hasPermission(session("user"), "admin.settings.mail.read")).toBe(false);
+  });
 });

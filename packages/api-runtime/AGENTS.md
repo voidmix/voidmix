@@ -16,7 +16,8 @@ depending on Nitro or an application.
 ## Ownership
 
 - Own Hono routes, oRPC procedure handlers, permission enforcement, session
-  resolution, CORS, Better Auth composition, and production repository wiring.
+  resolution, CORS, Better Auth composition, dynamic mail/auth policy
+  resolution, and production repository wiring.
 - Own no domain rule, wire schema, deployment listener, or Nitro lifecycle.
 
 ## Constraints
@@ -27,6 +28,22 @@ depending on Nitro or an application.
   logger. Request adapters receive an explicit `api` logger config.
 - Keep `/api/auth/*`, `/rpc/*`, and `/health` stable. Protected procedures must
   call `requirePermission` and retain ordinary-user rejection coverage.
+- Mail-dependent Better Auth requests return `MAIL_NOT_CONFIGURED` with HTTP 503
+  when settings are disabled/incomplete; health and verified-user login remain
+  available.
+- Keep Admin settings views, server-only runtime configuration, and
+  `public.auth.capabilities.get` separate. The public procedure is unauthenticated
+  and returns only three derived booleans; it never returns sources, domain
+  allowlists, missing fields, or secret state.
+- Registration, verification-email, and password-reset guards resolve typed
+  Auth settings for every relevant request. Preserve the stable
+  `REGISTRATION_DISABLED`, `EMAIL_DOMAIN_NOT_ALLOWED`,
+  `EMAIL_VERIFICATION_DISABLED`, and `PASSWORD_RESET_DISABLED` responses.
+- `admin.settings.auth.get` requires Auth settings read permission;
+  `admin.settings.auth.update` requires the separate Owner-only write
+  permission. UI role checks never replace these handler guards.
+- Mail ordinary mutations require mail-write permission. A Resend `replace` or
+  `reset` in the same typed update additionally requires secret-write permission.
 - Hono logs non-RPC requests and oRPC logs `/rpc/**`; preserve one wide event
   per request and never log credentials or session tokens.
 - Keep the header session resolver as an explicit development/test seam. The

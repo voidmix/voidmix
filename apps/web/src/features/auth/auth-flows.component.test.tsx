@@ -7,6 +7,11 @@ import type { FormEvent, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mocks = vi.hoisted(() => ({
+  capabilities: {
+    registrationAvailable: true,
+    verificationEmailRequestAvailable: true,
+    passwordResetRequestAvailable: true,
+  },
   navigate: vi.fn(),
   notifyAuthFailure: vi.fn(),
   requestPasswordReset: vi.fn(),
@@ -40,6 +45,10 @@ vi.mock("./feedback", () => ({
   notifyAuthFailure: mocks.notifyAuthFailure,
 }));
 
+vi.mock("./capabilities", () => ({
+  useAuthCapabilities: () => mocks.capabilities,
+}));
+
 import { AuthForm } from "./auth-form";
 import { PasswordField } from "./password-field";
 import { ResetPassword } from "./reset-password";
@@ -49,6 +58,9 @@ afterEach(() => cleanup());
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.capabilities.registrationAvailable = true;
+  mocks.capabilities.verificationEmailRequestAvailable = true;
+  mocks.capabilities.passwordResetRequestAvailable = true;
   mocks.navigate.mockResolvedValue(undefined);
   mocks.notifyAuthFailure.mockReturnValue("Unable to complete authentication.");
 });
@@ -107,6 +119,26 @@ describe("authentication forms", () => {
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
+  it("hides unavailable registration and password reset entry points", () => {
+    mocks.capabilities.registrationAvailable = false;
+    mocks.capabilities.passwordResetRequestAvailable = false;
+
+    render(<AuthForm mode="login" />);
+
+    expect(screen.queryByRole("link", { name: "Create account" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Forgot password?" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeVisible();
+  });
+
+  it("shows an unavailable state instead of the registration form", () => {
+    mocks.capabilities.registrationAvailable = false;
+
+    render(<AuthForm mode="register" />);
+
+    expect(screen.getByRole("heading", { name: "Registration unavailable" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Create account" })).not.toBeInTheDocument();
+  });
+
   it("toggles password visibility without submitting the form", async () => {
     const submit = vi.fn((event: FormEvent) => event.preventDefault());
     const user = userEvent.setup();
@@ -140,6 +172,24 @@ describe("password reset and email verification", () => {
       email: "owner@example.com",
       redirectTo: expect.stringMatching(/\/reset-password$/),
     });
+  });
+
+  it("shows an unavailable state for a tokenless reset request", () => {
+    mocks.capabilities.passwordResetRequestAvailable = false;
+
+    render(<ResetPassword />);
+
+    expect(screen.getByRole("heading", { name: "Password reset unavailable" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Send reset link" })).not.toBeInTheDocument();
+  });
+
+  it("keeps an existing reset token usable when email requests are disabled", () => {
+    mocks.capabilities.passwordResetRequestAvailable = false;
+
+    render(<ResetPassword token="existing-reset-token" />);
+
+    expect(screen.getByRole("heading", { name: "Set a new password" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Update password" })).toBeVisible();
   });
 
   it("verifies a token and exposes the completed state", async () => {

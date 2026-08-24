@@ -1,3 +1,4 @@
+import { COMMON_ERROR_STATUS_MAP } from "@orpc/server";
 import { BodyLimitPlugin, RPCHandler } from "@orpc/server/fetch";
 import {
   BatchHandlerPlugin,
@@ -8,10 +9,15 @@ import {
   ResponseHeadersHandlerPlugin,
   TimeoutHandlerPlugin,
 } from "@orpc/server/plugins";
-import type { UserRepository } from "@voidmix/domain";
+import type {
+  MailSettingsFallback,
+  SystemSettingsRepository,
+  UserRepository,
+} from "@voidmix/domain";
 import { createLoggerConfig, toMiddlewareOptions, type EvlogConfig } from "@voidmix/logger";
 import { evlog as honoEvlog, type EvlogVariables } from "@voidmix/logger/hono";
 import { withEvlog } from "@voidmix/logger/orpc";
+import type { Mailer } from "@voidmix/mail/types";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
@@ -21,6 +27,9 @@ import type { SessionResolver } from "./session.js";
 
 export interface CreateApiAppOptions {
   users: UserRepository;
+  settings: SystemSettingsRepository;
+  mailFallback: MailSettingsFallback;
+  mailer: Mailer;
   resolveSession: SessionResolver;
   allowedOrigins: readonly string[];
   authHandler: (request: Request) => Promise<Response>;
@@ -38,6 +47,9 @@ type ApiEnv = {
 export function createApiApp(options: CreateApiAppOptions) {
   const router = createApiRouter({
     users: options.users,
+    settings: options.settings,
+    mailFallback: options.mailFallback,
+    mailer: options.mailer,
     ...(options.now ? { now: options.now } : {}),
     ...(options.id ? { id: options.id } : {}),
   });
@@ -59,7 +71,9 @@ export function createApiApp(options: CreateApiAppOptions) {
         new TimeoutHandlerPlugin<ApiContext>({ timeout: 15_000 }),
       ],
       allowMethods: (method, _procedure, path) =>
-        method === "POST" || (method === "GET" && path.at(-1) !== "updateStatus"),
+        method === "POST" ||
+        (method === "GET" && !["updateStatus", "update", "sendTest"].includes(path.at(-1) ?? "")),
+      errorStatusMap: { ...COMMON_ERROR_STATUS_MAP, MAIL_NOT_CONFIGURED: 503 },
     }),
     {
       ...middlewareOptions,

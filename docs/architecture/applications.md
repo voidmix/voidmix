@@ -23,7 +23,13 @@ browser composition root for authentication and Admin operations.
 - Authentication pages are grouped under `(auth)/route.tsx` and retain the
   public `/login`, `/register`, `/reset-password`, and `/verify-email` URLs.
 - `(app)/route.tsx` owns the browser session gate. The nested `(admin)` group
-  mounts the Admin shell and `/admin` user directory, while
+  mounts the Admin shell, `/admin` user directory, and `/admin/settings` mail
+  configuration. `/admin/settings/auth` exposes registration and Auth-mail
+  policy as read-only for Admin and writable for Owner. Settings fields show
+  their effective source and safe inherited value; reset deletes the database
+  override instead of persisting the fallback. Public Auth pages consume a
+  separate three-boolean capability view and fail open when it cannot be loaded,
+  while
   `@voidmix/api-runtime` remains authoritative for authentication,
   authorization, suspended users, and audit rules.
 - Admin-specific adapters, tables, filters, and layouts stay isolated under
@@ -34,7 +40,8 @@ browser composition root for authentication and Admin operations.
 - Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
   through explicit Nitro Web-format routes.
 - Uses the shared typed client with same-origin cookie requests.
-- Requires `DATABASE_URL` and the server Auth/Mail environment at startup.
+- Requires `DATABASE_URL` and the server Auth environment at startup. Mail may
+  be configured later through Admin or supplied through compatibility variables.
 
 ## Desktop
 
@@ -86,18 +93,24 @@ Current procedures:
 
 ```text
 health
+public.auth.capabilities.get
 admin.users.list
 admin.users.get
 admin.users.updateStatus
 admin.audit.list
+admin.settings.mail.get
+admin.settings.mail.update
+admin.settings.mail.sendTest
+admin.settings.auth.get
+admin.settings.auth.update
 ```
 
 `GET /health` is available on both Web and the compatibility service. The
 runtime requires `DATABASE_URL`; the seeded in-memory repository is reserved
 for direct `@voidmix/api-runtime` tests that inject it explicitly.
 
-The oRPC beta transport uses GET for read-only procedures and POST for status
-updates. The client and Fetch handler batch concurrent reads, deduplicate
+The oRPC beta transport uses GET for read-only procedures and POST for status or
+settings updates and test delivery. The client and Fetch handler batch concurrent reads, deduplicate
 identical in-flight reads, compress payloads above 1 KiB, propagate an
 `x-request-id` response header, retry rate-limited/unavailable reads when the
 server supplies `Retry-After`, enforce a 1 MiB request-body limit, and enforce a
@@ -111,4 +124,16 @@ non-RPC routes, while the oRPC adapter records procedures and errors for
 Better Auth is mounted at `/api/auth/*` with credentialed CORS. Admin uses the
 HTTP-only cookie session; the public Web app remains unauthenticated. Auth email
 verification, password reset, and welcome messages are sent through the typed
-`@voidmix/mail` service.
+`@voidmix/mail` service. Database mail settings override environment fallbacks
+and are resolved for every send. Admin responses contain safe effective values,
+per-field sources, and inherited previews, while the server-only runtime result
+retains the Resend value. Mail-dependent Auth operations return 503 when
+configuration is disabled or incomplete without taking down the host.
+
+Registration mode, exact allowed email domains, and verification/reset/welcome
+delivery switches are typed database settings. Relevant Auth requests resolve
+them immediately before handling, so an Owner update applies without restarting
+the process. Public registration and recovery navigation receives only derived
+availability booleans, never the domain list, sources, missing fields, or secret
+state. Policy rejection uses stable error codes and does not affect verified-user
+login.
