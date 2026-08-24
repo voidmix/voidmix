@@ -1,0 +1,25 @@
+packages/db/AGENTS.md
+  s_dd909d2597cf6a::t_d04f45822529bd 60-63,67-70
+packages/db/drizzle/20260824122518_clever_skullbuster/migration.sql
+  s_dd909d2597cf6a::t_a25bf205ad1aac 1-26
+packages/db/drizzle/20260824122518_clever_skullbuster/snapshot.json
+  s_dd909d2597cf6a::t_a25bf205ad1aac 1-1244
+packages/db/src/schema.ts
+  s_dd909d2597cf6a::t_7c4726289c04d2 128-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "d565d04ad3ccfdd65b80ad93bec30866f48e3abb",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
