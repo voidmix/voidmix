@@ -52,6 +52,16 @@ describe("repository workflows", () => {
     ]);
   });
 
+  it("forwards extra flags to drizzle-kit generate", async () => {
+    const deps = dependencies();
+
+    await runGenerate(deps, ["--hints", "[]"]);
+
+    expect(deps.runCommand.mock.calls.map(([command]) => command)).toEqual([
+      ["bun", "run", "--cwd", "packages/db", "generate", "--hints", "[]"],
+    ]);
+  });
+
   it("does not regenerate route trees, which the Start plugin owns", async () => {
     const deps = dependencies();
 

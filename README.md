@@ -89,6 +89,8 @@ bun run test
 bun run test:e2e
 bun run build
 bun run db:migrate
+bun run db:push
+bun run db:clean
 bun run db:seed
 bun run db:studio
 bun run admin:create -- --email owner@example.com --name "Workspace Owner"

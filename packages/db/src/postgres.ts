@@ -63,6 +63,20 @@ export async function migrateDatabase(
   }
 }
 
+// Drops every table and the drizzle migration bookkeeping, leaving an empty
+// `public` schema for `db push` or a fresh `db migrate`. Callers own the
+// development/test restriction.
+export async function resetDatabase(databaseUrl: string): Promise<void> {
+  const client: Sql = postgres(databaseUrl, { max: 1 });
+  try {
+    await client`drop schema if exists drizzle cascade`;
+    await client`drop schema if exists public cascade`;
+    await client`create schema public`;
+  } finally {
+    await client.end();
+  }
+}
+
 export class PostgresUserRepository implements UserRepository {
   constructor(private readonly db: PostgresJsDatabase) {}
 

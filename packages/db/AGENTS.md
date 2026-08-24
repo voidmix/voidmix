@@ -7,11 +7,11 @@ interfaces owned by `@voidmix/domain`.
 
 ## Interface
 
-| Path       | Purpose                                                         |
-| ---------- | --------------------------------------------------------------- |
-| `.`        | repositories, connection helpers, `migrateDatabase`, re-exports |
-| `./env`    | the database environment preset                                 |
-| `./schema` | Drizzle tables, enums, and the `schema` aggregate               |
+| Path       | Purpose                                                     |
+| ---------- | ----------------------------------------------------------- |
+| `.`        | repositories, connection helpers, migrate/reset, re-exports |
+| `./env`    | the database environment preset                             |
+| `./schema` | Drizzle tables, enums, and the `schema` aggregate           |
 
 Source layout: `src/schema.ts` (one flat file, no `src/schema/`),
 `src/postgres.ts`, `src/memory.ts`, `src/env.ts`, `src/index.ts`, and SQL output
@@ -59,10 +59,21 @@ under `drizzle/`.
   aliases; audit events use `actor` and nullable `targetUser`.
 - **Never hand-edit `drizzle/*.sql` or `drizzle/meta/`.** Generate them. The
   journal's `idx` does not match the filename number, so do not invent names.
+- `generate` exits 2 with `missing_hints` when a diff is ambiguous — it cannot
+  tell a rename from a create. Re-run with the `--hints '<json-array>'` it
+  prints; `bun run generate` and `db push` forward flags for exactly this.
 - `drizzle.config.ts` calls `getDatabaseEnv()` at module load, so `drizzle-kit`
   fails at import time when `DATABASE_URL` is missing or invalid.
-- `db seed` and `db studio` are restricted to development and test by
-  `@voidmix/scripts`; `db migrate` only requires a database URL.
+- `db seed`, `db push`, `db clean`, and `db studio` are restricted to
+  development and test by `@voidmix/scripts`; `db migrate` only requires a
+  database URL.
+- `db push` applies the schema without a migration, so it is for a database in
+  flux only. Committed schema changes still ship as generated `drizzle/*.sql`.
+  It forwards its flags to `drizzle-kit`, because an ambiguous diff exits 2 and
+  demands `--hints '<json-array>'`.
+- `resetDatabase` (`db clean`) drops the `drizzle` and `public` schemas and
+  recreates an empty `public`. It destroys data and migration history without
+  prompting, so the environment guard is the only protection.
 - A new audit-action value is also declared in `@voidmix/domain` (literal union)
   and `@voidmix/contracts` (`z.enum`). All three plus a migration must land
   together.

@@ -38,6 +38,32 @@ const seedCommand = defineCommand({
   },
 });
 
+const cleanCommand = defineCommand({
+  meta: { name: "clean", description: "Drop every table in a development or test database" },
+  async run() {
+    await runContextualAction("db clean", "database", async (context) => {
+      const [{ runClean }, { resetDatabase }] = await Promise.all([
+        import("./operation.js"),
+        import("@voidmix/db"),
+      ]);
+      await runClean(context.environment, { log: context.log, reset: resetDatabase });
+    });
+  },
+});
+
+const pushCommand = defineCommand({
+  meta: { name: "push", description: "Push the schema straight to a local database" },
+  async run({ rawArgs }) {
+    await runContextualAction("db push", "database", async (context) => {
+      const [{ runPush }, { runCommand }] = await Promise.all([
+        import("./operation.js"),
+        import("../runtime/process.js"),
+      ]);
+      await runPush(context.environment, { ...context, runCommand }, rawArgs);
+    });
+  },
+});
+
 const studioCommand = defineCommand({
   meta: { name: "studio", description: "Open Drizzle Studio for a local database" },
   async run() {
@@ -54,7 +80,9 @@ const studioCommand = defineCommand({
 export const databaseCommand = defineCommand({
   meta: { name: "db", description: "Manage the Voidmix database" },
   subCommands: {
+    clean: cleanCommand,
     migrate: migrateCommand,
+    push: pushCommand,
     seed: seedCommand,
     studio: studioCommand,
   },

@@ -103,6 +103,8 @@ deps update             write compatible updates and refresh bun.lock
 skills update           update installed repository skills
 clean [options]        remove rebuildable outputs and tool caches; optionally dependencies or Bun's cache
 db migrate             apply Drizzle migrations
+db push                push the schema without a migration in development/test
+db clean               drop every table and migration record in development/test
 db seed                seed development/test data
 db studio              open Drizzle Studio in development/test
 admin create           create an idempotent initial administrator
@@ -254,8 +256,8 @@ customizations before committing; never run it unattended.
 `bun run doctor` fails for incorrect Bun/Node versions, missing repository
 metadata, required local binaries, or invalid environment schemas. Missing
 Rust/Cargo or Docker tooling is reported as a warning because those workflows
-are optional. `bun run db:studio` is interactive and bypasses Vite+ task
-orchestration.
+are optional. `bun run db:studio` and `bun run db:push` are interactive and
+bypass Vite+ task orchestration.
 
 The Citty command tree provides `vmx --help`, nested command help such as
 `vmx db --help`, and `vmx --version`.

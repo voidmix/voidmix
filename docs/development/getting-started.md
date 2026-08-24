@@ -68,6 +68,8 @@ bun run check
 bun run test
 bun run build
 bun run db:migrate
+bun run db:push
+bun run db:clean
 bun run db:seed
 bun run db:studio
 bun run admin:create -- --email owner@example.com --name "Workspace Owner"
@@ -80,6 +82,8 @@ Reach for the CLI directly when you need to pass an argument:
 
 ```bash
 bun run vmx db migrate
+bun run vmx db push
+bun run vmx db clean
 bun run vmx db seed
 bun run vmx db studio
 bun run vmx admin create --email owner@example.com --name "Workspace Owner"
@@ -94,6 +98,23 @@ bun run db:migrate
 bun run db:seed
 bun run db:studio
 ```
+
+`db:push` is the throwaway alternative to `generate` plus `db:migrate`: it
+diffs `src/schema.ts` against a development or test database and applies the
+change without writing a migration. Use it while a schema is still in flux, and
+generate a migration before committing. Flags reach `drizzle-kit` unchanged,
+which matters because an ambiguous diff exits 2 and asks to be re-run with
+hints:
+
+```bash
+bun run db:push -- --hints '[{"type":"create","kind":"table","entity":["public","users"]}]'
+```
+
+`db:clean` is the reset that pairs with both: it drops the `drizzle` and
+`public` schemas and recreates an empty `public`. It takes every table and the
+migration history with it, and there is no confirmation prompt — the
+development/test guard is the only thing standing between the command and the
+database `DATABASE_URL` points at.
 
 ## Application ports
 

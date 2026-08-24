@@ -4,6 +4,7 @@ export {
   migrateDatabase,
   PostgresSystemSettingsRepository,
   PostgresUserRepository,
+  resetDatabase,
   type DatabaseConnection,
 } from "./postgres.js";
 export {

@@ -19,6 +19,8 @@
     "clean:all": "vmx clean --dependencies",
     "clean:bun-cache": "vmx clean --bun-cache",
     "db:migrate": "vmx db migrate",
+    "db:push": "vmx db push",
+    "db:clean": "vmx db clean",
     "db:seed": "vmx db seed",
     "db:studio": "vmx db studio",
     "admin:create": "vmx admin create",

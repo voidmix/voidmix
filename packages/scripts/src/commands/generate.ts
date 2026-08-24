@@ -9,10 +9,15 @@ import type { RepositoryProcessDependencies } from "../runtime/process-dependenc
  * `@tanstack/start-plugin-core` appends — a strictly worse file that still passes
  * `tsc`. The Start Vite plugin owns those files; `dev` and `build` produce them.
  */
-export async function runGenerate(dependencies: RepositoryProcessDependencies): Promise<void> {
+export async function runGenerate(
+  dependencies: RepositoryProcessDependencies,
+  // `drizzle-kit generate` exits 2 and asks for `--hints '<json-array>'` when a
+  // diff is ambiguous, so extra flags have to reach it unchanged.
+  extraArgs: readonly string[] = [],
+): Promise<void> {
   dependencies.log("info", "generate.started");
   for (const [workspace, script] of [["packages/db", "generate"]] as const) {
-    await dependencies.runCommand(["bun", "run", "--cwd", workspace, script], {
+    await dependencies.runCommand(["bun", "run", "--cwd", workspace, script, ...extraArgs], {
       cwd: dependencies.repositoryRoot,
       env: dependencies.processEnv,
     });
@@ -22,10 +27,10 @@ export async function runGenerate(dependencies: RepositoryProcessDependencies): 
 
 export const generateCommand = defineCommand({
   meta: { name: "generate", description: "Regenerate database artifacts" },
-  async run() {
+  async run({ rawArgs }) {
     await runContextualAction("generate", "repository", async (context) => {
       const { runCommand } = await import("../runtime/process.js");
-      await runGenerate({ ...context, runCommand });
+      await runGenerate({ ...context, runCommand }, rawArgs);
     });
   },
 });

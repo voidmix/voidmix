@@ -103,6 +103,8 @@
     "test:coverage": "vp run -r test:coverage",
     "test:e2e": "vp run @voidmix/e2e#e2e",
     "db:migrate": "vmx db migrate",
+    "db:push": "vmx db push",
+    "db:clean": "vmx db clean",
     "db:seed": "vmx db seed",
     "db:studio": "vmx db studio",
     "admin:create": "vmx admin create",

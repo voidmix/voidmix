@@ -40,7 +40,7 @@ describe("vmx CLI", () => {
   it.each([
     [
       ["db", "--help"],
-      ["migrate", "seed", "studio"],
+      ["clean", "migrate", "push", "seed", "studio"],
     ],
     [["admin", "--help"], ["create"]],
     [["desktop", "--help"], ["build"]],

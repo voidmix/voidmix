@@ -2,7 +2,7 @@ import type { User, UserRepository } from "@voidmix/domain";
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { getDatabaseScriptsEnv } from "../env.js";
-import { runMigrate, runSeed, runStudio } from "./operation.js";
+import { runClean, runMigrate, runPush, runSeed, runStudio } from "./operation.js";
 
 const databaseUrl = "postgres://voidmix:voidmix@localhost:5432/voidmix";
 
@@ -59,6 +59,14 @@ describe("database commands", () => {
     expect(migrate).toHaveBeenCalledWith(databaseUrl);
   });
 
+  it("cleans the configured database", async () => {
+    const reset = vi.fn(async () => undefined);
+
+    await runClean(environment(), { reset, log: vi.fn() });
+
+    expect(reset).toHaveBeenCalledWith(databaseUrl);
+  });
+
   it("seeds users and always closes the connection", async () => {
     const save = vi.fn(async () => undefined);
     const users = userRepository({ save });
@@ -102,10 +110,14 @@ describe("database commands", () => {
     expect(close).toHaveBeenCalledOnce();
   });
 
-  it("restricts seed and studio to development or test", async () => {
+  it("restricts clean, seed, push, and studio to development or test", async () => {
     const production = environment({ NODE_ENV: "production" });
     const runCommand = vi.fn(async () => undefined);
+    const reset = vi.fn(async () => undefined);
 
+    await expect(runClean(production, { reset, log: vi.fn() })).rejects.toThrow(
+      "db clean is restricted",
+    );
     await expect(
       runSeed(production, {
         createAdministration: () => ({ ensureAdmin: vi.fn() }),
@@ -116,6 +128,9 @@ describe("database commands", () => {
       }),
     ).rejects.toThrow("db seed is restricted");
     await expect(
+      runPush(production, { log: vi.fn(), processEnv: {}, repositoryRoot: "/repo", runCommand }),
+    ).rejects.toThrow("db push is restricted");
+    await expect(
       runStudio(production, {
         log: vi.fn(),
         processEnv: {},
@@ -124,6 +139,23 @@ describe("database commands", () => {
       }),
     ).rejects.toThrow("db studio is restricted");
     expect(runCommand).not.toHaveBeenCalled();
+    expect(reset).not.toHaveBeenCalled();
+  });
+
+  it("pushes the schema and forwards extra drizzle-kit flags", async () => {
+    const runCommand = vi.fn(async () => undefined);
+    const processEnv = { DATABASE_URL: databaseUrl };
+
+    await runPush(
+      environment(),
+      { log: vi.fn(), processEnv, repositoryRoot: "/repo", runCommand },
+      ["--hints", "[]"],
+    );
+
+    expect(runCommand).toHaveBeenCalledWith(
+      ["bun", "run", "drizzle-kit", "push", "--config", "drizzle.config.ts", "--hints", "[]"],
+      { cwd: "/repo/packages/db", env: processEnv },
+    );
   });
 
   it("starts Drizzle Studio with the loaded environment", async () => {
