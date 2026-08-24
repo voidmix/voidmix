@@ -12,25 +12,80 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@voidmix/ui/components/ui/dropdown-menu";
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
+
+import {
+  chatSkills,
+  findSlashToken,
+  insertSkillAtCaret,
+  matchSkills,
+  type ChatSkill,
+} from "../skills";
+import { SkillMenu } from "./skill-menu";
 
 interface ComposerProps {
   onSubmit: (prompt: string) => void;
   value?: string;
 }
 
-const skills = ["summarize", "brainstorm", "explain", "review"] as const;
-
 export function Composer({ onSubmit, value = "" }: ComposerProps) {
   const [prompt, setPrompt] = useState(value);
+  const [caret, setCaret] = useState(value.length);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [dismissed, setDismissed] = useState(false);
+  const [focused, setFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const pendingCaretRef = useRef<number | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const baseId = useId();
+  const listboxId = `${baseId}-skills`;
+  const optionId = (index: number) => `${baseId}-skill-${index}`;
+
+  const token = dismissed ? null : findSlashToken(prompt, caret);
+  const suggestions = token ? matchSkills(token.query) : [];
+  const isMenuOpen = focused && suggestions.length > 0;
+  // Clamping during render means a shrinking filter can never expose a stale index.
+  const boundedIndex = Math.min(activeIndex, suggestions.length - 1);
+
+  // A controlled textarea keeps its old caret when the value grows, so the caret
+  // has to be restored after React commits the inserted text.
+  useLayoutEffect(() => {
+    const target = pendingCaretRef.current;
+    if (target === null) return;
+    pendingCaretRef.current = null;
+
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.focus();
+    textarea.setSelectionRange(target, target);
+  }, [prompt]);
+
+  function resetDraft(next: string) {
+    setPrompt(next);
+    setCaret(next.length);
+    setActiveIndex(0);
+    setDismissed(false);
+  }
+
+  function submitDraft() {
     const trimmedPrompt = prompt.trim();
     if (!trimmedPrompt) return;
     onSubmit(trimmedPrompt);
-    setPrompt("");
+    resetDraft("");
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    submitDraft();
   }
 
   function appendAttachment(event: ChangeEvent<HTMLInputElement>) {
@@ -41,25 +96,88 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
     event.target.value = "";
   }
 
-  function insertSkill(skill: string) {
-    setPrompt((current) => {
-      const stripped = current.replace(/^\/\S+\s/, "").trimStart();
-      return `/${skill} ${stripped}`;
-    });
+  function selectSkill(skill: ChatSkill | undefined) {
+    if (!skill) return;
+    const edit = insertSkillAtCaret(prompt, caret, skill);
+    pendingCaretRef.current = edit.caret;
+    setPrompt(edit.value);
+    setCaret(edit.caret);
+    setActiveIndex(0);
+    setDismissed(false);
+  }
+
+  function handleChange(event: ChangeEvent<HTMLTextAreaElement>) {
+    setPrompt(event.target.value);
+    setCaret(event.target.selectionStart);
+    setActiveIndex(0);
+    // Any edit revives a menu that Escape dismissed.
+    setDismissed(false);
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    // An IME commit arrives as Enter; it must neither send nor pick a skill.
+    if (event.nativeEvent.isComposing) return;
+
+    if (isMenuOpen) {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const step = event.key === "ArrowDown" ? 1 : suggestions.length - 1;
+        setActiveIndex((boundedIndex + step) % suggestions.length);
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setDismissed(true);
+        return;
+      }
+      if (event.key === "Tab" || (event.key === "Enter" && !event.shiftKey)) {
+        event.preventDefault();
+        selectSkill(suggestions[boundedIndex]);
+        return;
+      }
+    }
+
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      submitDraft();
+    }
   }
 
   return (
     <form
-      className="rounded-xl border border-input bg-card p-2.5 transition-[border-color,box-shadow] focus-within:border-ring/70 focus-within:ring-2 focus-within:ring-ring/20"
+      className="relative rounded-xl border border-input bg-card p-2.5 transition-[border-color,box-shadow] focus-within:border-ring/70 focus-within:ring-2 focus-within:ring-ring/20"
       onSubmit={handleSubmit}
     >
+      {isMenuOpen ? (
+        <SkillMenu
+          activeIndex={boundedIndex}
+          listboxId={listboxId}
+          onActivate={setActiveIndex}
+          onSelect={selectSkill}
+          optionId={optionId}
+          skills={suggestions}
+        />
+      ) : null}
+      <span className="sr-only" role="status">
+        {isMenuOpen ? `${suggestions.length} skill suggestions` : ""}
+      </span>
       <div className="flex items-start gap-2.5">
         <Sparkle aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
         <textarea
+          aria-activedescendant={isMenuOpen ? optionId(boundedIndex) : undefined}
+          aria-autocomplete="list"
+          aria-controls={isMenuOpen ? listboxId : undefined}
           aria-label="Ask Voidmix"
+          aria-owns={isMenuOpen ? listboxId : undefined}
           className="min-h-[6rem] min-w-0 flex-1 resize-y border-0 bg-transparent p-0 text-[0.82rem] leading-[1.5] text-foreground outline-none placeholder:text-muted-foreground"
-          onChange={(event) => setPrompt(event.target.value)}
+          onBlur={() => setFocused(false)}
+          onChange={handleChange}
+          onClick={(event) => setCaret(event.currentTarget.selectionStart)}
+          onFocus={() => setFocused(true)}
+          onKeyDown={handleKeyDown}
+          onKeyUp={(event) => setCaret(event.currentTarget.selectionStart)}
           placeholder="Ask about this workspace"
+          ref={textareaRef}
           rows={4}
           value={prompt}
         />
@@ -88,14 +206,14 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
                 Skills
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                {skills.map((skill) => (
+                {chatSkills.map((skill) => (
                   <DropdownMenuItem
-                    key={skill}
+                    key={skill.name}
                     onClick={() => {
-                      insertSkill(skill);
+                      selectSkill(skill);
                     }}
                   >
-                    /{skill}
+                    /{skill.name}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuSubContent>
