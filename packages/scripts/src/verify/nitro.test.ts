@@ -51,6 +51,7 @@ describe("verifyNitroRuntimes", () => {
       JSON.stringify(target.probes),
     ]);
     expect(options).toEqual({
+      captureOutput: false,
       cwd: "/isolated/.output",
       env: expect.objectContaining({
         ALLOWED_ORIGINS: "http://localhost:3000",

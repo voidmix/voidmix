@@ -75,6 +75,9 @@ describe("vmx CLI", () => {
     expect(cleanHelp.stdout).toContain("--dependencies");
     expect(cleanHelp.stdout).toContain("--bun-cache");
     expect(runCli(["doctor", "--help"], environment).status).toBe(0);
+    const verifyHelp = runCli(["verify", "--help"], environment);
+    expect(verifyHelp.status).toBe(0);
+    expect(verifyHelp.stdout).toContain("--verbose");
   });
 
   it("runs env commands without initializing the scripts environment", () => {

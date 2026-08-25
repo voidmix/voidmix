@@ -4,11 +4,11 @@ import { runClean } from "./clean.js";
 import { runDesktopBuild } from "./desktop.js";
 import { runGenerate } from "./generate.js";
 import { runVerify } from "./verify.js";
+import type { RepositoryCommandOptions } from "../runtime/process-dependencies.js";
 
 function dependencies() {
   const runCommand = vi.fn(
-    async (_command: readonly string[], _options: { cwd: string; env: NodeJS.ProcessEnv }) =>
-      undefined,
+    async (_command: readonly string[], _options: RepositoryCommandOptions) => undefined,
   );
   return {
     log: vi.fn(),
@@ -16,7 +16,7 @@ function dependencies() {
     repositoryRoot: "/repo",
     runCommand,
     verifyPolicy: vi.fn(async () => undefined),
-    verifyRuntimes: vi.fn(async () => undefined),
+    verifyRuntimes: vi.fn(async (_options: { captureOutput: boolean }) => undefined),
   };
 }
 
@@ -104,7 +104,29 @@ describe("repository workflows", () => {
       deps.processEnv,
       { ...deps.processEnv, NITRO_PRESET: "bun" },
     ]);
-    expect(deps.verifyRuntimes).toHaveBeenCalledOnce();
+    expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]);
+    expect(deps.verifyRuntimes).toHaveBeenCalledWith({ captureOutput: true });
+  });
+
+  it("keeps child output visible in verbose mode", async () => {
+    const deps = dependencies();
+
+    await runVerify(deps, { verbose: true });
+
+    expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual([
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
+    expect(deps.verifyRuntimes).toHaveBeenCalledWith({ captureOutput: false });
   });
 
   it("checks formatting before spending minutes on a build", async () => {

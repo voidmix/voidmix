@@ -5,7 +5,11 @@ import type { RepositoryProcessDependencies } from "../runtime/process-dependenc
 
 interface VerifyDependencies extends RepositoryProcessDependencies {
   verifyPolicy: () => Promise<void>;
-  verifyRuntimes: () => Promise<void>;
+  verifyRuntimes: (options: { captureOutput: boolean }) => Promise<void>;
+}
+
+export interface VerifyOptions {
+  verbose?: boolean;
 }
 
 /**
@@ -17,7 +21,11 @@ const rootGates = [
   { command: ["vp", "lint"], task: "lint" },
 ] as const;
 
-export async function runVerify(dependencies: VerifyDependencies): Promise<void> {
+export async function runVerify(
+  dependencies: VerifyDependencies,
+  options: VerifyOptions = {},
+): Promise<void> {
+  const captureOutput = !(options.verbose ?? false);
   // Repository policy runs first: it costs milliseconds and its failures are
   // structural, so there is no point building before it passes.
   dependencies.log("info", "verify.task.started", { task: "policy" });
@@ -29,6 +37,7 @@ export async function runVerify(dependencies: VerifyDependencies): Promise<void>
   for (const { command, task } of rootGates) {
     dependencies.log("info", "verify.task.started", { task });
     await dependencies.runCommand(command, {
+      captureOutput,
       cwd: dependencies.repositoryRoot,
       env: dependencies.processEnv,
     });
@@ -37,6 +46,7 @@ export async function runVerify(dependencies: VerifyDependencies): Promise<void>
   for (const task of ["check", "test", "build"] as const) {
     dependencies.log("info", "verify.task.started", { task });
     await dependencies.runCommand(["vp", "run", "-r", task], {
+      captureOutput,
       cwd: dependencies.repositoryRoot,
       env:
         task === "build"
@@ -45,7 +55,7 @@ export async function runVerify(dependencies: VerifyDependencies): Promise<void>
     });
   }
   dependencies.log("info", "verify.task.started", { task: "runtime" });
-  await dependencies.verifyRuntimes();
+  await dependencies.verifyRuntimes({ captureOutput });
   dependencies.log("info", "verify.completed");
 }
 
@@ -54,7 +64,14 @@ export const verifyCommand = defineCommand({
     name: "verify",
     description: "Run every repository gate: policy, format, lint, checks, tests, builds, runtimes",
   },
-  async run() {
+  args: {
+    verbose: {
+      type: "boolean",
+      default: false,
+      description: "Show full output from formatting, linting, checks, tests, and builds",
+    },
+  },
+  async run({ args }) {
     await runContextualAction("verify", "process", async (context) => {
       const [{ runCommand }, { verifyNitroRuntimes }, policyRuntime, policyChecks, policyReport] =
         await Promise.all([
@@ -65,16 +82,19 @@ export const verifyCommand = defineCommand({
           import("../policy/report.js"),
         ]);
       const dependencies = { ...context, runCommand };
-      await runVerify({
-        ...dependencies,
-        verifyRuntimes: () => verifyNitroRuntimes(dependencies),
-        async verifyPolicy() {
-          const report = await policyChecks.runPolicy(policyRuntime.createPolicyDependencies());
-          if (report.errors > 0) {
-            throw new Error(policyReport.renderPolicyReport(report));
-          }
+      await runVerify(
+        {
+          ...dependencies,
+          verifyRuntimes: (options) => verifyNitroRuntimes(dependencies, options),
+          async verifyPolicy() {
+            const report = await policyChecks.runPolicy(policyRuntime.createPolicyDependencies());
+            if (report.errors > 0) {
+              throw new Error(policyReport.renderPolicyReport(report));
+            }
+          },
         },
-      });
+        { verbose: args.verbose },
+      );
     });
   },
 });

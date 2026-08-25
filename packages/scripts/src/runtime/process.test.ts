@@ -5,7 +5,13 @@ import { join } from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
-import { forwardProcessSignals, ProcessError, runChildProcess, runCommand } from "./process.js";
+import {
+  forwardProcessSignals,
+  ProcessError,
+  runChildProcess,
+  runCommand,
+  summarizeProcessOutput,
+} from "./process.js";
 
 const temporaryDirectories: string[] = [];
 
@@ -58,6 +64,31 @@ describe("runCommand", () => {
     ).rejects.toEqual(
       expect.objectContaining<Partial<ProcessError>>({ exitCode: 7, signal: null }),
     );
+  });
+
+  it("includes only a compact failure tail when output is captured", async () => {
+    await expect(
+      runCommand(
+        [
+          process.execPath,
+          "-e",
+          "for (let i = 0; i < 100; i++) console.error('line-' + i); process.exit(7)",
+        ],
+        { captureOutput: true },
+      ),
+    ).rejects.toMatchObject({
+      name: "ProcessError",
+      exitCode: 7,
+      message: expect.stringContaining("line-99"),
+    });
+  });
+});
+
+describe("summarizeProcessOutput", () => {
+  it("removes terminal control sequences and keeps stderr before stdout", () => {
+    const summary = summarizeProcessOutput("out", "\u001b[31merror\u001b[0m\r\nlast");
+
+    expect(summary).toBe("error\nlast\nout");
   });
 });
 

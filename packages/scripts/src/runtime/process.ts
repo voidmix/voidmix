@@ -1,6 +1,9 @@
 import { spawn, type ChildProcess, type StdioOptions } from "node:child_process";
 
 const forwardedSignals = ["SIGINT", "SIGTERM", "SIGHUP"] as const;
+const ansiEscapePattern = /\u001B\[[0-?]*[ -\\/]*[@-~]/g;
+const failureOutputMaxChars = 8_000;
+const failureOutputMaxLines = 80;
 
 export interface ProcessResult {
   code: number | null;
@@ -28,6 +31,32 @@ export class ProcessError extends Error {
     super(message, options);
     this.name = "ProcessError";
   }
+}
+
+function cleanOutput(output: string): string {
+  return output.replace(ansiEscapePattern, "").replace(/\r/g, "").trim();
+}
+
+export function summarizeProcessOutput(stdout: string, stderr: string): string {
+  const output = [cleanOutput(stderr), cleanOutput(stdout)].filter(Boolean).join("\n");
+  if (!output) return "";
+
+  const lines = output.split("\n");
+  const tail = lines.slice(-failureOutputMaxLines);
+  let summary = tail.join("\n");
+  if (summary.length > failureOutputMaxChars) {
+    summary = summary.slice(-failureOutputMaxChars);
+    const firstNewline = summary.indexOf("\n");
+    if (firstNewline >= 0) summary = summary.slice(firstNewline + 1);
+  }
+
+  const omittedLines = lines.length - tail.length;
+  return [
+    omittedLines > 0 ? "[" + omittedLines + " earlier output lines omitted]" : undefined,
+    summary,
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 export function forwardProcessSignals(
@@ -98,8 +127,11 @@ export async function runCommand(
   if (result.code === 0 && result.signal === null) return;
 
   const status = result.signal ?? result.code ?? "unknown";
+  const output = options.captureOutput ? summarizeProcessOutput(result.stdout, result.stderr) : "";
   throw new ProcessError(
-    `${command[0] ?? "command"} exited with ${status}`,
+    [(command[0] ?? "command") + " exited with " + status, output ? "\n" + output : undefined]
+      .filter(Boolean)
+      .join(""),
     command,
     result.code,
     result.signal,

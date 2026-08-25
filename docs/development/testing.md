@@ -11,6 +11,11 @@ bun run verify
 stage is cheaper than the one after it, so the first failure is usually the
 fastest one to reproduce:
 
+`bun run verify` captures child-process output by default, so successful checks
+do not flood the terminal or an agent context. If a gate fails, `vmx` reports a
+sanitized tail of that command's output. Use `bun run verify --verbose` when
+interactive debugging needs the full live output.
+
 | Stage   | Command           | Why it is at this position                     |
 | ------- | ----------------- | ---------------------------------------------- |
 | policy  | in-process        | milliseconds, and its failures are structural  |

@@ -23,6 +23,7 @@ interface NitroMetadata {
 }
 
 interface NitroRuntimeVerificationOptions {
+  captureOutput?: boolean;
   allocatePort?: () => Promise<number>;
   readMetadata?: (path: string) => Promise<string>;
   stageOutput?: (sourceDirectory: string) => Promise<NitroRuntimeStage>;
@@ -194,6 +195,7 @@ export async function verifyNitroRuntimes(
           JSON.stringify(target.probes),
         ],
         {
+          captureOutput: options.captureOutput ?? false,
           cwd: stage.directory,
           env: createRuntimeEnvironment(dependencies.processEnv, port),
         },

@@ -24,7 +24,7 @@ src/verify/         Nitro runtime verification
 ```
 
 Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skills update`, `clean [--dependencies] [--bun-cache]`, `db migrate|seed|studio`,
-`admin create`, `generate`, `desktop build`, `policy`, `verify`,
+`admin create`, `generate`, `desktop build`, `policy`, `verify [--verbose]`,
 `shadcn update`.
 
 ## Ownership

@@ -117,6 +117,7 @@ generate               regenerate Drizzle artifacts
 desktop build          build the Tauri application
 verify                  run every gate: policy, format, lint, check, test,
                         build, and the Nitro runtime probe
+verify --verbose        run every gate with full child-process output
 shadcn update          refresh tracked shadcn/ui components in packages/ui
 ```
 
