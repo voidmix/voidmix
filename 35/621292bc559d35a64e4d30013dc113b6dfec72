@@ -1,0 +1,54 @@
+packages/scripts/src/runtime/process-dependencies.ts
+  s_5bd531699090e7::t_56d2ea79ee178c 4-9
+  s_5bd531699090e7::t_c8d1289a945064 14
+packages/scripts/src/commands/verify.ts
+  s_5bd531699090e7::t_531c1bd4772ecf 11-12,24-28,40,49,67-74,97
+  s_5bd531699090e7::t_80cf50844c0d64 8,58,88
+  s_cab1d0174edaf3::t_b32f719dd6e96f 9-10,85-87,89-94,96
+packages/scripts/AGENTS.md
+  s_5bd531699090e7::t_80cf50844c0d64 27
+packages/scripts/src/verify/nitro.ts
+  s_5bd531699090e7::t_80cf50844c0d64 26,198
+packages/scripts/src/runtime/process.ts
+  s_5bd531699090e7::t_5849854b8c6a28 4-6,36-61,130,133-134
+  s_5bd531699090e7::t_28e8c075f29209 132
+docs/development/testing.md
+  s_5bd531699090e7::t_a3dc37df1c178d 14-18
+packages/scripts/src/verify/nitro.test.ts
+  s_5bd531699090e7::t_80cf50844c0d64 54
+packages/scripts/src/runtime/process.test.ts
+  s_5bd531699090e7::t_7ea17e16c067ee 8-14,68-92
+packages/scripts/src/cli.test.ts
+  s_5bd531699090e7::t_7ea17e16c067ee 78-80
+docs/architecture/tooling.md
+  s_5bd531699090e7::t_a3dc37df1c178d 120
+packages/scripts/src/commands/workflows.test.ts
+  s_5bd531699090e7::t_3e30849da3f7eb 7
+  s_5bd531699090e7::t_1cff2c6d97fc78 11
+  s_5bd531699090e7::t_80cf50844c0d64 19,114,129
+  s_5bd531699090e7::t_7ea17e16c067ee 107-113,115-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "35621292bc559d35a64e4d30013dc113b6dfec72",
+  "prompts": {},
+  "sessions": {
+    "s_5bd531699090e7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03919-46f3-7782-9034-7463176fa551",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_cab1d0174edaf3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03926-01fa-7891-bf58-230f94ea89ea",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
