@@ -18,7 +18,7 @@
     "test:integration": "vitest run --passWithNoTests integration.test",
     "test:component": "vitest run --passWithNoTests component.test",
     "test:coverage": "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
-    "i18n:generate": "tsx src/cli.ts"
+    "i18n:generate": "bun src/cli.ts"
   },
   "dependencies": {
     "@inlang/paraglide-js": "catalog:",
@@ -34,7 +34,6 @@
     "@types/react": "catalog:tooling",
     "@voidmix/tsconfig": "workspace:*",
     "react": "catalog:",
-    "tsx": "catalog:tooling",
     "typescript": "catalog:tooling",
     "vite": "catalog:tooling",
     "vite-plus": "catalog:tooling",

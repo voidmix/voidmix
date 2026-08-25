@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env bun
 import { resolve } from "node:path";
 import { defineCommand, runMain } from "citty";
 
