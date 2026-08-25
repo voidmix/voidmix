@@ -1,0 +1,25 @@
+apps/web/components.json
+  s_dd909d2597cf6a::t_87a29090300519 16
+apps/desktop/components.json
+  s_dd909d2597cf6a::t_22f5cde137327d 16
+packages/ui/tsconfig.json
+  s_dd909d2597cf6a::t_42cbae561bba7e 3-8
+packages/ui/AGENTS.md
+  s_dd909d2597cf6a::t_fb45049aea7f32 55-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "7307e2d185a790c3548ae88cacf3d758b88e9085",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
