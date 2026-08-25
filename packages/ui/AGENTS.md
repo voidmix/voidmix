@@ -52,6 +52,14 @@ Page layout and product-specific composition stay in the owning application.
   tests need the file-level `/** @vitest-environment jsdom */` directive.
 - Running `shadcn add` from an application writes into that app's `@/components`,
   not here. Reusable primitives belong in this package.
+- **`tsconfig.json` maps `@voidmix/ui/*` to `./src/*` for the shadcn CLI alone.**
+  Its resolver needs a directory and the export map deliberately offers no
+  barrel, so without that entry every `shadcn` command — including
+  `shadcn:update` — fails with `Could not resolve the following aliases`.
+  Generated files import `@voidmix/ui/lib/utils`, which the export map resolves
+  at runtime. Do not restate it as `@/*`: this package ships raw source, so a
+  consuming bundler would not resolve it. TypeScript 7 removed `baseUrl`, so
+  `paths` stands alone.
 
 ## Verification
 
