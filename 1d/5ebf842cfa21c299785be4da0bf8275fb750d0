@@ -1,0 +1,27 @@
+apps/web/src/lib/request-preferences.ts
+  s_dd909d2597cf6a::t_25fd4dc710c49d 1-28
+apps/web/AGENTS.md
+  s_dd909d2597cf6a::t_4ab025262c0243 64-68
+  s_dd909d2597cf6a::t_c91096c6d81281 29
+  s_dd909d2597cf6a::t_1c5fc5fe18e477 110-111
+  s_dd909d2597cf6a::t_2000570fe227df 108
+  s_dd909d2597cf6a::t_61a6005984d727 109
+apps/web/src/routes/__root.tsx
+  s_dd909d2597cf6a::t_7064827e0c78d6 18,28,169,186-191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "1d5ebf842cfa21c299785be4da0bf8275fb750d0",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
