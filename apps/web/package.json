@@ -8,7 +8,7 @@
     "build": "bun run check && vmx env -- vp build",
     "start": "node --enable-source-maps .output/server/index.mjs",
     "preview": "vmx env -- vp preview",
-    "i18n:generate": "bun run --cwd ../../packages/i18n i18n:generate -- ../../apps/web",
+    "i18n:generate": "bun run --cwd ../../packages/i18n i18n:generate -- ../../apps/web && bun run --cwd ../../packages/mail i18n:generate",
     "check": "bun run i18n:generate && tsc --noEmit -p tsconfig.json",
     "test": "vitest run --passWithNoTests",
     "test:unit": "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
