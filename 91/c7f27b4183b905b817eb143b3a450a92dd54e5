@@ -1,0 +1,56 @@
+docs/architecture/applications.md
+  s_374685a980f535::t_aa6fefba8ea453 14-16
+apps/web/src/components/theme-menu-items.tsx
+  s_374685a980f535::t_80632a1d0191fb 8
+  s_374685a980f535::t_b09a66dba0f1f1 26-36
+  s_374685a980f535::t_2d2cec2db1d928 10-13
+apps/web/src/routes/manifest[.]webmanifest.ts
+  s_374685a980f535::t_aa6fefba8ea453 1-38
+apps/web/AGENTS.md
+  s_374685a980f535::t_5da7f55fd0f0b8 49-51
+  s_374685a980f535::t_aa6fefba8ea453 17
+apps/web/src/components/theme-menu-lazy.ts
+  s_374685a980f535::t_2d2cec2db1d928 1-2,28-32
+  s_374685a980f535::t_9380aadb6f015b 3-27
+packages/ui/src/logo.tsx
+  s_374685a980f535::t_80632a1d0191fb 3,23,25
+apps/web/src/components/theme-menu.tsx
+  s_374685a980f535::t_9380aadb6f015b 1-25
+packages/ui/src/components.component.test.tsx
+  s_374685a980f535::t_80632a1d0191fb 59-62,65
+apps/web/src/components/theme-switcher.component.test.tsx
+  s_374685a980f535::t_f927c62bd08300 1-65
+apps/web/src/components/theme-options.ts
+  s_374685a980f535::t_2d2cec2db1d928 3-6
+  s_374685a980f535::t_80632a1d0191fb 1-2,7
+apps/web/src/features/admin/admin-shell.tsx
+  s_374685a980f535::t_2d2cec2db1d928 3,19,119-120,122-123,125-133,136-142,159-163
+  s_374685a980f535::t_54c624c71798de 121
+apps/web/src/components/theme-switcher.tsx
+  s_374685a980f535::t_9380aadb6f015b 9,22,29,31-39,42-47,49-50,52-61
+  s_374685a980f535::t_80632a1d0191fb 2,10,21,28,30,48
+  s_374685a980f535::t_2d2cec2db1d928 1,3-4,6,12-16,24
+  s_374685a980f535::t_7f15e4da2b9c58 40-41
+  s_374685a980f535::t_18bc1200e6b998 11
+apps/web/src/routes/__root.tsx
+  s_374685a980f535::t_6982dc1048ffe4 55-58
+  s_374685a980f535::t_701369618fe139 54
+apps/web/src/routeTree.gen.ts
+  s_374685a980f535::t_d30627fd55a7bb 15,38-42,86,97,111,125,136,149,164,190-196,327
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "91c7f27b4183b905b817eb143b3a450a92dd54e5",
+  "prompts": {},
+  "sessions": {
+    "s_374685a980f535": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03791-3b82-7542-9233-21f61af5cc7e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
