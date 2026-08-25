@@ -97,7 +97,7 @@ describe("validateWorkspaceManifest", () => {
         check: checkCommand,
         build: checkCommand,
       };
-      scripts[name] = "vitest run --silent";
+      scripts[name] = "vp test --run --silent";
       const findings = validateWorkspaceManifest(location, manifest({ scripts }), shape());
 
       expect(findings).toHaveLength(1);
@@ -239,7 +239,7 @@ describe("validateWorkspaceManifest", () => {
   }
 
   it("reports an invalid scripts field without throwing", () => {
-    const content = manifest({ scripts: ["vitest run"] });
+    const content = manifest({ scripts: ["vp test --run"] });
 
     expect(validateWorkspaceManifest(location, content, shape())).toEqual([
       {
@@ -299,7 +299,7 @@ describe("fixWorkspaceManifest", () => {
     const { "test:component": _omitted, ...rest } = canonicalScripts;
     const content = manifest({
       devEngines: { runtime: { name: "node" } },
-      scripts: { ...rest, "test:unit": "vitest run", check: checkCommand, build: checkCommand },
+      scripts: { ...rest, "test:unit": "vp test --run", check: checkCommand, build: checkCommand },
     });
 
     const fixed = fixWorkspaceManifest(content, shape());
@@ -342,12 +342,12 @@ describe("fixWorkspaceManifest", () => {
 
   it("leaves an invalid scripts field untouched", () => {
     const content = manifest({
-      scripts: ["vitest run"],
+      scripts: ["vp test --run"],
       devEngines: { runtime: { name: "node" } },
     });
     const fixed = fixWorkspaceManifest(content, shape());
 
-    expect(JSON.parse(fixed).scripts).toEqual(["vitest run"]);
+    expect(JSON.parse(fixed).scripts).toEqual(["vp test --run"]);
     expect(JSON.parse(fixed)).not.toHaveProperty("devEngines");
     expect(validateWorkspaceManifest(location, fixed, shape())).toEqual([
       expect.objectContaining({
@@ -362,7 +362,7 @@ describe("fixWorkspaceManifest", () => {
   });
 
   it("is idempotent", () => {
-    const scripts = { ...canonicalScripts, "test:unit": "vitest run", check: checkCommand };
+    const scripts = { ...canonicalScripts, "test:unit": "vp test --run", check: checkCommand };
     const once = fixWorkspaceManifest(manifest({ scripts }), shape());
 
     expect(fixWorkspaceManifest(once, shape())).toBe(once);

@@ -76,8 +76,7 @@
         "taze": "21.1.0",
         "typescript": "7.0.2",
         "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9",
-        "vite-plus": "0.2.9",
-        "vitest": "4.1.10"
+        "vite-plus": "0.2.9"
       }
     }
   },
@@ -129,8 +128,7 @@
     "taze": "catalog:tooling",
     "tw-animate-css": "catalog:frontend",
     "typescript": "catalog:tooling",
-    "vite-plus": "catalog:tooling",
-    "vitest": "catalog:tooling"
+    "vite-plus": "catalog:tooling"
   },
   "overrides": {
     "esbuild": "catalog:tooling",

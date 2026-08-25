@@ -10,11 +10,11 @@
     "preview": "vmx env -- vp preview",
     "i18n:generate": "bun run --cwd ../../packages/i18n i18n:generate -- ../../apps/web && bun run --cwd ../../packages/mail i18n:generate",
     "check": "bun run i18n:generate && tsc --noEmit -p tsconfig.json",
-    "test": "vitest run --passWithNoTests",
-    "test:unit": "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
-    "test:integration": "vitest run --passWithNoTests integration.test",
-    "test:component": "vitest run --passWithNoTests component.test",
-    "test:coverage": "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov"
+    "test": "vp test --run --passWithNoTests",
+    "test:unit": "vp test --run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:integration": "vp test --run --passWithNoTests integration.test",
+    "test:component": "vp test --run --passWithNoTests component.test",
+    "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov"
   },
   "dependencies": {
     "@phosphor-icons/react": "catalog:frontend",
@@ -45,7 +45,6 @@
     "nitro": "catalog:backend",
     "typescript": "catalog:tooling",
     "vite": "catalog:tooling",
-    "vite-plus": "catalog:tooling",
-    "vitest": "catalog:tooling"
+    "vite-plus": "catalog:tooling"
   }
 }

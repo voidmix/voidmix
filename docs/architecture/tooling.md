@@ -20,8 +20,8 @@ The root `package.json` centralizes versions with Bun catalogs:
 
 - Default: React, TanStack Router/Start, and oRPC.
 - `catalog:tooling`: TypeScript, Type-fest, Vite+, Vite alias, React
-  types/plugin, Citty, Dotenvx, and related tooling, Vitest, coverage, and
-  Playwright.
+  types/plugin, Citty, Dotenvx, and related tooling, Vitest coverage, and
+  Playwright. Vitest itself is absent because Vite+ bundles the runner.
 - `catalog:backend`: Hono, Nitro, Drizzle, PostgreSQL, and Zod.
 - `catalog:observability`: Evlog.
 - `catalog:frontend`: Base UI, Phosphor Icons, Tailwind CSS, CVA, `clsx`, and
@@ -136,8 +136,10 @@ bun run skills:update   update installed repository skills non-interactively
 
 The update command scans all workspaces and Bun catalogs in `minor` mode. It
 includes exact pins, but deliberately excludes Bun/Node runtime versions and
-the Vitest 4 packages that must stay aligned with the pinned Vite+ release.
-Major upgrades and toolchain exceptions remain manual decisions.
+`@vitest/coverage-v8`, whose version must keep matching the Vitest that the
+pinned Vite+ release bundles — nothing else pins that Vitest now, so a Vite+
+upgrade has to move coverage with it. Major upgrades and toolchain exceptions
+remain manual decisions.
 
 The Bun commands are explicit maintenance operations rather than part of
 `doctor` or `verify`. `deps:dedupe` may rewrite only Bun's lockfile; its

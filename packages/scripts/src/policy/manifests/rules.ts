@@ -3,11 +3,11 @@ import type { WorkspaceShape } from "../manifests.js";
 
 export const canonicalScripts: Readonly<Record<string, string>> = {
   "test:unit":
-    "vitest run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
-  "test:integration": "vitest run --passWithNoTests integration.test",
-  "test:component": "vitest run --passWithNoTests component.test",
+    "vp test --run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+  "test:integration": "vp test --run --passWithNoTests integration.test",
+  "test:component": "vp test --run --passWithNoTests component.test",
   "test:coverage":
-    "vitest run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
+    "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
 };
 
 export function scriptFinding(location: string, message: string, fix: string): PolicyFinding {

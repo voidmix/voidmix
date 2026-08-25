@@ -139,6 +139,11 @@ Every application and test-bearing package owns an independent
 `vp`, and leave `@voidmix/e2e` outside `bun run test`. Most `test` scripts carry
 `--passWithNoTests`, so confirm a new test actually ran.
 
+The runner is `vp test --run`; there is no direct `vitest` dependency, because
+Vite+ bundles it and the test API is imported from `vite-plus/test`. Deleting a
+workspace's `vitest.config.ts` admits its application Vite plugins into the
+runner and breaks React 19 — the configs are load-bearing, not boilerplate.
+
 The four `test:*` layer scripts are byte-identical across every workspace that
 owns a `vitest.config.ts`, and `bun run policy` holds them there. They select a
 layer with vitest's positional **substring filter**; a glob in that position

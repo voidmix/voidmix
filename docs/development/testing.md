@@ -71,9 +71,10 @@ supplies a non-routable database URL and exercises no database query.
 ## Vite+/Vitest configuration boundary
 
 Every application and test-bearing package owns a separate `vitest.config.ts`.
-The test command is `vitest run`, while the application `vite.config.ts` is
-reserved for `dev`, `build`, and SSR. Unit tests therefore do not load
-TanStack Start, Nitro, React, Tailwind, or evlog application plugins.
+The test command is `vp test --run`, which reads that file; the application
+`vite.config.ts` is reserved for `dev`, `build`, and SSR. Unit tests therefore
+do not load TanStack Start, Nitro, React, Tailwind, or evlog application
+plugins.
 
 Loading the complete application plugin pipeline in Vite+'s test module runner
 causes React 19's CommonJS entry to be evaluated as an inlined ESM module. The
@@ -84,9 +85,11 @@ ReferenceError: module is not defined
 close timed out after 10000ms
 ```
 
-Keep the independent `vitest.config.ts` files and direct `vitest run` scripts.
-Do not reintroduce test-mode branches into application Vite configs unless a
-specific plugin is genuinely required by a test.
+**Every `vitest.config.ts` must stay.** Deleting one does not fall back to a
+sane default — it lets the workspace's `vite.config.ts` plugin pipeline into the
+runner, which is what produces the failure above. Do not reintroduce test-mode
+branches into application Vite configs unless a specific plugin is genuinely
+required by a test.
 
 Run repository tests through:
 
@@ -94,7 +97,7 @@ Run repository tests through:
 bun run test
 # or
 vp run -r test
-# or, for a direct Vite+ invocation:
+# or, for one workspace:
 bunx vp test --run
 ```
 
@@ -102,16 +105,24 @@ Do not rely on a globally installed `vp` binary. Even when its version matches
 the repository's `0.2.9`, its global install directory is a different physical
 dependency tree from the workspace's `vite-plus/test` import. That splits the
 runner from the test API and can fail before the first test with
-`Cannot read properties of undefined (reading 'config')`.
+`Cannot read properties of undefined (reading 'config')`. Workspace scripts are
+safe because they resolve `vp` from the root `node_modules/.bin`, the same way
+they already resolve `tsc` without declaring TypeScript.
 
-`vp test` is Vite+'s built-in command. `vp run test`/`vpr test` runs the
-workspace `test` script instead; this repository's script intentionally calls
-the pinned local `vitest run` binary.
+`vp test` is Vite+'s built-in command and is the runner every workspace `test`
+script calls. `vp run test`/`vpr test` runs the workspace script instead, so
+`vp run -r test` is still the repository-wide entry point. There is no direct
+`vitest` dependency: Vite+ bundles the runner, and the test API is imported from
+`vite-plus/test`. `@vitest/coverage-v8` remains a direct dependency because
+Vite+ does not bundle it; its version therefore has to keep matching the Vitest
+that Vite+ ships.
 
-The root `vitest.config.ts` excludes the Playwright `e2e/` workspace, while
-component files opt into `jsdom` with a file-level environment directive. This
-keeps `bunx vp test --run` useful as a repository-wide Vitest smoke command
-without starting application servers.
+The root `vitest.config.ts` excludes the Playwright `e2e/` workspace. It is a
+file-discovery smoke config only: a root `bunx vp test --run` collects every
+workspace's tests into one process, where per-workspace `setupFiles` and
+environments do not apply, so `jest-dom` matchers are missing and jsdom stubs
+such as `window.matchMedia` are absent. Expect failures from that invocation and
+use `vp run -r test` for a real repository-wide run.
 
 ## Test layers
 
