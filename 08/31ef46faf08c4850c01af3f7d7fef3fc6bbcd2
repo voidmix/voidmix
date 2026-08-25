@@ -1,0 +1,33 @@
+apps/storybook/src/avatar.stories.tsx
+  s_dd909d2597cf6a::t_fcfa4e8ca66484 37
+DESIGN.md
+  s_dd909d2597cf6a::t_5faf25389b4e7c 3,5-8,10-15,42-43,54-61,64-66,70,75,92-95,99-100,109-115,119-123,125-127,129-133,137-141,157-163,211-214,223,228,231,236-240,258-259,270-271
+  s_dd909d2597cf6a::t_f14b7e2bb6accc 144-148,150-154
+  s_dd909d2597cf6a::t_0ef2b4f56fd1de 149
+packages/ui/src/styles/globals.css
+  s_dd909d2597cf6a::t_c5b169347a45ae 53
+  s_dd909d2597cf6a::t_ec4ad3dc4546fc 34,38-39
+  s_dd909d2597cf6a::t_503668f36095bc 11-14,23,35-37,48,60,62,64-65,72,83-89
+  s_dd909d2597cf6a::t_811d26c289c261 10,15,45,73-75,93
+docs/architecture/design.md
+  s_dd909d2597cf6a::t_a2194dc9ff23df 40
+  s_dd909d2597cf6a::t_82326f424f85b2 26
+  s_dd909d2597cf6a::t_16eef07f78e59a 30-35
+  s_dd909d2597cf6a::t_5efb28f21ea7e7 13-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "0831ef46faf08c4850c01af3f7d7fef3fc6bbcd2",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
