@@ -2,7 +2,7 @@
 
 Setup and commands are in [README.md](./README.md). The rules you must follow are
 in [AGENTS.md](./AGENTS.md) and the `AGENTS.md` of the workspace you are changing
-— read the latter before you start; it is capped at 120 lines and names that
+— read the latter before you start; it is capped at 200 lines and names that
 workspace's own verification commands.
 
 For the read order, the tie-breakers on ambiguous choices, and how nested

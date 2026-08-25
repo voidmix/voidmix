@@ -39,8 +39,11 @@ browser composition root for authentication and Admin operations.
 - Produces a TanStack Start server bundle and a browser bundle.
 - Resolves locale from `voidmix_locale`, `Accept-Language`, then English; the
   document and React provider share the loader result for hydration safety.
-- Loads Paraglide catalogs by feature namespace and locale instead of placing a
-  full catalog registry in the root bundle.
+- Loads Paraglide catalogs by feature namespace instead of placing a full
+  catalog registry in the root bundle. Web chooses the generated synchronous
+  namespace entrypoints so translations do not introduce React Suspense during
+  SSR or hydration; with two supported locales, each loaded namespace contains
+  both English and Chinese catalogs.
 - Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
   through explicit Nitro Web-format routes.
 - Uses the shared typed client with same-origin cookie requests.

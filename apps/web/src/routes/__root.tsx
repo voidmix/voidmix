@@ -141,8 +141,8 @@ function RootErrorPage({ error, reset }: ErrorComponentProps) {
 }
 
 function NotFoundPage() {
-  // Static for the same reason as RootErrorPage: a root notFoundComponent has no
-  // Suspense boundary above it, so it must not suspend.
+  // Static for the same reason as RootErrorPage: recovery copy must not depend
+  // on an application catalog chunk that may have failed to load.
   const t = createRecoveryTranslator(readDocumentLocale());
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">

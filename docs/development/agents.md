@@ -30,7 +30,7 @@ handling, logging and audit separation.
 A rule no single workspace can own belongs in the root file. A rule that only
 makes sense inside one workspace belongs in that workspace's file, so it stays
 out of context when you are working elsewhere. Each workspace file is capped at
-120 lines; past that, the detail belongs in `docs/`.
+200 lines; past that, the detail belongs in `docs/`.
 
 ## Read order
 

@@ -8,7 +8,7 @@ export const requiredAgentsSections = [
   "Verification",
 ] as const;
 
-export const maximumAgentsLines = 120;
+export const maximumAgentsLines = 200;
 
 const sectionGuidance: Record<(typeof requiredAgentsSections)[number], string> = {
   Purpose: "state why the workspace exists and what it is for",

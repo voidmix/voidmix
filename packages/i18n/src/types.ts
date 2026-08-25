@@ -4,7 +4,7 @@ export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 export type MessageFunction = (values?: Record<string, unknown>) => string;
 export type MessageCatalog = Record<string, MessageFunction>;
-export type NamespaceLoader = (locale: Locale) => Promise<MessageCatalog>;
+export type NamespaceLoader = (locale: Locale) => MessageCatalog | Promise<MessageCatalog>;
 export type InitialCatalogs = Partial<Record<string, MessageCatalog>>;
 
 export type LocaleStorage = {

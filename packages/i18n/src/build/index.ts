@@ -139,7 +139,7 @@ async function calculateFingerprint(project: I18nProject) {
     hash.update(relative(project.root, file));
     hash.update(await readFile(file));
   }
-  hash.update("voidmix-i18n-paraglide-locale-modules-v2");
+  hash.update("voidmix-i18n-paraglide-locale-modules-v3-sync-loaders");
   return hash.digest("hex");
 }
 
@@ -218,6 +218,20 @@ function createNamespaceOutput(ids: readonly string[], locales: readonly string[
       ].join("\n") + "\n";
     output[`messages/_namespaces/${encoded}/loader.d.ts`] =
       'export declare function loadNamespace(locale: import("../../../runtime.js").Locale): Promise<Record<string, (values?: Record<string, unknown>) => string>>;\n';
+    output[`messages/_namespaces/${encoded}/loader.sync.js`] =
+      [
+        ...locales.map((locale) => `import catalog_${safeModuleId(locale)} from "./${locale}.js";`),
+        "",
+        "const catalogs = {",
+        ...locales.map((locale) => `  ${JSON.stringify(locale)}: catalog_${safeModuleId(locale)},`),
+        "};",
+        "",
+        "export function loadNamespace(locale) {",
+        `  return catalogs[locale] ?? catalogs[${JSON.stringify(locales[0] ?? "en")}];`,
+        "}",
+      ].join("\n") + "\n";
+    output[`messages/_namespaces/${encoded}/loader.sync.d.ts`] =
+      'export declare function loadNamespace(locale: import("../../../runtime.js").Locale): Record<string, (values?: Record<string, unknown>) => string>;\n';
   }
   return output;
 }
@@ -225,7 +239,10 @@ function createNamespaceOutput(ids: readonly string[], locales: readonly string[
 async function bundleNamespaceCatalogs(outdir: string, generatedFiles: readonly string[]) {
   const localeModules = generatedFiles.filter(
     (file) =>
-      file.includes("/_namespaces/") && file.endsWith(".js") && !file.endsWith("/loader.js"),
+      file.includes("/_namespaces/") &&
+      file.endsWith(".js") &&
+      !file.endsWith("/loader.js") &&
+      !file.endsWith("/loader.sync.js"),
   );
 
   await Promise.all(

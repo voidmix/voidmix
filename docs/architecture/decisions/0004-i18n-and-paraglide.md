@@ -17,8 +17,11 @@ semantics and weaken message parameter types.
 Paraglide is the only message compiler and application-owned Inlang projects
 and JSON catalogs are the source of truth. `@voidmix/i18n/build` invokes the
 Paraglide compiler with locale modules, then emits stable namespace loaders.
-Each loader contains explicit dynamic imports for `en` and `zh`; browser code
-imports a namespace loader, never the generated all-message barrel.
+The asynchronous `loader.js` entrypoint uses explicit dynamic imports for `en`
+and `zh`; `loader.sync.js` statically imports both catalogs for render paths
+that must not suspend. Browser code imports a namespace loader, never the
+generated all-message barrel. Web uses the synchronous entrypoint while
+Desktop and Mail retain asynchronous loading.
 
 `@voidmix/i18n` owns locale normalization, Accept-Language parsing, Cookie and
 localStorage adapters, Intl formatting, the React provider, and the build
@@ -52,6 +55,8 @@ per locale.
   aggregate all catalog loaders.
 - The production bundle can separate route code, namespace code, and locale
   code while retaining Paraglide message functions and fallback semantics.
+  Web trades per-locale namespace splitting for no i18n Suspense by bundling
+  both supported locales inside each synchronously loaded namespace.
 - A failed locale load leaves the current locale and document state unchanged.
 
 ## Follow-up

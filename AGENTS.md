@@ -156,7 +156,7 @@ Desktop's native checks.
 ## Documentation
 
 - Update the workspace's own `AGENTS.md` when its interface, ownership,
-  constraints, or verification commands change. Keep those files at or below 120
+  constraints, or verification commands change. Keep those files at or below 200
   lines and link to `docs/` instead of growing them.
 - Update the focused file under `docs/architecture/` or `docs/development/` when
   architecture, tooling, commands, testing, or deployment behavior changes.

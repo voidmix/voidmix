@@ -81,9 +81,10 @@ Paraglide build integration. Applications and Mail own their Inlang projects
 and catalogs.
 
 The build entry is isolated from runtime and client exports. It compiles
-Paraglide locale modules and emits namespace loaders with explicit dynamic ESM
-imports. Runtime code imports those loaders directly and never imports a full
-catalog barrel. Domain and contracts remain independent of i18n.
+Paraglide locale modules and emits asynchronous namespace loaders plus explicit
+synchronous loaders for render paths that must not suspend. Runtime code
+imports those loaders directly and never imports a full catalog barrel. Domain
+and contracts remain independent of i18n.
 
 ## `@voidmix/env`
 

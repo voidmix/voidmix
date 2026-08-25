@@ -30,6 +30,15 @@ type I18nContextValue = {
 
 type PendingCatalogs = Map<string, Map<Locale, Promise<MessageCatalog>>>;
 
+function isPromiseLike<T>(value: T | Promise<T>): value is Promise<T> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "then" in value &&
+    typeof value.then === "function"
+  );
+}
+
 export type I18nProviderProps = PropsWithChildren<{
   locale: Locale;
   loaders?: Record<string, NamespaceLoader>;
@@ -104,7 +113,7 @@ export function I18nProvider({
   }
 
   const loadNamespace = useCallback(
-    async (namespace: string, targetLocale: Locale) => {
+    (namespace: string, targetLocale: Locale): MessageCatalog | Promise<MessageCatalog> => {
       const byLocale = cache.get(namespace) ?? new Map<Locale, MessageCatalog>();
       cache.set(namespace, byLocale);
       const existing = byLocale.get(targetLocale);
@@ -117,7 +126,13 @@ export function I18nProvider({
       const existingPending = pendingByLocale.get(targetLocale);
       if (existingPending) return existingPending;
 
-      const request = loader(targetLocale)
+      const loaded = loader(targetLocale);
+      if (!isPromiseLike(loaded)) {
+        byLocale.set(targetLocale, loaded);
+        return loaded;
+      }
+
+      const request = loaded
         .then((messages) => {
           byLocale.set(targetLocale, messages);
           pendingByLocale.delete(targetLocale);
@@ -142,7 +157,8 @@ export function I18nProvider({
       if (catalog) return catalog;
 
       const request = pending.get(namespace)?.get(locale) ?? loadNamespace(namespace, locale);
-      throw request;
+      if (isPromiseLike(request)) throw request;
+      return request;
     },
     [activeNamespaces, cache, loadNamespace, locale, pending, registeredLoaders],
   );
@@ -151,7 +167,9 @@ export function I18nProvider({
     async (nextLocale: Locale) => {
       if (!SUPPORTED_LOCALES.includes(nextLocale) || nextLocale === locale) return;
       await Promise.all(
-        [...activeNamespaces].map((namespace) => loadNamespace(namespace, nextLocale)),
+        [...activeNamespaces].map((namespace) =>
+          Promise.resolve(loadNamespace(namespace, nextLocale)),
+        ),
       );
       storage?.write(nextLocale);
       await onLocaleChange?.(nextLocale);

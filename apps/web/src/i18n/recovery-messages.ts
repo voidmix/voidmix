@@ -3,11 +3,10 @@ import type { Locale } from "@voidmix/i18n/types";
 
 /**
  * The root error and not-found pages cannot read the `common` namespace the way
- * every other component does. `useTranslations` suspends until a lazily
- * imported catalog chunk resolves, and the error page's whole purpose is to
- * render when chunk loading has failed — it would need a chunk from the same
- * broken deployment it is reporting on, and there is no Suspense boundary above
- * a root `errorComponent` to fall back to. So these few strings are static.
+ * every other component does. Web's normal namespace entrypoints are
+ * synchronous, but a recovery page must remain renderable when the application
+ * chunk containing those catalogs is exactly what failed to load. So these few
+ * strings are static.
  *
  * The copy is duplicated from `messages/<locale>.json`, which is a drift risk;
  * `recovery-messages.test.ts` fails if the two ever disagree.

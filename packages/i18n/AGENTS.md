@@ -27,8 +27,10 @@ Paraglide/Inlang build adapter used by application-owned catalogs.
 - Paraglide is the only message compiler; do not add another ICU parser.
 - `client` and runtime exports must not import build/compiler modules.
 - Do not expose or recommend a full-catalog runtime barrel to application code.
-- Generated namespace loaders must keep locale imports statically analyzable so
-  Vite/Rolldown can split unused locale and namespace chunks.
+- Generated namespaces expose `loader.js` for asynchronous per-locale splitting
+  and `loader.sync.js` for render paths that must not suspend. A synchronous
+  loader bundles every supported locale for that namespace, so applications
+  must opt into that size tradeoff deliberately.
 - Domain and contract packages must not depend on this package.
 
 ## Verification
