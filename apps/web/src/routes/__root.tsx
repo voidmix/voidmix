@@ -4,7 +4,7 @@ import {
   createRootRoute,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { I18nProvider, createBrowserLocaleStorage, useTranslations } from "@voidmix/i18n/client";
+import { I18nProvider, createBrowserLocaleStorage } from "@voidmix/i18n/client";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { initClientLogger } from "@voidmix/logger/client";
@@ -14,6 +14,7 @@ import "@voidmix/ui/styles.css";
 import { ThemeProvider, ThemeScript } from "@voidmix/ui/theme";
 import { env } from "../env.js";
 import { loadCommonMessages } from "../i18n/common";
+import { createRecoveryTranslator, readDocumentLocale } from "../i18n/recovery-messages";
 import { getRequestLocale } from "../i18n/request-locale";
 import {
   CHUNK_RECOVERY_STORAGE_KEY,
@@ -61,7 +62,9 @@ export const Route = createRootRoute({
 });
 
 function RootErrorPage({ error, reset }: ErrorComponentProps) {
-  const t = useTranslations("common", loadCommonMessages);
+  // Static messages on purpose — see recovery-messages.ts. Suspending here would
+  // require a chunk from the deployment this page exists to report on.
+  const t = createRecoveryTranslator(readDocumentLocale());
   const chunkLoadFailed = isChunkLoadError(error);
   const [isRecovering, setIsRecovering] = useState(chunkLoadFailed);
 
@@ -138,7 +141,9 @@ function RootErrorPage({ error, reset }: ErrorComponentProps) {
 }
 
 function NotFoundPage() {
-  const t = useTranslations("common", loadCommonMessages);
+  // Static for the same reason as RootErrorPage: a root notFoundComponent has no
+  // Suspense boundary above it, so it must not suspend.
+  const t = createRecoveryTranslator(readDocumentLocale());
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">
       <section className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-sm">

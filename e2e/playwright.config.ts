@@ -12,6 +12,10 @@ export default defineConfig({
   reporter: process.env.CI ? [["dot"], ["html", { open: "never" }]] : "list",
   use: {
     trace: "on-first-retry",
+    // These specs locate elements by visible English text, and the application
+    // negotiates its locale from Accept-Language. Pin it so the assertions do
+    // not depend on the machine's language.
+    locale: "en-US",
   },
   projects: [
     {

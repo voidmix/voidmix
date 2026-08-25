@@ -8,7 +8,7 @@ export function AuthActions() {
   const t = useOptionalTranslations("auth", loadAuthMessages, (key) => {
     const fallback: Record<string, string> = {
       account: "Account",
-      signIn: "Log in",
+      signIn: "Sign in",
       createAccount: "Create account",
     };
     return fallback[key] ?? key;

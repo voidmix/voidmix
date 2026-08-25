@@ -102,6 +102,13 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Keep `vite.config.ts` and `vitest.config.ts` separate. Loading the application
   plugin pipeline in the test runner breaks React 19's CJS entry — see
   [testing](../../docs/development/testing.md).
+- `useTranslations` **suspends**, and a root `errorComponent`/`notFoundComponent`
+  has no boundary above it, so those two read static copy from
+  `src/i18n/recovery-messages.ts` — the error page reports chunk-load failures
+  and must never need a chunk itself. Its test guards that copy against drift.
+- A `useOptionalTranslations` fallback runs only without a provider, so only in
+  component tests. Keep entries byte-identical to `messages/en.json`: a drifted
+  one is invisible in the app yet pins e2e to a string nothing renders.
 
 ## Verification
 
