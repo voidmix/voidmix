@@ -1,0 +1,41 @@
+apps/desktop/src-tauri/Cargo.toml
+  s_374685a980f535::t_b2c02191ca9116 4
+packages/ui/src/logo.tsx
+  s_374685a980f535::t_10e3576dcad18c 3
+apps/desktop/src/features/shell/desktop-shell.tsx
+  s_374685a980f535::t_b2c02191ca9116 76
+apps/desktop/index.html
+  s_374685a980f535::t_b2c02191ca9116 7
+packages/ui/package.json
+  s_374685a980f535::t_2d073038541c19 42-43
+apps/desktop/src-tauri/tauri.conf.json
+  s_374685a980f535::t_b2c02191ca9116 3,16
+apps/desktop/src-tauri/src/lib.rs
+  s_374685a980f535::t_b2c02191ca9116 35,37,105
+apps/desktop/messages/zh.json
+  s_374685a980f535::t_b2c02191ca9116 4,21,90,93
+apps/desktop/CHANGELOG.md
+  s_374685a980f535::t_b2c02191ca9116 29-32
+packages/ui/src/vite-env.d.ts
+  s_374685a980f535::t_2d073038541c19 1
+apps/desktop/messages/en.json
+  s_374685a980f535::t_b2c02191ca9116 4,21,90,93
+bun.lock
+  s_374685a980f535::t_ad4dcd3c11476e 321
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "2e301f0f47c59a45e55eaaa95378c52462c2e28f",
+  "prompts": {},
+  "sessions": {
+    "s_374685a980f535": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03791-3b82-7542-9233-21f61af5cc7e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
