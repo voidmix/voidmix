@@ -34,8 +34,11 @@ scripts/         local deterministic email preview
 - Do not turn this into an arbitrary marketing-mail API; add a typed method for a
   new product-owned notification.
 - Keep templates deterministic and network-free in tests and preview.
-- Render subject, HTML, text, actions, and `<html lang>` with the same
-  `MAIL_DEFAULT_LOCALE`; invalid or missing values fall back to `en`.
+- Render subject, HTML, text, actions, and `<html lang>` with one locale:
+  `input.locale` when the caller knows the recipient's language, otherwise
+  `MAIL_DEFAULT_LOCALE`, itself falling back to `en`. Omit `locale` rather than
+  passing `undefined` — the fallback depends on the property being absent
+  (ADR-0005).
 
 ## Verification
 

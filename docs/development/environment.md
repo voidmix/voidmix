@@ -11,7 +11,7 @@ RESEND_API_KEY   production Resend credential
 MAIL_FROM        verified production sender address
 MAIL_FROM_NAME   sender display name
 EMAIL_TEMPLATES_BASE_URL optional application URL used by welcome mail
-MAIL_DEFAULT_LOCALE server email locale (`en` or `zh`, defaults to `en`)
+MAIL_DEFAULT_LOCALE fallback locale when the recipient's is unknown (`en` or `zh`, defaults to `en`)
 ```
 
 Admins and owners can manage the typed mail configuration at `/admin/settings`.

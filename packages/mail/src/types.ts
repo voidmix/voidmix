@@ -1,3 +1,5 @@
+import type { Locale } from "@voidmix/i18n/types";
+
 export type MailAddress = {
   email: string;
   name?: string;
@@ -54,11 +56,15 @@ export type SendLinkEmailInput = {
   name?: string | null;
   url: string;
   baseUrl?: string;
+  /** The recipient's language. Falls back to `MAIL_DEFAULT_LOCALE` when absent. */
+  locale?: Locale;
 };
 
 export type SendWelcomeEmailInput = {
   email: string;
   name?: string | null;
+  /** The recipient's language. Falls back to `MAIL_DEFAULT_LOCALE` when absent. */
+  locale?: Locale;
 };
 
 export type WelcomeTemplateInput = SendWelcomeEmailInput & {

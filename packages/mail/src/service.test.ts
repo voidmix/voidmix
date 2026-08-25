@@ -105,4 +105,33 @@ describe("mail environment", () => {
       "second@example.com",
     ]);
   });
+
+  it("sends in the recipient's language rather than the deployment default", async () => {
+    const send = vi.fn<MailTransport["send"]>(async () => ({ ok: true, id: "sent" }));
+    const mailer = createMailer({ env: developmentEnv, transport: { send } });
+
+    await mailer.sendVerification({
+      email: "alex@example.com",
+      name: "Alex",
+      url: "https://admin.example.com/verify?token=private",
+      locale: "zh",
+    });
+
+    const [message] = send.mock.calls[0]!;
+    expect(message.subject).toBe("验证你的 Voidmix 邮箱");
+    expect(message.html).toContain('lang="zh"');
+  });
+
+  it("falls back to the configured default when no recipient locale is known", async () => {
+    const send = vi.fn<MailTransport["send"]>(async () => ({ ok: true, id: "sent" }));
+    const mailer = createMailer({ env: developmentEnv, transport: { send } });
+
+    await mailer.sendVerification({
+      email: "alex@example.com",
+      name: "Alex",
+      url: "https://admin.example.com/verify?token=private",
+    });
+
+    expect(send.mock.calls[0]![0].subject).toBe("Verify your Voidmix email");
+  });
 });

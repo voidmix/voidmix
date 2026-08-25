@@ -43,4 +43,35 @@ describe("welcome email policy", () => {
       name: "Person",
     });
   });
+
+  it("forwards the recipient locale to the mailer", async () => {
+    const sendWelcome = vi.fn(async () => {});
+
+    await sendWelcomeEmailIfEnabled({
+      user: { email: "person@example.com", name: "Person" },
+      mailer: mailer(sendWelcome),
+      getAuthSettings: async () => createDefaultAuthSettings(),
+      locale: "zh",
+    });
+
+    expect(sendWelcome).toHaveBeenCalledWith({
+      email: "person@example.com",
+      name: "Person",
+      locale: "zh",
+    });
+  });
+
+  it("omits the locale entirely when none was resolved", async () => {
+    const sendWelcome = vi.fn<Mailer["sendWelcome"]>(async () => {});
+
+    await sendWelcomeEmailIfEnabled({
+      user: { email: "person@example.com", name: "Person" },
+      mailer: mailer(sendWelcome),
+      getAuthSettings: async () => createDefaultAuthSettings(),
+    });
+
+    // Not `locale: undefined` — the mailer's fallback depends on the property
+    // being absent, and `exactOptionalPropertyTypes` forbids the explicit form.
+    expect(Object.keys(sendWelcome.mock.calls[0]![0])).toEqual(["email", "name"]);
+  });
 });

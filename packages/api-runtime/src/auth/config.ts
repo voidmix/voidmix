@@ -2,11 +2,24 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import type { DatabaseConnection } from "@voidmix/db";
 import { authAccounts, authSessions, authVerifications, users } from "@voidmix/db/schema";
 import type { AuthSettings } from "@voidmix/domain";
+import { resolveRequestLocale } from "@voidmix/i18n/server";
+import type { Locale } from "@voidmix/i18n/types";
 import { logger } from "@voidmix/logger";
 import type { Mailer } from "@voidmix/mail/types";
 import { betterAuth } from "better-auth";
 
 import type { ApiRuntimeEnvironment } from "../env.js";
+
+/**
+ * Better Auth hands each mail callback the request that triggered it, so the
+ * recipient's own language is available without storing a preference. Absent a
+ * request the property is omitted rather than set to undefined, so the mailer
+ * falls back to `MAIL_DEFAULT_LOCALE` (`exactOptionalPropertyTypes` is on).
+ */
+function recipientLocale(request: Request | undefined): { locale?: Locale } {
+  if (!request) return {};
+  return { locale: resolveRequestLocale(request.headers) };
+}
 
 export interface CreateApiAuthOptions {
   connection: DatabaseConnection;
@@ -40,18 +53,29 @@ export function createApiAuth({
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
-      sendResetPassword: async ({ user, url }) =>
-        mailer.sendPasswordReset({ email: user.email, name: user.name, url }),
+      sendResetPassword: async ({ user, url }, request) =>
+        mailer.sendPasswordReset({
+          email: user.email,
+          name: user.name,
+          url,
+          ...recipientLocale(request),
+        }),
     },
     emailVerification: {
       sendOnSignUp: true,
-      sendVerificationEmail: async ({ user, url }) =>
-        mailer.sendVerification({ email: user.email, name: user.name, url }),
-      afterEmailVerification: async (user) =>
+      sendVerificationEmail: async ({ user, url }, request) =>
+        mailer.sendVerification({
+          email: user.email,
+          name: user.name,
+          url,
+          ...recipientLocale(request),
+        }),
+      afterEmailVerification: async (user, request) =>
         sendWelcomeEmailIfEnabled({
           user: { email: user.email, name: user.name },
           mailer,
           getAuthSettings,
+          ...recipientLocale(request),
         }),
     },
     user: {
@@ -99,10 +123,14 @@ export async function sendWelcomeEmailIfEnabled(options: {
   user: { email: string; name: string };
   mailer: Mailer;
   getAuthSettings: () => Promise<AuthSettings>;
+  locale?: Locale;
 }): Promise<void> {
   if (!(await options.getAuthSettings()).welcomeEmailEnabled) return;
   try {
-    await options.mailer.sendWelcome(options.user);
+    await options.mailer.sendWelcome({
+      ...options.user,
+      ...(options.locale ? { locale: options.locale } : {}),
+    });
   } catch {
     const log = logger({ operation: "auth.welcome-email" });
     log.set({ recipient: options.user.email, outcome: "failure" });

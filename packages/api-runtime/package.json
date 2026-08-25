@@ -24,6 +24,7 @@
     "@voidmix/db": "workspace:*",
     "@voidmix/domain": "workspace:*",
     "@voidmix/env": "workspace:*",
+    "@voidmix/i18n": "workspace:*",
     "@voidmix/logger": "workspace:*",
     "@voidmix/mail": "workspace:*",
     "better-auth": "catalog:",

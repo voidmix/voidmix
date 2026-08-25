@@ -80,7 +80,7 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
             ...input,
             ...(configuration.templatesBaseUrl ? { baseUrl: configuration.templatesBaseUrl } : {}),
           },
-          defaultLocale,
+          input.locale ?? defaultLocale,
         ),
       );
     },
@@ -91,7 +91,7 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
             ...input,
             ...(configuration.templatesBaseUrl ? { baseUrl: configuration.templatesBaseUrl } : {}),
           },
-          defaultLocale,
+          input.locale ?? defaultLocale,
         ),
       );
     },
@@ -102,7 +102,7 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
             ...input,
             ...(configuration.templatesBaseUrl ? { appUrl: configuration.templatesBaseUrl } : {}),
           },
-          defaultLocale,
+          input.locale ?? defaultLocale,
         ),
       );
     },

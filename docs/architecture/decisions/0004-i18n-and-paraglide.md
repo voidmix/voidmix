@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted; the recipient-locale clause is superseded by ADR-0005
 
 ## Context
 
