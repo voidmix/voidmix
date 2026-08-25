@@ -1,0 +1,99 @@
+packages/i18n/src/errors.test.ts
+  s_374685a980f535::t_3e25e70dc39f53 1-25
+packages/scripts/src/commands/desktop.ts
+  s_374685a980f535::t_ab9dc9142f8523 8-11,14
+packages/mail/src/i18n.test.ts
+  s_374685a980f535::t_dd57ffbc336492 1-11
+packages/i18n/src/index.ts
+  s_374685a980f535::t_7dc22abe1bd83b 10,15-20
+packages/i18n/src/index.test.ts
+  s_374685a980f535::t_3e25e70dc39f53 48-60
+packages/i18n/AGENTS.md
+  s_374685a980f535::t_5cd1f2c7dc84a3 15,22-24,28-29
+packages/scripts/src/commands/workflows.test.ts
+  s_374685a980f535::t_ab9dc9142f8523 81
+apps/desktop/src/main.tsx
+  s_374685a980f535::t_7c8e0e45142e76 15-18,21-28
+packages/i18n/vitest.config.ts
+  s_374685a980f535::t_1796c411d7982e 5
+docs/architecture/decisions/0004-use-intl-static-catalogs.md
+  s_374685a980f535::t_9b975028189d2d 30-39,57-59
+apps/web/src/features/admin/admin-shell.tsx
+  s_374685a980f535::t_638a7b88d823a7 40
+packages/i18n/src/client.test.tsx
+  s_374685a980f535::t_9d05b3353ad4a9 4-11,76-87
+  s_374685a980f535::t_9c3bdb135b6e31 43-44,48-49,72-73
+  s_374685a980f535::t_dd57ffbc336492 3,12-17,20-42,45-47,50-71,74-75,88-89
+  s_374685a980f535::t_413a14f1d9acc8 1-2,18-19
+packages/ui/src/logo.tsx
+  s_374685a980f535::t_638a7b88d823a7 3-4,18-24
+apps/desktop/src/App.css
+  s_374685a980f535::t_638a7b88d823a7 105
+packages/i18n/src/client.ts
+  s_374685a980f535::t_7dc22abe1bd83b 10,12,14,16,44,48-50,93,149
+apps/desktop/src/i18n/catalogs.test.ts
+  s_374685a980f535::t_dd57ffbc336492 1-15
+packages/i18n/src/formatter.ts
+  s_374685a980f535::t_48b90e349ac9d5 33-34,40
+  s_374685a980f535::t_7dc22abe1bd83b 1-2,6-9,30,32,35,38,41-65,68-71,74
+apps/web/src/i18n/api-errors.ts
+  s_374685a980f535::t_1796c411d7982e 1-6,22,31,39
+packages/i18n/src/server.ts
+  s_374685a980f535::t_7dc22abe1bd83b 23-24
+packages/i18n/src/types-entry.ts
+  s_374685a980f535::t_7dc22abe1bd83b 2
+packages/i18n/src/testing.ts
+  s_374685a980f535::t_7dc22abe1bd83b 1-57,63-65
+  s_374685a980f535::t_e2c25eebb01cfc 58-60
+  s_374685a980f535::t_413a14f1d9acc8 61-62
+packages/ui/src/components.component.test.tsx
+  s_374685a980f535::t_eac67dfea99315 17,54-62
+  s_374685a980f535::t_51b8a4ef1232b7 63-65
+apps/desktop/src/i18n/api-errors.ts
+  s_374685a980f535::t_1796c411d7982e 1,7,10
+packages/i18n/src/errors.ts
+  s_374685a980f535::t_9c3bdb135b6e31 19,30-31
+  s_374685a980f535::t_5aff619ff5d9c2 20,29
+  s_374685a980f535::t_7dc22abe1bd83b 1-18,21-28,32
+apps/web/src/i18n/catalogs.test.ts
+  s_374685a980f535::t_dd57ffbc336492 3,22-24
+  s_374685a980f535::t_1418f7a93a3249 25
+docs/development/getting-started.md
+  s_374685a980f535::t_ab9dc9142f8523 80-83
+apps/web/src/routes/__root.tsx
+  s_374685a980f535::t_3e25e70dc39f53 179
+  s_374685a980f535::t_1796c411d7982e 14,178,183-200
+  s_374685a980f535::t_3a0ea8ac4feb14 172-173
+  s_374685a980f535::t_638a7b88d823a7 52-53
+  s_374685a980f535::t_7c8e0e45142e76 7,180-182
+  s_374685a980f535::t_5fa5fdab5467e3 201-203
+packages/i18n/package.json
+  s_374685a980f535::t_3a0ea8ac4feb14 26
+  s_374685a980f535::t_1796c411d7982e 30
+  s_374685a980f535::t_5aff619ff5d9c2 11-12
+apps/desktop/src/i18n/api-errors.test.ts
+  s_374685a980f535::t_3a0ea8ac4feb14 10
+  s_374685a980f535::t_3e25e70dc39f53 1-9,11-16
+packages/i18n/src/testing.test.ts
+  s_374685a980f535::t_3a0ea8ac4feb14 8
+  s_374685a980f535::t_413a14f1d9acc8 7,9
+  s_374685a980f535::t_dd57ffbc336492 1-6,10-33
+bun.lock
+  s_374685a980f535::t_d8a48b5372c8cc 230,234,1321,1857-1858,1903-1904,1907-1908
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "ad39b0138ea87651f9f11eb071ee4bf1e1518127",
+  "prompts": {},
+  "sessions": {
+    "s_374685a980f535": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03791-3b82-7542-9233-21f61af5cc7e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
