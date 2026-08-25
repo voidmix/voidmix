@@ -57,6 +57,10 @@
   "errors": {
     "userNotFound": "找不到请求的用户。",
     "mailNotConfigured": "邮件发送尚未配置。",
+    "registrationDisabled": "账号注册当前已关闭。",
+    "emailVerificationDisabled": "验证邮件发送当前已关闭。",
+    "emailDomainNotAllowed": "该邮箱域名不允许注册。",
+    "passwordResetDisabled": "密码重置邮件发送当前已关闭。",
     "unknown": "出了点问题，请重试。"
   },
   "home": {

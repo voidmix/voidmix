@@ -8,10 +8,14 @@ import { useState, type FormEvent } from "react";
 import { authClient } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
+import { useTranslations } from "@voidmix/i18n/client";
+
+import { loadErrorMessages } from "../../i18n/errors";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 
 export function ResetPassword({ token }: { token?: string }) {
+  const translateError = useTranslations("errors", loadErrorMessages);
   const capabilities = useAuthCapabilities();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,6 +39,7 @@ export function ResetPassword({ token }: { token?: string }) {
       if (result.error) {
         setError(
           notifyAuthFailure({
+            translateError,
             title: "Password reset failed",
             error: result.error,
             fallback: "Unable to reset your password. Try again.",
@@ -47,6 +52,7 @@ export function ResetPassword({ token }: { token?: string }) {
     } catch (cause) {
       setError(
         notifyAuthFailure({
+          translateError,
           title: "Password reset failed",
           error: cause,
           fallback: "Unable to reset your password. Try again.",

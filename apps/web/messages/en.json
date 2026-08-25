@@ -57,6 +57,10 @@
   "errors": {
     "userNotFound": "The requested user could not be found.",
     "mailNotConfigured": "Email delivery is not configured.",
+    "registrationDisabled": "Account registration is currently disabled.",
+    "emailVerificationDisabled": "Email verification delivery is currently disabled.",
+    "emailDomainNotAllowed": "This email domain is not allowed to register.",
+    "passwordResetDisabled": "Password reset email delivery is currently disabled.",
     "unknown": "Something went wrong. Try again."
   },
   "home": {

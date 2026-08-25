@@ -6,11 +6,15 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { authClient } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
+import { useTranslations } from "@voidmix/i18n/client";
+
+import { loadErrorMessages } from "../../i18n/errors";
 import { notifyAuthFailure } from "./feedback";
 
 type VerificationStatus = "waiting" | "verifying" | "verified" | "failed";
 
 export function VerifyEmail({ token }: { token?: string }) {
+  const translateError = useTranslations("errors", loadErrorMessages);
   const [status, setStatus] = useState<VerificationStatus>(token ? "verifying" : "waiting");
   const [error, setError] = useState<string | null>(null);
 
@@ -23,6 +27,7 @@ export function VerifyEmail({ token }: { token?: string }) {
         if (result.error) {
           setError(
             notifyAuthFailure({
+              translateError,
               title: "Email verification failed",
               error: result.error,
               fallback: "This verification link is invalid or expired.",
@@ -37,6 +42,7 @@ export function VerifyEmail({ token }: { token?: string }) {
       .catch((cause: unknown) => {
         setError(
           notifyAuthFailure({
+            translateError,
             title: "Email verification failed",
             error: cause,
             fallback: "This verification link is invalid or expired.",

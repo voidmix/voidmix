@@ -10,9 +10,11 @@ import { useAuthCapabilities } from "./capabilities";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 import { loadAuthMessages } from "../../i18n/auth";
+import { loadErrorMessages } from "../../i18n/errors";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const t = useTranslations("auth", loadAuthMessages);
+  const translateError = useTranslations("errors", loadErrorMessages);
   const capabilities = useAuthCapabilities();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -35,6 +37,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       if (result.error) {
         setError(
           notifyAuthFailure({
+            translateError,
             title: mode === "login" ? t("signInFailed") : t("registrationFailed"),
             error: result.error,
             fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
@@ -45,6 +48,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     } catch (cause) {
       setError(
         notifyAuthFailure({
+          translateError,
           title: mode === "login" ? t("signInFailed") : t("registrationFailed"),
           error: cause,
           fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
