@@ -94,8 +94,8 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   tokenless reset entry points follow those booleans, an existing reset token
   remains usable, and capability-request failures fail open so the server remains
   the final policy boundary.
-- Stylesheets: `import "@voidmix/ui/styles.css"` plus
-  `import appCss from "../styles.css?url"` fed through `head().links`.
+- Stylesheets: `src/styles.css` imports `@voidmix/ui/styles.css`, then the root
+  route imports that single entry with `?url` and feeds it through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is
   evlog → nitro → tailwindcss → tanstackStart → viteReact. Nitro uses explicit
   Web-format routes with directory scanning and its automatic server entry off.

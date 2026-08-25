@@ -10,7 +10,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { initClientLogger } from "@voidmix/logger/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Toaster } from "@voidmix/ui/components/ui/toast";
-import "@voidmix/ui/styles.css";
 import { ThemeProvider, ThemeScript, type UserTheme } from "@voidmix/ui/theme";
 import { env } from "../env.js";
 import { messages } from "../i18n/messages";

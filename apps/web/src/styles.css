@@ -1,3 +1,5 @@
+@import "@voidmix/ui/styles.css";
+
 :root {
   color: var(--foreground);
   background: var(--background);
@@ -6,27 +8,17 @@
   text-rendering: optimizeLegibility;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 html {
   background: var(--background);
   scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
   min-width: 320px;
   background: var(--background);
 }
 
-textarea {
-  font: inherit;
-}
-
 a:not([data-slot="button"]) {
-  color: inherit;
   text-decoration: none;
 }
 
