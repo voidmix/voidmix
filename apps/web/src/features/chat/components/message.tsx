@@ -4,14 +4,13 @@ import { Avatar } from "@voidmix/ui/avatar";
 import { cn } from "@voidmix/ui/lib/utils";
 
 import type { ChatMessage } from "../types";
-import { loadHomeMessages } from "../../../i18n/home";
 
 interface MessageProps {
   message: ChatMessage;
 }
 
 export function ChatMessageRow({ message }: MessageProps) {
-  const t = useTranslations("home", loadHomeMessages);
+  const t = useTranslations("home");
   const isUser = message.role === "user";
 
   return (

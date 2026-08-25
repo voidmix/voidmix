@@ -4,11 +4,10 @@ import { Avatar } from "@voidmix/ui/avatar";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 
-import { loadHomeMessages } from "../../../i18n/home";
 import { navigation, navigationClassName, navigationHref, recentThreads } from "../data";
 
 export function HomeSidebar() {
-  const t = useTranslations("home", loadHomeMessages);
+  const t = useTranslations("home");
 
   return (
     <aside

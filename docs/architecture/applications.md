@@ -39,11 +39,11 @@ browser composition root for authentication and Admin operations.
 - Produces a TanStack Start server bundle and a browser bundle.
 - Resolves locale from `voidmix_locale`, `Accept-Language`, then English; the
   document and React provider share the loader result for hydration safety.
-- Loads Paraglide catalogs by feature namespace instead of placing a full
-  catalog registry in the root bundle. Web chooses the generated synchronous
-  namespace entrypoints so translations do not introduce React Suspense during
-  SSR or hydration; with two supported locales, each loaded namespace contains
-  both English and Chinese catalogs.
+- Mounts the statically imported English and Chinese catalog through
+  `@voidmix/i18n`. Feature components select a namespace through the facade;
+  there are no generated loaders or i18n Suspense boundaries during SSR or
+  hydration. The tradeoff is that the application bundle contains both
+  supported locales.
 - Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
   through explicit Nitro Web-format routes.
 - Uses the shared typed client with same-origin cookie requests.
@@ -57,9 +57,9 @@ browser composition root for authentication and Admin operations.
 - Shares `@voidmix/ui`, `@voidmix/client`, and `@voidmix/contracts`.
 - Uses a Vite SPA rather than TanStack Start SSR.
 - Resolves locale from localStorage, `navigator.language`, then English and
-  switches only after active Paraglide namespaces preload successfully.
+  switches synchronously against the statically mounted catalog.
 - Uses lazy route components so feature code remains separate from the shell
-  and common locale loader.
+  and shared static catalog.
 - Rust owns tray behavior, notifications, window lifecycle, and native
   commands.
 - The renderer mounts feature pages directly from `src/features/`; `App.tsx` is

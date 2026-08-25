@@ -8,13 +8,12 @@ import { authClient } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
 import { useTranslations } from "@voidmix/i18n/client";
 
-import { loadErrorMessages } from "../../i18n/errors";
 import { notifyAuthFailure } from "./feedback";
 
 type VerificationStatus = "waiting" | "verifying" | "verified" | "failed";
 
 export function VerifyEmail({ token }: { token?: string }) {
-  const translateError = useTranslations("errors", loadErrorMessages);
+  const translateError = useTranslations("errors");
   const [status, setStatus] = useState<VerificationStatus>(token ? "verifying" : "waiting");
   const [error, setError] = useState<string | null>(null);
 

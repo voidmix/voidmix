@@ -1,6 +1,5 @@
 import type { ChatMessage } from "../types";
 import { useTranslations } from "@voidmix/i18n/client";
-import { loadHomeMessages } from "../../../i18n/home";
 import { ChatMessageRow } from "./message";
 
 interface MessageListProps {
@@ -8,7 +7,7 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages }: MessageListProps) {
-  const t = useTranslations("home", loadHomeMessages);
+  const t = useTranslations("home");
 
   return (
     <div

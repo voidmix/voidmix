@@ -11,4 +11,5 @@ export { createFormatter, type Formatter } from "./formatter.js";
 export { formats } from "./formats.js";
 export { isLocale, normalizeLocale } from "./normalize.js";
 export { resolveLocale } from "./resolve.js";
-export { createTranslator, type Translator } from "./translator.js";
+export { createTranslator, type CreateTranslatorOptions, type Translator } from "./translator.js";
+export type { MessageCatalog, MessageTree, MessagesByLocale, TranslationValues } from "./types.js";

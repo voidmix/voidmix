@@ -1,5 +1,5 @@
 import { Gear, List, Plus, UserCircle, UsersThree } from "@phosphor-icons/react";
-import { useOptionalTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useEffect, useState } from "react";
 import {
@@ -14,7 +14,6 @@ import {
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { Logo } from "@voidmix/ui/logo";
 
-import { loadHomeMessages } from "../../../i18n/home";
 import { mobileNavigationItems } from "../data";
 
 function navigateTo(href: string) {
@@ -22,24 +21,7 @@ function navigateTo(href: string) {
 }
 
 function MobileNavigationMenu() {
-  const t = useOptionalTranslations("home", loadHomeMessages, (key) => {
-    const fallback: Record<string, string> = {
-      openWorkspaceNavigation: "Open workspace navigation",
-      workspace: "Workspace",
-      newTask: "New task",
-      navOverview: "Overview",
-      navInbox: "Inbox",
-      navProjects: "Projects",
-      navReviews: "Reviews",
-      navDecisions: "Decisions",
-      navAssets: "Assets",
-      team: "Team",
-      settings: "Settings",
-      account: "Account",
-      admin: "Admin",
-    };
-    return fallback[key] ?? key;
-  });
+  const t = useTranslations("home");
 
   return (
     <DropdownMenu>
@@ -99,9 +81,7 @@ function MobileNavigationMenu() {
 }
 
 export function MobileNavigation() {
-  const t = useOptionalTranslations("home", loadHomeMessages, (key) =>
-    key === "workspace" ? "Workspace" : "Open workspace navigation",
-  );
+  const t = useTranslations("home");
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {

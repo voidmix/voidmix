@@ -3,11 +3,10 @@ import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { cn } from "@voidmix/ui/lib/utils";
 
-import { loadHomeMessages } from "../../../i18n/home";
 import { activityIndicatorClassName, activityItems, activityStateClassName } from "../data";
 
 export function ActivitySection() {
-  const t = useTranslations("home", loadHomeMessages);
+  const t = useTranslations("home");
 
   return (
     <section

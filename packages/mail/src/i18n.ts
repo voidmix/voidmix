@@ -1,19 +1,16 @@
-import { createTranslator } from "@voidmix/i18n";
-import type { Locale, MessageCatalog } from "@voidmix/i18n/types";
+import { createTranslator } from "@voidmix/i18n/server";
+import type { Locale, Translator } from "@voidmix/i18n/types";
 
-import { loadNamespace as loadCommon } from "./generated/i18n/messages/_namespaces/636f6d6d6f6e/loader.js";
-import { loadNamespace as loadPasswordReset } from "./generated/i18n/messages/_namespaces/70617373776f72645265736574/loader.js";
-import { loadNamespace as loadVerification } from "./generated/i18n/messages/_namespaces/766572696669636174696f6e/loader.js";
-import { loadNamespace as loadWelcome } from "./generated/i18n/messages/_namespaces/77656c636f6d65/loader.js";
+import en from "../messages/en.json" with { type: "json" };
+import zh from "../messages/zh.json" with { type: "json" };
 
-export const mailMessages = {
-  common: loadCommon,
-  passwordReset: loadPasswordReset,
-  verification: loadVerification,
-  welcome: loadWelcome,
-} satisfies Record<string, (locale: Locale) => Promise<MessageCatalog>>;
+export const mailMessages = { en, zh } as const;
+export type MailNamespace = "common" | "passwordReset" | "verification" | "welcome";
 
-export async function loadMailTranslator(namespace: keyof typeof mailMessages, locale: Locale) {
-  const messages = await mailMessages[namespace](locale);
-  return createTranslator(messages, locale);
+export function createMailTranslator(namespace: MailNamespace, locale: Locale): Translator {
+  return createTranslator({
+    locale,
+    messages: mailMessages[locale],
+    namespace,
+  });
 }

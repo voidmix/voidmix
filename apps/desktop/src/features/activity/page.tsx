@@ -10,7 +10,6 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useTranslations } from "@voidmix/i18n/client";
 import { useState } from "react";
-import { loadActivityMessages } from "../../i18n/activity";
 
 const activityRows = [
   {
@@ -53,7 +52,7 @@ const activityRows = [
 const filters = ["all", "uploads", "downloads", "backups"] as const;
 
 export function ActivityPage() {
-  const t = useTranslations("activity", loadActivityMessages);
+  const t = useTranslations("activity");
   const [filter, setFilter] = useState<(typeof filters)[number]>("all");
 
   return (

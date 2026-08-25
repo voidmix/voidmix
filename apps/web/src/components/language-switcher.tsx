@@ -11,8 +11,6 @@ import {
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { useState } from "react";
 
-import { loadCommonMessages } from "../i18n/common";
-
 const languageOptions: ReadonlyArray<{ label: string; value: Locale }> = [
   { label: "English", value: "en" },
   { label: "简体中文", value: "zh" },
@@ -21,7 +19,7 @@ const languageOptions: ReadonlyArray<{ label: string; value: Locale }> = [
 export function LanguageSwitcher() {
   const locale = useLocale();
   const setLocale = useSetLocale();
-  const t = useTranslations("common", loadCommonMessages);
+  const t = useTranslations("common");
   const [pending, setPending] = useState(false);
   const currentLabel =
     languageOptions.find((option) => option.value === locale)?.label ?? "English";

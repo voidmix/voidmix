@@ -8,7 +8,6 @@
     ".": "./src/index.ts",
     "./client": "./src/client.ts",
     "./server": "./src/server.ts",
-    "./build": "./src/build/index.ts",
     "./types": "./src/types-entry.ts"
   },
   "scripts": {
@@ -17,17 +16,10 @@
     "test:unit": "vp test --run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
     "test:integration": "vp test --run --passWithNoTests integration.test",
     "test:component": "vp test --run --passWithNoTests component.test",
-    "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
-    "i18n:generate": "bun src/cli.ts"
+    "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov"
   },
   "dependencies": {
-    "@inlang/paraglide-js": "catalog:",
-    "@inlang/plugin-m-function-matcher": "catalog:",
-    "@inlang/plugin-message-format": "catalog:",
-    "@inlang/sdk": "catalog:",
-    "citty": "catalog:tooling",
-    "esbuild": "catalog:tooling",
-    "urlpattern-polyfill": "catalog:frontend"
+    "use-intl": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:tooling",

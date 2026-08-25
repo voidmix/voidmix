@@ -3,34 +3,32 @@
 ## Purpose
 
 Shared locale negotiation, React runtime helpers, Intl formatting, and the
-Paraglide/Inlang build adapter used by application-owned catalogs.
+`use-intl` facade used by application-owned static catalogs.
 
 ## Interface
 
 ```text
 @voidmix/i18n         locale constants, parsing, formatting, translation
 @voidmix/i18n/client  React provider/hooks and browser/Desktop storage
-@voidmix/i18n/server  request and configured-locale resolution
-@voidmix/i18n/build   Paraglide generation and Vite integration
+@voidmix/i18n/server  request locale resolution and sync translator factory
 @voidmix/i18n/types   runtime-only public types
 ```
 
 ## Ownership
 
 - Own locale normalization, Cookie/localStorage adapters, runtime providers,
-  formatters, and Paraglide generation integration.
-- Applications and Mail own their `messages/` catalogs and Inlang settings.
-- Generated output is disposable and must never be hand-edited.
+  formatters, and the `use-intl` integration.
+- Applications and Mail own their `messages/` JSON catalogs.
+- Catalogs are statically imported by each composition root; there is no
+  generated runtime output or async namespace loader.
 
 ## Constraints
 
-- Paraglide is the only message compiler; do not add another ICU parser.
-- `client` and runtime exports must not import build/compiler modules.
-- Do not expose or recommend a full-catalog runtime barrel to application code.
-- Generated namespaces expose `loader.js` for asynchronous per-locale splitting
-  and `loader.sync.js` for render paths that must not suspend. A synchronous
-  loader bundles every supported locale for that namespace, so applications
-  must opt into that size tradeoff deliberately.
+- Business code imports translation hooks and translator types only from this
+  package; it must not import `use-intl` directly.
+- Keep `use-intl` implementation details behind the package facade, including
+  its `AppConfig` and translator types.
+- `client` and runtime exports must not import compiler or build modules.
 - Domain and contract packages must not depend on this package.
 
 ## Verification
@@ -38,5 +36,4 @@ Paraglide/Inlang build adapter used by application-owned catalogs.
 ```bash
 bun run --cwd packages/i18n check
 bun run --cwd packages/i18n test
-bun run --cwd packages/i18n i18n:generate -- <workspace-root>
 ```

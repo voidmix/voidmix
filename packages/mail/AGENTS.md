@@ -13,8 +13,7 @@ src/types.ts     Mailer, template, transport, and message types
 src/server.ts    createMailer and server-only template/transport exports
 src/templates/   React Email templates and shared layout
 src/transports/  Resend and logger transports
-messages/        English and Chinese Inlang catalogs
-project.inlang/  Paraglide project settings
+messages/        English and Chinese JSON catalogs
 scripts/         local deterministic email preview
 ```
 

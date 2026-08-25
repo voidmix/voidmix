@@ -15,12 +15,11 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
-import { loadCommonMessages } from "../../i18n/common";
 import "@voidmix/ui/styles.css";
 import "../../App.css";
 
 function WindowActions() {
-  const t = useTranslations("common", loadCommonMessages);
+  const t = useTranslations("common");
   const [message, setMessage] = useState("");
 
   async function handleHide() {
@@ -51,7 +50,7 @@ function WindowActions() {
 }
 
 export function DesktopShell() {
-  const t = useTranslations("common", loadCommonMessages);
+  const t = useTranslations("common");
   const locale = useLocale();
   const setLocale = useSetLocale();
   const navigation = [

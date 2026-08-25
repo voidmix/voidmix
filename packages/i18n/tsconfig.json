@@ -1,6 +1,7 @@
 {
   "extends": "@voidmix/tsconfig/react-library.json",
   "compilerOptions": {
+    "resolveJsonModule": true,
     "types": ["node"]
   },
   "include": ["src", "__tests__"]

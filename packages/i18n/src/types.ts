@@ -2,10 +2,15 @@ import type { SUPPORTED_LOCALES } from "./constants.js";
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-export type MessageFunction = (values?: Record<string, unknown>) => string;
-export type MessageCatalog = Record<string, MessageFunction>;
-export type NamespaceLoader = (locale: Locale) => MessageCatalog | Promise<MessageCatalog>;
-export type InitialCatalogs = Partial<Record<string, MessageCatalog>>;
+export type MessageTree = {
+  readonly [key: string]: string | MessageTree;
+};
+
+export type MessagesByLocale = Record<Locale, MessageTree>;
+
+export type TranslationValues = Record<string, string | number | Date>;
+
+export type MessageCatalog = MessageTree;
 
 export type LocaleStorage = {
   read(): Locale | undefined;

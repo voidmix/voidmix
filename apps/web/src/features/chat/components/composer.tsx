@@ -1,5 +1,5 @@
 import { Paperclip, Plus, Sparkle, Wrench } from "@phosphor-icons/react";
-import { useOptionalTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   DropdownMenu,
@@ -30,7 +30,6 @@ import {
   matchSkills,
   type ChatSkill,
 } from "../skills";
-import { loadHomeMessages } from "../../../i18n/home";
 import { SkillMenu } from "./skill-menu";
 
 interface ComposerProps {
@@ -39,23 +38,7 @@ interface ComposerProps {
 }
 
 export function Composer({ onSubmit, value = "" }: ComposerProps) {
-  const t = useOptionalTranslations("home", loadHomeMessages, (key, values) => {
-    const fallback: Record<string, string> = {
-      askVoidmix: "Ask Voidmix",
-      askWorkspace: "Ask about this workspace",
-      addAttachmentOrSkill: "Add attachment or skill",
-      addToMessage: "Add to message",
-      uploadFile: "Upload file",
-      skills: "Skills",
-      sendMessage: "Send message",
-      skillSuggestions: `${typeof values?.count === "number" ? values.count : 0} skill suggestions`,
-      skillSummarize: "Condense the thread into key points.",
-      skillBrainstorm: "Generate options for the current problem.",
-      skillExplain: "Walk through how something works.",
-      skillReview: "Critique the current draft or change.",
-    };
-    return fallback[key] ?? key;
-  });
+  const t = useTranslations("home");
   const [prompt, setPrompt] = useState(value);
   const [caret, setCaret] = useState(value.length);
   const [activeIndex, setActiveIndex] = useState(0);

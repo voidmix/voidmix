@@ -1,18 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useOptionalTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "@voidmix/i18n/client";
 import { buttonVariants } from "@voidmix/ui/components/ui/button";
 
-import { loadAuthMessages } from "../../../i18n/auth";
-
 export function AuthActions() {
-  const t = useOptionalTranslations("auth", loadAuthMessages, (key) => {
-    const fallback: Record<string, string> = {
-      account: "Account",
-      signIn: "Sign in",
-      createAccount: "Create account",
-    };
-    return fallback[key] ?? key;
-  });
+  const t = useTranslations("auth");
 
   return (
     <nav aria-label={t("account")} className="flex items-center gap-1">

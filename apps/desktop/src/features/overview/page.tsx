@@ -27,10 +27,9 @@ import {
   type CloudSnapshot,
   type SyncJob,
 } from "../../lib/cloud";
-import { loadOverviewMessages } from "../../i18n/overview";
 
 function SyncState({ paused, pending }: { paused: boolean; pending: number }) {
-  const t = useTranslations("overview", loadOverviewMessages);
+  const t = useTranslations("overview");
   return (
     <span className={paused ? "sync-state paused" : "sync-state"}>
       <span className="sync-indicator" />
@@ -44,7 +43,7 @@ function SyncState({ paused, pending }: { paused: boolean; pending: number }) {
 }
 
 function MetricRow({ snapshot }: { snapshot: CloudSnapshot }) {
-  const t = useTranslations("overview", loadOverviewMessages);
+  const t = useTranslations("overview");
   const metrics = [
     {
       label: t("cloudStorage"),
@@ -88,7 +87,7 @@ function JobIcon({ job }: { job: SyncJob }) {
 }
 
 function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
-  const t = useTranslations("overview", loadOverviewMessages);
+  const t = useTranslations("overview");
   return (
     <section className="work-panel queue-panel" aria-labelledby="queue-title">
       <div className="section-heading">
@@ -124,7 +123,7 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
 }
 
 function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
-  const t = useTranslations("overview", loadOverviewMessages);
+  const t = useTranslations("overview");
   const usedPercent = Math.round((snapshot.storage.used / snapshot.storage.total) * 100);
   const categories = [
     { label: t("projectFiles"), value: snapshot.storage.projects, tone: "primary" },
@@ -177,7 +176,7 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
 }
 
 function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
-  const t = useTranslations("overview", loadOverviewMessages);
+  const t = useTranslations("overview");
   return (
     <section className="device-strip" aria-labelledby="device-title">
       <div>
@@ -212,7 +211,7 @@ function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
 }
 
 export function OverviewPage() {
-  const t = useTranslations("overview", loadOverviewMessages);
+  const t = useTranslations("overview");
   const [snapshot, setSnapshot] = useState<CloudSnapshot>(demoCloudSnapshot);
   const [source, setSource] = useState<"cloud" | "connected" | "demo">("demo");
   const [loading, setLoading] = useState(false);

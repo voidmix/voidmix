@@ -4,8 +4,11 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
+import { I18nProvider } from "@voidmix/i18n/client";
 import { ThemeProvider } from "@voidmix/ui/theme";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
+import { messages } from "../../i18n/messages";
 
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -55,11 +58,13 @@ afterEach(() => {
 
 function renderShell() {
   render(
-    <ThemeProvider disableScript defaultTheme="system" storageKey={false}>
-      <AdminShell>
-        <p>Directory</p>
-      </AdminShell>
-    </ThemeProvider>,
+    <I18nProvider locale="en" messages={messages}>
+      <ThemeProvider disableScript defaultTheme="system" storageKey={false}>
+        <AdminShell>
+          <p>Directory</p>
+        </AdminShell>
+      </ThemeProvider>
+    </I18nProvider>,
   );
   return {
     trigger: screen.getByRole("button", { name: "Open account menu" }),

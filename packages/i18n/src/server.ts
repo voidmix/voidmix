@@ -1,5 +1,6 @@
 import { getLocaleCookie } from "./cookie.js";
 import { resolveLocale } from "./resolve.js";
+export { createTranslator, type CreateTranslatorOptions, type Translator } from "./translator.js";
 import type { Locale } from "./types.js";
 
 export function resolveRequestLocale(headers: Headers, fallbackLocale?: Locale): Locale {

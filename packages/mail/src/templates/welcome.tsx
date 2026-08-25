@@ -2,11 +2,11 @@ import { render, Text } from "react-email";
 import type { Locale } from "@voidmix/i18n/types";
 import type { WelcomeTemplateInput } from "../types.js";
 import { MailLayout } from "./layout.js";
-import { loadMailTranslator } from "../i18n.js";
+import { createMailTranslator } from "../i18n.js";
 
 export const welcomeEmail = async (input: WelcomeTemplateInput, locale: Locale = "en") => {
-  const t = await loadMailTranslator("welcome", locale);
-  const common = await loadMailTranslator("common", locale);
+  const t = createMailTranslator("welcome", locale);
+  const common = createMailTranslator("common", locale);
   const hello = input.name?.trim()
     ? common("greetingNamed", { name: input.name.trim() })
     : common("greeting");

@@ -22,7 +22,7 @@ src/
   lib/cloud.ts      stable cloud facade and formatting helper
   lib/cloud/        remote source, preview source, validation, and types
   lib/desktop.ts    Tauri bridge helpers
-  i18n/             generated namespace-loader adapters
+  i18n/             static catalogs and API error codes
 src-tauri/
   src/main.rs, src/lib.rs   Rust entry and app setup
   tauri.conf.json           window, bundle, and updater configuration
@@ -43,9 +43,8 @@ src-tauri/
   into Web, and do not copy Web's route files into here.
 - Route construction mounts feature pages directly. Keep page-specific UI under
   `src/features/<feature>/`; do not grow `App.tsx` into a page aggregator.
-- Route components are lazy imports. The shell owns only `common` translations;
-  feature modules own their namespace loader and must not import a full catalog
-  barrel.
+- Route components are lazy imports. The shell and feature modules use the
+  `@voidmix/i18n` facade against the static catalog mounted by `main.tsx`.
 - `check` runs **two** typecheck passes (`typecheck` and `typecheck:node`) because
   the renderer and the Node-side config have separate tsconfigs. Both must pass.
 - Rust changes additionally require `cargo fmt --check`, `cargo check`, and

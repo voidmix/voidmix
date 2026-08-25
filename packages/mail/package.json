@@ -9,8 +9,7 @@
     "./env": "./src/env.ts"
   },
   "scripts": {
-    "i18n:generate": "bun run --cwd ../../packages/i18n i18n:generate -- ../../packages/mail",
-    "check": "bun run i18n:generate && tsc --noEmit -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
     "test": "vp test --run",
     "test:unit": "vp test --run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
     "test:integration": "vp test --run --passWithNoTests integration.test",

@@ -4,11 +4,10 @@ import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
 
-import { loadHomeMessages } from "../../../i18n/home";
 import { operators } from "../data";
 
 export function ProjectContext() {
-  const t = useTranslations("home", loadHomeMessages);
+  const t = useTranslations("home");
 
   return (
     <aside

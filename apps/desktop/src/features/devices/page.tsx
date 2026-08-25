@@ -2,10 +2,9 @@ import { DeviceMobile, Laptop, Monitor, Sparkle, X } from "@phosphor-icons/react
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useTranslations } from "@voidmix/i18n/client";
 import { demoCloudSnapshot } from "../../lib/cloud";
-import { loadDeviceMessages } from "../../i18n/devices";
 
 export function DevicesPage() {
-  const t = useTranslations("devices", loadDeviceMessages);
+  const t = useTranslations("devices");
   const devices = demoCloudSnapshot.devices;
   return (
     <div className="page">

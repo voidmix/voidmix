@@ -10,12 +10,11 @@ import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
 import { useTranslations } from "@voidmix/i18n/client";
 
-import { loadErrorMessages } from "../../i18n/errors";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 
 export function ResetPassword({ token }: { token?: string }) {
-  const translateError = useTranslations("errors", loadErrorMessages);
+  const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -7,11 +7,10 @@ import { useState } from "react";
 import { Composer } from "./components/composer";
 import { MessageList } from "./components/message-list";
 import { createPreviewResponse, initialChatMessages } from "./fixtures";
-import { loadHomeMessages } from "../../i18n/home";
 import type { ChatMessage } from "./types";
 
 export function ChatShell() {
-  const t = useTranslations("home", loadHomeMessages);
+  const t = useTranslations("home");
   const [messages, setMessages] = useState<readonly ChatMessage[]>(initialChatMessages);
   const hasMessages = messages.length > 0;
 

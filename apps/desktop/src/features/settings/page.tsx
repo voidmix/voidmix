@@ -2,7 +2,6 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { useTranslations } from "@voidmix/i18n/client";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useMemo, useState } from "react";
-import { loadSettingsMessages } from "../../i18n/settings";
 
 function SettingToggle({
   label,
@@ -34,7 +33,7 @@ function SettingToggle({
 }
 
 export function SettingsPage() {
-  const t = useTranslations("settings", loadSettingsMessages);
+  const t = useTranslations("settings");
   const sections = useMemo(
     () => [
       {

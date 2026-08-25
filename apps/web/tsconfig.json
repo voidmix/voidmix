@@ -8,6 +8,7 @@
     "vitest.config.ts"
   ],
   "compilerOptions": {
+    "resolveJsonModule": true,
     "types": ["vite/client", "node"]
   }
 }

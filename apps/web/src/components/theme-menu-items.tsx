@@ -1,12 +1,10 @@
 import { Desktop, Moon, Sun } from "@phosphor-icons/react";
-import { useOptionalTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "@voidmix/i18n/client";
 import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { useTheme, type UserTheme } from "@voidmix/ui/theme";
-
-import { loadCommonMessages } from "../i18n/common";
 
 export const themeOptions: ReadonlyArray<{ icon: typeof Sun; label: string; value: UserTheme }> = [
   { icon: Sun, label: "Light", value: "light" },
@@ -26,14 +24,7 @@ export const themeLabels: Record<UserTheme, string> = {
  */
 export function ThemeMenuItems() {
   const { theme, setTheme } = useTheme();
-  const t = useOptionalTranslations("common", loadCommonMessages, (key) => {
-    const fallback: Record<string, string> = {
-      themeLight: "Light",
-      themeDark: "Dark",
-      themeSystem: "System",
-    };
-    return fallback[key] ?? key;
-  });
+  const t = useTranslations("common");
 
   return (
     <DropdownMenuRadioGroup onValueChange={(value) => setTheme(value as UserTheme)} value={theme}>

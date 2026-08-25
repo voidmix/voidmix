@@ -4,45 +4,36 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useRef,
   useState,
   type PropsWithChildren,
 } from "react";
+import {
+  IntlProvider,
+  useFormatter as useIntlFormatter,
+  useTranslations as useIntlTranslations,
+} from "use-intl";
 
-import { createFormatter, type Formatter } from "./formatter.js";
-import { createTranslator, type Translator } from "./translator.js";
 import { normalizeLocale } from "./normalize.js";
 import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from "./constants.js";
+import type { Formatter } from "./formatter.js";
+import { formats } from "./formats.js";
 import type {
-  InitialCatalogs,
   Locale,
   LocaleStorage,
   MessageCatalog,
-  NamespaceLoader,
+  MessageTree,
+  MessagesByLocale,
 } from "./types.js";
+import type { Translator } from "./translator.js";
 
 type I18nContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => Promise<void>;
-  readNamespace: (namespace: string, loader?: NamespaceLoader) => MessageCatalog;
-  version: number;
 };
-
-type PendingCatalogs = Map<string, Map<Locale, Promise<MessageCatalog>>>;
-
-function isPromiseLike<T>(value: T | Promise<T>): value is Promise<T> {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "then" in value &&
-    typeof value.then === "function"
-  );
-}
 
 export type I18nProviderProps = PropsWithChildren<{
   locale: Locale;
-  loaders?: Record<string, NamespaceLoader>;
-  initialCatalogs?: InitialCatalogs;
+  messages: MessagesByLocale;
   storage?: LocaleStorage;
   onLocaleChange?: (locale: Locale) => void | Promise<void>;
 }>;
@@ -87,102 +78,59 @@ export function createLocalStorageLocaleStorage(): LocaleStorage {
   };
 }
 
-export function I18nProvider({
+export type LocaleProviderProps = PropsWithChildren<{
+  locale: Locale;
+  storage?: LocaleStorage;
+  onLocaleChange?: (locale: Locale) => void | Promise<void>;
+}>;
+
+export function LocaleProvider({
   children,
   locale: initialLocale,
-  loaders = {},
-  initialCatalogs = {},
   storage,
   onLocaleChange,
-}: I18nProviderProps) {
+}: LocaleProviderProps) {
   const [locale, setActiveLocale] = useState(initialLocale);
-  const [version, setVersion] = useState(0);
-  const cache = useMemo(() => {
-    const result = new Map<string, Map<Locale, MessageCatalog>>();
-    for (const [namespace, catalog] of Object.entries(initialCatalogs)) {
-      if (catalog) result.set(namespace, new Map([[initialLocale, catalog]]));
-    }
-    return result;
-  }, []);
-  const pending = useRef<PendingCatalogs>(new Map()).current;
-  const registeredLoaders = useRef(new Map(Object.entries(loaders))).current;
-  const activeNamespaces = useRef(new Set<string>()).current;
-
-  for (const [namespace, loader] of Object.entries(loaders)) {
-    registeredLoaders.set(namespace, loader);
-  }
-
-  const loadNamespace = useCallback(
-    (namespace: string, targetLocale: Locale): MessageCatalog | Promise<MessageCatalog> => {
-      const byLocale = cache.get(namespace) ?? new Map<Locale, MessageCatalog>();
-      cache.set(namespace, byLocale);
-      const existing = byLocale.get(targetLocale);
-      if (existing) return existing;
-
-      const loader = registeredLoaders.get(namespace);
-      if (!loader) throw new Error(`No i18n loader is registered for namespace "${namespace}"`);
-      const pendingByLocale = pending.get(namespace) ?? new Map<Locale, Promise<MessageCatalog>>();
-      pending.set(namespace, pendingByLocale);
-      const existingPending = pendingByLocale.get(targetLocale);
-      if (existingPending) return existingPending;
-
-      const loaded = loader(targetLocale);
-      if (!isPromiseLike(loaded)) {
-        byLocale.set(targetLocale, loaded);
-        return loaded;
-      }
-
-      const request = loaded
-        .then((messages) => {
-          byLocale.set(targetLocale, messages);
-          pendingByLocale.delete(targetLocale);
-          setVersion((current) => current + 1);
-          return messages;
-        })
-        .catch((error: unknown) => {
-          pendingByLocale.delete(targetLocale);
-          throw error;
-        });
-      pendingByLocale.set(targetLocale, request);
-      return request;
-    },
-    [cache, pending, registeredLoaders],
-  );
-
-  const readNamespace = useCallback(
-    (namespace: string, loader?: NamespaceLoader) => {
-      if (loader) registeredLoaders.set(namespace, loader);
-      activeNamespaces.add(namespace);
-      const catalog = cache.get(namespace)?.get(locale);
-      if (catalog) return catalog;
-
-      const request = pending.get(namespace)?.get(locale) ?? loadNamespace(namespace, locale);
-      if (isPromiseLike(request)) throw request;
-      return request;
-    },
-    [activeNamespaces, cache, loadNamespace, locale, pending, registeredLoaders],
-  );
 
   const setLocale = useCallback(
     async (nextLocale: Locale) => {
       if (!SUPPORTED_LOCALES.includes(nextLocale) || nextLocale === locale) return;
-      await Promise.all(
-        [...activeNamespaces].map((namespace) =>
-          Promise.resolve(loadNamespace(namespace, nextLocale)),
-        ),
-      );
       storage?.write(nextLocale);
       await onLocaleChange?.(nextLocale);
       setActiveLocale(nextLocale);
     },
-    [activeNamespaces, loadNamespace, locale, onLocaleChange, storage],
+    [locale, onLocaleChange, storage],
   );
 
-  const context = useMemo(
-    () => ({ locale, setLocale, readNamespace, version }),
-    [locale, readNamespace, setLocale, version],
-  );
+  const context = useMemo(() => ({ locale, setLocale }), [locale, setLocale]);
   return createElement(I18nContext.Provider, { value: context }, children);
+}
+
+export function I18nProvider({ messages, children, ...localeProps }: I18nProviderProps) {
+  return createElement(
+    LocaleProvider,
+    localeProps,
+    createElement(IntlMessagesProvider, { messages }, children),
+  );
+}
+
+function IntlMessagesProvider({
+  children,
+  messages,
+}: PropsWithChildren<{ messages: MessagesByLocale }>) {
+  const locale = useLocale();
+  return createElement(IntlProvider, {
+    locale,
+    // A fixed server timezone keeps SSR and hydration deterministic.
+    timeZone: "UTC",
+    messages: messages[locale] as MessageTree,
+    formats: {
+      dateTime: formats.dateTime,
+      list: formats.list,
+      number: formats.number,
+    },
+    children,
+  });
 }
 
 function useI18nContext() {
@@ -199,33 +147,57 @@ export function useSetLocale() {
   return useI18nContext().setLocale;
 }
 
-export function useTranslations(namespace: string, loader?: NamespaceLoader): Translator {
-  const { locale, readNamespace } = useI18nContext();
-  const messages = readNamespace(namespace, loader);
-  return useMemo(() => createTranslator(messages, locale), [locale, messages]);
-}
-
-/**
- * Translation hook for reusable components that may also be rendered outside
- * the application provider (for example, isolated component tests).
- */
-export function useOptionalTranslations(
-  namespace: string,
-  loader: NamespaceLoader,
-  fallback: Translator,
-): Translator {
-  const context = useContext(I18nContext);
-  const messages = context ? context.readNamespace(namespace, loader) : null;
-  return useMemo(
-    () => (messages && context ? createTranslator(messages, context.locale) : fallback),
-    [context, fallback, messages],
-  );
+export function useTranslations(namespace?: string): Translator {
+  return useIntlTranslations(namespace as never) as unknown as Translator;
 }
 
 export function useFormatter(): Formatter {
   const locale = useLocale();
-  return useMemo(() => createFormatter(locale), [locale]);
+  const formatter = useIntlFormatter();
+  const formatDateTime = formatter.dateTime as unknown as (
+    value: Date | number,
+    options?: Intl.DateTimeFormatOptions,
+  ) => string;
+  const formatNumber = formatter.number as unknown as (
+    value: bigint | number,
+    options?: Intl.NumberFormatOptions,
+  ) => string;
+  return useMemo(
+    () => ({
+      dateTime: (
+        value: Date | number,
+        format?: keyof typeof formats.dateTime | Intl.DateTimeFormatOptions,
+      ) => {
+        if (typeof format === "string") return formatter.dateTime(value, format);
+        return formatDateTime(value, format);
+      },
+      list: (
+        values: Iterable<string>,
+        format?: keyof typeof formats.list | Intl.ListFormatOptions,
+      ) => {
+        if (typeof format === "string") return formatter.list(values, format);
+        return formatter.list(values, format);
+      },
+      number: (
+        value: bigint | number,
+        format?: keyof typeof formats.number | Intl.NumberFormatOptions,
+      ) => {
+        if (typeof format === "string") return formatter.number(value, format);
+        return formatNumber(value, format);
+      },
+      relativeTime: (
+        value: number,
+        unit: Intl.RelativeTimeFormatUnit,
+        format?: keyof typeof formats.relativeTime | Intl.RelativeTimeFormatOptions,
+      ) =>
+        new Intl.RelativeTimeFormat(
+          locale,
+          typeof format === "string" ? formats.relativeTime[format] : format,
+        ).format(value, unit),
+    }),
+    [formatter, formatDateTime, formatNumber, locale],
+  );
 }
 
 export { DEFAULT_LOCALE };
-export type { InitialCatalogs, Locale, LocaleStorage, MessageCatalog, NamespaceLoader };
+export type { Locale, LocaleStorage, MessageCatalog, MessageTree, MessagesByLocale };

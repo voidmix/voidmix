@@ -1,19 +1,14 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import evlog from "@voidmix/logger/vite";
-import { defineI18nProject, i18nVitePlugin } from "@voidmix/i18n/build";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig, lazyPlugins } from "vite-plus";
-import { fileURLToPath } from "node:url";
-
-const i18nProject = defineI18nProject({ root: fileURLToPath(new URL(".", import.meta.url)) });
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins:
     lazyPlugins(() => [
-      i18nVitePlugin(i18nProject),
       evlog({
         service: "web",
       }),

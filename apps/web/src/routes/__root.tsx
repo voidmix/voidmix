@@ -13,7 +13,7 @@ import { Toaster } from "@voidmix/ui/components/ui/toast";
 import "@voidmix/ui/styles.css";
 import { ThemeProvider, ThemeScript } from "@voidmix/ui/theme";
 import { env } from "../env.js";
-import { loadCommonMessages } from "../i18n/common";
+import { messages } from "../i18n/messages";
 import { createRecoveryTranslator, readDocumentLocale } from "../i18n/recovery-messages";
 import { getRequestPreferences } from "../lib/request-preferences";
 import {
@@ -170,8 +170,8 @@ function RootDocument({ children }: { children: ReactNode }) {
 
   return (
     <I18nProvider
-      loaders={{ common: loadCommonMessages }}
       locale={locale}
+      messages={messages}
       onLocaleChange={(nextLocale) => {
         document.documentElement.lang = nextLocale;
       }}

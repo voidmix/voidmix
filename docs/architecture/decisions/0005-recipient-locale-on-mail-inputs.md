@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-[ADR-0004](./0004-i18n-and-paraglide.md) localized the mail templates and then
+[ADR-0004](./0004-use-intl-static-catalogs.md) localized the mail templates and then
 stated, deliberately, that "recipient locale is not added to mail method inputs";
 every message rendered with the process-wide `MAIL_DEFAULT_LOCALE`.
 
@@ -34,9 +34,8 @@ each callback and omits the property when there is no request — omission, not
 `undefined`, because `exactOptionalPropertyTypes` is on and the mailer's fallback
 depends on absence.
 
-This supersedes only the recipient-locale clause of ADR-0004. Every other
-decision in that record — Paraglide, locale and namespace chunks, the cookie
-strategy, Mail owning its own Inlang project — remains in force.
+This supersedes only the recipient-locale clause of ADR-0004. The current ADR-0004
+decision uses the `@voidmix/i18n` facade with static JSON catalogs.
 
 It does not add a locale column to the user record. A stored preference would
 outrank a request header, and it needs the status-value treatment the repository

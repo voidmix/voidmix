@@ -4,14 +4,20 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { I18nProvider } from "@voidmix/i18n/client";
 
+import { messages } from "../../../i18n/messages";
 import { Composer } from "./composer";
 
 afterEach(() => cleanup());
 
 function renderComposer(options?: Parameters<typeof userEvent.setup>[0]) {
   const onSubmit = vi.fn();
-  render(<Composer onSubmit={onSubmit} />);
+  render(
+    <I18nProvider locale="en" messages={messages}>
+      <Composer onSubmit={onSubmit} />
+    </I18nProvider>,
+  );
   return {
     onSubmit,
     textarea: screen.getByRole("textbox", { name: "Ask Voidmix" }),

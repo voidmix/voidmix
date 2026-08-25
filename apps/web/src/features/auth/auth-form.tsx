@@ -9,12 +9,10 @@ import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
-import { loadAuthMessages } from "../../i18n/auth";
-import { loadErrorMessages } from "../../i18n/errors";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
-  const t = useTranslations("auth", loadAuthMessages);
-  const translateError = useTranslations("errors", loadErrorMessages);
+  const t = useTranslations("auth");
+  const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");

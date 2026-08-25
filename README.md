@@ -40,7 +40,7 @@ packages/client     Typed oRPC client
 packages/contracts  Runtime API contracts
 packages/domain     Framework-independent business rules
 packages/auth       Sessions, roles, and permissions
-packages/i18n       Paraglide runtime, locale adapters, and build integration
+packages/i18n       use-intl facade, locale adapters, and formatting
 packages/mail       Typed auth email templates and transports
 packages/env        Runtime-aware environment presets
 packages/db         Drizzle schema and repository adapters
@@ -66,7 +66,6 @@ deliberately deferred until a real asynchronous job needs its own lifecycle.
 cp .env.example .env
 bun install
 bun run generate
-bun run i18n:generate
 bun run dev
 ```
 

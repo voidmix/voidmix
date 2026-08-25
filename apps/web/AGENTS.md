@@ -26,7 +26,7 @@ src/
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
-  i18n/              namespace loaders, API error codes, recovery copy
+  i18n/              static catalogs, API error codes, recovery copy
 server/
   env.ts             server-only API/Auth/Mail environment composition
   app.ts             Nitro Web-format handler
@@ -64,8 +64,8 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - The root loader owns locale **and** theme resolution
   (`src/lib/request-preferences.ts`) — both providers need the value before the
   first render or they paint a wrong one and correct it in an effect. Root
-  composition imports only the `common` Paraglide namespace; feature modules
-  import their own loaders. Never import generated `messages.js` or `_index.js`.
+  composition supplies the statically imported `src/i18n/messages.ts` catalog
+  to `@voidmix/i18n`; feature modules select namespaces with the facade hook.
 - `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
   import fails `check`.
 - Better Auth and `@voidmix/client` use same-origin `/api/auth/*` and `/rpc/*`
@@ -97,19 +97,17 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Stylesheets: `import "@voidmix/ui/styles.css"` plus
   `import appCss from "../styles.css?url"` fed through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is
-  i18n → evlog → nitro → tailwindcss → tanstackStart → viteReact. Nitro uses explicit
+  evlog → nitro → tailwindcss → tanstackStart → viteReact. Nitro uses explicit
   Web-format routes with directory scanning and its automatic server entry off.
 - Import extensions are inconsistent per file (`../env.js` vs `./routeTree.gen`).
   Mirror the neighbouring import rather than reasoning about it.
 - Keep `vite.config.ts` and `vitest.config.ts` separate. Loading the application
   plugin pipeline in the test runner breaks React 19's CJS entry — see
   [testing](../../docs/development/testing.md).
-- Web namespace wrappers import generated `loader.sync.js` entrypoints; the
-  async `loader.js` entrypoints make `useTranslations` suspend. Root recovery
-  pages use static `src/i18n/recovery-messages.ts` copy to survive a broken
-  application chunk, drift-guarded by its test.
-- `useOptionalTranslations` fallbacks run only in component tests; keep them
-  byte-identical to `messages/en.json`.
+- Web catalogs are statically imported so translation hooks never suspend during
+  SSR or hydration. Root recovery pages use static
+  `src/i18n/recovery-messages.ts` copy to survive a broken application chunk,
+  drift-guarded by its test.
 
 ## Verification
 
