@@ -26,7 +26,8 @@ temporary standalone API host. It owns Hono routes, oRPC handlers, Better Auth
 session resolution, permission enforcement, CORS, mail composition, dynamic
 authentication-policy enforcement, and the single pooled database runtime. It
 exports factories and an environment preset, but owns no Nitro listener or
-process lifecycle.
+process lifecycle. Better Auth database IDs are generated as UUID v7 values so
+new records retain time-ordered locality while remaining globally unique.
 
 ## `@voidmix/domain`
 

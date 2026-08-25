@@ -28,7 +28,9 @@
     "@voidmix/logger": "workspace:*",
     "@voidmix/mail": "workspace:*",
     "better-auth": "catalog:",
-    "hono": "catalog:backend"
+    "hono": "catalog:backend",
+    "nanoid": "catalog:backend",
+    "uuid": "catalog:"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",

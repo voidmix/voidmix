@@ -21,6 +21,7 @@ import type { Mailer } from "@voidmix/mail/types";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
+import { nanoid } from "nanoid";
 
 import { createApiRouter, type ApiContext } from "./router.js";
 import type { SessionResolver } from "./session.js";
@@ -83,7 +84,7 @@ export function createApiApp(options: CreateApiAppOptions) {
   const origins = new Set(options.allowedOrigins);
   const app = new Hono<ApiEnv>();
 
-  app.use("*", requestId());
+  app.use("*", requestId({ generator: () => nanoid() }));
   app.use("*", honoEvlog({ ...middlewareOptions, exclude: ["/rpc/**"] }));
   app.use("*", async (context, next) => {
     const log = context.get("log");

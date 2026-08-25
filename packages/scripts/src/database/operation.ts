@@ -26,7 +26,7 @@ export interface SeedDependencies {
   log: ScriptsLog;
   now(): Date;
   openUsers(databaseUrl: string): UserRepositoryConnection;
-  randomUUID(): string;
+  uuidv7(): string;
 }
 
 export async function runMigrate(
@@ -64,7 +64,7 @@ export async function runSeed(
     });
     if (!(await connection.users.getByEmail("user@voidmix.local"))) {
       await connection.users.save({
-        id: dependencies.randomUUID(),
+        id: dependencies.uuidv7(),
         email: "user@voidmix.local",
         displayName: "Local User",
         role: "user",

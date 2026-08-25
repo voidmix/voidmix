@@ -42,7 +42,8 @@
     "@voidmix/domain": "workspace:*",
     "@voidmix/env": "workspace:*",
     "@voidmix/logger": "workspace:*",
-    "citty": "catalog:tooling"
+    "citty": "catalog:tooling",
+    "uuid": "catalog:"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",

@@ -184,6 +184,14 @@ describe("API", () => {
     expect((await client.health({})).status).toBe("ok");
   });
 
+  it("generates compact request ids when the client does not provide one", async () => {
+    const app = createTestApiApp();
+    const response = await app.request("/health");
+    const requestId = response.headers.get("x-request-id");
+
+    expect(requestId).toMatch(/^[A-Za-z0-9_-]{21}$/);
+  });
+
   it("batches concurrent safe reads and returns the request id header", async () => {
     const setupResult = setup("owner", "owner-1");
     const [health, user] = await Promise.all([

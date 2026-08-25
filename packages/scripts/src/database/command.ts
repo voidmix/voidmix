@@ -1,4 +1,5 @@
 import { defineCommand } from "citty";
+import { v7 as uuidv7 } from "uuid";
 
 import { runContextualAction } from "../runtime/action.js";
 
@@ -32,7 +33,7 @@ const seedCommand = defineCommand({
         log: context.log,
         now: () => new Date(),
         openUsers: openPostgresUsers,
-        randomUUID: () => crypto.randomUUID(),
+        uuidv7,
       });
     });
   },

@@ -78,7 +78,7 @@ describe("database commands", () => {
       log: vi.fn(),
       now: () => new Date("2026-02-01T00:00:00.000Z"),
       openUsers: () => ({ users, close }),
-      randomUUID: () => "local-user-id",
+      uuidv7: () => "local-user-id",
     });
 
     expect(ensureAdmin).toHaveBeenCalledWith({
@@ -104,7 +104,7 @@ describe("database commands", () => {
         log: vi.fn(),
         now: () => new Date(),
         openUsers: () => ({ users: userRepository(), close }),
-        randomUUID: () => "id",
+        uuidv7: () => "id",
       }),
     ).rejects.toThrow("seed failed");
     expect(close).toHaveBeenCalledOnce();
@@ -124,7 +124,7 @@ describe("database commands", () => {
         log: vi.fn(),
         now: () => new Date(),
         openUsers: vi.fn(),
-        randomUUID: () => "id",
+        uuidv7: () => "id",
       }),
     ).rejects.toThrow("db seed is restricted");
     await expect(

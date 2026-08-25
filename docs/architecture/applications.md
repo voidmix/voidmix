@@ -128,8 +128,9 @@ settings updates and test delivery. The client and Fetch handler batch concurren
 identical in-flight reads, compress payloads above 1 KiB, propagate an
 `x-request-id` response header, retry rate-limited/unavailable reads when the
 server supplies `Retry-After`, enforce a 1 MiB request-body limit, and enforce a
-15-second request deadline. GET procedures are guarded by oRPC's CSRF protection
-plugin.
+15-second request deadline. Hono preserves a valid incoming `X-Request-Id` and
+generates a 21-character Nano ID when one is absent or invalid. GET procedures
+are guarded by oRPC's CSRF protection plugin.
 
 The API emits one Evlog wide event per HTTP/oRPC operation. Hono instruments
 non-RPC routes, while the oRPC adapter records procedures and errors for

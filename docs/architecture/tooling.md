@@ -18,7 +18,7 @@ real compatibility tests and benchmarks justify a change.
 
 The root `package.json` centralizes versions with Bun catalogs:
 
-- Default: React, TanStack Router/Start, and oRPC.
+- Default: React, TanStack Router/Start, oRPC, and UUID.
 - `catalog:tooling`: TypeScript, Type-fest, Vite+, Vite alias, React
   types/plugin, Citty, Dotenvx, and related tooling, Vitest coverage, and
   Playwright. Vitest itself is absent because Vite+ bundles the runner.

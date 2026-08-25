@@ -119,13 +119,17 @@ Vendored skills know their framework, not this repository. They never override a
 
 Currently adopted:
 
-| Skill                            | Source                             | Why                                                                          |
-| -------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------- |
-| `shadcn`                         | `shadcn/ui`                        | documents the Base UI versus Radix API split and the configured icon library |
-| `hono`                           | `yusukebe/hono-skill`              | one file, matches the API's middleware and routing layer                     |
-| `postgres-drizzle`               | `ccheney/robust-skills`            | schema, query, migration, and index guidance for `packages/db`               |
-| `tanstack-router-best-practices` | `deckardger/tanstack-agent-skills` | the repository has no loader or route-guard precedent                        |
-| `tanstack-start-best-practices`  | `deckardger/tanstack-agent-skills` | the repository has no server-function precedent                              |
+| Skill                            | Source                                 | Why                                                                            |
+| -------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------ |
+| `shadcn`                         | `shadcn/ui`                            | documents the Base UI versus Radix API split and the configured icon library   |
+| `hono`                           | `yusukebe/hono-skill`                  | one file, matches the API's middleware and routing layer                       |
+| `postgres-drizzle`               | `ccheney/robust-skills`                | schema, query, migration, and index guidance for `packages/db`                 |
+| `tanstack-router-best-practices` | `deckardger/tanstack-agent-skills`     | the repository has no loader or route-guard precedent                          |
+| `tanstack-start-best-practices`  | `deckardger/tanstack-agent-skills`     | the repository has no server-function precedent                                |
+| `better-auth-best-practices`     | `better-auth/skills`                   | Better Auth configuration, sessions, adapters, plugins, and security           |
+| `tauri-v2`                       | `nodnarbnitram/claude-code-extensions` | Tauri v2 IPC, capabilities, Rust commands, and desktop deployment              |
+| `vercel-react-best-practices`    | `vercel-labs/agent-skills`             | React performance, bundle size, rendering, and data-fetching guidance          |
+| `vite`                           | `antfu/skills`                         | Vite configuration, plugin, SSR, and Rolldown guidance for the Vite+ toolchain |
 
 Read [TanStack corrections](../../skills/voidmix-infra/references/tanstack.md)
 before acting on the two TanStack skills. They over-promise their rule indexes,

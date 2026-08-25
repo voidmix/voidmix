@@ -6,6 +6,7 @@ import { resolveRequestLocale } from "@voidmix/i18n/server";
 import type { Locale } from "@voidmix/i18n/types";
 import { logger } from "@voidmix/logger";
 import type { Mailer } from "@voidmix/mail/types";
+import { v7 as uuidv7 } from "uuid";
 import { betterAuth } from "better-auth";
 
 import type { ApiRuntimeEnvironment } from "../env.js";
@@ -106,7 +107,7 @@ export function createApiAuth({
       },
     },
     advanced: {
-      database: { generateId: () => crypto.randomUUID(), joins: false },
+      database: { generateId: () => uuidv7(), joins: false },
       defaultCookieAttributes: {
         httpOnly: true,
         sameSite: "lax",
