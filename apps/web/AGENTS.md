@@ -26,7 +26,7 @@ src/
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
-  i18n/              namespace loaders and request-locale integration
+  i18n/              namespace loaders, API error codes, recovery copy
 server/
   env.ts             server-only API/Auth/Mail environment composition
   app.ts             Nitro Web-format handler
@@ -61,9 +61,11 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - The root route uses **`shellComponent`**, not `component`. `RootDocument`
   renders the whole `<html>` document including `<HeadContent />` and
   `<Scripts />`; do not move either into a separate wrapper.
-- The root loader owns request locale resolution. Root composition imports only
-  the `common` Paraglide namespace; feature modules import their own loaders.
-  Never import generated `messages.js` or `_index.js` barrels.
+- The root loader owns locale **and** theme resolution
+  (`src/lib/request-preferences.ts`) — both providers need the value before the
+  first render or they paint a wrong one and correct it in an effect. Root
+  composition imports only the `common` Paraglide namespace; feature modules
+  import their own loaders. Never import generated `messages.js` or `_index.js`.
 - `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
   import fails `check`.
 - Better Auth and `@voidmix/client` use same-origin `/api/auth/*` and `/rpc/*`
@@ -103,12 +105,10 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   plugin pipeline in the test runner breaks React 19's CJS entry — see
   [testing](../../docs/development/testing.md).
 - `useTranslations` **suspends**, and a root `errorComponent`/`notFoundComponent`
-  has no boundary above it, so those two read static copy from
-  `src/i18n/recovery-messages.ts` — the error page reports chunk-load failures
-  and must never need a chunk itself. Its test guards that copy against drift.
-- A `useOptionalTranslations` fallback runs only without a provider, so only in
-  component tests. Keep entries byte-identical to `messages/en.json`: a drifted
-  one is invisible in the app yet pins e2e to a string nothing renders.
+  has no boundary above it, so both read static copy from
+  `src/i18n/recovery-messages.ts`, drift-guarded by its test.
+- `useOptionalTranslations` fallbacks run only in component tests; keep them
+  byte-identical to `messages/en.json`.
 
 ## Verification
 

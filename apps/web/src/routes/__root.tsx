@@ -15,7 +15,7 @@ import { ThemeProvider, ThemeScript } from "@voidmix/ui/theme";
 import { env } from "../env.js";
 import { loadCommonMessages } from "../i18n/common";
 import { createRecoveryTranslator, readDocumentLocale } from "../i18n/recovery-messages";
-import { getRequestLocale } from "../i18n/request-locale";
+import { getRequestPreferences } from "../lib/request-preferences";
 import {
   CHUNK_RECOVERY_STORAGE_KEY,
   createChunkRecoveryRecord,
@@ -25,7 +25,7 @@ import {
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
-  loader: () => getRequestLocale(),
+  loader: () => getRequestPreferences(),
   errorComponent: RootErrorPage,
   notFoundComponent: NotFoundPage,
   head: () => ({
@@ -166,7 +166,7 @@ function NotFoundPage() {
 }
 
 function RootDocument({ children }: { children: ReactNode }) {
-  const locale = Route.useLoaderData();
+  const { locale, theme } = Route.useLoaderData();
 
   return (
     <I18nProvider
@@ -183,7 +183,12 @@ function RootDocument({ children }: { children: ReactNode }) {
           <HeadContent />
         </head>
         <body>
-          <ThemeProvider disableScript defaultTheme="system" disableTransitionOnChange>
+          <ThemeProvider
+            disableScript
+            defaultTheme="system"
+            initialTheme={theme}
+            disableTransitionOnChange
+          >
             <ClientLogger />
             {children}
             <Toaster />
