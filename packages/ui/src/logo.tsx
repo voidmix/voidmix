@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 
-const markUrl = new URL("./assets/voidmix-mark.png", import.meta.url).href;
+import markUrl from "./assets/voidmix-mark.png?url";
 
 export interface LogoProps extends ComponentPropsWithoutRef<"span"> {
   label?: string;

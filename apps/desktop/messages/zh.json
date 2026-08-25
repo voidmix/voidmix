@@ -1,7 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "common": {
-    "brand": "Voidmix",
+    "brand": "VoidMix",
     "primaryNavigation": "主导航",
     "control": "控制台",
     "notifications": "通知",
@@ -18,7 +18,7 @@
     "desktopReady": "桌面端已就绪",
     "browserPreview": "浏览器预览",
     "trayMessage": "系统托盘控制仅在桌面版本中可用。",
-    "hideToTray": "将 Voidmix 隐藏到系统托盘",
+    "hideToTray": "将 VoidMix 隐藏到系统托盘",
     "searchWorkspace": "搜索工作区"
   },
   "overview": {
@@ -87,10 +87,10 @@
   },
   "settings": {
     "title": "设置",
-    "description": "选择 Voidmix 在这台电脑上的运行方式。",
+    "description": "选择 VoidMix 在这台电脑上的运行方式。",
     "syncBehavior": "同步行为",
     "startWithSystem": "开机启动",
-    "startWithSystemDescription": "登录这台电脑后让 Voidmix 保持就绪。",
+    "startWithSystemDescription": "登录这台电脑后让 VoidMix 保持就绪。",
     "meteredNetworks": "在按流量计费的网络上同步",
     "meteredNetworksDescription": "网络存在流量限制时继续传输。",
     "automaticDownloads": "自动下载新文件",

@@ -91,14 +91,6 @@ button:disabled {
   font-weight: 760;
   letter-spacing: -0.03em;
 }
-.edition {
-  margin-left: auto;
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
 .brand [data-slot="logo"] {
   font-size: 17px;
 }

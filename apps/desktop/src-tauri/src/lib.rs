@@ -32,9 +32,9 @@ fn show_main_window(app: &AppHandle) {
 }
 
 fn build_tray(app: &tauri::App) -> tauri::Result<()> {
-    let show = MenuItem::with_id(app, "show", "Show Voidmix", true, None::<&str>)?;
+    let show = MenuItem::with_id(app, "show", "Show VoidMix", true, None::<&str>)?;
     let hide = MenuItem::with_id(app, "hide", "Hide window", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app, "quit", "Quit Voidmix", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "Quit VoidMix", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&show, &hide, &quit])?;
 
     let mut tray = TrayIconBuilder::new();
@@ -102,5 +102,5 @@ pub fn run() {
             }
         })
         .run(tauri::generate_context!())
-        .expect("error while running Voidmix desktop application");
+        .expect("error while running VoidMix desktop application");
 }

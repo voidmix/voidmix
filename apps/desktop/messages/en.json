@@ -1,7 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "common": {
-    "brand": "Voidmix",
+    "brand": "VoidMix",
     "primaryNavigation": "Primary navigation",
     "control": "Control",
     "notifications": "Notifications",
@@ -18,7 +18,7 @@
     "desktopReady": "Desktop shell ready",
     "browserPreview": "Browser preview",
     "trayMessage": "Tray controls are available in the desktop build.",
-    "hideToTray": "Hide Voidmix to the system tray",
+    "hideToTray": "Hide VoidMix to the system tray",
     "searchWorkspace": "Search workspace"
   },
   "overview": {
@@ -87,10 +87,10 @@
   },
   "settings": {
     "title": "Settings",
-    "description": "Choose how Voidmix behaves on this computer.",
+    "description": "Choose how VoidMix behaves on this computer.",
     "syncBehavior": "Sync behavior",
     "startWithSystem": "Start with the system",
-    "startWithSystemDescription": "Keep Voidmix ready after you sign in to this computer.",
+    "startWithSystemDescription": "Keep VoidMix ready after you sign in to this computer.",
     "meteredNetworks": "Sync on metered networks",
     "meteredNetworksDescription": "Continue transfers when your connection has a data limit.",
     "automaticDownloads": "Download new files automatically",

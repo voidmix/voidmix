@@ -1,7 +1,7 @@
 [package]
 name = "voidmix-desktop"
 version = "0.1.0"
-description = "Voidmix cloud desktop client"
+description = "VoidMix desktop client"
 authors = ["Voidmix"]
 edition = "2021"
 

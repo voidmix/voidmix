@@ -73,8 +73,7 @@ export function DesktopShell() {
     <div className="desktop-shell">
       <aside className="sidebar">
         <div className="brand">
-          <Logo />
-          <span className="edition">Field</span>
+          <Logo label="VoidMix" />
         </div>
 
         <nav className="primary-nav" aria-label={t("primaryNavigation")}>
