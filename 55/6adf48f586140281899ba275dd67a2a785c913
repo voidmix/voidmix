@@ -1,0 +1,45 @@
+packages/mail/src/types.ts
+  s_dd909d2597cf6a::t_a1dc7fd7d17c7a 1-2,59-60,66-67
+docs/architecture/decisions/0004-i18n-and-paraglide.md
+  s_dd909d2597cf6a::t_cd575656d64783 5
+packages/api-runtime/src/auth/config.test.ts
+  s_dd909d2597cf6a::t_a4cace6c08ca4f 46-64,66-76
+  s_dd909d2597cf6a::t_4542b29eecd39b 65
+packages/api-runtime/package.json
+  s_dd909d2597cf6a::t_e371ad212734af 27
+packages/api-runtime/src/auth/config.ts
+  s_dd909d2597cf6a::t_95fd9c8dd9c544 126,130-133
+  s_dd909d2597cf6a::t_55ba81719d6f1d 5-6,13-22
+  s_dd909d2597cf6a::t_eea3e37b433551 56-62,66-73,78
+  s_dd909d2597cf6a::t_73d7a1224f134c 23
+packages/mail/src/service.test.ts
+  s_dd909d2597cf6a::t_15e54967fadc95 108-136
+docs/architecture/decisions/0005-recipient-locale-on-mail-inputs.md
+  s_dd909d2597cf6a::t_a6a9bfbf3673be 1-68
+docs/architecture/decisions/README.md
+  s_dd909d2597cf6a::t_cd575656d64783 34
+packages/mail/AGENTS.md
+  s_dd909d2597cf6a::t_cac5ad11d93015 37-41
+packages/mail/src/service.ts
+  s_dd909d2597cf6a::t_118c9778869d4c 83,94,105
+docs/development/environment.md
+  s_dd909d2597cf6a::t_f84a03c126bcf1 14
+bun.lock
+  s_dd909d2597cf6a::t_2f42751bc7124f 140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "556adf48f586140281899ba275dd67a2a785c913",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
