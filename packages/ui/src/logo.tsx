@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 
-import markUrl from "./assets/voidmix-mark.png?url";
+import markUrl from "./assets/voidmix-mark.webp?url";
 
 export interface LogoProps extends ComponentPropsWithoutRef<"span"> {
   label?: string;
@@ -20,7 +20,9 @@ export function Logo({ label = "Voidmix", className, ...props }: LogoProps) {
         aria-hidden="true"
         className="size-7 shrink-0 object-contain"
         data-slot="logo-mark"
+        height={28}
         src={markUrl}
+        width={28}
       />
       <span>{label}</span>
     </span>

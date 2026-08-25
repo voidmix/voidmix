@@ -11,6 +11,9 @@ duplicating them here.
 browser composition root for authentication and Admin operations.
 
 - Uses `@voidmix/ui` and owns Web-specific routes, metadata, SSR, and content.
+- Serves `/manifest.webmanifest` through a TanStack Start server route with the
+  VoidMix name, launch scope, theme, and shared 512×512 brand mark for
+  install-capable browsers.
 - Route files declare URLs and may compose a small number of feature entrypoints;
   the home route directly mounts the home navbar and chat shell.
 - Feature roots keep components, state, data, fixtures, tests, and styles;

@@ -14,6 +14,7 @@ src/
   routeTree.gen.ts   generated — do not edit
   routes/
     __root.tsx       createRootRoute with head() and shellComponent
+    manifest[.]webmanifest.ts  server route for the Web App Manifest
     index.tsx        route declaration and home feature composition
     (auth)/route.tsx public authentication group layout
     (auth)/          login, registration, reset, and verification routes
@@ -45,8 +46,9 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ## Constraints
 
 - File-based routing. Add `src/routes/<path>.tsx` exporting
-  `export const Route = createFileRoute("/path")({ component: X })`. The route
-  tree regenerates on the next `dev` or `build`.
+  `export const Route = createFileRoute("/path")({ component: X })`. Server-only
+  endpoints may use `server.handlers` and omit `component`. The route tree
+  regenerates on the next `dev` or `build`.
 - Route modules stay thin: route declaration, route-level layout, and composition
   of a small number of feature entrypoints. Feature components, state, static
   view data, and business behavior belong under `src/features/<feature>/`.

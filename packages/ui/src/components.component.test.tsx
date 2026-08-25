@@ -56,9 +56,13 @@ describe("Logo", () => {
     render(<Logo />);
 
     expect(screen.getByText("Voidmix")).toBeVisible();
+    expect(document.querySelector('[data-slot="logo-mark"]')).toMatchObject({
+      height: 28,
+      width: 28,
+    });
     expect(document.querySelector('[data-slot="logo-mark"]')).toHaveAttribute(
       "src",
-      expect.stringContaining("voidmix-mark.png"),
+      expect.stringContaining("voidmix-mark.webp"),
     );
   });
 });

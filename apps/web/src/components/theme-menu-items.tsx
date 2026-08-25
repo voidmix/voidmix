@@ -5,17 +5,12 @@ import {
   DropdownMenuRadioItem,
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { useTheme, type UserTheme } from "@voidmix/ui/theme";
+import { themeOptions } from "./theme-options";
 
-export const themeOptions: ReadonlyArray<{ icon: typeof Sun; label: string; value: UserTheme }> = [
-  { icon: Sun, label: "Light", value: "light" },
-  { icon: Moon, label: "Dark", value: "dark" },
-  { icon: Desktop, label: "System", value: "system" },
-];
-
-export const themeLabels: Record<UserTheme, string> = {
-  dark: "Dark",
-  light: "Light",
-  system: "System",
+const themeIcons: Record<UserTheme, typeof Sun> = {
+  dark: Moon,
+  light: Sun,
+  system: Desktop,
 };
 
 /**
@@ -28,14 +23,17 @@ export function ThemeMenuItems() {
 
   return (
     <DropdownMenuRadioGroup onValueChange={(value) => setTheme(value as UserTheme)} value={theme}>
-      {themeOptions.map((option) => (
-        <DropdownMenuRadioItem key={option.value} value={option.value}>
-          <option.icon aria-hidden="true" />
-          {t(
-            `theme${option.value === "light" ? "Light" : option.value === "dark" ? "Dark" : "System"}`,
-          )}
-        </DropdownMenuRadioItem>
-      ))}
+      {themeOptions.map((option) => {
+        const Icon = themeIcons[option.value];
+        return (
+          <DropdownMenuRadioItem key={option.value} value={option.value}>
+            <Icon aria-hidden="true" />
+            {t(
+              `theme${option.value === "light" ? "Light" : option.value === "dark" ? "Dark" : "System"}`,
+            )}
+          </DropdownMenuRadioItem>
+        );
+      })}
     </DropdownMenuRadioGroup>
   );
 }

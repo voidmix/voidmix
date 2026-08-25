@@ -1,6 +1,6 @@
 import { DotsThree, GearSix, SignOut, SquaresFour, UsersThree } from "@phosphor-icons/react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -16,7 +16,7 @@ import {
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { Logo } from "@voidmix/ui/logo";
 import { cn } from "@voidmix/ui/lib/utils";
-import { ThemeMenuItems } from "../../components/theme-menu-items";
+import { LazyThemeMenuItems, loadThemeMenuItems } from "../../components/theme-menu-lazy";
 import { signOut, useSession } from "../../lib/auth-client";
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -116,11 +116,30 @@ function AccountMenu({
   role: string | undefined;
   onSignOut: () => Promise<void>;
 }) {
+  const [open, setOpen] = useState(false);
+  const prefetchThemeMenu = () => {
+    void loadThemeMenuItems().catch(() => undefined);
+  };
+
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (nextOpen) {
+          prefetchThemeMenu();
+        }
+      }}
+      open={open}
+    >
       <DropdownMenuTrigger
         render={
-          <Button aria-label="Open account menu" size="icon-sm" variant="ghost">
+          <Button
+            aria-label="Open account menu"
+            onFocus={prefetchThemeMenu}
+            onPointerDown={prefetchThemeMenu}
+            size="icon-sm"
+            variant="ghost"
+          >
             <DotsThree aria-hidden="true" weight="bold" />
           </Button>
         }
@@ -137,7 +156,11 @@ function AccountMenu({
 
         <DropdownMenuGroup>
           <DropdownMenuLabel>Theme</DropdownMenuLabel>
-          <ThemeMenuItems />
+          {open ? (
+            <Suspense fallback={null}>
+              <LazyThemeMenuItems />
+            </Suspense>
+          ) : null}
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
