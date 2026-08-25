@@ -5,9 +5,13 @@ import type { RepositoryProcessDependencies } from "../runtime/process-dependenc
 
 export async function runDesktopBuild(dependencies: RepositoryProcessDependencies): Promise<void> {
   dependencies.log("info", "desktop.build.started");
+  // Tauri's DMG bundler uses CI to skip Finder AppleScript automation. That
+  // keeps the repository build deterministic on machines without Automation
+  // permission while still producing the .app and DMG bundles.
+  const desktopBuildEnv = { ...dependencies.processEnv, CI: "true" };
   await dependencies.runCommand(["bun", "run", "--cwd", "apps/desktop", "tauri", "build"], {
     cwd: dependencies.repositoryRoot,
-    env: dependencies.processEnv,
+    env: desktopBuildEnv,
   });
   dependencies.log("info", "desktop.build.completed");
 }

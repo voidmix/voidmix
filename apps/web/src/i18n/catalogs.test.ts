@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
+import { assertMessageCatalogParity } from "@voidmix/i18n/testing";
 import { messages } from "./messages";
 
 describe("web i18n catalogs", () => {
@@ -17,5 +18,9 @@ describe("web i18n catalogs", () => {
 
   it("keeps identical root namespace keys for both locales", () => {
     expect(Object.keys(messages.en).sort()).toEqual(Object.keys(messages.zh).sort());
+  });
+
+  it("keeps recursive message keys, node types, and ICU arguments aligned", () => {
+    expect(() => assertMessageCatalogParity(messages.en, messages.zh, "en", "zh")).not.toThrow();
   });
 });

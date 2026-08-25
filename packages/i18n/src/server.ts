@@ -20,5 +20,6 @@ export function resolveConfiguredLocale(
   return resolveLocale({ ...(value ? { cookieLocale: value } : {}), fallbackLocale });
 }
 
-export { getLocaleCookie, resolveLocale } from "./index.js";
+export { getLocaleCookie } from "./cookie.js";
+export { resolveLocale } from "./resolve.js";
 export type { Locale } from "./types.js";

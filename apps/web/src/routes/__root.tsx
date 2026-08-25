@@ -4,14 +4,14 @@ import {
   createRootRoute,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { I18nProvider, createBrowserLocaleStorage } from "@voidmix/i18n/client";
+import { I18nProvider, createBrowserLocaleStorage, useLocale } from "@voidmix/i18n/client";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { initClientLogger } from "@voidmix/logger/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Toaster } from "@voidmix/ui/components/ui/toast";
 import "@voidmix/ui/styles.css";
-import { ThemeProvider, ThemeScript } from "@voidmix/ui/theme";
+import { ThemeProvider, ThemeScript, type UserTheme } from "@voidmix/ui/theme";
 import { env } from "../env.js";
 import { messages } from "../i18n/messages";
 import { createRecoveryTranslator, readDocumentLocale } from "../i18n/recovery-messages";
@@ -49,8 +49,8 @@ export const Route = createRootRoute({
     links: [
       {
         rel: "icon",
-        type: "image/svg+xml",
-        href: "/favicon.svg",
+        type: "image/png",
+        href: "/favicon.png",
       },
       {
         rel: "stylesheet",
@@ -169,34 +169,35 @@ function RootDocument({ children }: { children: ReactNode }) {
   const { locale, theme } = Route.useLoaderData();
 
   return (
-    <I18nProvider
-      locale={locale}
-      messages={messages}
-      onLocaleChange={(nextLocale) => {
-        document.documentElement.lang = nextLocale;
-      }}
-      storage={createBrowserLocaleStorage()}
-    >
-      <html dir="ltr" lang={locale} suppressHydrationWarning>
-        <head>
-          <ThemeScript />
-          <HeadContent />
-        </head>
-        <body>
-          <ThemeProvider
-            disableScript
-            defaultTheme="system"
-            initialTheme={theme}
-            disableTransitionOnChange
-          >
-            <ClientLogger />
-            {children}
-            <Toaster />
-            <Scripts />
-          </ThemeProvider>
-        </body>
-      </html>
+    <I18nProvider locale={locale} messages={messages} storage={createBrowserLocaleStorage()}>
+      <LocalizedDocument theme={theme}>{children}</LocalizedDocument>
     </I18nProvider>
+  );
+}
+
+function LocalizedDocument({ children, theme }: { children: ReactNode; theme: UserTheme }) {
+  const locale = useLocale();
+
+  return (
+    <html dir="ltr" lang={locale} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+        <HeadContent />
+      </head>
+      <body>
+        <ThemeProvider
+          disableScript
+          defaultTheme="system"
+          initialTheme={theme}
+          disableTransitionOnChange
+        >
+          <ClientLogger />
+          {children}
+          <Toaster />
+          <Scripts />
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }
 

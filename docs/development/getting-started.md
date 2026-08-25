@@ -77,6 +77,10 @@ bun run desktop:build
 bun run verify
 ```
 
+`desktop:build` sets `CI=true` for Tauri's bundler. On macOS this skips the
+optional Finder AppleScript that only positions DMG icons; it avoids requiring
+Automation permission and keeps local and CI DMG builds reproducible.
+
 Those names are aliases for nested `vmx` commands, which is what the scripts call.
 Reach for the CLI directly when you need to pass an argument:
 

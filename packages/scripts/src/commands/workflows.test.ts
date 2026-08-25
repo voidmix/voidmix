@@ -78,7 +78,7 @@ describe("repository workflows", () => {
 
     expect(deps.runCommand).toHaveBeenCalledWith(
       ["bun", "run", "--cwd", "apps/desktop", "tauri", "build"],
-      { cwd: "/repo", env: deps.processEnv },
+      { cwd: "/repo", env: { ...deps.processEnv, CI: "true" } },
     );
   });
 

@@ -14,6 +14,7 @@ import { Field, FieldError, FieldLabel } from "./components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group";
 import { Separator } from "./components/ui/separator";
 import { Toaster, toast } from "./components/ui/toast";
+import { Logo } from "./logo";
 
 afterEach(() => cleanup());
 
@@ -47,6 +48,18 @@ describe("Avatar", () => {
     render(<Avatar name="Ada Lovelace" />);
 
     expect(screen.getByRole("img", { name: "Ada Lovelace" })).toHaveTextContent("AL");
+  });
+});
+
+describe("Logo", () => {
+  it("uses the shared generated mark while keeping the accessible wordmark", () => {
+    render(<Logo />);
+
+    expect(screen.getByText("Voidmix")).toBeVisible();
+    expect(document.querySelector('[data-slot="logo-mark"]')).toHaveAttribute(
+      "src",
+      expect.stringContaining("voidmix-mark.png"),
+    );
   });
 });
 

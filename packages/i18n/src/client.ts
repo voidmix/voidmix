@@ -7,16 +7,13 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import {
-  IntlProvider,
-  useFormatter as useIntlFormatter,
-  useTranslations as useIntlTranslations,
-} from "use-intl";
+import { IntlProvider, useTranslations as useIntlTranslations } from "use-intl";
 
-import { normalizeLocale } from "./normalize.js";
+import { getLocaleCookie, serializeLocaleCookie } from "./cookie.js";
 import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from "./constants.js";
-import type { Formatter } from "./formatter.js";
+import { createFormatter, type Formatter } from "./formatter.js";
 import { formats } from "./formats.js";
+import { normalizeLocale } from "./normalize.js";
 import type {
   Locale,
   LocaleStorage,
@@ -44,17 +41,13 @@ export function createBrowserLocaleStorage(): LocaleStorage {
   return {
     read() {
       if (typeof document === "undefined") return undefined;
-      return normalizeLocale(
-        document.cookie
-          .split(";")
-          .map((part) => part.trim())
-          .find((part) => part.startsWith(`${LOCALE_STORAGE_KEY}=`))
-          ?.slice(LOCALE_STORAGE_KEY.length + 1),
-      );
+      return getLocaleCookie(document.cookie);
     },
     write(locale) {
       if (typeof document === "undefined") return;
-      document.cookie = `${LOCALE_STORAGE_KEY}=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
+      document.cookie = serializeLocaleCookie(locale, {
+        secure: globalThis.location?.protocol === "https:",
+      });
     },
   };
 }
@@ -96,8 +89,8 @@ export function LocaleProvider({
     async (nextLocale: Locale) => {
       if (!SUPPORTED_LOCALES.includes(nextLocale) || nextLocale === locale) return;
       storage?.write(nextLocale);
-      await onLocaleChange?.(nextLocale);
       setActiveLocale(nextLocale);
+      await onLocaleChange?.(nextLocale);
     },
     [locale, onLocaleChange, storage],
   );
@@ -153,50 +146,7 @@ export function useTranslations(namespace?: string): Translator {
 
 export function useFormatter(): Formatter {
   const locale = useLocale();
-  const formatter = useIntlFormatter();
-  const formatDateTime = formatter.dateTime as unknown as (
-    value: Date | number,
-    options?: Intl.DateTimeFormatOptions,
-  ) => string;
-  const formatNumber = formatter.number as unknown as (
-    value: bigint | number,
-    options?: Intl.NumberFormatOptions,
-  ) => string;
-  return useMemo(
-    () => ({
-      dateTime: (
-        value: Date | number,
-        format?: keyof typeof formats.dateTime | Intl.DateTimeFormatOptions,
-      ) => {
-        if (typeof format === "string") return formatter.dateTime(value, format);
-        return formatDateTime(value, format);
-      },
-      list: (
-        values: Iterable<string>,
-        format?: keyof typeof formats.list | Intl.ListFormatOptions,
-      ) => {
-        if (typeof format === "string") return formatter.list(values, format);
-        return formatter.list(values, format);
-      },
-      number: (
-        value: bigint | number,
-        format?: keyof typeof formats.number | Intl.NumberFormatOptions,
-      ) => {
-        if (typeof format === "string") return formatter.number(value, format);
-        return formatNumber(value, format);
-      },
-      relativeTime: (
-        value: number,
-        unit: Intl.RelativeTimeFormatUnit,
-        format?: keyof typeof formats.relativeTime | Intl.RelativeTimeFormatOptions,
-      ) =>
-        new Intl.RelativeTimeFormat(
-          locale,
-          typeof format === "string" ? formats.relativeTime[format] : format,
-        ).format(value, unit),
-    }),
-    [formatter, formatDateTime, formatNumber, locale],
-  );
+  return useMemo(() => createFormatter(locale, { timeZone: "UTC" }), [locale]);
 }
 
 export { DEFAULT_LOCALE };

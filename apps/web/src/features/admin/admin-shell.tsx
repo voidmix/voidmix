@@ -37,7 +37,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <aside className="sticky top-0 flex h-svh flex-col border-r bg-card px-3.5 py-6 max-[1050px]:px-2.5 max-[760px]:static max-[760px]:grid max-[760px]:h-auto max-[760px]:grid-cols-[auto_1fr_auto] max-[760px]:items-center max-[760px]:border-r-0 max-[760px]:border-b max-[760px]:px-4 max-[760px]:py-2.5">
         <Link className="block px-3 pt-1.5 pb-8 max-[1050px]:px-0 max-[760px]:p-0" to="/">
           <Logo
-            className="text-sm max-[1050px]:[&>span]:hidden [&>svg]:size-6"
+            className="text-sm max-[1050px]:[&>span]:hidden [&>img]:size-6"
             label="Voidmix / Control"
           />
         </Link>

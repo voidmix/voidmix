@@ -102,7 +102,7 @@ button:disabled {
 .brand [data-slot="logo"] {
   font-size: 17px;
 }
-.brand [data-slot="logo"] svg {
+.brand [data-slot="logo"] img {
   width: 21px;
   height: 21px;
 }

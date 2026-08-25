@@ -27,9 +27,16 @@ the same static catalogs through `@voidmix/i18n/server`.
 
 Web resolves `voidmix_locale`, then `Accept-Language`, then `en`, and persists
 changes in a one-year SameSite=Lax Cookie. Desktop resolves
-`localStorage.voidmix_locale`, then `navigator.language`, then `en`. Locale
-changes update the provider and storage synchronously; Web also updates the
-document `lang` attribute.
+`localStorage.voidmix_locale`, then `navigator.language`, then `en`. The shared
+locale provider updates its in-memory state and storage before invoking the
+document synchronization callback, so a callback failure cannot leave the UI
+and persisted locale out of sync. Web renders the document `lang` attribute
+from `useLocale()`; Desktop synchronizes the Vite document before the first
+render and after each switch.
+
+Formatting uses the same `use-intl/core` formatter path for server and client
+helpers. The default timezone is `UTC` for deterministic SSR/hydration output;
+callers can request an explicit timezone through `createFormatter`.
 
 API boundaries return stable error codes and structured data; diagnostic
 messages remain server-side. Web and Desktop translate those codes from their
@@ -47,8 +54,9 @@ falling back to `en`. Subject, preview, HTML, text, actions, and the HTML
 - Each Web/Desktop/Mail runtime bundles both supported locale catalogs. This is
   an intentional simplicity and stability tradeoff; locale chunk splitting is
   deferred until bundle measurements justify it.
-- Catalog drift is checked by workspace tests rather than a compiler-generated
-  namespace registry.
+- Catalog drift is checked by a shared recursive parity helper that compares
+  leaf keys, node types, and ICU argument names in every Web/Desktop/Mail
+  catalog pair rather than by a compiler-generated namespace registry.
 - Root recovery pages keep their independent static copy so they remain
   renderable when an application chunk fails.
 

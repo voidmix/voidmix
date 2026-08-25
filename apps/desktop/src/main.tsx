@@ -12,9 +12,20 @@ const initialLocale =
   normalizeLocale(typeof navigator === "undefined" ? undefined : navigator.language) ??
   "en";
 
+if (typeof document !== "undefined") {
+  document.documentElement.lang = initialLocale;
+}
+
 createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <I18nProvider messages={messages} locale={initialLocale} storage={storage}>
+    <I18nProvider
+      messages={messages}
+      locale={initialLocale}
+      onLocaleChange={(nextLocale) => {
+        document.documentElement.lang = nextLocale;
+      }}
+      storage={storage}
+    >
       <RouterProvider router={router} />
     </I18nProvider>
   </React.StrictMode>,

@@ -1,4 +1,9 @@
-import type { Translator } from "@voidmix/i18n";
+import {
+  translateErrorCode,
+  translateKnownErrorCode,
+  type ErrorCodeMap,
+  type Translator,
+} from "@voidmix/i18n";
 
 /**
  * Every code the API can put on the wire, mapped to an `errors` message key.
@@ -14,6 +19,7 @@ const ERROR_KEYS = {
   EMAIL_DOMAIN_NOT_ALLOWED: "emailDomainNotAllowed",
   PASSWORD_RESET_DISABLED: "passwordResetDisabled",
 } as const;
+const ERROR_KEY_MAP: ErrorCodeMap = ERROR_KEYS;
 
 export type ApiErrorCode = keyof typeof ERROR_KEYS;
 
@@ -22,8 +28,7 @@ export function isApiErrorCode(code: string | undefined): code is ApiErrorCode {
 }
 
 export function translateApiError(error: unknown, t: Translator): string {
-  const code = readErrorCode(error);
-  return t(isApiErrorCode(code) ? ERROR_KEYS[code] : "unknown");
+  return translateErrorCode(error, t, ERROR_KEY_MAP);
 }
 
 /**
@@ -31,11 +36,5 @@ export function translateApiError(error: unknown, t: Translator): string {
  * more specific fallback for everything else.
  */
 export function translateKnownApiError(error: unknown, t: Translator): string | null {
-  const code = readErrorCode(error);
-  return isApiErrorCode(code) ? t(ERROR_KEYS[code]) : null;
-}
-
-export function readErrorCode(error: unknown): string | undefined {
-  if (typeof error !== "object" || error === null || !("code" in error)) return undefined;
-  return typeof error.code === "string" ? error.code : undefined;
+  return translateKnownErrorCode(error, t, ERROR_KEY_MAP);
 }
