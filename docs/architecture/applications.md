@@ -37,6 +37,10 @@ browser composition root for authentication and Admin operations.
   turning those modules into public-home concerns.
 - Runs on port `3000` in development.
 - Produces a TanStack Start server bundle and a browser bundle.
+- Resolves locale from `voidmix_locale`, `Accept-Language`, then English; the
+  document and React provider share the loader result for hydration safety.
+- Loads Paraglide catalogs by feature namespace and locale instead of placing a
+  full catalog registry in the root bundle.
 - Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
   through explicit Nitro Web-format routes.
 - Uses the shared typed client with same-origin cookie requests.
@@ -49,6 +53,10 @@ browser composition root for authentication and Admin operations.
 
 - Shares `@voidmix/ui`, `@voidmix/client`, and `@voidmix/contracts`.
 - Uses a Vite SPA rather than TanStack Start SSR.
+- Resolves locale from localStorage, `navigator.language`, then English and
+  switches only after active Paraglide namespaces preload successfully.
+- Uses lazy route components so feature code remains separate from the shell
+  and common locale loader.
 - Rust owns tray behavior, notifications, window lifecycle, and native
   commands.
 - The renderer mounts feature pages directly from `src/features/`; `App.tsx` is
@@ -135,5 +143,6 @@ delivery switches are typed database settings. Relevant Auth requests resolve
 them immediately before handling, so an Owner update applies without restarting
 the process. Public registration and recovery navigation receives only derived
 availability booleans, never the domain list, sources, missing fields, or secret
-state. Policy rejection uses stable error codes and does not affect verified-user
-login.
+state. Policy rejection uses stable code-only payloads and does not affect
+verified-user login. Diagnostic messages are not part of the client contract;
+renderer surfaces translate codes locally.

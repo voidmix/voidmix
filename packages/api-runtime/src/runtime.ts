@@ -41,6 +41,7 @@ export async function createApiRuntime({
       MAIL_FROM_NAME: environment.MAIL_FROM_NAME,
       RESEND_API_KEY: environment.RESEND_API_KEY,
       EMAIL_TEMPLATES_BASE_URL: environment.EMAIL_TEMPLATES_BASE_URL,
+      MAIL_DEFAULT_LOCALE: environment.MAIL_DEFAULT_LOCALE,
     });
     const mailFallback = toMailFallback(environment);
     const settings = new PostgresSystemSettingsRepository(connection.db);
@@ -105,18 +106,10 @@ export function createMailProtectedAuthHandler(options: {
       const authSettings = await options.getAuthSettings();
       if (path === "/api/auth/sign-up/email") {
         if (authSettings.registrationMode === "closed") {
-          return authPolicyResponse(
-            "REGISTRATION_DISABLED",
-            "Account registration is currently disabled.",
-            403,
-          );
+          return authPolicyResponse("REGISTRATION_DISABLED", 403);
         }
         if (!authSettings.verificationEmailEnabled) {
-          return authPolicyResponse(
-            "EMAIL_VERIFICATION_DISABLED",
-            "Email verification delivery is currently disabled.",
-            403,
-          );
+          return authPolicyResponse("EMAIL_VERIFICATION_DISABLED", 403);
         }
         const emailDomain = await readEmailDomain(request);
         if (
@@ -124,42 +117,27 @@ export function createMailProtectedAuthHandler(options: {
           authSettings.allowedEmailDomains.length > 0 &&
           !authSettings.allowedEmailDomains.includes(emailDomain)
         ) {
-          return authPolicyResponse(
-            "EMAIL_DOMAIN_NOT_ALLOWED",
-            "This email domain is not allowed to register.",
-            400,
-          );
+          return authPolicyResponse("EMAIL_DOMAIN_NOT_ALLOWED", 400);
         }
       }
       if (path === "/api/auth/send-verification-email" && !authSettings.verificationEmailEnabled) {
-        return authPolicyResponse(
-          "EMAIL_VERIFICATION_DISABLED",
-          "Email verification delivery is currently disabled.",
-          403,
-        );
+        return authPolicyResponse("EMAIL_VERIFICATION_DISABLED", 403);
       }
       if (path === "/api/auth/request-password-reset" && !authSettings.passwordResetEmailEnabled) {
-        return authPolicyResponse(
-          "PASSWORD_RESET_DISABLED",
-          "Password reset email delivery is currently disabled.",
-          403,
-        );
+        return authPolicyResponse("PASSWORD_RESET_DISABLED", 403);
       }
 
       const mailSettings = await options.getMailSettings();
       if (mailSettings.configurationState !== "ready") {
-        return Response.json(
-          { code: "MAIL_NOT_CONFIGURED", message: "Mail configuration is not ready." },
-          { status: 503 },
-        );
+        return Response.json({ code: "MAIL_NOT_CONFIGURED" }, { status: 503 });
       }
     }
     return options.handler(request);
   };
 }
 
-function authPolicyResponse(code: string, message: string, status: 400 | 403): Response {
-  return Response.json({ code, message }, { status });
+function authPolicyResponse(code: string, status: 400 | 403): Response {
+  return Response.json({ code }, { status });
 }
 
 async function readEmailDomain(request: Request): Promise<string | null> {

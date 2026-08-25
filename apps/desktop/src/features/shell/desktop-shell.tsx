@@ -9,28 +9,24 @@ import {
   Pulse,
 } from "@phosphor-icons/react";
 import { Link, Outlet } from "@tanstack/react-router";
+import { useLocale, useSetLocale, useTranslations } from "@voidmix/i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
+import { loadCommonMessages } from "../../i18n/common";
 import "@voidmix/ui/styles.css";
 import "../../App.css";
 
-const navigation = [
-  { to: "/", label: "Overview", icon: Cloud },
-  { to: "/activity", label: "Activity", icon: Pulse },
-  { to: "/devices", label: "Devices", icon: Laptop },
-  { to: "/settings", label: "Settings", icon: Gear },
-] as const;
-
 function WindowActions() {
+  const t = useTranslations("common", loadCommonMessages);
   const [message, setMessage] = useState("");
 
   async function handleHide() {
     const hidden = await hideMainWindow();
     if (!hidden) {
-      setMessage("Tray controls are available in the desktop build.");
+      setMessage(t("trayMessage"));
       window.setTimeout(() => setMessage(""), 2800);
     }
   }
@@ -38,7 +34,7 @@ function WindowActions() {
   return (
     <div className="window-actions">
       {message ? <span className="window-message">{message}</span> : null}
-      <Button className="icon-button" size="icon" variant="ghost" aria-label="Notifications">
+      <Button className="icon-button" size="icon" variant="ghost" aria-label={t("notifications")}>
         <Bell size={16} weight="regular" />
         <span className="notification-dot" />
       </Button>
@@ -46,15 +42,24 @@ function WindowActions() {
         className="window-hide"
         variant="ghost"
         onClick={() => void handleHide()}
-        title="Hide Voidmix to the system tray"
+        title={t("hideToTray")}
       >
-        Hide to tray
+        {t("hideToTray")}
       </Button>
     </div>
   );
 }
 
 export function DesktopShell() {
+  const t = useTranslations("common", loadCommonMessages);
+  const locale = useLocale();
+  const setLocale = useSetLocale();
+  const navigation = [
+    { to: "/", label: t("overview"), icon: Cloud },
+    { to: "/activity", label: t("activity"), icon: Pulse },
+    { to: "/devices", label: t("devices"), icon: Laptop },
+    { to: "/settings", label: t("settings"), icon: Gear },
+  ] as const;
   const [runtime, setRuntime] = useState<DesktopRuntime>({
     appVersion: "0.1.0",
     platform: "browser",
@@ -73,8 +78,8 @@ export function DesktopShell() {
           <span className="edition">Field</span>
         </div>
 
-        <nav className="primary-nav" aria-label="Primary navigation">
-          <p className="nav-label">Control</p>
+        <nav className="primary-nav" aria-label={t("primaryNavigation")}>
+          <p className="nav-label">{t("control")}</p>
           {navigation.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
@@ -101,7 +106,7 @@ export function DesktopShell() {
         <div className="runtime-status">
           <span className={runtime.trayEnabled ? "runtime-dot ready" : "runtime-dot"} />
           <span>
-            <strong>{runtime.trayEnabled ? "Desktop shell ready" : "Browser preview"}</strong>
+            <strong>{runtime.trayEnabled ? t("desktopReady") : t("browserPreview")}</strong>
             <small>
               v{runtime.appVersion} · {runtime.platform}
             </small>
@@ -113,10 +118,18 @@ export function DesktopShell() {
         <header className="titlebar" data-tauri-drag-region>
           <Button className="search-trigger" variant="outline">
             <MagnifyingGlass size={15} weight="regular" />
-            <span>Search workspace</span>
+            <span>{t("searchWorkspace")}</span>
             <kbd>
               <Command size={11} />K
             </kbd>
+          </Button>
+          <Button
+            className="window-hide"
+            variant="ghost"
+            onClick={() => void setLocale(locale === "en" ? "zh" : "en").catch(() => undefined)}
+            title={t("language")}
+          >
+            {locale === "en" ? "中文" : "EN"}
           </Button>
           <WindowActions />
         </header>

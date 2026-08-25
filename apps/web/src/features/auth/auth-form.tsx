@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
@@ -8,8 +9,10 @@ import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
+import { loadAuthMessages } from "../../i18n/auth";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
+  const t = useTranslations("auth", loadAuthMessages);
   const capabilities = useAuthCapabilities();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -32,12 +35,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       if (result.error) {
         setError(
           notifyAuthFailure({
-            title: mode === "login" ? "Sign in failed" : "Registration failed",
+            title: mode === "login" ? t("signInFailed") : t("registrationFailed"),
             error: result.error,
-            fallback:
-              mode === "login"
-                ? "Unable to sign in. Check your credentials and try again."
-                : "Unable to create your account. Try again.",
+            fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
           }),
         );
         return;
@@ -45,12 +45,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     } catch (cause) {
       setError(
         notifyAuthFailure({
-          title: mode === "login" ? "Sign in failed" : "Registration failed",
+          title: mode === "login" ? t("signInFailed") : t("registrationFailed"),
           error: cause,
-          fallback:
-            mode === "login"
-              ? "Unable to sign in. Check your credentials and try again."
-              : "Unable to create your account. Try again.",
+          fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
         }),
       );
       return;
@@ -68,16 +65,16 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   if (mode === "register" && !capabilities.registrationAvailable) {
     return (
       <AuthCard
-        description="New account registration is not available with the current system and mail configuration."
+        description={t("registrationUnavailableDescription")}
         footer={
           <Link className="font-medium text-foreground hover:underline" to="/login">
-            Back to sign in
+            {t("backToSignIn")}
           </Link>
         }
-        title="Registration unavailable"
+        title={t("registrationUnavailable")}
       >
         <p className="text-sm leading-6 text-muted-foreground">
-          An administrator can reopen registration after verification email delivery is ready.
+          {t("registrationUnavailableBody")}
         </p>
       </AuthCard>
     );
@@ -85,35 +82,31 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
   return (
     <AuthCard
-      description={
-        mode === "login"
-          ? "Enter your account details to continue to the workspace."
-          : "Create an account with your work email to get started."
-      }
+      description={mode === "login" ? t("loginDescription") : t("registerDescription")}
       footer={
         mode === "login" && capabilities.registrationAvailable ? (
           <span>
-            New to Voidmix?{" "}
+            {t("newToVoidmix")}{" "}
             <Link className="font-medium text-foreground hover:underline" to="/register">
-              Create account
+              {t("createAccount")}
             </Link>
           </span>
         ) : (
           <span>
-            Already have an account?{" "}
+            {t("alreadyHaveAccount")}{" "}
             <Link className="font-medium text-foreground hover:underline" to="/login">
-              Sign in
+              {t("signIn")}
             </Link>
           </span>
         )
       }
-      title={mode === "login" ? "Welcome back" : "Create your account"}
+      title={mode === "login" ? t("welcomeBack") : t("createYourAccount")}
     >
       <form aria-busy={pending} onSubmit={submit}>
         <FieldGroup className="gap-4">
           {mode === "register" ? (
             <Field>
-              <FieldLabel htmlFor="auth-name">Name</FieldLabel>
+              <FieldLabel htmlFor="auth-name">{t("name")}</FieldLabel>
               <Input
                 autoComplete="name"
                 className="h-9"
@@ -126,7 +119,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             </Field>
           ) : null}
           <Field>
-            <FieldLabel htmlFor="auth-email">Email</FieldLabel>
+            <FieldLabel htmlFor="auth-email">{t("email")}</FieldLabel>
             <Input
               aria-describedby={error ? "auth-error" : undefined}
               autoComplete="email"
@@ -146,7 +139,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                   className="text-[0.8125rem] text-muted-foreground hover:text-foreground hover:underline"
                   to="/reset-password"
                 >
-                  Forgot password?
+                  {t("forgotPassword")}
                 </Link>
               ) : null
             }
@@ -154,7 +147,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             autoComplete={mode === "login" ? "current-password" : "new-password"}
             disabled={pending}
             id="auth-password"
-            label="Password"
+            label={t("password")}
             minLength={8}
             onChange={(event) => setPassword(event.target.value)}
             required
@@ -164,11 +157,11 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           <Button className="mt-1 w-full" disabled={pending} size="lg" type="submit">
             {pending
               ? mode === "login"
-                ? "Signing in…"
-                : "Creating account…"
+                ? t("signingIn")
+                : t("creatingAccount")
               : mode === "login"
-                ? "Sign in"
-                : "Create account"}
+                ? t("signIn")
+                : t("createAccount")}
           </Button>
         </FieldGroup>
       </form>

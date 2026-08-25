@@ -13,6 +13,8 @@ src/types.ts     Mailer, template, transport, and message types
 src/server.ts    createMailer and server-only template/transport exports
 src/templates/   React Email templates and shared layout
 src/transports/  Resend and logger transports
+messages/        English and Chinese Inlang catalogs
+project.inlang/  Paraglide project settings
 scripts/         local deterministic email preview
 ```
 
@@ -32,6 +34,8 @@ scripts/         local deterministic email preview
 - Do not turn this into an arbitrary marketing-mail API; add a typed method for a
   new product-owned notification.
 - Keep templates deterministic and network-free in tests and preview.
+- Render subject, HTML, text, actions, and `<html lang>` with the same
+  `MAIL_DEFAULT_LOCALE`; invalid or missing values fall back to `en`.
 
 ## Verification
 

@@ -64,11 +64,26 @@ not depend on the provider.
 
 Typed auth mail delivery for verification, password reset, welcome, and
 administrator test emails.
+Its Inlang catalogs are compiled by Paraglide and rendered using the
+server-only `MAIL_DEFAULT_LOCALE`, which falls back to English.
 React Email templates always provide HTML and plain-text output. Resend is the
 production transport; development and test use a logger transport without
 network access. Production throws `MailUnavailableError` at delivery time when
 configuration is unavailable, rather than failing process startup or silently
 using the logger transport. The package exposes only server-side mail interfaces.
+
+## `@voidmix/i18n`
+
+The locale and translation adapter shared by renderer and server packages. It
+owns `en`/`zh` normalization, Accept-Language and Cookie parsing, browser and
+Desktop storage adapters, cached Intl formatters, the React provider, and the
+Paraglide build integration. Applications and Mail own their Inlang projects
+and catalogs.
+
+The build entry is isolated from runtime and client exports. It compiles
+Paraglide locale modules and emits namespace loaders with explicit dynamic ESM
+imports. Runtime code imports those loaders directly and never imports a full
+catalog barrel. Domain and contracts remain independent of i18n.
 
 ## `@voidmix/env`
 

@@ -15,6 +15,7 @@ import {
   WifiHigh,
 } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
+import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useCallback, useEffect, useState } from "react";
@@ -26,34 +27,45 @@ import {
   type CloudSnapshot,
   type SyncJob,
 } from "../../lib/cloud";
+import { loadOverviewMessages } from "../../i18n/overview";
 
 function SyncState({ paused, pending }: { paused: boolean; pending: number }) {
+  const t = useTranslations("overview", loadOverviewMessages);
   return (
     <span className={paused ? "sync-state paused" : "sync-state"}>
       <span className="sync-indicator" />
-      {paused ? "Sync paused" : pending > 0 ? `Syncing ${pending} items` : "Everything is synced"}
+      {paused
+        ? t("syncPaused")
+        : pending > 0
+          ? t("syncingItems", { count: pending })
+          : t("everythingSynced")}
     </span>
   );
 }
 
 function MetricRow({ snapshot }: { snapshot: CloudSnapshot }) {
+  const t = useTranslations("overview", loadOverviewMessages);
   const metrics = [
     {
-      label: "Cloud storage",
+      label: t("cloudStorage"),
       value: formatBytes(snapshot.storage.used),
-      detail: `of ${formatBytes(snapshot.storage.total)}`,
+      detail: t("ofTotal", { total: formatBytes(snapshot.storage.total) }),
     },
     {
-      label: "Files indexed",
+      label: t("filesIndexed"),
       value: snapshot.fileCount.toLocaleString(),
-      detail: `${snapshot.newThisWeek} new this week`,
+      detail: t("newThisWeek", { count: snapshot.newThisWeek }),
     },
     {
-      label: "Active devices",
+      label: t("activeDevices"),
       value: String(snapshot.devices.filter((device) => device.online).length),
-      detail: `${snapshot.devices.length} registered`,
+      detail: t("registeredCount", { count: snapshot.devices.length }),
     },
-    { label: "Last backup", value: snapshot.lastBackup, detail: "Encrypted snapshot" },
+    {
+      label: t("lastBackup"),
+      value: snapshot.lastBackup,
+      detail: t("encryptedSnapshot"),
+    },
   ];
 
   return (
@@ -76,15 +88,16 @@ function JobIcon({ job }: { job: SyncJob }) {
 }
 
 function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
+  const t = useTranslations("overview", loadOverviewMessages);
   return (
     <section className="work-panel queue-panel" aria-labelledby="queue-title">
       <div className="section-heading">
         <div>
-          <h2 id="queue-title">Transfer queue</h2>
-          <p>Current work across this device and the cloud.</p>
+          <h2 id="queue-title">{t("transferQueue")}</h2>
+          <p>{t("queueDescription")}</p>
         </div>
         <Button className="quiet-button" variant="ghost">
-          View activity <CaretRight size={14} />
+          {t("viewActivity")} <CaretRight size={14} />
         </Button>
       </div>
       <div className="queue-list">
@@ -101,7 +114,7 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
               <span style={{ width: `${job.progress}%` }} />
             </div>
             <span className={cn("job-status", job.status)}>
-              {job.status === "complete" ? "Done" : `${job.progress}%`}
+              {job.status === "complete" ? t("done") : `${job.progress}%`}
             </span>
           </div>
         ))}
@@ -111,21 +124,27 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
 }
 
 function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
+  const t = useTranslations("overview", loadOverviewMessages);
   const usedPercent = Math.round((snapshot.storage.used / snapshot.storage.total) * 100);
   const categories = [
-    { label: "Project files", value: snapshot.storage.projects, tone: "primary" },
-    { label: "Media", value: snapshot.storage.media, tone: "accent" },
-    { label: "Archives", value: snapshot.storage.archives, tone: "muted" },
+    { label: t("projectFiles"), value: snapshot.storage.projects, tone: "primary" },
+    { label: t("media"), value: snapshot.storage.media, tone: "accent" },
+    { label: t("archives"), value: snapshot.storage.archives, tone: "muted" },
   ];
 
   return (
     <section className="work-panel storage-panel" aria-labelledby="storage-title">
       <div className="section-heading">
         <div>
-          <h2 id="storage-title">Storage</h2>
-          <p>{usedPercent}% of your team allocation is in use.</p>
+          <h2 id="storage-title">{t("storage")}</h2>
+          <p>{t("storageDescription", { percent: usedPercent })}</p>
         </div>
-        <Button className="icon-button" size="icon" variant="ghost" aria-label="Storage options">
+        <Button
+          className="icon-button"
+          size="icon"
+          variant="ghost"
+          aria-label={t("storageOptions")}
+        >
           <DotsThree size={16} />
         </Button>
       </div>
@@ -138,7 +157,7 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
         </div>
         <div>
           <strong>{formatBytes(snapshot.storage.used)}</strong>
-          <span>used of {formatBytes(snapshot.storage.total)}</span>
+          <span>{t("usedOf", { total: formatBytes(snapshot.storage.total) })}</span>
         </div>
       </div>
       <div className="storage-breakdown">
@@ -151,25 +170,28 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
         ))}
       </div>
       <Button className="secondary-button full-width" variant="secondary">
-        Manage storage
+        {t("manageStorage")}
       </Button>
     </section>
   );
 }
 
 function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
+  const t = useTranslations("overview", loadOverviewMessages);
   return (
     <section className="device-strip" aria-labelledby="device-title">
       <div>
         <span className="device-pulse" />
         <div>
-          <h2 id="device-title">Device network</h2>
+          <h2 id="device-title">{t("deviceNetwork")}</h2>
           <p>
-            {snapshot.devices.filter((device) => device.online).length} devices are reachable now
+            {t("reachableDevices", {
+              count: snapshot.devices.filter((device) => device.online).length,
+            })}
           </p>
         </div>
       </div>
-      <div className="device-avatars" aria-label="Connected devices">
+      <div className="device-avatars" aria-label={t("connectedDevices")}>
         {snapshot.devices.map((device) => (
           <span key={device.id} title={`${device.name}: ${device.online ? "online" : "offline"}`}>
             {device.kind === "phone" ? (
@@ -183,13 +205,14 @@ function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
         ))}
       </div>
       <Link to="/devices" className="quiet-link">
-        Manage devices <CaretRight size={14} />
+        {t("manageDevices")} <CaretRight size={14} />
       </Link>
     </section>
   );
 }
 
 export function OverviewPage() {
+  const t = useTranslations("overview", loadOverviewMessages);
   const [snapshot, setSnapshot] = useState<CloudSnapshot>(demoCloudSnapshot);
   const [source, setSource] = useState<"cloud" | "connected" | "demo">("demo");
   const [loading, setLoading] = useState(false);
@@ -211,17 +234,17 @@ export function OverviewPage() {
     <div className="page overview-page">
       <header className="page-header">
         <div>
-          <h1>Workspace signal</h1>
-          <p>Transfers, storage, and connected devices are operating normally.</p>
+          <h1>{t("title")}</h1>
+          <p>{t("description")}</p>
         </div>
         <div className="page-actions">
           <span className={cn("data-source", source)}>
             <WifiHigh size={13} />
             {source === "cloud"
-              ? "Cloud data"
+              ? t("cloudData")
               : source === "connected"
-                ? "API online"
-                : "Preview data"}
+                ? t("apiOnline")
+                : t("previewData")}
           </span>
           <Button
             className="secondary-button"
@@ -230,7 +253,7 @@ export function OverviewPage() {
             disabled={loading}
           >
             <ArrowsClockwise size={14} className={loading ? "rotating" : ""} />
-            Refresh
+            {t("refresh")}
           </Button>
           <Button
             className="primary-button"
@@ -238,7 +261,7 @@ export function OverviewPage() {
             onClick={() => setPaused((value) => !value)}
           >
             {paused ? <Play size={14} /> : <Pause size={14} />}
-            {paused ? "Resume sync" : "Pause sync"}
+            {paused ? t("resumeSync") : t("pauseSync")}
           </Button>
         </div>
       </header>
@@ -251,13 +274,9 @@ export function OverviewPage() {
         </div>
         <div>
           <SyncState paused={paused} pending={snapshot.pendingItems} />
-          <p>
-            {paused
-              ? "Transfers will remain queued until sync resumes."
-              : "Desktop, cloud, and backup copies are up to date."}
-          </p>
+          <p>{paused ? t("pausedDescription") : t("syncedDescription")}</p>
         </div>
-        <span className="sync-time">Checked {snapshot.lastChecked}</span>
+        <span className="sync-time">{t("checked", { time: snapshot.lastChecked })}</span>
       </section>
 
       <MetricRow snapshot={snapshot} />

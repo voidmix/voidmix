@@ -31,6 +31,36 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => mocks.navigate,
 }));
 
+vi.mock("@voidmix/i18n/client", () => ({
+  useTranslations: () => (key: string) =>
+    ({
+      alreadyHaveAccount: "Already have an account?",
+      backToSignIn: "Back to sign in",
+      createAccount: "Create account",
+      createYourAccount: "Create your account",
+      creatingAccount: "Creating account…",
+      email: "Email",
+      forgotPassword: "Forgot password?",
+      loginDescription: "Enter your account details to continue to the workspace.",
+      name: "Name",
+      newToVoidmix: "New to Voidmix?",
+      password: "Password",
+      registerDescription: "Create an account with your work email to get started.",
+      registrationFailed: "Registration failed",
+      registrationFallback: "Unable to create your account. Try again.",
+      registrationUnavailable: "Registration unavailable",
+      registrationUnavailableBody:
+        "An administrator can reopen registration after verification email delivery is ready.",
+      registrationUnavailableDescription:
+        "New account registration is not available with the current system and mail configuration.",
+      signIn: "Sign in",
+      signInFailed: "Sign in failed",
+      signInFallback: "Unable to sign in. Check your credentials and try again.",
+      signingIn: "Signing in…",
+      welcomeBack: "Welcome back",
+    })[key] ?? key,
+}));
+
 vi.mock("../../lib/auth-client", () => ({
   authClient: {
     requestPasswordReset: mocks.requestPasswordReset,

@@ -1,27 +1,29 @@
 import { render, Text } from "react-email";
-import type { EmailTemplate, WelcomeTemplateInput } from "../types.js";
+import type { Locale } from "@voidmix/i18n/types";
+import type { WelcomeTemplateInput } from "../types.js";
 import { MailLayout } from "./layout.js";
-import { greeting } from "./shared.js";
+import { loadMailTranslator } from "../i18n.js";
 
-export const welcomeEmail: EmailTemplate<WelcomeTemplateInput> = async (input) => {
-  const subject = "Welcome to Voidmix";
+export const welcomeEmail = async (input: WelcomeTemplateInput, locale: Locale = "en") => {
+  const t = await loadMailTranslator("welcome", locale);
+  const common = await loadMailTranslator("common", locale);
+  const hello = input.name?.trim()
+    ? common("greetingNamed", { name: input.name.trim() })
+    : common("greeting");
   const html = await render(
     <MailLayout
-      preview="Your Voidmix account is ready."
-      title="Welcome to Voidmix"
-      {...(input.appUrl ? { action: { label: "Open Voidmix", url: input.appUrl } } : {})}
+      footer={common("footer")}
+      locale={locale}
+      preview={t("preview")}
+      title={t("title")}
+      {...(input.appUrl ? { action: { label: t("button"), url: input.appUrl } } : {})}
     >
-      <Text>{greeting(input.name)}</Text>
-      <Text>Your account is ready. You can now sign in and start working with your team.</Text>
+      <Text>{hello}</Text>
+      <Text>{t("body")}</Text>
     </MailLayout>,
   );
-  const text = [
-    greeting(input.name),
-    "",
-    "Welcome to Voidmix. Your account is ready.",
-    input.appUrl ? `\nOpen Voidmix:\n${input.appUrl}` : "",
-  ]
+  const text = [hello, "", t("textIntro"), input.appUrl ? `\n${t("button")}:\n${input.appUrl}` : ""]
     .filter(Boolean)
     .join("\n");
-  return { subject, html, text };
+  return { subject: t("subject"), html, text };
 };

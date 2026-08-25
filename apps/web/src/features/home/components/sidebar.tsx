@@ -1,14 +1,18 @@
 import { ArrowRight, Bell, Gear, Plus, UsersThree } from "@phosphor-icons/react";
+import { useTranslations } from "@voidmix/i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 
+import { loadHomeMessages } from "../../../i18n/home";
 import { navigation, navigationClassName, navigationHref, recentThreads } from "../data";
 
 export function HomeSidebar() {
+  const t = useTranslations("home", loadHomeMessages);
+
   return (
     <aside
-      aria-label="Workspace navigation"
+      aria-label={t("workspace")}
       className="sticky top-0 flex h-dvh min-h-0 flex-col overflow-y-auto border-r border-border bg-muted px-3 py-[1.15rem] pb-[0.9rem] max-[760px]:hidden"
     >
       <div className="flex flex-col gap-5">
@@ -23,7 +27,9 @@ export function HomeSidebar() {
             N
           </span>
           <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-[0.78rem] font-bold">
-            <small className="text-[0.7rem] font-medium text-muted-foreground">Workspace</small>
+            <small className="text-[0.7rem] font-medium text-muted-foreground">
+              {t("workspace")}
+            </small>
             Northstar
           </span>
           <ArrowRight aria-hidden="true" className="size-3.5 rotate-90 text-muted-foreground" />
@@ -32,12 +38,12 @@ export function HomeSidebar() {
 
       <Button className="mt-5 w-full" size="lg" variant="secondary">
         <Plus aria-hidden="true" data-icon="inline-start" weight="bold" />
-        New task
+        {t("newTask")}
       </Button>
 
       <nav className="mt-7 flex flex-col gap-0.5">
         <p className="mb-1.5 px-2.5 text-[0.7rem] font-semibold tracking-[0.025em] text-muted-foreground">
-          Workspace
+          {t("workspace")}
         </p>
         {navigation.map((item) => {
           const Icon = item.icon;
@@ -50,7 +56,7 @@ export function HomeSidebar() {
               key={item.label}
             >
               <Icon aria-hidden="true" weight={item.current ? "fill" : "regular"} />
-              <span>{item.label}</span>
+              <span>{t(item.messageKey)}</span>
               {"count" in item && item.count ? (
                 <b className="ml-auto flex min-w-[1.15rem] items-center justify-center rounded-full bg-input px-1 text-[0.65rem] font-bold text-secondary-foreground">
                   {item.count}
@@ -63,7 +69,7 @@ export function HomeSidebar() {
 
       <div className="mt-7 flex flex-col gap-0.5 border-t border-border pt-[1.15rem]">
         <p className="mb-1.5 px-2.5 text-[0.7rem] font-semibold tracking-[0.025em] text-muted-foreground">
-          Recent
+          {t("recent")}
         </p>
         {recentThreads.map((thread) => (
           <a
@@ -80,17 +86,17 @@ export function HomeSidebar() {
       <div className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3">
         <a className={navigationClassName({ current: false })} href="#team">
           <UsersThree aria-hidden="true" />
-          <span>Team</span>
+          <span>{t("team")}</span>
         </a>
         <a className={navigationClassName({ current: false })} href="#settings">
           <Gear aria-hidden="true" />
-          <span>Settings</span>
+          <span>{t("settings")}</span>
         </a>
         <div className="mt-2 flex items-center gap-2.5 border-t border-border px-1 py-3">
           <Avatar name="Alex Morgan" size="small" />
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
             <strong className="truncate text-[0.72rem]">Alex Morgan</strong>
-            <small className="text-[0.7rem] font-medium text-muted-foreground">Admin</small>
+            <small className="text-[0.7rem] font-medium text-muted-foreground">{t("admin")}</small>
           </span>
           <Bell aria-hidden="true" className="size-4 text-muted-foreground" />
         </div>

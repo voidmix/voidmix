@@ -9,12 +9,12 @@ import {
 import { cn } from "@voidmix/ui/lib/utils";
 
 export const navigation = [
-  { label: "Overview", icon: House, current: true },
-  { label: "Inbox", icon: ChatCircleDots, current: false, count: 4 },
-  { label: "Projects", icon: FolderSimple, current: false },
-  { label: "Reviews", icon: CheckCircle, current: false, count: 3 },
-  { label: "Decisions", icon: Lightning, current: false },
-  { label: "Assets", icon: Stack, current: false },
+  { label: "Overview", messageKey: "navOverview", icon: House, current: true },
+  { label: "Inbox", messageKey: "navInbox", icon: ChatCircleDots, current: false, count: 4 },
+  { label: "Projects", messageKey: "navProjects", icon: FolderSimple, current: false },
+  { label: "Reviews", messageKey: "navReviews", icon: CheckCircle, current: false, count: 3 },
+  { label: "Decisions", messageKey: "navDecisions", icon: Lightning, current: false },
+  { label: "Assets", messageKey: "navAssets", icon: Stack, current: false },
 ] as const;
 
 export const recentThreads = [
@@ -25,9 +25,13 @@ export const recentThreads = [
 
 export const featuredActivity = {
   title: "Final cut / v18",
+  titleKey: "featuredTitle",
   detail: "Review the color pass and close the last delivery decision.",
+  detailKey: "featuredDetail",
   meta: "Northstar / Launch film · Updated 8 min ago",
+  metaKey: "featuredMeta",
   state: "On track",
+  stateKey: "featuredState",
   tone: "complete",
   featured: true,
 } as const;
@@ -35,20 +39,29 @@ export const featuredActivity = {
 export const activity = [
   {
     title: "Approve final color pass",
+    titleKey: "activityColorPassTitle",
     detail: "3 reviewers ready · delivery blocked",
+    detailKey: "activityColorPassDetail",
     state: "Needs decision",
+    stateKey: "activityColorPassState",
     tone: "warning",
   },
   {
     title: "Sound mix arriving",
+    titleKey: "activitySoundMixTitle",
     detail: "Mina is tracking the handoff",
+    detailKey: "activitySoundMixDetail",
     state: "In progress",
+    stateKey: "activitySoundMixState",
     tone: "live",
   },
   {
     title: "Picture lock confirmed",
+    titleKey: "activityPictureLockTitle",
     detail: "Leo closed the review thread",
+    detailKey: "activityPictureLockDetail",
     state: "Complete",
+    stateKey: "activityPictureLockState",
     tone: "complete",
   },
 ] as const;
@@ -58,9 +71,9 @@ export const activityItems = [featuredActivity, ...activity] as const;
 export type ActivityTone = (typeof activityItems)[number]["tone"];
 
 export const operators = [
-  { name: "Mina Cole", role: "Creative lead" },
-  { name: "Leo Wang", role: "Editor" },
-  { name: "Samira Bell", role: "Producer" },
+  { name: "Mina Cole", role: "Creative lead", roleKey: "creativeLead" },
+  { name: "Leo Wang", role: "Editor", roleKey: "editor" },
+  { name: "Samira Bell", role: "Producer", roleKey: "producer" },
 ] as const;
 
 export function navigationHref(item: { label: string; current: boolean }): string {
@@ -69,6 +82,7 @@ export function navigationHref(item: { label: string; current: boolean }): strin
 
 export const mobileNavigationItems = navigation.map((item) => ({
   label: item.label,
+  messageKey: item.messageKey,
   icon: item.icon,
   current: item.current,
   href: navigationHref(item),

@@ -75,14 +75,18 @@ bun run format       vp fmt --check   fail on unformatted files
 bun run format:fix   vp fmt           rewrite files in place
 ```
 
-`check` stays `vp run -r check` — per-workspace `tsc --noEmit`. It is
+`check` stays `vp run -r check` — per-workspace typecheck scripts. Web, Desktop,
+and Mail generate their disposable Paraglide output before invoking `tsc`, so a
+clean checkout does not depend on generated files being committed. It is
 deliberately not repointed at `vp check`, which resolves a different graph
 (root-level typecheck plus fmt and lint).
 
-Oxfmt reads `.gitignore` and `.prettierignore`. The latter excludes generated
-output — the TanStack route trees, Drizzle migrations, and vendored agent skills
-— because formatting them would be reverted by whichever tool owns them,
-producing permanent churn and defeating drift detection.
+Oxfmt reads `.gitignore` and `.prettierignore`. i18n output is ignored through
+`.gitignore` because it is disposable; `.prettierignore` remains for generated
+files that stay visible to git — the TanStack route trees and Drizzle metadata —
+and for vendored agent skills. Formatting those files would be reverted by
+whichever tool owns them, producing permanent churn and defeating drift
+detection.
 
 The `staged` block in `vite.config.ts` defines the pre-commit formatting and
 lint-fix pass. It is opt-in per developer through `vp hooks enable`, which sets

@@ -1,5 +1,6 @@
 import { createEnv, type Preset, z } from "@voidmix/env";
 import { runtimeEnv } from "@voidmix/env/runtime";
+import { resolveConfiguredLocale } from "@voidmix/i18n/server";
 
 export const mailEnv = {
   id: "mail",
@@ -9,6 +10,7 @@ export const mailEnv = {
     MAIL_FROM: z.email().optional(),
     MAIL_FROM_NAME: z.string().trim().min(1).optional(),
     EMAIL_TEMPLATES_BASE_URL: z.url().optional(),
+    MAIL_DEFAULT_LOCALE: z.string().optional(),
   },
 } as const satisfies Preset;
 
@@ -28,6 +30,7 @@ export function getMailEnv(
     ...(env.EMAIL_TEMPLATES_BASE_URL
       ? { EMAIL_TEMPLATES_BASE_URL: env.EMAIL_TEMPLATES_BASE_URL }
       : {}),
+    MAIL_DEFAULT_LOCALE: resolveConfiguredLocale(env.MAIL_DEFAULT_LOCALE),
   };
 }
 

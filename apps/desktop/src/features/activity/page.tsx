@@ -8,7 +8,9 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { cn } from "@voidmix/ui/lib/utils";
+import { useTranslations } from "@voidmix/i18n/client";
 import { useState } from "react";
+import { loadActivityMessages } from "../../i18n/activity";
 
 const activityRows = [
   {
@@ -48,23 +50,24 @@ const activityRows = [
   },
 ] as const;
 
-const filters = ["All activity", "Uploads", "Downloads", "Backups"] as const;
+const filters = ["all", "uploads", "downloads", "backups"] as const;
 
 export function ActivityPage() {
-  const [filter, setFilter] = useState<(typeof filters)[number]>("All activity");
+  const t = useTranslations("activity", loadActivityMessages);
+  const [filter, setFilter] = useState<(typeof filters)[number]>("all");
 
   return (
     <div className="page">
       <header className="page-header">
         <div>
-          <h1>Activity</h1>
-          <p>A chronological record of transfers, backups, and device changes.</p>
+          <h1>{t("title")}</h1>
+          <p>{t("description")}</p>
         </div>
         <Button className="secondary-button" variant="secondary">
-          Export log
+          {t("exportLog")}
         </Button>
       </header>
-      <div className="filter-row" role="toolbar" aria-label="Activity filters">
+      <div className="filter-row" role="toolbar" aria-label={t("filters")}>
         {filters.map((item) => (
           <Button
             className={cn("filter-chip", filter === item && "active")}
@@ -72,12 +75,12 @@ export function ActivityPage() {
             key={item}
             onClick={() => setFilter(item)}
           >
-            {item}
+            {t(item)}
           </Button>
         ))}
       </div>
-      <section className="activity-panel" aria-label="Recent activity">
-        <div className="activity-date">Today</div>
+      <section className="activity-panel" aria-label={t("recent")}>
+        <div className="activity-date">{t("today")}</div>
         {activityRows.map(({ title, detail, time, icon: Icon, tone }) => (
           <article className="activity-row" key={title}>
             <span className={cn("activity-icon", tone)}>
@@ -92,7 +95,7 @@ export function ActivityPage() {
               className="icon-button"
               size="icon"
               variant="ghost"
-              aria-label={`More options for ${title}`}
+              aria-label={t("moreOptions", { title })}
             >
               <DotsThree size={16} />
             </Button>

@@ -1,4 +1,5 @@
 import { Gear, List, Plus, UserCircle, UsersThree } from "@phosphor-icons/react";
+import { useOptionalTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useEffect, useState } from "react";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { Logo } from "@voidmix/ui/logo";
 
+import { loadHomeMessages } from "../../../i18n/home";
 import { mobileNavigationItems } from "../data";
 
 function navigateTo(href: string) {
@@ -20,21 +22,40 @@ function navigateTo(href: string) {
 }
 
 function MobileNavigationMenu() {
+  const t = useOptionalTranslations("home", loadHomeMessages, (key) => {
+    const fallback: Record<string, string> = {
+      openWorkspaceNavigation: "Open workspace navigation",
+      workspace: "Workspace",
+      newTask: "New task",
+      navOverview: "Overview",
+      navInbox: "Inbox",
+      navProjects: "Projects",
+      navReviews: "Reviews",
+      navDecisions: "Decisions",
+      navAssets: "Assets",
+      team: "Team",
+      settings: "Settings",
+      account: "Account",
+      admin: "Admin",
+    };
+    return fallback[key] ?? key;
+  });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button aria-label="Open workspace navigation" size="icon-lg" variant="ghost">
+          <Button aria-label={t("openWorkspaceNavigation")} size="icon-lg" variant="ghost">
             <List aria-hidden="true" data-icon="inline-start" weight="bold" />
           </Button>
         }
       />
       <DropdownMenuContent align="end" className="min-w-60" sideOffset={8}>
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Workspace</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("workspace")}</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => navigateTo("#ask-voidmix")}>
             <Plus aria-hidden="true" weight="bold" />
-            New task
+            {t("newTask")}
           </DropdownMenuItem>
           {mobileNavigationItems.map((item) => {
             const Icon = item.icon;
@@ -42,7 +63,7 @@ function MobileNavigationMenu() {
             return (
               <DropdownMenuItem key={item.label} onClick={() => navigateTo(item.href)}>
                 <Icon aria-hidden="true" weight={item.current ? "fill" : "regular"} />
-                {item.label}
+                {t(item.messageKey)}
                 {"count" in item ? <DropdownMenuShortcut>{item.count}</DropdownMenuShortcut> : null}
               </DropdownMenuItem>
             );
@@ -54,22 +75,22 @@ function MobileNavigationMenu() {
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => navigateTo("#team")}>
             <UsersThree aria-hidden="true" />
-            Team
+            {t("team")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigateTo("#settings")}>
             <Gear aria-hidden="true" />
-            Settings
+            {t("settings")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Account</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("account")}</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => navigateTo("#account")}>
             <UserCircle aria-hidden="true" />
             Alex Morgan
-            <DropdownMenuShortcut>Admin</DropdownMenuShortcut>
+            <DropdownMenuShortcut>{t("admin")}</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
@@ -78,6 +99,9 @@ function MobileNavigationMenu() {
 }
 
 export function MobileNavigation() {
+  const t = useOptionalTranslations("home", loadHomeMessages, (key) =>
+    key === "workspace" ? "Workspace" : "Open workspace navigation",
+  );
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -95,7 +119,9 @@ export function MobileNavigation() {
           N
         </span>
         <span className="flex min-w-0 flex-col">
-          <small className="text-[0.68rem] leading-tight text-muted-foreground">Workspace</small>
+          <small className="text-[0.68rem] leading-tight text-muted-foreground">
+            {t("workspace")}
+          </small>
           <strong className="truncate text-[0.78rem] leading-[1.35]">Northstar</strong>
         </span>
       </div>
@@ -104,7 +130,7 @@ export function MobileNavigation() {
         <MobileNavigationMenu />
       ) : (
         <Button
-          aria-label="Open workspace navigation"
+          aria-label={t("openWorkspaceNavigation")}
           className="min-h-11 min-w-11"
           disabled
           size="icon-lg"

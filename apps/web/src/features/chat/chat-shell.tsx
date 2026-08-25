@@ -1,4 +1,5 @@
 import { ChatCircleDots } from "@phosphor-icons/react";
+import { useTranslations } from "@voidmix/i18n/client";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@voidmix/ui/components/ui/card";
 import { useState } from "react";
@@ -6,19 +7,22 @@ import { useState } from "react";
 import { Composer } from "./components/composer";
 import { MessageList } from "./components/message-list";
 import { createPreviewResponse, initialChatMessages } from "./fixtures";
+import { loadHomeMessages } from "../../i18n/home";
 import type { ChatMessage } from "./types";
 
 export function ChatShell() {
+  const t = useTranslations("home", loadHomeMessages);
   const [messages, setMessages] = useState<readonly ChatMessage[]>(initialChatMessages);
   const hasMessages = messages.length > 0;
 
   function handleSubmit(prompt: string) {
     setMessages((current) => [
       ...current,
-      { id: `user-${current.length}`, role: "user", content: prompt, timestamp: "Now" },
+      { id: `user-${current.length}`, role: "user", content: prompt, timestamp: t("now") },
       {
-        ...createPreviewResponse(prompt),
+        ...createPreviewResponse(prompt, t("previewResponse")),
         id: `assistant-${current.length}`,
+        timestamp: t("preview"),
       },
     ]);
   }
@@ -28,9 +32,7 @@ export function ChatShell() {
       <section className="flex flex-1 items-center justify-center py-12" id="ask-voidmix">
         <div className="w-full">
           <Composer onSubmit={handleSubmit} />
-          <p className="mt-3 text-center text-xs text-muted-foreground">
-            Northstar preview data stays in this browser.
-          </p>
+          <p className="mt-3 text-center text-xs text-muted-foreground">{t("previewDataStays")}</p>
         </div>
       </section>
     );
@@ -44,17 +46,15 @@ export function ChatShell() {
             <ChatCircleDots aria-hidden="true" weight="fill" />
           </span>
           <div>
-            <CardTitle className="text-base">Ask Voidmix</CardTitle>
-            <p className="mt-0.5 text-xs text-muted-foreground">Northstar workspace</p>
+            <CardTitle className="text-base">{t("askVoidmix")}</CardTitle>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t("northstarWorkspace")}</p>
           </div>
         </div>
-        <Badge>Preview data</Badge>
+        <Badge>{t("previewData")}</Badge>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col gap-3 pt-0">
         <MessageList messages={messages} />
-        <p className="text-xs text-muted-foreground">
-          Uses Northstar sample data. Messages stay in this browser.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("usesSampleData")}</p>
         <Composer onSubmit={handleSubmit} />
       </CardContent>
     </Card>

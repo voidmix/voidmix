@@ -4,6 +4,7 @@ import {
   createRootRoute,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
+import { I18nProvider, createBrowserLocaleStorage, useTranslations } from "@voidmix/i18n/client";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { initClientLogger } from "@voidmix/logger/client";
@@ -12,6 +13,8 @@ import { Toaster } from "@voidmix/ui/components/ui/toast";
 import "@voidmix/ui/styles.css";
 import { ThemeProvider, ThemeScript } from "@voidmix/ui/theme";
 import { env } from "../env.js";
+import { loadCommonMessages } from "../i18n/common";
+import { getRequestLocale } from "../i18n/request-locale";
 import {
   CHUNK_RECOVERY_STORAGE_KEY,
   createChunkRecoveryRecord,
@@ -21,6 +24,7 @@ import {
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
+  loader: () => getRequestLocale(),
   errorComponent: RootErrorPage,
   notFoundComponent: NotFoundPage,
   head: () => ({
@@ -57,6 +61,7 @@ export const Route = createRootRoute({
 });
 
 function RootErrorPage({ error, reset }: ErrorComponentProps) {
+  const t = useTranslations("common", loadCommonMessages);
   const chunkLoadFailed = isChunkLoadError(error);
   const [isRecovering, setIsRecovering] = useState(chunkLoadFailed);
 
@@ -100,15 +105,13 @@ function RootErrorPage({ error, reset }: ErrorComponentProps) {
         aria-live="polite"
         className="flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground"
       >
-        <p className="text-sm text-muted-foreground">Refreshing Voidmix…</p>
+        <p className="text-sm text-muted-foreground">{t("refreshing")}</p>
       </main>
     );
   }
 
-  const title = chunkLoadFailed ? "This page needs a refresh" : "Something went wrong";
-  const description = chunkLoadFailed
-    ? "A newer version of this page is available. Reload it to continue."
-    : "The page could not finish loading. Try again or return to the home page.";
+  const title = chunkLoadFailed ? t("pageNeedsRefresh") : t("somethingWentWrong");
+  const description = chunkLoadFailed ? t("newerPageAvailable") : t("pageLoadFailed");
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">
@@ -123,10 +126,10 @@ function RootErrorPage({ error, reset }: ErrorComponentProps) {
             onClick={chunkLoadFailed ? () => window.location.reload() : reset}
             variant="primary"
           >
-            {chunkLoadFailed ? "Reload page" : "Try again"}
+            {chunkLoadFailed ? t("reload") : t("tryAgain")}
           </Button>
           <Button nativeButton={false} render={<a href="/" />} variant="outline">
-            Return home
+            {t("returnHome")}
           </Button>
         </div>
       </section>
@@ -135,21 +138,22 @@ function RootErrorPage({ error, reset }: ErrorComponentProps) {
 }
 
 function NotFoundPage() {
+  const t = useTranslations("common", loadCommonMessages);
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-6 py-16 text-foreground">
       <section className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           Voidmix
         </p>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight">Page not found</h1>
+        <h1 className="mt-3 text-2xl font-semibold tracking-tight">{t("pageNotFound")}</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          The workspace page you requested does not exist.
+          {t("pageNotFoundDescription")}
         </p>
         <a
           className="mt-6 inline-flex h-9 items-center justify-center rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80"
           href="/"
         >
-          Return home
+          {t("returnHome")}
         </a>
       </section>
     </main>
@@ -157,21 +161,32 @@ function NotFoundPage() {
 }
 
 function RootDocument({ children }: { children: ReactNode }) {
+  const locale = Route.useLoaderData();
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <ThemeScript />
-        <HeadContent />
-      </head>
-      <body>
-        <ThemeProvider disableScript defaultTheme="system" disableTransitionOnChange>
-          <ClientLogger />
-          {children}
-          <Toaster />
-          <Scripts />
-        </ThemeProvider>
-      </body>
-    </html>
+    <I18nProvider
+      loaders={{ common: loadCommonMessages }}
+      locale={locale}
+      onLocaleChange={(nextLocale) => {
+        document.documentElement.lang = nextLocale;
+      }}
+      storage={createBrowserLocaleStorage()}
+    >
+      <html dir="ltr" lang={locale} suppressHydrationWarning>
+        <head>
+          <ThemeScript />
+          <HeadContent />
+        </head>
+        <body>
+          <ThemeProvider disableScript defaultTheme="system" disableTransitionOnChange>
+            <ClientLogger />
+            {children}
+            <Toaster />
+            <Scripts />
+          </ThemeProvider>
+        </body>
+      </html>
+    </I18nProvider>
   );
 }
 

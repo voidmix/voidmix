@@ -10,7 +10,7 @@ deployment boundaries, and coding-agent guidance.
 - [Applications](./architecture/applications.md) — Web (including Admin), Desktop, API,
   and Storybook: what each is for, how it is built, and how it is deployed.
 - [Shared packages](./architecture/packages.md) — contracts, client, domain,
-  auth, env, DB, logger, UI, scripts, and TypeScript presets.
+  auth, i18n, mail, env, DB, logger, UI, scripts, and TypeScript presets.
 - [Product design](./architecture/design.md) — brand posture, cross-surface
   intensity, visual vocabulary, and accessibility rules.
 - [Toolchain](./architecture/tooling.md) — Bun catalogs, Vite+, TypeScript,

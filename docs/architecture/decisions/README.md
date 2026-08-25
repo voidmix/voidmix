@@ -30,3 +30,4 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 - [ADR-0001: Base UI and shadcn base-nova over Radix](./0001-base-ui-over-radix.md)
 - [ADR-0002: Vite+ as the only task orchestrator](./0002-vite-plus-sole-orchestrator.md)
 - [ADR-0003: Three skill discovery roots](./0003-three-skill-discovery-roots.md)
+- [ADR-0004: Paraglide with locale and namespace chunks](./0004-i18n-and-paraglide.md)

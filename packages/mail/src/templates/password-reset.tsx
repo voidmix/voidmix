@@ -1,31 +1,39 @@
 import { render, Text } from "react-email";
-import type { EmailTemplate, SendLinkEmailInput } from "../types.js";
+import type { Locale } from "@voidmix/i18n/types";
+import type { SendLinkEmailInput } from "../types.js";
 import { MailLayout } from "./layout.js";
-import { greeting, linkFallback } from "./shared.js";
+import { linkFallback } from "./shared.js";
+import { loadMailTranslator } from "../i18n.js";
 
-export const passwordResetEmail: EmailTemplate<SendLinkEmailInput> = async (input) => {
-  const subject = "Reset your Voidmix password";
+export const passwordResetEmail = async (input: SendLinkEmailInput, locale: Locale = "en") => {
+  const t = await loadMailTranslator("passwordReset", locale);
+  const common = await loadMailTranslator("common", locale);
+  const hello = input.name?.trim()
+    ? common("greetingNamed", { name: input.name.trim() })
+    : common("greeting");
   const html = await render(
     <MailLayout
       {...(input.baseUrl ? { baseUrl: input.baseUrl } : {})}
-      preview="Use this secure link to reset your Voidmix password."
-      title="Reset your password"
-      action={{ label: "Reset password", url: input.url }}
+      footer={common("footer")}
+      locale={locale}
+      preview={t("preview")}
+      title={t("title")}
+      action={{ label: t("button"), url: input.url }}
     >
-      <Text>{greeting(input.name)}</Text>
-      <Text>We received a request to reset the password for your Voidmix account.</Text>
-      <Text>If the button does not work, copy the link below into your browser:</Text>
+      <Text>{hello}</Text>
+      <Text>{t("body")}</Text>
+      <Text>{t("copyLink")}</Text>
       <Text>{input.url}</Text>
     </MailLayout>,
   );
   const text = [
-    greeting(input.name),
+    hello,
     "",
-    "We received a request to reset the password for your Voidmix account.",
+    t("body"),
     "",
-    linkFallback("Reset password", input.url),
+    linkFallback(t("button"), input.url),
     "",
-    "If you did not request a password reset, you can safely ignore this message.",
+    t("fallback"),
   ].join("\n");
-  return { subject, html, text };
+  return { subject: t("subject"), html, text };
 };

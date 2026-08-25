@@ -37,6 +37,7 @@ export interface ApiRuntimeEnvironment {
   MAIL_FROM?: string | undefined;
   MAIL_FROM_NAME?: string | undefined;
   EMAIL_TEMPLATES_BASE_URL?: string | undefined;
+  MAIL_DEFAULT_LOCALE?: string | undefined;
   LOG_LEVEL?: LogLevel | undefined;
   LOG_PRETTY?: boolean | undefined;
 }

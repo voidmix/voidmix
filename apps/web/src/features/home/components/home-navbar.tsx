@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "@voidmix/ui/logo";
 
+import { LanguageSwitcher } from "../../../components/language-switcher";
 import { ThemeSwitcher } from "../../../components/theme-switcher";
 import { AuthActions } from "./auth-actions";
 
@@ -17,6 +18,7 @@ export function HomeNavbar() {
 
       <div className="flex items-center gap-1">
         <AuthActions />
+        <LanguageSwitcher />
         <div className="ml-1">
           <ThemeSwitcher />
         </div>

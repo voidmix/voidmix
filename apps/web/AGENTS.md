@@ -26,6 +26,7 @@ src/
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
+  i18n/              namespace loaders and request-locale integration
 server/
   env.ts             server-only API/Auth/Mail environment composition
   app.ts             Nitro Web-format handler
@@ -60,6 +61,9 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - The root route uses **`shellComponent`**, not `component`. `RootDocument`
   renders the whole `<html>` document including `<HeadContent />` and
   `<Scripts />`; do not move either into a separate wrapper.
+- The root loader owns request locale resolution. Root composition imports only
+  the `common` Paraglide namespace; feature modules import their own loaders.
+  Never import generated `messages.js` or `_index.js` barrels.
 - `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
   import fails `check`.
 - Better Auth and `@voidmix/client` use same-origin `/api/auth/*` and `/rpc/*`
@@ -91,7 +95,7 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Stylesheets: `import "@voidmix/ui/styles.css"` plus
   `import appCss from "../styles.css?url"` fed through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is
-  evlog → nitro → tailwindcss → tanstackStart → viteReact. Nitro uses explicit
+  i18n → evlog → nitro → tailwindcss → tanstackStart → viteReact. Nitro uses explicit
   Web-format routes with directory scanning and its automatic server entry off.
 - Import extensions are inconsistent per file (`../env.js` vs `./routeTree.gen`).
   Mirror the neighbouring import rather than reasoning about it.

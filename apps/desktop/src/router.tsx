@@ -1,8 +1,9 @@
-import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
-import { ActivityPage } from "./features/activity/page";
-import { DevicesPage } from "./features/devices/page";
-import { OverviewPage } from "./features/overview/page";
-import { SettingsPage } from "./features/settings/page";
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+  lazyRouteComponent,
+} from "@tanstack/react-router";
 import { DesktopShell } from "./features/shell/desktop-shell";
 
 const rootRoute = createRootRoute({ component: DesktopShell });
@@ -10,25 +11,25 @@ const rootRoute = createRootRoute({ component: DesktopShell });
 const overviewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: OverviewPage,
+  component: lazyRouteComponent(() => import("./features/overview/page"), "OverviewPage"),
 });
 
 const activityRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/activity",
-  component: ActivityPage,
+  component: lazyRouteComponent(() => import("./features/activity/page"), "ActivityPage"),
 });
 
 const devicesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/devices",
-  component: DevicesPage,
+  component: lazyRouteComponent(() => import("./features/devices/page"), "DevicesPage"),
 });
 
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings",
-  component: SettingsPage,
+  component: lazyRouteComponent(() => import("./features/settings/page"), "SettingsPage"),
 });
 
 const routeTree = rootRoute.addChildren([

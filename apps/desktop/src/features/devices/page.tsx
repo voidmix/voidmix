@@ -1,21 +1,24 @@
 import { DeviceMobile, Laptop, Monitor, Sparkle, X } from "@phosphor-icons/react";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { useTranslations } from "@voidmix/i18n/client";
 import { demoCloudSnapshot } from "../../lib/cloud";
+import { loadDeviceMessages } from "../../i18n/devices";
 
 export function DevicesPage() {
+  const t = useTranslations("devices", loadDeviceMessages);
   const devices = demoCloudSnapshot.devices;
   return (
     <div className="page">
       <header className="page-header">
         <div>
-          <h1>Devices</h1>
-          <p>Control which computers and phones can access this workspace.</p>
+          <h1>{t("title")}</h1>
+          <p>{t("description")}</p>
         </div>
         <Button className="primary-button" variant="primary">
-          <Sparkle size={14} /> Pair device
+          <Sparkle size={14} /> {t("pair")}
         </Button>
       </header>
-      <section className="device-list" aria-label="Registered devices">
+      <section className="device-list" aria-label={t("registered")}>
         {devices.map((device) => {
           const Icon =
             device.kind === "phone" ? DeviceMobile : device.kind === "desktop" ? Monitor : Laptop;
@@ -30,22 +33,22 @@ export function DevicesPage() {
               </div>
               <div>
                 <span className={device.online ? "presence online" : "presence"}>
-                  {device.online ? "Online" : "Offline"}
+                  {device.online ? t("online") : t("offline")}
                 </span>
               </div>
               <div className="device-meta">
-                <span>Last seen</span>
+                <span>{t("lastSeen")}</span>
                 <strong>{device.lastSeen}</strong>
               </div>
               <div className="device-meta">
-                <span>Synced</span>
+                <span>{t("synced")}</span>
                 <strong>{device.synced}</strong>
               </div>
               <Button
                 className="icon-button"
                 size="icon"
                 variant="ghost"
-                aria-label={`Remove ${device.name}`}
+                aria-label={t("remove", { name: device.name })}
               >
                 <X size={16} />
               </Button>

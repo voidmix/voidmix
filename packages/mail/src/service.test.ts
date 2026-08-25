@@ -57,7 +57,17 @@ describe("mail environment", () => {
       NODE_ENV: "test",
       MAIL_FROM: "noreply@voidmix.local",
       MAIL_FROM_NAME: "Voidmix",
+      MAIL_DEFAULT_LOCALE: "en",
     });
+  });
+
+  it("normalizes the configured mail locale and falls back to English", () => {
+    expect(getMailEnv({ NODE_ENV: "test", MAIL_DEFAULT_LOCALE: "zh-CN" }).MAIL_DEFAULT_LOCALE).toBe(
+      "zh",
+    );
+    expect(getMailEnv({ NODE_ENV: "test", MAIL_DEFAULT_LOCALE: "fr" }).MAIL_DEFAULT_LOCALE).toBe(
+      "en",
+    );
   });
 
   it("allows production startup and reports unavailable mail only when sending", async () => {

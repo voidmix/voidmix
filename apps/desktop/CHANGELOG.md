@@ -21,6 +21,10 @@ user can observe them.
 
 ## Unreleased
 
-Nothing user-facing yet. `0.1.0` has not been released; there are no tags and CI
-has no release job, so the version in the three manifests is a placeholder rather
-than a shipped build.
+### Added
+
+- English and Simplified Chinese shell translations with a no-refresh language
+  switcher that remembers the selected locale.
+
+`0.1.0` has not been released; there are no tags and CI has no release job, so
+the version in the three manifests is a placeholder rather than a shipped build.

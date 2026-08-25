@@ -1,13 +1,30 @@
 export interface ChatSkill {
   readonly description: string;
+  readonly descriptionKey?: string;
   readonly name: string;
 }
 
 export const chatSkills: readonly ChatSkill[] = [
-  { name: "summarize", description: "Condense the thread into key points." },
-  { name: "brainstorm", description: "Generate options for the current problem." },
-  { name: "explain", description: "Walk through how something works." },
-  { name: "review", description: "Critique the current draft or change." },
+  {
+    name: "summarize",
+    descriptionKey: "skillSummarize",
+    description: "Condense the thread into key points.",
+  },
+  {
+    name: "brainstorm",
+    descriptionKey: "skillBrainstorm",
+    description: "Generate options for the current problem.",
+  },
+  {
+    name: "explain",
+    descriptionKey: "skillExplain",
+    description: "Walk through how something works.",
+  },
+  {
+    name: "review",
+    descriptionKey: "skillReview",
+    description: "Critique the current draft or change.",
+  },
 ];
 
 export interface SlashToken {

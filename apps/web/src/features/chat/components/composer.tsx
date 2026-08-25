@@ -1,4 +1,5 @@
 import { Paperclip, Plus, Sparkle, Wrench } from "@phosphor-icons/react";
+import { useOptionalTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ import {
   matchSkills,
   type ChatSkill,
 } from "../skills";
+import { loadHomeMessages } from "../../../i18n/home";
 import { SkillMenu } from "./skill-menu";
 
 interface ComposerProps {
@@ -37,6 +39,23 @@ interface ComposerProps {
 }
 
 export function Composer({ onSubmit, value = "" }: ComposerProps) {
+  const t = useOptionalTranslations("home", loadHomeMessages, (key, values) => {
+    const fallback: Record<string, string> = {
+      askVoidmix: "Ask Voidmix",
+      askWorkspace: "Ask about this workspace",
+      addAttachmentOrSkill: "Add attachment or skill",
+      addToMessage: "Add to message",
+      uploadFile: "Upload file",
+      skills: "Skills",
+      sendMessage: "Send message",
+      skillSuggestions: `${typeof values?.count === "number" ? values.count : 0} skill suggestions`,
+      skillSummarize: "Condense the thread into key points.",
+      skillBrainstorm: "Generate options for the current problem.",
+      skillExplain: "Walk through how something works.",
+      skillReview: "Critique the current draft or change.",
+    };
+    return fallback[key] ?? key;
+  });
   const [prompt, setPrompt] = useState(value);
   const [caret, setCaret] = useState(value.length);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -50,8 +69,12 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
   const listboxId = `${baseId}-skills`;
   const optionId = (index: number) => `${baseId}-skill-${index}`;
 
+  const localizedSkills = chatSkills.map((skill) => ({
+    ...skill,
+    description: skill.descriptionKey ? t(skill.descriptionKey) : skill.description,
+  }));
   const token = dismissed ? null : findSlashToken(prompt, caret);
-  const suggestions = token ? matchSkills(token.query) : [];
+  const suggestions = token ? matchSkills(token.query, localizedSkills) : [];
   const isMenuOpen = focused && suggestions.length > 0;
   // Clamping during render means a shrinking filter can never expose a stale index.
   const boundedIndex = Math.min(activeIndex, suggestions.length - 1);
@@ -159,7 +182,7 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
         />
       ) : null}
       <span className="sr-only" role="status">
-        {isMenuOpen ? `${suggestions.length} skill suggestions` : ""}
+        {isMenuOpen ? t("skillSuggestions", { count: suggestions.length }) : ""}
       </span>
       <div className="flex items-start gap-2.5">
         <Sparkle aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
@@ -167,7 +190,7 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
           aria-activedescendant={isMenuOpen ? optionId(boundedIndex) : undefined}
           aria-autocomplete="list"
           aria-controls={isMenuOpen ? listboxId : undefined}
-          aria-label="Ask Voidmix"
+          aria-label={t("askVoidmix")}
           aria-owns={isMenuOpen ? listboxId : undefined}
           className="min-h-[6rem] min-w-0 flex-1 resize-y border-0 bg-transparent p-0 text-[0.82rem] leading-[1.5] text-foreground outline-none placeholder:text-muted-foreground"
           onBlur={() => setFocused(false)}
@@ -176,7 +199,7 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
           onFocus={() => setFocused(true)}
           onKeyDown={handleKeyDown}
           onKeyUp={(event) => setCaret(event.currentTarget.selectionStart)}
-          placeholder="Ask about this workspace"
+          placeholder={t("askWorkspace")}
           ref={textareaRef}
           rows={4}
           value={prompt}
@@ -186,27 +209,27 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button aria-label="Add attachment or skill" size="icon" variant="ghost">
+              <Button aria-label={t("addAttachmentOrSkill")} size="icon" variant="ghost">
                 <Plus aria-hidden="true" weight="bold" />
               </Button>
             }
           />
           <DropdownMenuContent align="start" side="top" sideOffset={4}>
             <DropdownMenuGroup>
-              <DropdownMenuLabel>Add to message</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("addToMessage")}</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
                 <Paperclip aria-hidden="true" />
-                Upload file
+                {t("uploadFile")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 <Wrench aria-hidden="true" />
-                Skills
+                {t("skills")}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                {chatSkills.map((skill) => (
+                {localizedSkills.map((skill) => (
                   <DropdownMenuItem
                     key={skill.name}
                     onClick={() => {
@@ -229,7 +252,7 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
           type="file"
         />
         <Button
-          aria-label="Send message"
+          aria-label={t("sendMessage")}
           disabled={!prompt.trim()}
           size="icon"
           type="submit"

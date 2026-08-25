@@ -2,10 +2,14 @@ import type { ViteUserConfig } from "vite-plus";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import evlog from "@voidmix/logger/vite";
+import { defineI18nProject, i18nVitePlugin } from "@voidmix/i18n/build";
+import { fileURLToPath } from "node:url";
 
 const host = process.env.TAURI_DEV_HOST;
 const isDevelopment = process.env.NODE_ENV !== "production";
+const i18nProject = defineI18nProject({ root: fileURLToPath(new URL(".", import.meta.url)) });
 const vitePlugins = [
+  i18nVitePlugin(i18nProject),
   ...react(),
   tailwindcss(),
   ...evlog({

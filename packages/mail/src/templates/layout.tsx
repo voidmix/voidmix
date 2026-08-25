@@ -11,6 +11,7 @@ import {
   Text,
 } from "react-email";
 import type { ReactNode } from "react";
+import type { Locale } from "@voidmix/i18n/types";
 
 export interface MailLayoutProps {
   children: ReactNode;
@@ -18,11 +19,21 @@ export interface MailLayoutProps {
   title: string;
   action?: { label: string; url: string };
   baseUrl?: string;
+  locale?: Locale;
+  footer?: string;
 }
 
-export function MailLayout({ children, preview, title, action, baseUrl }: MailLayoutProps) {
+export function MailLayout({
+  children,
+  preview,
+  title,
+  action,
+  baseUrl,
+  locale = "en",
+  footer = "This message was sent by Voidmix. If you did not request it, you can safely ignore it.",
+}: MailLayoutProps) {
   return (
-    <Html lang="en">
+    <Html lang={locale}>
       <Head />
       <Preview>{preview}</Preview>
       <Body style={styles.body}>
@@ -40,9 +51,7 @@ export function MailLayout({ children, preview, title, action, baseUrl }: MailLa
             </Section>
           ) : null}
           <Hr style={styles.rule} />
-          <Text style={styles.footer}>
-            This message was sent by Voidmix. If you did not request it, you can safely ignore it.
-          </Text>
+          <Text style={styles.footer}>{footer}</Text>
           {baseUrl ? <Text style={styles.footer}>{baseUrl}</Text> : null}
         </Container>
       </Body>

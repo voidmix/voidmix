@@ -1,14 +1,17 @@
 import { Sparkle } from "@phosphor-icons/react";
+import { useTranslations } from "@voidmix/i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { cn } from "@voidmix/ui/lib/utils";
 
 import type { ChatMessage } from "../types";
+import { loadHomeMessages } from "../../../i18n/home";
 
 interface MessageProps {
   message: ChatMessage;
 }
 
 export function ChatMessageRow({ message }: MessageProps) {
+  const t = useTranslations("home", loadHomeMessages);
   const isUser = message.role === "user";
 
   return (
@@ -29,7 +32,7 @@ export function ChatMessageRow({ message }: MessageProps) {
       </div>
       <div className={cn("min-w-0", isUser && "col-start-1 row-start-1 flex flex-col items-end")}>
         <div className="flex min-h-[1.4rem] items-center gap-1.5">
-          <strong className="text-[0.76rem]">{isUser ? "You" : "Voidmix"}</strong>
+          <strong className="text-[0.76rem]">{isUser ? t("you") : "Voidmix"}</strong>
           <span className="text-[0.68rem] text-muted-foreground">{message.timestamp}</span>
         </div>
         <p
