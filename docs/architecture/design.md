@@ -10,9 +10,11 @@ specification is [`DESIGN.md`](../../DESIGN.md).
 ## Design posture
 
 The creative north star is **The Live Signal Room**. Voidmix should look like a
-system already in motion: strong hierarchy, precise rules, realistic state,
-and one rare high-energy accent. It does not use generic purple AI gradients,
-decorative glass effects, editorial serif styling, or mascot-led storytelling.
+system already in motion: strong hierarchy, precise rules, realistic state, and
+one rare full-contrast inversion. The palette is achromatic; the signal is
+carried by contrast rather than by a brand hue. It does not use generic purple
+AI gradients, decorative glass effects, editorial serif styling, or mascot-led
+storytelling.
 
 ## Surface intensity
 
@@ -21,18 +23,21 @@ decorative glass effects, editorial serif styling, or mascot-led storytelling.
 - **Admin** is a dark control surface. Density, operational status, and table
   scanability take precedence over visual spectacle.
 - **Desktop** is a light field workstation. It uses the same geometry and
-  Signal Lime vocabulary while remaining comfortable for long sessions.
+  achromatic vocabulary while remaining comfortable for long sessions.
 
 ## Shared vocabulary
 
-- Void `#0B0E0C` and Cloud `#F4F6F1` form the primary dark and light fields.
-- Signal Lime `#D7FF45` identifies primary actions, current selection, and
-  genuinely live state. Product screens keep its surface coverage below 12%.
+- Void `#0A0A0A` and Cloud `#F5F5F5` form the primary dark and light fields.
+- The inverted primary fill — Void Raised `#171717` on light surfaces, Line
+  Light `#E5E5E5` on dark — identifies primary actions, current selection, and
+  genuinely live state. Product screens keep its coverage below 12%.
+- Chroma is reserved for destructive state (`#E7000B` light, `#FF6467` dark).
+  Every other token is achromatic.
 - Avenir Next, Segoe UI, and Helvetica Neue form the main sans-serif stack.
   Monospace is limited to time, IDs, status, and machine metadata.
 - Permanent product panels use tonal layering and one-pixel rules. Large soft
   shadows are reserved for the single Web product stage.
-- Shared components use compact 4 to 12 pixel radii. Pill geometry is reserved
+- Shared components use compact 4 to 10 pixel radii. Pill geometry is reserved
   for people or compact state tokens.
 
 ## Ownership
