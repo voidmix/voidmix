@@ -1,0 +1,19 @@
+apps/web/package.json
+  s_17dbe15deaa4ec::t_e470dfa74b7b3d 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "9011772557dc02a37908abc9e324bf07bc238c1a",
+  "prompts": {},
+  "sessions": {
+    "s_17dbe15deaa4ec": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a036ab-5b5e-73c3-9377-ad878a13346e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
