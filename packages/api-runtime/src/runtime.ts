@@ -4,7 +4,7 @@ import {
   PostgresUserRepository,
 } from "@voidmix/db";
 import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
-import type { AuthSettings, MailSettingsFallback } from "@voidmix/domain";
+import type { AuthSettings, MailSettingsFallback } from "@voidmix/core";
 import { createLoggerConfig, type EvlogConfig } from "@voidmix/logger";
 import { getMailEnv } from "@voidmix/mail/env";
 import { createMailer } from "@voidmix/mail/server";
@@ -12,6 +12,7 @@ import { createMailer } from "@voidmix/mail/server";
 import { createApiApp } from "./app.js";
 import { createApiAuth } from "./auth/config.js";
 import type { ApiRuntimeEnvironment } from "./env.js";
+import { createApiModules } from "./modules.js";
 import { createBetterAuthSessionResolver } from "./session.js";
 
 export interface ApiRuntime {
@@ -104,18 +105,21 @@ export async function createApiRuntime({
       getAuthSettings,
       getMailSettings: async () => (await settings.resolveMailConfiguration(mailFallback)).settings,
     });
+    const modules = createApiModules({
+      users: new PostgresUserRepository(connection.db),
+      settings,
+      mailFallback,
+      mailer,
+      resolveAuthSettings: getAuthSettings,
+    });
     let closePromise: Promise<void> | undefined;
 
     return {
       app: createApiApp({
-        users: new PostgresUserRepository(connection.db),
-        settings,
-        mailFallback,
-        mailer,
+        modules,
         allowedOrigins: environment.ALLOWED_ORIGINS,
         authHandler,
         resolveSession: createBetterAuthSessionResolver(auth),
-        resolveAuthSettings: getAuthSettings,
         invalidateAuthSettings,
         loggerConfig,
       }),

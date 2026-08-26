@@ -14,8 +14,8 @@ import type {
   UserPage,
   UserRepository,
   UserStatus,
-} from "@voidmix/domain";
-import { createDefaultAuthSettings } from "@voidmix/domain";
+} from "@voidmix/core";
+import { createDefaultAuthSettings } from "@voidmix/core";
 
 type StoredConfigurationValue = {
   value: string;

@@ -39,7 +39,7 @@ It hand-rolls sessions with TanStack Start's `useSession` and Prisma-style
 queries (`db.users.findUnique`). Neither matches this repository: sessions are
 resolved behind `packages/api-runtime/src/session.ts`'s `SessionResolver` seam,
 roles and permissions come from `@voidmix/auth`, and persistence is Drizzle
-behind repository interfaces owned by `@voidmix/domain`.
+behind repository interfaces owned by `@voidmix/core`.
 
 Its cookie-hardening table (`httpOnly`, `secure`, `sameSite`, `maxAge`, a 32-plus
 character secret) and the "store minimal data, rotate on privilege change"

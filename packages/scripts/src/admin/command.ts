@@ -23,7 +23,7 @@ const createAdminCommand = defineCommand({
       const [operation, { openPostgresUsers }, domain] = await Promise.all([
         import("./operation.js"),
         import("../database/users.js"),
-        import("@voidmix/domain"),
+        import("@voidmix/core"),
       ]);
       await operation.runCreateAdmin(
         operation.resolveAdminCreateInput(args, context.environment),

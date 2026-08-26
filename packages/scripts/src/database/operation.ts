@@ -1,4 +1,4 @@
-import type { User, UserRepository } from "@voidmix/domain";
+import type { User, UserRepository } from "@voidmix/core";
 import { join } from "node:path";
 
 import { assertDevelopmentDatabaseCommand, requireDatabaseUrl } from "./policy.js";

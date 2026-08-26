@@ -38,8 +38,8 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:tooling",
+    "@voidmix/core": "workspace:*",
     "@voidmix/db": "workspace:*",
-    "@voidmix/domain": "workspace:*",
     "@voidmix/env": "workspace:*",
     "@voidmix/logger": "workspace:*",
     "citty": "catalog:tooling",

@@ -1,4 +1,4 @@
-# @voidmix/domain
+# @voidmix/core
 
 ## Purpose
 
@@ -58,7 +58,7 @@ transported or stored.
 ## Verification
 
 ```bash
-bun run --cwd packages/domain check
-bun run --cwd packages/domain test
+bun run --cwd packages/core check
+bun run --cwd packages/core test
 bun run --cwd packages/api-runtime test   # exercises usecases through the router
 ```

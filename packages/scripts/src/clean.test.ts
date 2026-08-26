@@ -36,7 +36,7 @@ describe("cleanRepository", () => {
       "apps/web/app.tsbuildinfo",
       "apps/web/node_modules/.cache/tool/state.json",
       "apps/web/node_modules/.vite/metadata.json",
-      "packages/domain/coverage/coverage.json",
+      "packages/core/coverage/coverage.json",
       "e2e/test-results/results.json",
       "apps/desktop/src-tauri/target/debug/voidmix",
       "apps/desktop/src-tauri/gen/schemas/schema.json",
@@ -85,7 +85,7 @@ describe("cleanRepository", () => {
         "apps/web/dist",
         "apps/web/node_modules/.cache",
         "apps/web/node_modules/.vite",
-        "packages/domain/coverage",
+        "packages/core/coverage",
         "apps/desktop/src-tauri/gen/schemas",
         "apps/desktop/src-tauri/target",
       ].sort(),
@@ -101,7 +101,7 @@ describe("cleanRepository", () => {
       "node_modules.bun/root-package/package.json",
       "apps/web/node_modules/web-package/package.json",
       "apps/web/node_modules.bun/web-package/package.json",
-      "packages/domain/node_modules/domain-package/package.json",
+      "packages/core/node_modules/domain-package/package.json",
     ];
     const sourcePath = "apps/web/src/index.ts";
 
@@ -123,7 +123,7 @@ describe("cleanRepository", () => {
       [
         "apps/web/node_modules",
         "apps/web/node_modules.bun",
-        "packages/domain/node_modules",
+        "packages/core/node_modules",
         "node_modules",
         "node_modules.bun",
       ].sort(),

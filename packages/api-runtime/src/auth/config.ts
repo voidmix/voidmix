@@ -1,7 +1,7 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import type { DatabaseConnection } from "@voidmix/db";
 import { authAccounts, authSessions, authVerifications, users } from "@voidmix/db/schema";
-import type { AuthSettings } from "@voidmix/domain";
+import type { AuthSettings } from "@voidmix/core";
 import { resolveRequestLocale } from "@voidmix/i18n/server";
 import type { Locale } from "@voidmix/i18n/types";
 import { logger } from "@voidmix/logger";

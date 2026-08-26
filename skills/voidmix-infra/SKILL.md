@@ -55,7 +55,7 @@ them; corrections go in `references/`.
 things that mislead in the moment and belong to no single rule:
 
 - **There is no audit, authorization, or rpc package.** Audit lives in
-  `packages/domain` plus `packages/db`; authorization is `packages/auth`; the RPC
+  `packages/core` plus `packages/db`; authorization is `packages/auth`; the RPC
   surface is `packages/contracts` plus `packages/client`.
 - **`check` is `tsc --noEmit` only** — it does not lint or format. Those are
   `bun run lint` and `bun run format` (`format:fix` to rewrite).

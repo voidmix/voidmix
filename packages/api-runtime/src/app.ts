@@ -9,54 +9,40 @@ import {
   ResponseHeadersHandlerPlugin,
   TimeoutHandlerPlugin,
 } from "@orpc/server/plugins";
-import type {
-  AuthSettings,
-  MailSettingsFallback,
-  SystemSettingsRepository,
-  UserRepository,
-} from "@voidmix/domain";
 import { createLoggerConfig, toMiddlewareOptions, type EvlogConfig } from "@voidmix/logger";
 import { evlog as honoEvlog, type EvlogVariables } from "@voidmix/logger/hono";
 import { withEvlog } from "@voidmix/logger/orpc";
-import type { Mailer } from "@voidmix/mail/types";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { nanoid } from "nanoid";
 
 import { createApiRouter, type ApiContext } from "./router.js";
+import { createApiRequestAuthContext, type ApiRequestAuthContext } from "./context.js";
+import type { ApiModules } from "./modules.js";
 import type { SessionResolver } from "./session.js";
 
 export interface CreateApiAppOptions {
-  users: UserRepository;
-  settings: SystemSettingsRepository;
-  mailFallback: MailSettingsFallback;
-  mailer: Mailer;
+  modules: ApiModules;
   resolveSession: SessionResolver;
   allowedOrigins: readonly string[];
   authHandler: (request: Request) => Promise<Response>;
   now?: () => Date;
-  id?: () => string;
   loggerConfig?: EvlogConfig;
-  resolveAuthSettings?: () => Promise<AuthSettings>;
   invalidateAuthSettings?: () => Promise<void>;
 }
 
 type ApiEnv = {
   Variables: EvlogVariables["Variables"] & {
     requestId: string;
+    auth: ApiRequestAuthContext;
   };
 };
 
 export function createApiApp(options: CreateApiAppOptions) {
   const router = createApiRouter({
-    users: options.users,
-    settings: options.settings,
-    mailFallback: options.mailFallback,
-    mailer: options.mailer,
+    modules: options.modules,
     ...(options.now ? { now: options.now } : {}),
-    ...(options.id ? { id: options.id } : {}),
-    ...(options.resolveAuthSettings ? { resolveAuthSettings: options.resolveAuthSettings } : {}),
     ...(options.invalidateAuthSettings
       ? { invalidateAuthSettings: options.invalidateAuthSettings }
       : {}),
@@ -132,13 +118,17 @@ export function createApiApp(options: CreateApiAppOptions) {
     });
   });
   app.use("/rpc/*", async (context, next) => {
+    context.set("auth", createApiRequestAuthContext(await options.resolveSession(context.req.raw)));
+    await next();
+  });
+  app.use("/rpc/*", async (context, next) => {
     const requestId = context.get("requestId");
     const request = context.req.raw;
     const { matched, response } = await handler.handle(request, {
       prefix: "/rpc",
       context: {
         requestId,
-        session: await options.resolveSession(request),
+        auth: context.get("auth"),
       },
     });
 

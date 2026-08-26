@@ -10,7 +10,7 @@ desktop client.
 
 - Keep Web, Desktop, API, and the UI workbench independently runnable while
   isolating Admin as a protected Web feature.
-- Share contracts, domain rules, UI primitives, and API clients without
+- Share contracts, core business rules, UI primitives, and API clients without
   sharing platform-specific route trees.
 - Keep server-side business rules behind small, stable interfaces.
 - Use Bun for dependency installation and repository scripts while keeping
@@ -30,8 +30,9 @@ flowchart LR
   apiHost["Standalone API compatibility host"] --> api
   api --> logger["@voidmix/logger / Evlog"]
   api --> auth["Auth + RBAC"]
-  api --> domain["Domain services"]
-  domain --> db["Repository adapter"]
+  api --> core["@voidmix/core"]
+  api --> db["Repository adapter"]
+  db --> core
   db --> postgres[("PostgreSQL")]
 ```
 
@@ -63,21 +64,21 @@ apps/desktop  ─┴──> client ───> contracts
 apps/storybook ───> ui
 
 apps/web ─┐
-apps/api ─┴──> api-runtime ───> Hono + auth + domain + db + contracts
+apps/api ─┴──> api-runtime ───> Hono + auth + core + db + contracts
 api-runtime ───> logger
 apps/web/desktop ───> logger (Vite client integration)
 apps/api/web/desktop ───> env
 api-runtime ───> cache
 packages/db/logger/scripts ───> env
-packages/db ───> domain
-packages/scripts ───> db + domain + logger
-packages/domain ───> auth
+packages/db ───> core
+packages/scripts ───> db + core + logger
+packages/core ───> auth
 ```
 
 Rules:
 
 1. Frontend applications never import `@voidmix/db`.
-2. `@voidmix/domain` never imports React, Hono, Nitro, or Drizzle.
+2. `@voidmix/core` never imports React, Hono, Nitro, or Drizzle.
 3. `@voidmix/contracts` performs no network or database work.
 4. Every protected Admin operation is authorized by the API.
 5. Operational logs never contain raw credentials or session tokens.

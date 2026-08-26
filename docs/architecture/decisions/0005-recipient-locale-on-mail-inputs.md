@@ -39,7 +39,7 @@ decision uses the `@voidmix/i18n` facade with static JSON catalogs.
 
 It does not add a locale column to the user record. A stored preference would
 outrank a request header, and it needs the status-value treatment the repository
-already requires: a literal union in `@voidmix/domain`, a `z.enum` in
+already requires: a literal union in `@voidmix/core`, a `z.enum` in
 `@voidmix/contracts`, a `pgEnum` in `@voidmix/db`, and a migration.
 
 ## Consequences

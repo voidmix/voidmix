@@ -1,4 +1,4 @@
-import type { AuditEvent, User } from "@voidmix/domain";
+import type { AuditEvent, User } from "@voidmix/core";
 import { describe, expect, it } from "vite-plus/test";
 
 import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "./memory.js";

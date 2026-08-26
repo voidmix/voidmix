@@ -19,7 +19,7 @@
     "generate": "vmx env -- drizzle-kit generate --config drizzle.config.ts"
   },
   "dependencies": {
-    "@voidmix/domain": "workspace:*",
+    "@voidmix/core": "workspace:*",
     "@voidmix/env": "workspace:*",
     "drizzle-orm": "catalog:backend",
     "postgres": "catalog:backend"

@@ -21,7 +21,7 @@ environment detection, minimum levels, event shape, and redaction policy.
 - Own logger configuration, the wide-event shape, adapter integrations, and the
   central redaction policy.
 - Own **operational** logs only. Durable Admin audit records are product data
-  owned by `@voidmix/domain` and `@voidmix/db`; logs are observability data. Keep
+  owned by `@voidmix/core` and `@voidmix/db`; logs are observability data. Keep
   the two separate.
 
 ## Constraints

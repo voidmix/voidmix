@@ -1,4 +1,4 @@
-import { createDefaultAuthSettings } from "@voidmix/domain";
+import { createDefaultAuthSettings } from "@voidmix/core";
 import type { Mailer } from "@voidmix/mail/types";
 import { describe, expect, it, vi } from "vite-plus/test";
 

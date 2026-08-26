@@ -39,7 +39,7 @@ and no barrel to update.
   their database state; `reset` means delete the database override, not persist
   an empty inherited value.
 - **A status or audit-action value is declared in three places with no shared
-  source**: the literal union in `@voidmix/domain`, the `z.enum` here, and the
+  source**: the literal union in `@voidmix/core`, the `z.enum` here, and the
   `pgEnum` in `@voidmix/db`. Miss one and it fails at runtime (Zod output
   validation or a PostgreSQL enum error), not at compile time.
 - Depend only on `@orpc/contract` and `zod`. Never import a runtime package.

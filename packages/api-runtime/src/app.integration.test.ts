@@ -5,13 +5,14 @@ import type {
   SystemSettingsRepository,
   User,
   UserRepository,
-} from "@voidmix/domain";
+} from "@voidmix/core";
 import { configureLogger } from "@voidmix/logger";
 import type { Mailer } from "@voidmix/mail/types";
 import { describe, expect, it } from "vite-plus/test";
 
 import { createApiApp } from "./app.js";
-import { createHeaderSessionResolver } from "./session.js";
+import { createApiModules, type ApiModules } from "./modules.js";
+import { createHeaderSessionResolver, type SessionResolver } from "./session.js";
 
 const seed: User[] = [
   {
@@ -64,19 +65,29 @@ function createTestApiApp(
     allowedOrigins?: readonly string[];
     authHandler?: (request: Request) => Promise<Response>;
     id?: () => string;
+    resolveSession?: SessionResolver;
+    modules?: ApiModules;
   } = {},
 ) {
   const users = options.users ?? new InMemoryUserRepository(seed);
+  const settings =
+    options.settings ??
+    new InMemorySystemSettingsRepository(
+      users instanceof InMemoryUserRepository ? { auditEvents: users.auditEvents } : {},
+    );
+  const mailFallback = options.mailFallback ?? testMailFallback;
+  const mailer = options.mailer ?? testMailer;
   return createApiApp({
-    users,
-    settings:
-      options.settings ??
-      new InMemorySystemSettingsRepository(
-        users instanceof InMemoryUserRepository ? { auditEvents: users.auditEvents } : {},
-      ),
-    mailFallback: options.mailFallback ?? testMailFallback,
-    mailer: options.mailer ?? testMailer,
-    resolveSession: createHeaderSessionResolver(),
+    modules:
+      options.modules ??
+      createApiModules({
+        users,
+        settings,
+        mailFallback,
+        mailer,
+        ...(options.id ? { id: options.id } : {}),
+      }),
+    resolveSession: options.resolveSession ?? createHeaderSessionResolver(),
     allowedOrigins: options.allowedOrigins ?? ["http://voidmix.test"],
     authHandler:
       options.authHandler ??
@@ -85,7 +96,12 @@ function createTestApiApp(
   });
 }
 
-function setup(role: "user" | "admin" | "owner", actorId: string, configured = true) {
+function setup(
+  role: "user" | "admin" | "owner",
+  actorId: string,
+  configured = true,
+  resolveSession?: SessionResolver,
+) {
   const repository = new InMemoryUserRepository(seed);
   const settings = new InMemorySystemSettingsRepository({
     ...(configured
@@ -110,6 +126,7 @@ function setup(role: "user" | "admin" | "owner", actorId: string, configured = t
     settings,
     mailer,
     id: () => `id-${repository.auditEvents.length}`,
+    ...(resolveSession ? { resolveSession } : {}),
   });
   const actor = seed.find((user) => user.id === actorId);
   let rpcRequests = 0;
@@ -205,11 +222,79 @@ describe("API", () => {
     expect(setupResult.lastResponse?.headers.get("x-request-id")).toBe("rpc-request-1");
   });
 
+  it("resolves the request auth context once for a batched RPC request", async () => {
+    let calls = 0;
+    const headerResolver = createHeaderSessionResolver();
+    const result = setup("owner", "owner-1", true, async (request) => {
+      calls += 1;
+      return headerResolver(request);
+    });
+
+    await Promise.all([
+      result.client.health({}),
+      result.client.admin.users.get({ userId: "user-1" }),
+    ]);
+
+    expect(calls).toBe(1);
+  });
+
+  it("does not resolve application auth context for Better Auth routes", async () => {
+    let calls = 0;
+    const app = createTestApiApp({
+      resolveSession: async () => {
+        calls += 1;
+        return null;
+      },
+      authHandler: async () => new Response("auth-ok"),
+    });
+
+    const response = await app.request("/api/auth/get-session");
+
+    expect(response.status).toBe(200);
+    expect(calls).toBe(0);
+  });
+
   it("rejects ordinary users from admin procedures", async () => {
     const { client } = setup("user", "user-1");
     await expect(client.admin.users.list({ limit: 20 })).rejects.toMatchObject({
       code: "FORBIDDEN",
     });
+  });
+
+  it("rejects unauthenticated callers before protected handlers", async () => {
+    const app = createTestApiApp({ resolveSession: async () => null });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(client.admin.users.list({ limit: 20 })).rejects.toMatchObject({
+      code: "UNAUTHORIZED",
+    });
+  });
+
+  it("uses explicitly injected business modules", async () => {
+    const users = new InMemoryUserRepository(seed);
+    const settings = new InMemorySystemSettingsRepository();
+    const modules = createApiModules({
+      users,
+      settings,
+      mailFallback: testMailFallback,
+      mailer: testMailer,
+    });
+    const expected = { ...seed[2]!, displayName: "Injected module" };
+    modules.users.get = async () => expected;
+    const app = createTestApiApp({ modules });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+      },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(client.admin.users.get({ userId: "user-1" })).resolves.toEqual(expected);
   });
 
   it("rejects ordinary users from every mail settings procedure", async () => {

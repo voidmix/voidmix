@@ -1,5 +1,5 @@
 import { connectDatabase, PostgresUserRepository } from "@voidmix/db";
-import type { UserRepository } from "@voidmix/domain";
+import type { UserRepository } from "@voidmix/core";
 
 export interface UserRepositoryConnection {
   close(): Promise<void>;

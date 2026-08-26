@@ -3,7 +3,7 @@
 ## Purpose
 
 The database adapter. It hides Drizzle and PostgreSQL behind the repository
-interfaces owned by `@voidmix/domain`.
+interfaces owned by `@voidmix/core`.
 
 ## Interface
 
@@ -22,7 +22,7 @@ under `drizzle/`.
 - Own the Drizzle schema, user and system-settings repositories in PostgreSQL
   and memory, and migration execution.
 - Own no business rule and no interface definition — both belong to
-  `@voidmix/domain`.
+  `@voidmix/core`.
 
 ## Constraints
 
@@ -80,7 +80,7 @@ under `drizzle/`.
 - `resetDatabase` (`db clean`) drops the `drizzle` and `public` schemas and
   recreates an empty `public`. It destroys data and migration history without
   prompting, so the environment guard is the only protection.
-- A new audit-action value is also declared in `@voidmix/domain` (literal union)
+- A new audit-action value is also declared in `@voidmix/core` (literal union)
   and `@voidmix/contracts` (`z.enum`). All three plus a migration must land
   together.
 

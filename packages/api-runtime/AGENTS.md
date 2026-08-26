@@ -8,10 +8,10 @@ depending on Nitro or an application.
 
 ## Interface
 
-| Path    | Purpose                                                        |
-| ------- | -------------------------------------------------------------- |
-| `.`     | `createApiApp`, `createApiRuntime`, runtime and option types   |
-| `./env` | `apiRuntimeEnv` and the validated runtime environment contract |
+| Path    | Purpose                                                         |
+| ------- | --------------------------------------------------------------- |
+| `.`     | App/runtime factories, `createApiModules`, context/module types |
+| `./env` | `apiRuntimeEnv` and the validated runtime environment contract  |
 
 ## Ownership
 
@@ -27,7 +27,7 @@ depending on Nitro or an application.
 - The package must not read an application env module or initialize the global
   logger. Request adapters receive an explicit `api` logger config.
 - Keep `/api/auth/*`, `/rpc/*`, and `/health` stable. Protected procedures must
-  call `requirePermission` and retain ordinary-user rejection coverage.
+  apply the matching permission middleware and retain ordinary-user rejection coverage.
 - Mail-dependent Better Auth requests return `MAIL_NOT_CONFIGURED` with HTTP 503
   when settings are disabled/incomplete; health and verified-user login remain
   available.
@@ -49,11 +49,12 @@ depending on Nitro or an application.
 - Keep the header session resolver as an explicit development/test seam. The
   production runtime always uses Better Auth and rejects suspended users. The
   resolver is not part of the package root interface.
-- `createApiApp` requires explicit users, session resolver, origin policy, and
-  Auth handler injection. Seed repositories and header sessions belong only in
-  tests; there is no production default identity.
+- `createApiApp` requires explicit `ApiModules`, session resolver, origin policy,
+  and Auth handler injection. `createApiModules` is the public process-scoped
+  composition seam; seed repositories and header sessions belong only in tests.
 - Request logs never derive user identity from actor headers. Authenticated user
-  context is attached by the oRPC session resolver after Better Auth validation.
+  context is resolved once by Hono for `/rpc/*` and passed into oRPC. Better Auth
+  routes keep their own handler and do not run the application session resolver.
 
 See [`../../skills/voidmix-infra/references/orpc-procedures.md`](../../skills/voidmix-infra/references/orpc-procedures.md)
 for procedure changes.

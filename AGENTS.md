@@ -24,7 +24,7 @@ document is stale, then update the document in the same change.
 ```text
 apps        web, desktop, api, storybook    composition roots; never imported
 adapters    api-runtime, cache, client, contracts, i18n, ui  surfaces apps are allowed to use
-core        db, domain, auth, mail      db implements interfaces owned by domain
+core        core, db, auth, mail        db implements interfaces owned by core
 foundation  env, logger, tsconfig       no dependency on anything above
 tooling     scripts, e2e                never imported by runtime code
 ```
@@ -38,9 +38,9 @@ or `packages/` without a `package.json`.
 
 - Frontend applications access backend behavior through `@voidmix/client` and
   `@voidmix/contracts`; they never import `@voidmix/db`.
-- `@voidmix/domain` stays independent of React, Hono, Nitro, and Drizzle.
+- `@voidmix/core` stays independent of React, Hono, Nitro, and Drizzle.
 - `@voidmix/db` hides Drizzle implementation details behind repository
-  interfaces owned by the domain.
+  interfaces owned by `@voidmix/core`.
 - `@voidmix/api-runtime` performs final authentication and authorization checks;
   Web and the standalone API are hosting shells for that boundary.
 - Admin-specific routes, tables, filters, and layouts stay in
@@ -73,7 +73,7 @@ or `packages/` without a `package.json`.
   conditional spread: `{ limit, ...(query ? { query } : {}) }`.
 - `verbatimModuleSyntax` is on, so type-only imports need `import type`.
 - A status or audit-action value is declared in **three** places with no shared
-  source: a literal union in `@voidmix/domain`, a `z.enum` in
+  source: a literal union in `@voidmix/core`, a `z.enum` in
   `@voidmix/contracts`, and a `pgEnum` in `@voidmix/db`. Missing one fails at
   runtime, not at compile time.
 - Relative import extensions are inconsistent per file. Mirror the neighbouring

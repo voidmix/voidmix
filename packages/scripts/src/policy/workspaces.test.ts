@@ -16,7 +16,7 @@ const rootAgents = [
   "",
   "```text",
   "apps        web, api          composition roots; never imported",
-  "core        db, domain        db implements interfaces owned by domain",
+  "core        core, db          db implements interfaces owned by core",
   "tooling     scripts, e2e      never imported by runtime code",
   "```",
   "",
@@ -25,21 +25,14 @@ const rootAgents = [
   "- Something else entirely.",
 ].join("\n");
 
-const members = [
-  "apps/api",
-  "apps/web",
-  "e2e",
-  "packages/db",
-  "packages/domain",
-  "packages/scripts",
-];
+const members = ["apps/api", "apps/web", "e2e", "packages/core", "packages/db", "packages/scripts"];
 
 describe("parseDeclaredWorkspaces", () => {
   it("reads the names out of the Repository shape fence", () => {
     expect(parseDeclaredWorkspaces(rootAgents).sort()).toEqual([
       "api",
+      "core",
       "db",
-      "domain",
       "e2e",
       "scripts",
       "web",
@@ -136,8 +129,8 @@ const readme = [
   "apps/api        Nitro + Hono + oRPC API",
   "e2e             Playwright smoke tests",
   "",
+  "packages/core   Framework-independent business rules",
   "packages/db     Drizzle schema and repository adapters",
-  "packages/domain Framework-independent business rules",
   "packages/scripts Repository automation CLI",
   "```",
   "",

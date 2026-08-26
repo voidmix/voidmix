@@ -1,4 +1,4 @@
-import type { User, UserRepository } from "@voidmix/domain";
+import type { User, UserRepository } from "@voidmix/core";
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { getDatabaseScriptsEnv } from "../env.js";

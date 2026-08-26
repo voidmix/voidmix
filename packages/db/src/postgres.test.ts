@@ -1,4 +1,4 @@
-import type { AuditEvent, MailSettingsFallback } from "@voidmix/domain";
+import type { AuditEvent, MailSettingsFallback } from "@voidmix/core";
 import { describe, expect, it } from "vite-plus/test";
 
 import { PostgresSystemSettingsRepository } from "./postgres.js";

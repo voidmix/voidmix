@@ -39,7 +39,7 @@ packages/api-runtime Shared Hono, oRPC, Better Auth, and database composition
 packages/cache      Redis cache facade and Better Auth secondary storage
 packages/client     Typed oRPC client
 packages/contracts  Runtime API contracts
-packages/domain     Framework-independent business rules
+packages/core       Framework-independent business rules
 packages/auth       Sessions, roles, and permissions
 packages/i18n       use-intl facade, locale adapters, and formatting
 packages/mail       Typed auth email templates and transports

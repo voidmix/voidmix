@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vite-plus/test";
-import { createDefaultAuthSettings, type AuthSettings } from "@voidmix/domain";
+import { createDefaultAuthSettings, type AuthSettings } from "@voidmix/core";
 
 import { createMailProtectedAuthHandler } from "./runtime.js";
 

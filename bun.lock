@@ -136,7 +136,7 @@
         "@voidmix/cache": "workspace:*",
         "@voidmix/contracts": "workspace:*",
         "@voidmix/db": "workspace:*",
-        "@voidmix/domain": "workspace:*",
+        "@voidmix/core": "workspace:*",
         "@voidmix/env": "workspace:*",
         "@voidmix/i18n": "workspace:*",
         "@voidmix/logger": "workspace:*",
@@ -201,7 +201,7 @@
       "name": "@voidmix/db",
       "version": "0.0.0",
       "dependencies": {
-        "@voidmix/domain": "workspace:*",
+        "@voidmix/core": "workspace:*",
         "@voidmix/env": "workspace:*",
         "drizzle-orm": "catalog:backend",
         "postgres": "catalog:backend",
@@ -212,8 +212,8 @@
         "drizzle-kit": "catalog:backend",
       },
     },
-    "packages/domain": {
-      "name": "@voidmix/domain",
+    "packages/core": {
+      "name": "@voidmix/core",
       "version": "0.0.0",
       "dependencies": {
         "@voidmix/auth": "workspace:*",
@@ -299,7 +299,7 @@
       "dependencies": {
         "@dotenvx/dotenvx": "catalog:tooling",
         "@voidmix/db": "workspace:*",
-        "@voidmix/domain": "workspace:*",
+        "@voidmix/core": "workspace:*",
         "@voidmix/env": "workspace:*",
         "@voidmix/logger": "workspace:*",
         "citty": "catalog:tooling",
@@ -1100,7 +1100,7 @@
 
     "@voidmix/desktop": ["@voidmix/desktop@workspace:apps/desktop"],
 
-    "@voidmix/domain": ["@voidmix/domain@workspace:packages/domain"],
+    "@voidmix/core": ["@voidmix/core@workspace:packages/core"],
 
     "@voidmix/e2e": ["@voidmix/e2e@workspace:e2e"],
 

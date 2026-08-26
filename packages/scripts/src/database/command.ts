@@ -26,7 +26,7 @@ const seedCommand = defineCommand({
       const [{ runSeed }, { openPostgresUsers }, domain] = await Promise.all([
         import("./operation.js"),
         import("./users.js"),
-        import("@voidmix/domain"),
+        import("@voidmix/core"),
       ]);
       await runSeed(context.environment, {
         createAdministration: domain.createUserAdministration,

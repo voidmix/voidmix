@@ -42,7 +42,7 @@ callers can request an explicit timezone through `createFormatter`.
 
 API boundaries return stable error codes and structured data; diagnostic
 messages remain server-side. Web and Desktop translate those codes from their
-local `errors` namespace. `@voidmix/domain` and `@voidmix/contracts` do not
+local `errors` namespace. `@voidmix/core` and `@voidmix/contracts` do not
 depend on i18n.
 
 Mail uses `input.locale` when supplied, otherwise `MAIL_DEFAULT_LOCALE`,

@@ -1,4 +1,4 @@
-import type { User, UserRepository } from "@voidmix/domain";
+import type { User, UserRepository } from "@voidmix/core";
 
 import { requireDatabaseUrl } from "../database/policy.js";
 import type { UserRepositoryConnection } from "../database/users.js";

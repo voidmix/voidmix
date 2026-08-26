@@ -21,7 +21,7 @@ the single grant lookup that answers whether a session may do something.
 ## Constraints
 
 - **Zero dependencies.** This is the deepest package in the graph, imported by
-  `@voidmix/domain` among others. Keep it that way.
+  `@voidmix/core` among others. Keep it that way.
 - `roles` and `permissions` are `as const` tuples with types derived via
   `(typeof x)[number]`. Add a value to the tuple, never to a hand-written union.
 - The grant table is `Record<Role, ReadonlySet<Permission>>`, so a **missing role

@@ -25,8 +25,11 @@ The server-side transport and composition adapter shared by Web and the
 temporary standalone API host. It owns Hono routes, oRPC handlers, Better Auth
 session resolution, permission enforcement, CORS, mail composition, dynamic
 authentication-policy enforcement, and the single pooled database runtime. It
-exports factories and an environment preset, but owns no Nitro listener or
-process lifecycle. Better Auth database IDs are generated as UUID v7 values so
+exports process-scoped `ApiModules`, request-scoped Auth context types, factories,
+and an environment preset, but owns no Nitro listener or process lifecycle.
+Hono resolves one application session per RPC request; oRPC permission middleware
+injects a non-null principal into protected handlers. Better Auth database IDs are
+generated as UUID v7 values so
 new records retain time-ordered locality while remaining globally unique.
 
 ## `@voidmix/cache`
@@ -38,7 +41,7 @@ silently replaced by an in-memory fallback. API runtime uses it for Better Auth
 session/rate-limit/verification secondary storage and for a short-lived Auth
 policy cache; Admin settings views and mail secrets remain database-backed.
 
-## `@voidmix/domain`
+## `@voidmix/core`
 
 Framework-independent business rules and repository interfaces. It owns:
 
@@ -67,7 +70,7 @@ while only Owner can update it.
 
 `@voidmix/api-runtime` owns the Better Auth adapter and production cookie
 session resolver. The development header resolver remains available for
-injected tests and local preview only; the oRPC router and domain services do
+injected tests and local preview only; the oRPC router and core services do
 not depend on the provider.
 
 ## `@voidmix/mail`

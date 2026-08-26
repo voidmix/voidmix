@@ -31,7 +31,7 @@ browser's same-origin `/rpc`; external consumers provide an absolute origin.
   to exercise the whole stack in-process with no network.
 - Procedures are never zero-arg. `client.health({})` needs the explicit `{}`.
 - Depend only on `@orpc/client`, `@orpc/contract`, and `@voidmix/contracts`.
-  Never import `@voidmix/db`, `@voidmix/domain`, or any application.
+  Never import `@voidmix/db`, `@voidmix/core`, or any application.
 - Consumers own their own headers. Do not bake actor identity, auth, or
   environment lookups into this package.
 
