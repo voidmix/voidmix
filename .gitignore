@@ -24,6 +24,7 @@ node_modules/
 .cache/
 .vite/
 .vite-plus/
+.vite-hooks/_/
 
 # Environment. `*.local` is Vite's convention for machine-local overrides and
 # applies to every workspace, so it is hoisted here rather than repeated per app.

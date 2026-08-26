@@ -56,9 +56,9 @@ it as a real Vite+ task rather than reinstating the hop.
   and resolves a root-level typecheck; those are separate scripts.
 - Formatter coverage includes markdown, JSON, CSS, and TOML, so generated output
   must be excluded explicitly in `.prettierignore` rather than by convention.
-- The pre-commit pass is opt-in per developer via `vp hooks enable`. No hook
-  configuration is committed, so a fresh clone has no hooks and CI is the only
-  guaranteed gate.
+- The project-owned `.vite-hooks/pre-commit` script is committed, while the
+  generated `.vite-hooks/_` dispatcher stays local. The pre-commit pass remains
+  opt-in per developer via `vp hooks enable`, so CI is the only guaranteed gate.
 - A dependency on a second orchestrator, linter, formatter, or hook manager
   appearing in a manifest means this decision was bypassed rather than revisited.
 

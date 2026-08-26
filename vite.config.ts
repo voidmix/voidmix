@@ -2,7 +2,7 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   fmt: {},
-  // Opt in locally with `vp hooks enable`; `core.hooksPath` stays uncommitted.
+  // `.vite-hooks/pre-commit` invokes this locally after `vp hooks enable`.
   staged: {
     "*.{ts,tsx,json,md,css,toml}": ["vp fmt --write", "vp lint --fix"],
   },

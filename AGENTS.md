@@ -58,7 +58,8 @@ or `packages/` without a `package.json`.
 - Do not introduce another task orchestrator alongside Vite+.
 - Oxlint and Oxfmt ship inside Vite+ and are configured in `vite.config.ts`. Use
   `bun run lint` and `bun run format`. Do not add a separate linter, formatter,
-  or git-hook manager; `vp hooks enable` opts into the staged-file hook locally.
+  or git-hook manager. The committed `.vite-hooks/pre-commit` runs the staged-file
+  pass after `vp hooks enable`; generated `.vite-hooks/_` files stay local.
 - Node.js `24.18.0` is the initial production server runtime; Tauri uses Rust.
 - Keep Bun-specific types or APIs local to Bun workspaces rather than shared
   TypeScript presets.

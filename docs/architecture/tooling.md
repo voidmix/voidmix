@@ -88,8 +88,10 @@ whichever tool owns them, producing permanent churn and defeating drift
 detection.
 
 The `staged` block in `vite.config.ts` defines the pre-commit formatting and
-lint-fix pass. It is opt-in per developer through `vp hooks enable`, which sets
-the local `core.hooksPath`; no hook configuration is committed.
+lint-fix pass. The committed `.vite-hooks/pre-commit` script invokes `vp staged`.
+Each developer opts in through `vp hooks enable`, which installs the generated
+dispatcher under `.vite-hooks/_` and sets the local `core.hooksPath`; both remain
+uncommitted.
 
 ## Repository scripts
 
