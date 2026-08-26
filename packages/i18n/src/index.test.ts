@@ -24,8 +24,13 @@ describe("locale runtime", () => {
 
   it("round trips the locale cookie", () => {
     const cookie = serializeLocaleCookie("zh", { secure: true });
-    expect(cookie).toContain("voidmix_locale=zh");
+    expect(cookie).toContain("locale=zh");
     expect(getLocaleCookie(cookie)).toBe("zh");
+  });
+
+  it("reads the legacy locale cookie while preferring the unprefixed name", () => {
+    expect(getLocaleCookie("voidmix_locale=zh")).toBe("zh");
+    expect(getLocaleCookie("voidmix_locale=zh; locale=en")).toBe("en");
   });
 
   it("honors Accept-Language quality and stable ordering", () => {

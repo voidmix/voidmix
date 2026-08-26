@@ -80,7 +80,8 @@ describe("I18nProvider", () => {
     const browserStorage = createBrowserLocaleStorage();
     expect(browserStorage.read()).toBe("zh");
     browserStorage.write("en");
-    expect(document.cookie).toContain("voidmix_locale=en");
+    expect(document.cookie).toContain("locale=en");
+    expect(document.cookie).not.toContain("voidmix_locale=");
 
     const localStorage = createLocalStorageLocaleStorage();
     localStorage.write("zh");

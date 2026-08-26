@@ -25,8 +25,10 @@ shared `I18nProvider`. Components select a namespace with
 `useTranslations("namespace")`. Mail creates a synchronous translator from
 the same static catalogs through `@voidmix/i18n/server`.
 
-Web resolves `voidmix_locale`, then `Accept-Language`, then `en`, and persists
-changes in a one-year SameSite=Lax Cookie. Desktop resolves
+Web resolves the unprefixed `locale` Cookie, then `Accept-Language`, then `en`,
+and persists changes in a one-year SameSite=Lax Cookie. It temporarily accepts
+the legacy `voidmix_locale` Cookie and removes it on the next language change.
+Desktop resolves
 `localStorage.voidmix_locale`, then `navigator.language`, then `en`. The shared
 locale provider updates its in-memory state and storage before invoking the
 document synchronization callback, so a callback failure cannot leave the UI

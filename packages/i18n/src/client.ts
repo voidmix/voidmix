@@ -9,7 +9,11 @@ import {
 } from "react";
 import { IntlProvider, useTranslations as useIntlTranslations } from "use-intl";
 
-import { getLocaleCookie, serializeLocaleCookie } from "./cookie.js";
+import {
+  getLocaleCookie,
+  serializeLegacyLocaleCookieRemoval,
+  serializeLocaleCookie,
+} from "./cookie.js";
 import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from "./constants.js";
 import { createFormatter, type Formatter } from "./formatter.js";
 import { formats } from "./formats.js";
@@ -45,9 +49,9 @@ export function createBrowserLocaleStorage(): LocaleStorage {
     },
     write(locale) {
       if (typeof document === "undefined") return;
-      document.cookie = serializeLocaleCookie(locale, {
-        secure: globalThis.location?.protocol === "https:",
-      });
+      const secure = globalThis.location?.protocol === "https:";
+      document.cookie = serializeLocaleCookie(locale, { secure });
+      document.cookie = serializeLegacyLocaleCookieRemoval({ secure });
     },
   };
 }

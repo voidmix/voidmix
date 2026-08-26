@@ -40,7 +40,7 @@ browser composition root for authentication and Admin operations.
   turning those modules into public-home concerns.
 - Runs on port `3000` in development.
 - Produces a TanStack Start server bundle and a browser bundle.
-- Resolves locale from `voidmix_locale`, `Accept-Language`, then English; the
+- Resolves locale from the `locale` Cookie, `Accept-Language`, then English; the
   document and React provider share the loader result for hydration safety.
 - Mounts the statically imported English and Chinese catalog through
   `@voidmix/i18n`. Feature components select a namespace through the facade;
