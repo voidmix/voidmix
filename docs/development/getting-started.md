@@ -24,6 +24,10 @@ service or another reachable PostgreSQL instance. Admin authentication uses the
 Better Auth cookie session; local auth emails are logged when Resend is not
 configured.
 
+Redis is optional for local development. Set `REDIS_URL` when you want to enable
+the Redis cache and Better Auth secondary storage; omit it to use the database-only
+behavior.
+
 ## Environment files
 
 The root `.env.example` is the only committed complete example. Put shared

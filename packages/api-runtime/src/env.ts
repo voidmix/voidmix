@@ -1,4 +1,5 @@
 import { databaseEnv } from "@voidmix/db/env";
+import { cacheEnv } from "@voidmix/cache/env";
 import { type Preset, z } from "@voidmix/env";
 import { runtimeEnv } from "@voidmix/env/runtime";
 import type { LogLevel } from "@voidmix/logger";
@@ -13,7 +14,7 @@ const splitOrigins = (value: string): string[] =>
 
 export const apiRuntimeEnv = {
   id: "api-runtime",
-  extends: [runtimeEnv, loggerEnv, databaseEnv, mailEnv],
+  extends: [runtimeEnv, loggerEnv, databaseEnv, mailEnv, cacheEnv],
   server: {
     ALLOWED_ORIGINS: z
       .string()
@@ -29,6 +30,11 @@ export const apiRuntimeEnv = {
 export interface ApiRuntimeEnvironment {
   NODE_ENV: "development" | "production" | "test";
   DATABASE_URL: string;
+  REDIS_URL?: string | undefined;
+  CACHE_PREFIX: string;
+  CACHE_REDIS_CONNECT_TIMEOUT_MS: number;
+  CACHE_REDIS_OPERATION_TIMEOUT_MS: number;
+  CACHE_REDIS_MAX_RETRIES_PER_REQUEST: number;
   ALLOWED_ORIGINS: string[];
   AUTH_SECRET: string;
   AUTH_URL: string;

@@ -23,7 +23,7 @@ document is stale, then update the document in the same change.
 
 ```text
 apps        web, desktop, api, storybook    composition roots; never imported
-adapters    api-runtime, client, contracts, i18n, ui  surfaces apps are allowed to use
+adapters    api-runtime, cache, client, contracts, i18n, ui  surfaces apps are allowed to use
 core        db, domain, auth, mail      db implements interfaces owned by domain
 foundation  env, logger, tsconfig       no dependency on anything above
 tooling     scripts, e2e                never imported by runtime code

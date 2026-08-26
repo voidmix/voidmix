@@ -29,6 +29,15 @@ exports factories and an environment preset, but owns no Nitro listener or
 process lifecycle. Better Auth database IDs are generated as UUID v7 values so
 new records retain time-ordered locality while remaining globally unique.
 
+## `@voidmix/cache`
+
+The optional server-side Redis cache adapter. It exposes a Laravel-like cache
+facade with seconds-based TTLs, atomic add/pull/counter operations, prefix-scoped
+flush, and a raw-string Better Auth secondary-storage adapter. Redis is never
+silently replaced by an in-memory fallback. API runtime uses it for Better Auth
+session/rate-limit/verification secondary storage and for a short-lived Auth
+policy cache; Admin settings views and mail secrets remain database-backed.
+
 ## `@voidmix/domain`
 
 Framework-independent business rules and repository interfaces. It owns:

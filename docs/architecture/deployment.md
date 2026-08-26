@@ -23,6 +23,8 @@ bun run db:studio
 ```
 
 Every host of `@voidmix/api-runtime`, including Web, requires `DATABASE_URL`.
+`REDIS_URL` is optional; when present, both hosts share the configured Redis
+namespace for Better Auth secondary storage and the short-lived Auth policy cache.
 
 ## Containers and Railway
 

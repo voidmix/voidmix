@@ -6,6 +6,7 @@ import { resolveRequestLocale } from "@voidmix/i18n/server";
 import type { Locale } from "@voidmix/i18n/types";
 import { logger } from "@voidmix/logger";
 import type { Mailer } from "@voidmix/mail/types";
+import type { SecondaryStorage } from "better-auth/db";
 import { v7 as uuidv7 } from "uuid";
 import { betterAuth } from "better-auth";
 
@@ -27,6 +28,7 @@ export interface CreateApiAuthOptions {
   environment: ApiRuntimeEnvironment;
   mailer: Mailer;
   getAuthSettings: () => Promise<AuthSettings>;
+  secondaryStorage?: SecondaryStorage;
 }
 
 export function createApiAuth({
@@ -34,6 +36,7 @@ export function createApiAuth({
   environment,
   mailer,
   getAuthSettings,
+  secondaryStorage,
 }: CreateApiAuthOptions) {
   const production = environment.NODE_ENV === "production";
   if (production && environment.AUTH_SECRET === "voidmix-development-secret-change-me") {
@@ -87,9 +90,17 @@ export function createApiAuth({
         status: { type: "string", required: false, input: false },
       },
     },
+    ...(secondaryStorage
+      ? {
+          // Secondary storage is optional; DB persistence remains enabled for
+          // session and verification recovery when Redis is not available.
+          secondaryStorage,
+          rateLimit: { storage: "secondary-storage" as const },
+        }
+      : {}),
     session: { modelName: "authSessions", storeSessionInDatabase: true },
     account: { modelName: "authAccounts" },
-    verification: { modelName: "authVerifications" },
+    verification: { modelName: "authVerifications", storeInDatabase: true },
     databaseHooks: {
       user: {
         create: {

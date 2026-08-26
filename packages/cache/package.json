@@ -1,5 +1,5 @@
 {
-  "name": "@voidmix/api-runtime",
+  "name": "@voidmix/cache",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -17,25 +17,11 @@
     "build": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "catalog:",
-    "@orpc/server": "catalog:",
-    "@voidmix/auth": "workspace:*",
-    "@voidmix/cache": "workspace:*",
-    "@voidmix/contracts": "workspace:*",
-    "@voidmix/db": "workspace:*",
-    "@voidmix/domain": "workspace:*",
     "@voidmix/env": "workspace:*",
-    "@voidmix/i18n": "workspace:*",
-    "@voidmix/logger": "workspace:*",
-    "@voidmix/mail": "workspace:*",
-    "better-auth": "catalog:",
-    "hono": "catalog:backend",
-    "nanoid": "catalog:backend",
-    "uuid": "catalog:"
+    "ioredis": "catalog:backend"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",
-    "@voidmix/client": "workspace:*",
     "@voidmix/tsconfig": "workspace:*"
   }
 }

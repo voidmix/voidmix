@@ -4,6 +4,33 @@ The Web/API runtime requires `DATABASE_URL` and uses Better Auth with
 `AUTH_SECRET` and `AUTH_URL`. External browser origins are listed in
 `ALLOWED_ORIGINS`.
 
+Redis is optional and shared by the API/Web runtime through these server-only
+variables:
+
+```text
+REDIS_URL                         optional Redis connection URL
+CACHE_PREFIX                     key namespace, defaults to `voidmix`
+CACHE_REDIS_CONNECT_TIMEOUT_MS   connection timeout, defaults to `10000`
+CACHE_REDIS_OPERATION_TIMEOUT_MS command timeout, defaults to `5000`
+CACHE_REDIS_MAX_RETRIES_PER_REQUEST defaults to `1`
+```
+
+When `REDIS_URL` is absent, Better Auth keeps its existing database-backed
+behavior and no Auth policy cache is used. When it is present, Redis is checked
+during runtime creation; a configured but unreachable Redis fails startup rather
+than silently falling back to process memory. Runtime Redis command failures are
+propagated to the caller. Session and verification records remain persisted in
+PostgreSQL while Redis supplies secondary storage and rate limiting. Auth policy
+resolution is cached for 30 seconds and invalidated after a successful Owner
+settings update; Admin settings views, mail readiness, and secrets are never
+served from that cache.
+
+The generic cache serializes values with `JSON.stringify` and restores them with
+`JSON.parse`. Plain objects, arrays, strings, numbers, booleans, and `null` round
+trip; the TypeScript generic is not runtime schema information, so `Date`, class
+instances, `Map`, `Set`, `BigInt`, and custom prototypes are not automatically
+revived. Auth policy handles its `Date` field explicitly at the cache boundary.
+
 Mail environment variables are server-only compatibility fallbacks:
 
 ```text

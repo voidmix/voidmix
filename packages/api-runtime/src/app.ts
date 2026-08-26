@@ -10,6 +10,7 @@ import {
   TimeoutHandlerPlugin,
 } from "@orpc/server/plugins";
 import type {
+  AuthSettings,
   MailSettingsFallback,
   SystemSettingsRepository,
   UserRepository,
@@ -37,6 +38,8 @@ export interface CreateApiAppOptions {
   now?: () => Date;
   id?: () => string;
   loggerConfig?: EvlogConfig;
+  resolveAuthSettings?: () => Promise<AuthSettings>;
+  invalidateAuthSettings?: () => Promise<void>;
 }
 
 type ApiEnv = {
@@ -53,6 +56,10 @@ export function createApiApp(options: CreateApiAppOptions) {
     mailer: options.mailer,
     ...(options.now ? { now: options.now } : {}),
     ...(options.id ? { id: options.id } : {}),
+    ...(options.resolveAuthSettings ? { resolveAuthSettings: options.resolveAuthSettings } : {}),
+    ...(options.invalidateAuthSettings
+      ? { invalidateAuthSettings: options.invalidateAuthSettings }
+      : {}),
   });
   const loggerConfig = options.loggerConfig ?? createLoggerConfig({ service: "api" });
   const middlewareOptions = {

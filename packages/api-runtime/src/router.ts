@@ -6,6 +6,7 @@ import {
   createPublicAuthCapabilities,
   createUserAdministration,
   DomainError,
+  type AuthSettings,
   type MailSettingsFallback,
   type SystemSettingsRepository,
   type UserRepository,
@@ -33,6 +34,8 @@ export interface CreateApiRouterOptions {
   mailer: Mailer;
   now?: () => Date;
   id?: () => string;
+  resolveAuthSettings?: () => Promise<AuthSettings>;
+  invalidateAuthSettings?: () => Promise<void>;
 }
 
 export function createApiRouter(options: CreateApiRouterOptions) {
@@ -56,6 +59,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
   const publicAuthCapabilities = createPublicAuthCapabilities({
     settings: options.settings,
     mailFallback: options.mailFallback,
+    ...(options.resolveAuthSettings ? { resolveAuthSettings: options.resolveAuthSettings } : {}),
   });
   const os = implement(apiContract)
     .$context<ApiContext>()
@@ -155,6 +159,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
                     : {}),
                 },
               });
+              if (options.invalidateAuthSettings) await options.invalidateAuthSettings();
               context.log?.set({ outcome: "success" });
               return updated;
             } catch (error) {

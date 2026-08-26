@@ -67,6 +67,7 @@ apps/api ─┴──> api-runtime ───> Hono + auth + domain + db + contra
 api-runtime ───> logger
 apps/web/desktop ───> logger (Vite client integration)
 apps/api/web/desktop ───> env
+api-runtime ───> cache
 packages/db/logger/scripts ───> env
 packages/db ───> domain
 packages/scripts ───> db + domain + logger

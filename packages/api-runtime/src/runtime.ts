@@ -3,6 +3,7 @@ import {
   PostgresSystemSettingsRepository,
   PostgresUserRepository,
 } from "@voidmix/db";
+import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
 import type { AuthSettings, MailSettingsFallback } from "@voidmix/domain";
 import { createLoggerConfig, type EvlogConfig } from "@voidmix/logger";
 import { getMailEnv } from "@voidmix/mail/env";
@@ -33,8 +34,18 @@ export async function createApiRuntime({
   }),
 }: CreateApiRuntimeOptions): Promise<ApiRuntime> {
   const connection = connectDatabase(environment.DATABASE_URL);
+  let cacheConnection: RedisCacheConnection | undefined;
 
   try {
+    if (environment.REDIS_URL) {
+      cacheConnection = await createRedisCache({
+        url: environment.REDIS_URL,
+        prefix: environment.CACHE_PREFIX,
+        connectTimeoutMs: environment.CACHE_REDIS_CONNECT_TIMEOUT_MS,
+        operationTimeoutMs: environment.CACHE_REDIS_OPERATION_TIMEOUT_MS,
+        maxRetriesPerRequest: environment.CACHE_REDIS_MAX_RETRIES_PER_REQUEST,
+      });
+    }
     const mailEnvironment = getMailEnv({
       NODE_ENV: environment.NODE_ENV,
       MAIL_FROM: environment.MAIL_FROM,
@@ -58,8 +69,36 @@ export async function createApiRuntime({
         };
       },
     });
-    const getAuthSettings = () => settings.resolveAuthSettings();
-    const auth = createApiAuth({ connection, environment, mailer, getAuthSettings });
+    const authPolicyKey = "auth-policy:v1";
+    const getAuthSettings = async (): Promise<AuthSettings> => {
+      if (!cacheConnection) return settings.resolveAuthSettings();
+      // AuthSettings contains a native Date, while the generic cache stores
+      // JSON. Convert at the boundary so callers always receive domain types.
+      const cached = await cacheConnection.cache.remember(authPolicyKey, 30, async () => {
+        const resolved = await settings.resolveAuthSettings();
+        return {
+          ...resolved,
+          updatedAt: resolved.updatedAt?.toISOString() ?? null,
+        };
+      });
+      return {
+        ...cached,
+        updatedAt: cached.updatedAt === null ? null : new Date(cached.updatedAt),
+      };
+    };
+    const invalidateAuthSettings = () =>
+      // Surface Redis invalidation failures: a successful settings write must
+      // not claim success when other API instances may keep stale policy.
+      cacheConnection
+        ? cacheConnection.cache.forget(authPolicyKey).then(() => undefined)
+        : Promise.resolve();
+    const auth = createApiAuth({
+      connection,
+      environment,
+      mailer,
+      getAuthSettings,
+      ...(cacheConnection ? { secondaryStorage: cacheConnection.secondaryStorage } : {}),
+    });
     const authHandler = createMailProtectedAuthHandler({
       handler: auth.handler,
       getAuthSettings,
@@ -76,14 +115,20 @@ export async function createApiRuntime({
         allowedOrigins: environment.ALLOWED_ORIGINS,
         authHandler,
         resolveSession: createBetterAuthSessionResolver(auth),
+        resolveAuthSettings: getAuthSettings,
+        invalidateAuthSettings,
         loggerConfig,
       }),
       close(): Promise<void> {
-        closePromise ??= connection.close();
+        closePromise ??= Promise.all([
+          connection.close(),
+          ...(cacheConnection ? [cacheConnection.close()] : []),
+        ]).then(() => undefined);
         return closePromise;
       },
     };
   } catch (error) {
+    await cacheConnection?.close().catch(() => undefined);
     await connection.close();
     throw error;
   }

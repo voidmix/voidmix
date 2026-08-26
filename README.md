@@ -36,6 +36,7 @@ e2e             Playwright Web smoke tests, including protected Admin routes
 
 packages/ui         Shared visual primitives
 packages/api-runtime Shared Hono, oRPC, Better Auth, and database composition
+packages/cache      Redis cache facade and Better Auth secondary storage
 packages/client     Typed oRPC client
 packages/contracts  Runtime API contracts
 packages/domain     Framework-independent business rules

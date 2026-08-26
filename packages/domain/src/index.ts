@@ -443,11 +443,12 @@ function normalizeAuthSettings(input: UpdateAuthSettingsInput): UpdateAuthSettin
 export function createPublicAuthCapabilities(options: {
   settings: SystemSettingsRepository;
   mailFallback: MailSettingsFallback;
+  resolveAuthSettings?: () => Promise<AuthSettings>;
 }) {
   return {
     async get(): Promise<PublicAuthCapabilities> {
       const [auth, mail] = await Promise.all([
-        options.settings.resolveAuthSettings(),
+        options.resolveAuthSettings?.() ?? options.settings.resolveAuthSettings(),
         options.settings.resolveMailConfiguration(options.mailFallback),
       ]);
       const mailReady = mail.settings.configurationState === "ready";

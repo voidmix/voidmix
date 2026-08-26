@@ -32,3 +32,4 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 - [ADR-0003: Three skill discovery roots](./0003-three-skill-discovery-roots.md)
 - [ADR-0004: use-intl facade with static catalogs](./0004-use-intl-static-catalogs.md)
 - [ADR-0005: Recipient locale on mail inputs](./0005-recipient-locale-on-mail-inputs.md)
+- [ADR-0006: Optional Redis cache and Better Auth secondary storage](./0006-redis-cache-and-auth-secondary-storage.md)
