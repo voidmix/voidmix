@@ -26,6 +26,13 @@ route no longer preloads the shared Dropdown Menu runtime. Language and Composer
 add small interaction chunks (about 0.93 kB and 7.91 kB respectively) and share
 one Dropdown Menu runtime after the first menu interaction.
 
+The follow-up root-entry optimization moves client logger initialization behind
+hydration and idle scheduling. In the August 27, 2026 build it changes the home
+preload closure from 812.08 kB raw / 241.76 kB gzip to 809.67 kB raw / 240.61 kB
+gzip. The logger is emitted as a separate approximately 2.87 kB client chunk;
+the gain is intentionally modest because the logger is a small, non-critical
+root dependency.
+
 When repeating the measurement:
 
 1. Run `bun run --cwd apps/web build`.

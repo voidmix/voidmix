@@ -7,7 +7,6 @@ import {
 import { I18nProvider, createBrowserLocaleStorage, useLocale } from "@voidmix/i18n/client";
 import { useEffect, useState, type ReactNode } from "react";
 
-import { initClientLogger } from "@voidmix/logger/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Toaster } from "@voidmix/ui/components/ui/toast";
 import { ThemeProvider, ThemeScript, type UserTheme } from "@voidmix/ui/theme";
@@ -15,6 +14,7 @@ import { env } from "../env.js";
 import { messages } from "../i18n/messages";
 import { createRecoveryTranslator, readDocumentLocale } from "../i18n/recovery-messages";
 import { getRequestPreferences } from "../lib/request-preferences";
+import { scheduleClientLogger } from "../lib/client-logger";
 import {
   CHUNK_RECOVERY_STORAGE_KEY,
   createChunkRecoveryRecord,
@@ -207,7 +207,7 @@ function LocalizedDocument({ children, theme }: { children: ReactNode; theme: Us
 
 function ClientLogger() {
   useEffect(() => {
-    initClientLogger({
+    scheduleClientLogger({
       service: "web",
       pretty: env.VITE_LOG_PRETTY ?? env.NODE_ENV === "development",
       minLevel: env.VITE_LOG_LEVEL ?? (env.NODE_ENV === "development" ? "debug" : "info"),
