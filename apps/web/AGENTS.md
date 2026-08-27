@@ -99,8 +99,12 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Stylesheets: `src/styles.css` imports `@voidmix/ui/styles.css`, then the root
   route imports that single entry with `?url` and feeds it through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is
-  evlog → nitro → tailwindcss → tanstackStart → viteReact. Nitro uses explicit
-  Web-format routes with directory scanning and its automatic server entry off.
+  evlog → nitro → tailwindcss → tanstackStart → viteReact. The React plugin uses
+  the Oxc-backed React Compiler. Nitro uses explicit Web-format routes with
+  directory scanning and its automatic server entry off.
+- Keep menu-heavy secondary interactions out of the home route's initial client
+  path. Language, theme, and Composer attachment menus preload on focus or
+  pointer interaction and load their Base UI menu implementation on demand.
 - Import extensions are inconsistent per file (`../env.js` vs `./routeTree.gen`).
   Mirror the neighbouring import rather than reasoning about it.
 - Keep `vite.config.ts` and `vitest.config.ts` separate. Loading the application

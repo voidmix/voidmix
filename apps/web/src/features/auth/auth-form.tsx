@@ -26,6 +26,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     setPending(true);
     setError(null);
 
+    let succeeded = false;
+
     try {
       const result =
         mode === "login"
@@ -41,7 +43,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
           }),
         );
-        return;
+      } else {
+        succeeded = true;
       }
     } catch (cause) {
       setError(
@@ -52,10 +55,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
         }),
       );
-      return;
-    } finally {
-      setPending(false);
     }
+    setPending(false);
+
+    if (!succeeded) return;
 
     if (mode === "register") {
       await navigate({ to: "/verify-email" });

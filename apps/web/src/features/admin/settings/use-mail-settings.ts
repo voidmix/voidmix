@@ -53,9 +53,8 @@ export function useMailSettings(client: AdminMailSettingsClient = adminMailSetti
       applySettings(await client.get());
     } catch (nextError) {
       setError(errorMessage(nextError));
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, [applySettings, client]);
 
   useEffect(() => {
@@ -128,12 +127,12 @@ export function useMailSettings(client: AdminMailSettingsClient = adminMailSetti
     try {
       const updated = await client.update(changes);
       applySettings(updated);
+      setIsSaving(false);
       return updated;
     } catch (nextError) {
       setError(errorMessage(nextError));
-      throw nextError;
-    } finally {
       setIsSaving(false);
+      throw nextError;
     }
   }, [applySettings, changes, client, settings]);
 
@@ -141,12 +140,13 @@ export function useMailSettings(client: AdminMailSettingsClient = adminMailSetti
     setIsTesting(true);
     setError(null);
     try {
-      return await client.sendTest();
+      const result = await client.sendTest();
+      setIsTesting(false);
+      return result;
     } catch (nextError) {
       setError(errorMessage(nextError));
-      throw nextError;
-    } finally {
       setIsTesting(false);
+      throw nextError;
     }
   }, [client]);
 

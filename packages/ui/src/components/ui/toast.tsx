@@ -13,6 +13,8 @@ import { cn } from "../../lib/utils";
 import { Button } from "./button";
 
 const toast = ToastPrimitive.createToastManager();
+const defaultToastAction = <Button size="sm" variant="outline" />;
+const defaultToastClose = <Button size="icon-sm" variant="ghost" />;
 
 function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
   return <ToastPrimitive.Provider {...props} />;
@@ -97,7 +99,7 @@ function ToastDescription({ className, ...props }: ToastPrimitive.Description.Pr
 
 function ToastAction({
   className,
-  render = <Button size="sm" variant="outline" />,
+  render = defaultToastAction,
   ...props
 }: ToastPrimitive.Action.Props) {
   return (
@@ -113,7 +115,7 @@ function ToastAction({
 function ToastClose({
   className,
   children,
-  render = <Button size="icon-sm" variant="ghost" />,
+  render = defaultToastClose,
   ...props
 }: ToastPrimitive.Close.Props) {
   return (

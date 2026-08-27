@@ -28,6 +28,8 @@ deployment boundaries, and coding-agent guidance.
   environment boundaries.
 - [Testing and verification](./development/testing.md) — workspace checks, CI
   expectations, and the Vite+/Vitest plugin boundary.
+- [Web bundle baseline](./development/web-bundle.md) — how to compare the home
+  route's initial client preloads and deferred interaction chunks.
 - [File structure](./development/file-structure.md) — where a new file goes
   inside a workspace, and the conventions policy enforces.
 - [Coding agents](./development/agents.md) — read order, default decisions,

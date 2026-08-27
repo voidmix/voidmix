@@ -46,7 +46,7 @@ describe("theme switcher", () => {
 
     await user.click(trigger);
 
-    expect(await screen.findByRole("menu")).toBeVisible();
+    expect(await screen.findByRole("menu", {}, { timeout: 5000 })).toBeVisible();
     expect(screen.getAllByRole("menuitemradio").map((item) => item.textContent)).toEqual([
       "Light",
       "Dark",
@@ -58,7 +58,7 @@ describe("theme switcher", () => {
     const user = renderThemeSwitcher();
 
     await user.click(screen.getByRole("button", { name: "Theme: System" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: "Dark" }));
+    await user.click(await screen.findByRole("menuitemradio", { name: "Dark" }, { timeout: 5000 }));
 
     expect(screen.getByRole("button", { name: "Theme: Dark" })).toBeVisible();
   });

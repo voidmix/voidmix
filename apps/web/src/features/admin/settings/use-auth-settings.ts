@@ -46,9 +46,8 @@ export function useAuthSettings(client: AdminAuthSettingsClient = adminAuthSetti
       applySettings(await client.get());
     } catch (nextError) {
       setError(errorMessage(nextError));
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, [applySettings, client]);
 
   useEffect(() => {
@@ -105,12 +104,12 @@ export function useAuthSettings(client: AdminAuthSettingsClient = adminAuthSetti
     try {
       const updated = await client.update(changes);
       applySettings(updated);
+      setIsSaving(false);
       return updated;
     } catch (nextError) {
       setError(errorMessage(nextError));
-      throw nextError;
-    } finally {
       setIsSaving(false);
+      throw nextError;
     }
   }, [applySettings, changes, client, settings]);
 

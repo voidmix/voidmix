@@ -70,6 +70,7 @@
         "@types/react-dom": "19.2.5",
         "@vitejs/plugin-react": "6.1.0",
         "citty": "0.2.2",
+        "oxc-transform-react": "0.147.0",
         "storybook": "10.5.10",
         "type-fest": "5.8.0",
         "taze": "21.1.0",

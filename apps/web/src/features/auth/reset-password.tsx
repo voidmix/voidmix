@@ -44,10 +44,9 @@ export function ResetPassword({ token }: { token?: string }) {
             fallback: "Unable to reset your password. Try again.",
           }),
         );
-        return;
+      } else {
+        setSent(true);
       }
-
-      setSent(true);
     } catch (cause) {
       setError(
         notifyAuthFailure({
@@ -57,9 +56,8 @@ export function ResetPassword({ token }: { token?: string }) {
           fallback: "Unable to reset your password. Try again.",
         }),
       );
-    } finally {
-      setPending(false);
     }
+    setPending(false);
   }
 
   if (!token && !capabilities.passwordResetRequestAvailable) {

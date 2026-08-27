@@ -42,6 +42,7 @@
     "@voidmix/tsconfig": "workspace:*",
     "jsdom": "catalog:tooling",
     "nitro": "catalog:backend",
+    "oxc-transform-react": "catalog:tooling",
     "typescript": "catalog:tooling",
     "vite": "catalog:tooling",
     "vite-plus": "catalog:tooling"

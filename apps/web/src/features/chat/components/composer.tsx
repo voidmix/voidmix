@@ -1,18 +1,6 @@
-import { Paperclip, Plus, Sparkle, Wrench } from "@phosphor-icons/react";
+import { Plus, Sparkle } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@voidmix/ui/components/ui/dropdown-menu";
 import {
   useId,
   useLayoutEffect,
@@ -31,6 +19,7 @@ import {
   type ChatSkill,
 } from "../skills";
 import { SkillMenu } from "./skill-menu";
+import { loadAttachmentMenu } from "./attachment-menu-lazy";
 
 interface ComposerProps {
   onSubmit: (prompt: string) => void;
@@ -44,6 +33,10 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [dismissed, setDismissed] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [attachmentMenuOpen, setAttachmentMenuOpen] = useState(false);
+  const [attachmentMenu, setAttachmentMenu] = useState<
+    typeof import("./attachment-menu").AttachmentMenu | null
+  >(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pendingCaretRef = useRef<number | null>(null);
@@ -149,6 +142,35 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
     }
   }
 
+  function prefetchAttachmentMenu() {
+    void loadAttachmentMenu()
+      .then((module) => setAttachmentMenu(() => module.AttachmentMenu))
+      .catch(() => undefined);
+  }
+
+  function openAttachmentMenu() {
+    setAttachmentMenuOpen(true);
+    void loadAttachmentMenu()
+      .then((module) => setAttachmentMenu(() => module.AttachmentMenu))
+      .catch(() => setAttachmentMenuOpen(false));
+  }
+
+  const attachmentTrigger = (onClick?: () => void) => (
+    <Button
+      aria-label={t("addAttachmentOrSkill")}
+      aria-expanded={attachmentMenuOpen}
+      aria-haspopup="menu"
+      onClick={onClick}
+      onFocus={prefetchAttachmentMenu}
+      onPointerDown={prefetchAttachmentMenu}
+      size="icon"
+      variant="ghost"
+    >
+      <Plus aria-hidden="true" weight="bold" />
+    </Button>
+  );
+  const AttachmentMenu = attachmentMenu;
+
   return (
     <form
       className="relative rounded-xl border border-input bg-card p-2.5 transition-[border-color,box-shadow] focus-within:border-ring/70 focus-within:ring-2 focus-within:ring-ring/20"
@@ -189,43 +211,21 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
         />
       </div>
       <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border pt-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button aria-label={t("addAttachmentOrSkill")} size="icon" variant="ghost">
-                <Plus aria-hidden="true" weight="bold" />
-              </Button>
-            }
+        {AttachmentMenu ? (
+          <AttachmentMenu
+            fileInputRef={fileInputRef}
+            onOpenChange={setAttachmentMenuOpen}
+            onSelectSkill={selectSkill}
+            open={attachmentMenuOpen}
+            skills={localizedSkills}
+            skillsLabel={t("skills")}
+            title={t("addToMessage")}
+            trigger={attachmentTrigger()}
+            uploadFile={t("uploadFile")}
           />
-          <DropdownMenuContent align="start" side="top" sideOffset={4}>
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>{t("addToMessage")}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
-                <Paperclip aria-hidden="true" />
-                {t("uploadFile")}
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Wrench aria-hidden="true" />
-                {t("skills")}
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                {localizedSkills.map((skill) => (
-                  <DropdownMenuItem
-                    key={skill.name}
-                    onClick={() => {
-                      selectSkill(skill);
-                    }}
-                  >
-                    /{skill.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        ) : (
+          attachmentTrigger(openAttachmentMenu)
+        )}
         <input
           aria-hidden="true"
           className="sr-only"

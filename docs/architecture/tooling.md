@@ -20,8 +20,9 @@ The root `package.json` centralizes versions with Bun catalogs:
 
 - Default: React, TanStack Router/Start, oRPC, and UUID.
 - `catalog:tooling`: TypeScript, Type-fest, Vite+, Vite alias, React
-  types/plugin, Citty, Dotenvx, and related tooling, Vitest coverage, and
-  Playwright. Vitest itself is absent because Vite+ bundles the runner.
+  types/plugin and its Oxc React Compiler transform, Citty, Dotenvx, and related
+  tooling, Vitest coverage, and Playwright. Vitest itself is absent because
+  Vite+ bundles the runner.
 - `catalog:backend`: Hono, Nitro, Drizzle, PostgreSQL, and Zod.
 - `catalog:observability`: Evlog.
 - `catalog:frontend`: Base UI, Phosphor Icons, Tailwind CSS, CVA, `clsx`, and

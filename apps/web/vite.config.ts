@@ -33,7 +33,7 @@ const config = defineConfig({
       }),
       tailwindcss(),
       tanstackStart(),
-      viteReact(),
+      viteReact({ compiler: true }),
     ]) ?? [],
   server: { port: 3000, strictPort: true },
 });
