@@ -1,0 +1,27 @@
+apps/web/src/routes/__root.tsx
+  s_0f11182722ccdd::t_7710c1061d0140 17,210
+apps/web/src/lib/client-logger.test.ts
+  s_0f11182722ccdd::t_0f1bb4af6636b4 11-14
+  s_0f11182722ccdd::t_d0b04fe7de6933 1-10,15-58
+docs/development/web-bundle.md
+  s_0f11182722ccdd::t_f3668024bc0462 29-35
+apps/web/src/lib/client-logger.ts
+  s_0f11182722ccdd::t_7027d0a672e283 4-6
+  s_0f11182722ccdd::t_7710c1061d0140 1-3,7-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "9e56e469be3a7b71cccfc2f20a5c5b7d057cec93",
+  "prompts": {},
+  "sessions": {
+    "s_0f11182722ccdd": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0410c-2363-7fa1-bf8b-068e39262336",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
