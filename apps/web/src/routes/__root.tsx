@@ -5,10 +5,10 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { I18nProvider, createBrowserLocaleStorage, useLocale } from "@voidmix/i18n/client";
+import { AsyncToaster } from "@voidmix/ui/toast";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@voidmix/ui/components/ui/button";
-import { Toaster } from "@voidmix/ui/components/ui/toast";
 import { ThemeProvider, ThemeScript, type UserTheme } from "@voidmix/ui/theme";
 import { env } from "../env.js";
 import { messages } from "../i18n/messages";
@@ -197,7 +197,7 @@ function LocalizedDocument({ children, theme }: { children: ReactNode; theme: Us
         >
           <ClientLogger />
           {children}
-          <Toaster />
+          <AsyncToaster />
           <Scripts />
         </ThemeProvider>
       </body>

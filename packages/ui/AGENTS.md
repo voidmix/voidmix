@@ -11,6 +11,7 @@ Page layout and product-specific composition stay in the owning application.
 | ---------------------- | ----------------------------------------------------- |
 | `./components/ui/*`    | Tree-shakable generated shadcn components             |
 | `./avatar`, `./logo`   | Compatibility/product-specific wrapper exports        |
+| `./toast`              | Lazy Toast manager and `AsyncToaster` wrapper         |
 | `.`                    | Empty compatibility entrypoint                        |
 | `./styles.css`         | what applications import: the shared base-nova tokens |
 | `./styles/globals.css` | the shadcn-owned Tailwind entry and oklch token block |
@@ -22,6 +23,9 @@ Page layout and product-specific composition stay in the owning application.
   icons, Tailwind v4 tokens, and the `cn`/CVA composition helpers.
 - Own the base-nova design vocabulary: semantic tokens, focus, radius, and
   motion.
+- Own the lazy Toast manager bridge so renderer applications can defer the Toast
+  implementation until the first notification without duplicating lifecycle
+  logic.
 - Own no page layout, route tree, or application navigation.
 
 ## Constraints
@@ -46,6 +50,9 @@ Page layout and product-specific composition stay in the owning application.
   Caller `className` always merges last.
 - Add every public component to `package.json` as an explicit subpath export;
   keep `src/index.ts` empty so consumers do not pull a component barrel.
+- Keep `src/toast.tsx` as the public lazy Toast wrapper and
+  `src/components/ui/toast.tsx` as the concrete Toast implementation. Consumers
+  that need deferred Toast behavior import `@voidmix/ui/toast`.
 - **`vitest.config.ts` includes all `src/**/*.{test,spec}.{ts,tsx}` files.** The
   four layer scripts select unit, integration, component, or coverage runs;
   `--passWithNoTests` can still hide a filter that matches nothing. Component

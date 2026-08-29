@@ -183,6 +183,8 @@ Shared visual primitives and design-system utilities:
   system themes.
 - Base-nova `Button`, `Badge`, `Avatar`, `Card`, `DropdownMenu`, `Menubar`, and
   `Separator` components, plus the product-specific `Logo`.
+- A lazy Toast manager bridge exposed through `@voidmix/ui/toast`; it loads the
+  concrete Toast implementation only when the first notification is added.
 - `cn` and CVA helpers for composition.
 - Shared base-nova semantic colors, focus, radius, and motion tokens from
   `packages/ui/src/styles/globals.css`.
@@ -196,7 +198,9 @@ Import generated UI primitives through their explicit
 `@voidmix/ui/components/ui/<component>` subpath. The package root intentionally
 does not re-export components so bundlers can tree-shake each primitive
 independently. Product wrappers such as `Avatar` and `Logo` retain their own
-top-level subpaths.
+top-level subpaths. Renderer applications that need deferred notifications use
+`@voidmix/ui/toast`; the concrete Toast implementation remains available at
+`@voidmix/ui/components/ui/toast` for direct UI-package tests and composition.
 
 ## `@voidmix/scripts`
 

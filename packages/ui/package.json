@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./avatar": "./src/avatar.tsx",
     "./logo": "./src/logo.tsx",
+    "./toast": "./src/toast.tsx",
     "./theme": "./src/theme/index.ts",
     "./components/ui/toast": "./src/components/ui/toast.tsx",
     "./styles.css": "./src/styles.css",

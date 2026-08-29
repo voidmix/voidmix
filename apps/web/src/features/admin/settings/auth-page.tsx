@@ -18,7 +18,7 @@ import {
   FieldLabel,
 } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
-import { toast } from "@voidmix/ui/components/ui/toast";
+import { toast } from "@voidmix/ui/toast";
 import type { FormEvent, ReactNode } from "react";
 
 import { useSession } from "../../../lib/auth-client";

@@ -105,6 +105,10 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Keep menu-heavy secondary interactions out of the home route's initial client
   path. Language, theme, and Composer attachment menus preload on focus or
   pointer interaction and load their Base UI menu implementation on demand.
+- Web feature code uses `@voidmix/ui/toast` for Toast notifications. The bridge
+  loads `@voidmix/ui/components/ui/toast` on the first `toast.add()` call and
+  the root's `AsyncToaster` mounts its UI only after that module is ready. Do not
+  import the concrete UI Toast subpath directly from Web routes or features.
 - Import extensions are inconsistent per file (`../env.js` vs `./routeTree.gen`).
   Mirror the neighbouring import rather than reasoning about it.
 - Keep `vite.config.ts` and `vitest.config.ts` separate. Loading the application
