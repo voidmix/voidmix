@@ -8,7 +8,7 @@ import {
   createPublicAuthCapabilitiesAdapter,
   type PublicAuthCapabilitiesClient,
   useAuthCapabilities,
-} from "./capabilities";
+} from "../capabilities";
 
 describe("public auth capabilities", () => {
   it("uses the unauthenticated typed procedure", async () => {

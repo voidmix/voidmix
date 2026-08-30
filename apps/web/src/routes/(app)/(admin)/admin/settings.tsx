@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { MailSettingsPage } from "../../../../features/admin/settings/page";
+import { MailSettings } from "../../../../features/admin/settings/mail-settings";
 
 export const Route = createFileRoute("/(app)/(admin)/admin/settings")({
-  component: MailSettingsPage,
+  component: MailSettings,
   head: () => ({
     meta: [
       { title: "Mail settings | Voidmix Control" },

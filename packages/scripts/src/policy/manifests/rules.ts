@@ -3,7 +3,7 @@ import type { WorkspaceShape } from "../manifests.js";
 
 export const canonicalScripts: Readonly<Record<string, string>> = {
   "test:unit":
-    "vp test --run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "vp test --run --passWithNoTests --exclude '**/component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
   "test:integration": "vp test --run --passWithNoTests integration.test",
   "test:component": "vp test --run --passWithNoTests component.test",
   "test:coverage":

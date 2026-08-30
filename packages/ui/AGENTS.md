@@ -50,7 +50,7 @@ Page layout and product-specific composition stay in the owning application.
   Caller `className` always merges last.
 - Add every public component to `package.json` as an explicit subpath export;
   keep `src/index.ts` empty so consumers do not pull a component barrel.
-- Keep `src/toast.tsx` as the public lazy Toast wrapper and
+- Keep `src/toast/index.tsx` as the public lazy Toast wrapper and
   `src/components/ui/toast.tsx` as the concrete Toast implementation. Consumers
   that need deferred Toast behavior import `@voidmix/ui/toast`.
 - **`vitest.config.ts` includes all `src/**/*.{test,spec}.{ts,tsx}` files.** The

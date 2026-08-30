@@ -6,8 +6,8 @@ import userEvent from "@testing-library/user-event";
 import { I18nProvider } from "@voidmix/i18n/client";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
-import { messages } from "../../tests/fixtures/messages";
-import { LanguageSwitcher } from "./language-switcher";
+import { messages } from "../../../tests/fixtures/messages";
+import { LanguageSwitcher } from "../language-switcher";
 
 afterEach(() => cleanup());
 

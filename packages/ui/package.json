@@ -7,7 +7,7 @@
     ".": "./src/index.ts",
     "./avatar": "./src/avatar.tsx",
     "./logo": "./src/logo.tsx",
-    "./toast": "./src/toast.tsx",
+    "./toast": "./src/toast/index.tsx",
     "./theme": "./src/theme/index.ts",
     "./components/ui/toast": "./src/components/ui/toast.tsx",
     "./styles.css": "./src/styles.css",
@@ -18,7 +18,7 @@
   "scripts": {
     "check": "tsc --noEmit -p tsconfig.json",
     "test": "vp test --run --passWithNoTests",
-    "test:unit": "vp test --run --passWithNoTests --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:unit": "vp test --run --passWithNoTests --exclude '**/component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
     "test:integration": "vp test --run --passWithNoTests integration.test",
     "test:component": "vp test --run --passWithNoTests component.test",
     "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",

@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { useSyncExternalStore } from "react";
 
-export type ToastModule = typeof import("./components/ui/toast");
+export type ToastModule = typeof import("../components/ui/toast");
 type ToastOptions = Parameters<ToastModule["toast"]["add"]>[0];
 type ToastModuleLoader = () => Promise<ToastModule>;
 type ToastListener = () => void;
 
-const defaultLoader: ToastModuleLoader = () => import("./components/ui/toast");
+const defaultLoader: ToastModuleLoader = () => import("../components/ui/toast");
 
 export function createToastBridge(loader: ToastModuleLoader = defaultLoader) {
   let modulePromise: Promise<ToastModule> | undefined;

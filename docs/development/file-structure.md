@@ -83,7 +83,8 @@ small facade to the route or feature entrypoint.
 
 Tests are usually co-located with the code and the layer is encoded in the
 filename: `*.test.ts` unit, `*.integration.test.ts` integration,
-`*.component.test.tsx` component. A workspace may also use a top-level
+`component.test.tsx` component. Component tests live in a directory named for
+the subject under test, so the filename does not repeat `.component`. A workspace may also use a top-level
 `tests/` directory for shared fixtures or tests that span multiple source
 areas; its path must be included explicitly by that workspace's
 `vitest.config.ts`. See [testing](./testing.md) for the layer table and the

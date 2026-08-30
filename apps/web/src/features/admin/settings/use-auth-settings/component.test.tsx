@@ -3,8 +3,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
 
-import type { AdminAuthSettingsClient, AuthSettings } from "./auth-api-adapter";
-import { useAuthSettings } from "./use-auth-settings";
+import type { AdminAuthSettingsClient, AuthSettings } from "../auth-api-adapter";
+import { useAuthSettings } from "../use-auth-settings";
 
 const settings: AuthSettings = {
   registrationMode: "closed",

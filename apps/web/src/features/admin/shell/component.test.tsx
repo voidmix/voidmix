@@ -8,7 +8,7 @@ import { I18nProvider } from "@voidmix/i18n/client";
 import { ThemeProvider } from "@voidmix/ui/theme";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
-import { messages } from "../../../tests/fixtures/messages";
+import { messages } from "../../../../tests/fixtures/messages";
 
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -30,12 +30,12 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => mocks.navigate,
 }));
 
-vi.mock("../../lib/auth-client", () => ({
+vi.mock("../../../lib/auth-client", () => ({
   signOut: mocks.signOut,
   useSession: () => mocks.session,
 }));
 
-const { AdminShell } = await import("./admin-shell");
+const { AdminShell } = await import("./index");
 
 // jsdom ships no matchMedia, and the theme provider resolves "system" through it.
 beforeEach(() => {

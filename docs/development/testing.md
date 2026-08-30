@@ -138,7 +138,7 @@ loading another application's plugin pipeline:
 | ----------- | -------------------------- | ------------------------------------------------------ |
 | Unit        | `*.test.ts(x)`             | Pure functions, contracts, repositories, and utilities |
 | Integration | `*.integration.test.ts(x)` | API boundaries and in-memory adapters                  |
-| Component   | `*.component.test.tsx`     | React UI behavior in `jsdom`                           |
+| Component   | `component.test.tsx`       | React UI behavior in `jsdom`                           |
 | E2E         | `e2e/tests/*.spec.ts`      | Browser smoke tests across running applications        |
 
 `test:unit` selects its layer by excluding the other two patterns, while

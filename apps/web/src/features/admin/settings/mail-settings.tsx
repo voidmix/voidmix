@@ -19,14 +19,22 @@ import {
 } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
 import { toast } from "@voidmix/ui/toast";
-import type { FormEvent, ReactNode } from "react";
+import type { FormEvent } from "react";
 
+import {
+  ConfigurationBadge,
+  SettingFieldHeading,
+  SettingsLoading,
+  SettingsPageHeader,
+  SettingsUnavailable,
+  SourceBadge,
+  formatValue,
+  sourceLabel,
+} from "./components";
 import { SettingsNavigation } from "./navigation";
 import { useMailSettings } from "./use-mail-settings";
 
-type SettingSource = "database" | "environment" | "default" | "missing";
-
-export function MailSettingsPage() {
+export function MailSettings() {
   const state = useMailSettings();
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
@@ -77,29 +85,15 @@ export function MailSettingsPage() {
 
   return (
     <>
-      <header className="flex items-end justify-between py-9 pt-14 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-6 max-[760px]:pt-10">
-        <div>
-          <span className="text-xs font-semibold text-muted-foreground">
-            Control / System settings
-          </span>
-          <h1 className="mt-3 text-[clamp(2.1rem,4vw,3.6rem)] leading-none font-bold tracking-[-0.04em]">
-            Mail delivery
-          </h1>
-          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-            Manage database overrides while keeping environment and default fallbacks visible.
-          </p>
-        </div>
-      </header>
+      <SettingsPageHeader
+        description="Manage database overrides while keeping environment and default fallbacks visible."
+        title="Mail delivery"
+      />
 
       <SettingsNavigation current="mail" />
 
       {state.isLoading ? (
-        <Card>
-          <CardContent className="flex min-h-40 items-center justify-center text-muted-foreground">
-            <CircleNotch className="animate-spin" aria-hidden="true" />
-            <span className="ml-2">Loading mail settings…</span>
-          </CardContent>
-        </Card>
+        <SettingsLoading label="mail settings" />
       ) : state.settings ? (
         <form className="grid gap-5" onSubmit={(event) => void handleSave(event)}>
           <Card>
@@ -126,7 +120,7 @@ export function MailSettingsPage() {
               </div>
               <Field orientation="horizontal">
                 <div className="flex flex-col gap-1">
-                  <FieldHeading
+                  <SettingFieldHeading
                     label="Mail delivery"
                     source={state.settings.sources.enabled}
                     resetLabel="Restore inherited state"
@@ -161,7 +155,7 @@ export function MailSettingsPage() {
             <CardContent>
               <FieldGroup>
                 <Field>
-                  <FieldHeading
+                  <SettingFieldHeading
                     htmlFor="mail-from"
                     label="Sender address"
                     source={state.settings.sources.from}
@@ -183,7 +177,7 @@ export function MailSettingsPage() {
                   </FieldDescription>
                 </Field>
                 <Field>
-                  <FieldHeading
+                  <SettingFieldHeading
                     htmlFor="mail-from-name"
                     label="Sender display name"
                     source={state.settings.sources.fromName}
@@ -201,7 +195,7 @@ export function MailSettingsPage() {
                   </FieldDescription>
                 </Field>
                 <Field>
-                  <FieldHeading
+                  <SettingFieldHeading
                     htmlFor="mail-templates-url"
                     label="Templates base URL"
                     source={state.settings.sources.templatesBaseUrl}
@@ -323,71 +317,13 @@ export function MailSettingsPage() {
           </Card>
         </form>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Mail settings unavailable</CardTitle>
-            <CardDescription>
-              {state.error ?? "The API did not return mail settings."}
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button variant="outline" onClick={() => void state.reload()}>
-              Try again
-            </Button>
-          </CardFooter>
-        </Card>
+        <SettingsUnavailable
+          error={state.error}
+          fallback="The API did not return mail settings."
+          onRetry={() => void state.reload()}
+          title="Mail settings unavailable"
+        />
       )}
     </>
   );
-}
-
-function FieldHeading({
-  htmlFor,
-  label,
-  onReset,
-  resetLabel,
-  source,
-}: {
-  htmlFor?: string;
-  label: string;
-  onReset: () => void;
-  resetLabel: string;
-  source: SettingSource;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <FieldLabel htmlFor={htmlFor}>{label}</FieldLabel>
-      <SourceBadge source={source} />
-      {source === "database" ? (
-        <Button size="xs" type="button" variant="ghost" onClick={onReset}>
-          {resetLabel}
-        </Button>
-      ) : null}
-    </div>
-  );
-}
-
-function SourceBadge({ source }: { source: SettingSource }) {
-  return (
-    <Badge variant={source === "database" ? "secondary" : "outline"}>{sourceLabel(source)}</Badge>
-  );
-}
-
-function sourceLabel(source: SettingSource): string {
-  if (source === "database") return "Database override";
-  if (source === "environment") return "Environment";
-  if (source === "default") return "Default";
-  return "Missing";
-}
-
-function formatValue(value: ReactNode): ReactNode {
-  if (value === null || value === "") return "no value";
-  if (typeof value === "boolean") return value ? "enabled" : "disabled";
-  return value;
-}
-
-function ConfigurationBadge({ state }: { state: "ready" | "disabled" | "incomplete" }) {
-  if (state === "ready") return <Badge>Ready</Badge>;
-  if (state === "disabled") return <Badge variant="secondary">Disabled</Badge>;
-  return <Badge variant="destructive">Incomplete</Badge>;
 }

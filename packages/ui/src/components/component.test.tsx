@@ -6,15 +6,15 @@ import userEvent from "@testing-library/user-event";
 import { cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vite-plus/test";
 
-import { Avatar } from "./avatar";
-import { Badge } from "./components/ui/badge";
-import { Button } from "./components/ui/button";
-import { Card, CardContent } from "./components/ui/card";
-import { Field, FieldError, FieldLabel } from "./components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group";
-import { Separator } from "./components/ui/separator";
-import { Toaster, toast } from "./components/ui/toast";
-import { Logo } from "./logo";
+import { Avatar } from "../avatar";
+import { Logo } from "../logo";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
+import { Field, FieldError, FieldLabel } from "./ui/field";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
+import { Separator } from "./ui/separator";
+import { Toaster, toast } from "./ui/toast";
 
 afterEach(() => cleanup());
 

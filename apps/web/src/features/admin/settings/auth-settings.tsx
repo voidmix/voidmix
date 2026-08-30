@@ -10,24 +10,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@voidmix/ui/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@voidmix/ui/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
 import { toast } from "@voidmix/ui/toast";
-import type { FormEvent, ReactNode } from "react";
+import type { FormEvent } from "react";
 
 import { useSession } from "../../../lib/auth-client";
+import {
+  SettingFieldHeading,
+  SettingsLoading,
+  SettingsPageHeader,
+  SettingsUnavailable,
+  formatValue,
+  sourceLabel,
+  type SettingSource,
+} from "./components";
 import { SettingsNavigation } from "./navigation";
 import { useAuthSettings } from "./use-auth-settings";
 
-type SettingSource = "database" | "environment" | "default" | "missing";
-
-export function AuthSettingsPage() {
+export function AuthSettings() {
   const state = useAuthSettings();
   const session = useSession();
   const role = (session.data?.user as { role?: string } | undefined)?.role;
@@ -55,29 +56,15 @@ export function AuthSettingsPage() {
 
   return (
     <>
-      <header className="flex items-end justify-between py-9 pt-14 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-6 max-[760px]:pt-10">
-        <div>
-          <span className="text-xs font-semibold text-muted-foreground">
-            Control / System settings
-          </span>
-          <h1 className="mt-3 text-[clamp(2.1rem,4vw,3.6rem)] leading-none font-bold tracking-[-0.04em]">
-            Authentication policy
-          </h1>
-          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-            Manage database overrides while keeping the built-in policy visible.
-          </p>
-        </div>
-      </header>
+      <SettingsPageHeader
+        description="Manage database overrides while keeping the built-in policy visible."
+        title="Authentication policy"
+      />
 
       <SettingsNavigation current="auth" />
 
       {state.isLoading ? (
-        <Card>
-          <CardContent className="flex min-h-40 items-center justify-center text-muted-foreground">
-            <CircleNotch className="animate-spin" aria-hidden="true" />
-            <span className="ml-2">Loading authentication policy…</span>
-          </CardContent>
-        </Card>
+        <SettingsLoading label="authentication policy" />
       ) : state.settings ? (
         <form className="grid gap-5" onSubmit={(event) => void handleSave(event)}>
           <Card>
@@ -96,7 +83,7 @@ export function AuthSettingsPage() {
               <FieldGroup>
                 <Field orientation="horizontal" data-disabled={!canWrite || undefined}>
                   <div className="flex flex-col gap-1">
-                    <FieldHeading
+                    <SettingFieldHeading
                       canWrite={canWrite}
                       label="Account registration"
                       source={state.settings.sources.registrationMode}
@@ -127,7 +114,7 @@ export function AuthSettingsPage() {
                   </Button>
                 </Field>
                 <Field data-disabled={!canWrite || undefined}>
-                  <FieldHeading
+                  <SettingFieldHeading
                     canWrite={canWrite}
                     htmlFor="allowed-email-domains"
                     label="Allowed email domains"
@@ -217,19 +204,12 @@ export function AuthSettingsPage() {
           </Card>
         </form>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Authentication policy unavailable</CardTitle>
-            <CardDescription>
-              {state.error ?? "The API did not return authentication settings."}
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button variant="outline" onClick={() => void state.reload()}>
-              Try again
-            </Button>
-          </CardFooter>
-        </Card>
+        <SettingsUnavailable
+          error={state.error}
+          fallback="The API did not return authentication settings."
+          onRetry={() => void state.reload()}
+          title="Authentication policy unavailable"
+        />
       )}
     </>
   );
@@ -257,7 +237,7 @@ function PolicyToggle({
   return (
     <Field orientation="horizontal" data-disabled={!canWrite || undefined}>
       <div className="flex flex-col gap-1">
-        <FieldHeading canWrite={canWrite} label={label} source={source} onReset={onReset} />
+        <SettingFieldHeading canWrite={canWrite} label={label} source={source} onReset={onReset} />
         <FieldDescription>
           {description} Reset restores {formatValue(inherited)}.
         </FieldDescription>
@@ -273,50 +253,6 @@ function PolicyToggle({
       </Button>
     </Field>
   );
-}
-
-function FieldHeading({
-  canWrite,
-  htmlFor,
-  label,
-  onReset,
-  source,
-}: {
-  canWrite: boolean;
-  htmlFor?: string;
-  label: string;
-  onReset: () => void;
-  source: SettingSource;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <FieldLabel htmlFor={htmlFor}>{label}</FieldLabel>
-      <SourceBadge source={source} />
-      {canWrite && source === "database" ? (
-        <Button size="xs" type="button" variant="ghost" onClick={onReset}>
-          Restore default
-        </Button>
-      ) : null}
-    </div>
-  );
-}
-
-function SourceBadge({ source }: { source: SettingSource }) {
-  return (
-    <Badge variant={source === "database" ? "secondary" : "outline"}>{sourceLabel(source)}</Badge>
-  );
-}
-
-function sourceLabel(source: SettingSource): string {
-  if (source === "database") return "Database override";
-  if (source === "environment") return "Environment";
-  if (source === "default") return "Default";
-  return "Missing";
-}
-
-function formatValue(value: ReactNode): ReactNode {
-  if (typeof value === "boolean") return value ? "enabled" : "disabled";
-  return value;
 }
 
 function formatDomains(domains: string[]): string {

@@ -61,7 +61,7 @@ vi.mock("@voidmix/i18n/client", () => ({
     })[key] ?? key,
 }));
 
-vi.mock("../../lib/auth-client", () => ({
+vi.mock("../../../lib/auth-client", () => ({
   authClient: {
     requestPasswordReset: mocks.requestPasswordReset,
     resetPassword: mocks.resetPassword,
@@ -71,18 +71,18 @@ vi.mock("../../lib/auth-client", () => ({
   signUp: { email: mocks.signUpEmail },
 }));
 
-vi.mock("./feedback", () => ({
+vi.mock("../feedback", () => ({
   notifyAuthFailure: mocks.notifyAuthFailure,
 }));
 
-vi.mock("./capabilities", () => ({
+vi.mock("../capabilities", () => ({
   useAuthCapabilities: () => mocks.capabilities,
 }));
 
-import { AuthForm } from "./auth-form";
-import { PasswordField } from "./password-field";
-import { ResetPassword } from "./reset-password";
-import { VerifyEmail } from "./verify-email";
+import { AuthForm } from "../auth-form";
+import { PasswordField } from "../password-field";
+import { ResetPassword } from "../reset-password";
+import { VerifyEmail } from "../verify-email";
 
 afterEach(() => cleanup());
 
