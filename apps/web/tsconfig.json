@@ -3,6 +3,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "i18n/**/*.ts",
     "server/**/*.ts",
     "vite.config.ts",
     "vitest.config.ts"

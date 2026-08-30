@@ -27,7 +27,8 @@ src/
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
-  i18n/              static catalogs, API error codes, recovery copy
+  i18n/              catalog loaders, API error codes, recovery copy
+tests/               shared Web test fixtures and cross-feature tests
 server/
   env.ts             server-only API/Auth/Mail environment composition
   app.ts             Nitro Web-format handler
@@ -66,8 +67,10 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - The root loader owns locale **and** theme resolution
   (`src/lib/request-preferences.ts`) — both providers need the value before the
   first render or they paint a wrong one and correct it in an effect. Root
-  composition supplies the statically imported `src/i18n/messages.ts` catalog
-  to `@voidmix/i18n`; feature modules select namespaces with the facade hook.
+  composition supplies the server-resolved current catalog to
+  `AsyncI18nProvider` from `@voidmix/i18n`; `i18n/messages.ts` owns the
+  locale-specific dynamic import map and feature modules select namespaces with
+  the facade hook.
 - `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
   import fails `check`.
 - Better Auth and `@voidmix/client` use same-origin `/api/auth/*` and `/rpc/*`
@@ -114,10 +117,11 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Keep `vite.config.ts` and `vitest.config.ts` separate. Loading the application
   plugin pipeline in the test runner breaks React 19's CJS entry — see
   [testing](../../docs/development/testing.md).
-- Web catalogs are statically imported so translation hooks never suspend during
-  SSR or hydration. Root recovery pages use static
-  `src/i18n/recovery-messages.ts` copy to survive a broken application chunk,
-  drift-guarded by its test.
+- Web SSR loads only the resolved locale catalog before the first render. The
+  `AsyncI18nProvider` keeps the current catalog visible while a language switch
+  loads, commits locale and messages together, and permits retries after a load
+  failure. Root recovery pages use static `i18n/recovery-messages.ts` copy
+  to survive a broken application chunk, drift-guarded by its test.
 
 ## Verification
 

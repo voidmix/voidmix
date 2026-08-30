@@ -81,11 +81,13 @@ small facade to the route or feature entrypoint.
 
 ## Tests
 
-Tests are co-located with the code and the layer is encoded in the filename:
-`*.test.ts` unit, `*.integration.test.ts` integration, `*.component.test.tsx`
-component. There is no parallel `tests/` tree; each workspace's
-`vitest.config.ts` depends on this convention. See
-[testing](./testing.md) for the layer table and the Vite+/Vitest boundary.
+Tests are usually co-located with the code and the layer is encoded in the
+filename: `*.test.ts` unit, `*.integration.test.ts` integration,
+`*.component.test.tsx` component. A workspace may also use a top-level
+`tests/` directory for shared fixtures or tests that span multiple source
+areas; its path must be included explicitly by that workspace's
+`vitest.config.ts`. See [testing](./testing.md) for the layer table and the
+Vite+/Vitest boundary.
 
 TanStack file-based route directories use the framework's ignored-file prefix
 for route-adjacent tests (for example, `src/routes/-__root.test.ts`). Vitest

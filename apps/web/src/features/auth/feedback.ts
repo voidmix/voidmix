@@ -1,7 +1,7 @@
 import type { Translator } from "@voidmix/i18n";
 import { toast } from "@voidmix/ui/toast";
 
-import { translateKnownApiError } from "../../i18n/api-errors";
+import { translateKnownApiError } from "../../../i18n/api-errors";
 
 interface NotifyAuthFailureOptions {
   error: unknown;

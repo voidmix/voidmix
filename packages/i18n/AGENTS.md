@@ -3,7 +3,7 @@
 ## Purpose
 
 Shared locale negotiation, React runtime helpers, Intl formatting, and the
-`use-intl` facade used by application-owned static catalogs.
+`use-intl` facade used by application-owned catalogs.
 
 ## Interface
 
@@ -23,8 +23,12 @@ Shared locale negotiation, React runtime helpers, Intl formatting, and the
   document synchronization callback; callback failures do not roll back locale.
 - Formatter helpers default to UTC and cache by locale plus timezone.
 - Applications and Mail own their `messages/` JSON catalogs.
-- Catalogs are statically imported by each composition root; there is no
-  generated runtime output or async namespace loader.
+- `I18nProvider` remains the synchronous compatibility provider for Desktop,
+  Mail, and tests. `AsyncI18nProvider` supports an application-owned catalog
+  loader for Web-style locale splitting; it caches in-flight loads, commits the
+  locale and catalog atomically, and clears failed loads so callers can retry.
+- Applications and Mail own their catalog files. The i18n package owns the
+  loader contract but never imports application catalog files.
 - Catalog parity tests must compare recursive keys, node types, and ICU argument
   names for both supported locales.
 

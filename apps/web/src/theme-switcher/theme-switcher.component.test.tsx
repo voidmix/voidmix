@@ -7,8 +7,8 @@ import { I18nProvider } from "@voidmix/i18n/client";
 import { ThemeProvider } from "@voidmix/ui/theme";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
-import { messages } from "../i18n/messages";
-import { ThemeSwitcher } from "./theme-switcher";
+import { messages } from "../../tests/fixtures/messages";
+import { ThemeSwitcher } from "../components/theme-switcher";
 
 afterEach(() => cleanup());
 

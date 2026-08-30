@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted; the recipient-locale clause is superseded by ADR-0005.
+Web catalog loading is superseded by ADR-0007; the recipient-locale clause is
+superseded by ADR-0005. The remaining static-provider and facade decisions stay
+accepted.
 
 ## Context
 
@@ -20,10 +22,11 @@ adapters, locale state, formatting helpers, and the React/server integration.
 Mail do not import it directly or augment its global `AppConfig` type.
 
 Web, Desktop, and Mail own their English and Chinese `messages/*.json` files.
-Web and Desktop statically import both catalogs and mount them through the
-shared `I18nProvider`. Components select a namespace with
+Desktop statically imports both catalogs and mounts them through the shared
+`I18nProvider`. Components select a namespace with
 `useTranslations("namespace")`. Mail creates a synchronous translator from
-the same static catalogs through `@voidmix/i18n/server`.
+the same static catalogs through `@voidmix/i18n/server`. Web's catalog loading
+is defined by ADR-0007.
 
 Web resolves the unprefixed `locale` Cookie, then `Accept-Language`, then `en`,
 and persists changes in a one-year SameSite=Lax Cookie. It temporarily accepts
@@ -53,9 +56,9 @@ falling back to `en`. Subject, preview, HTML, text, actions, and the HTML
 
 - Static catalogs eliminate i18n Suspense and translation content jumps during
   SSR, hydration, and locale changes.
-- Each Web/Desktop/Mail runtime bundles both supported locale catalogs. This is
-  an intentional simplicity and stability tradeoff; locale chunk splitting is
-  deferred until bundle measurements justify it.
+- Desktop and Mail continue to bundle their supported catalogs statically. Web
+  accepts the extra async switching state in exchange for keeping the non-current
+  locale out of the initial browser preload.
 - Catalog drift is checked by a shared recursive parity helper that compares
   leaf keys, node types, and ICU argument names in every Web/Desktop/Mail
   catalog pair rather than by a compiler-generated namespace registry.
@@ -64,5 +67,6 @@ falling back to `en`. Subject, preview, HTML, text, actions, and the HTML
 
 ## Follow-up
 
-Revisit per-locale or per-namespace splitting only when deployment or bundle
-measurements show that the static catalog cost is material.
+Web per-locale splitting is specified by ADR-0007. Namespace splitting remains
+deferred until deployment or bundle measurements show that per-locale splitting
+is no longer sufficient.

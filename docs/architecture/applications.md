@@ -42,11 +42,11 @@ browser composition root for authentication and Admin operations.
 - Produces a TanStack Start server bundle and a browser bundle.
 - Resolves locale from the `locale` Cookie, `Accept-Language`, then English; the
   document and React provider share the loader result for hydration safety.
-- Mounts the statically imported English and Chinese catalog through
-  `@voidmix/i18n`. Feature components select a namespace through the facade;
-  there are no generated loaders or i18n Suspense boundaries during SSR or
-  hydration. The tradeoff is that the application bundle contains both
-  supported locales.
+- Loads only the resolved Web locale catalog before SSR through the root loader
+  and mounts it with `AsyncI18nProvider` from `@voidmix/i18n`. The Web-owned
+  loader map dynamically imports the other locale on language switch; feature
+  components select namespaces through the facade. Recovery pages retain their
+  independent static copy.
 - Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
   through explicit Nitro Web-format routes.
 - Uses the shared typed client with same-origin cookie requests.

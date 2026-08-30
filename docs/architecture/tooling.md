@@ -76,11 +76,12 @@ bun run format       vp fmt --check   fail on unformatted files
 bun run format:fix   vp fmt           rewrite files in place
 ```
 
-`check` stays `vp run -r check` — per-workspace typecheck scripts. Web, Desktop,
-and Mail typecheck their statically imported JSON catalogs directly, so a clean
-checkout does not depend on generated translation files. It is deliberately not
-repointed at `vp check`, which resolves a different graph (root-level typecheck
-plus fmt and lint).
+`check` stays `vp run -r check` — per-workspace typecheck scripts. Desktop
+and Mail typecheck their statically imported JSON catalogs directly, while Web
+typechecks its explicit locale-to-dynamic-import map. A clean checkout does not
+depend on generated translation files. It is deliberately not repointed at
+`vp check`, which resolves a different graph (root-level typecheck plus fmt
+and lint).
 
 Oxfmt reads `.gitignore` and `.prettierignore`. `.prettierignore` remains for
 generated files that stay visible to git — the TanStack route trees and Drizzle metadata —

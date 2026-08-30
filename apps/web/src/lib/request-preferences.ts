@@ -1,12 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, getRequestHeaders } from "@tanstack/react-start/server";
 import { resolveRequestLocale } from "@voidmix/i18n/server";
-import type { Locale } from "@voidmix/i18n/types";
 import { THEME_STORAGE_KEY, parseTheme, type UserTheme } from "@voidmix/ui/theme";
+
+import { loadWebMessages } from "../../i18n/messages";
+import type { Locale, MessageCatalog } from "@voidmix/i18n/types";
 
 export interface RequestPreferences {
   locale: Locale;
   theme: UserTheme;
+  messages: MessageCatalog;
 }
 
 /**
@@ -21,8 +24,12 @@ export interface RequestPreferences {
  * React's state.
  */
 export const getRequestPreferences = createServerFn({ method: "GET" }).handler(
-  (): RequestPreferences => ({
-    locale: resolveRequestLocale(getRequestHeaders()),
-    theme: parseTheme(getCookie(THEME_STORAGE_KEY), "system"),
-  }),
+  async (): Promise<RequestPreferences> => {
+    const locale = resolveRequestLocale(getRequestHeaders());
+    return {
+      locale,
+      theme: parseTheme(getCookie(THEME_STORAGE_KEY), "system"),
+      messages: await loadWebMessages(locale),
+    };
+  },
 );

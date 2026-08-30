@@ -42,6 +42,19 @@ When repeating the measurement:
 4. Confirm `dropdown-menu` remains absent from the `/` preload list and is an
    import of the language, theme, and attachment menu chunks.
 
+## Locale catalog split
+
+The Web root loader includes only the negotiated locale catalog for SSR. The
+other catalog must be absent from the unique `__root__` and `/` preload closure
+and emitted behind the locale switcher's async import. Verify this from the
+build manifest after setting a request Cookie or `Accept-Language` for each
+supported locale.
+
+Keep the split enabled while either condition holds: Web supports at least three
+locales, or the non-current locale contributes at least 10 KiB gzip to the home
+route's initial preload in the comparison build. Below that threshold, the
+additional async switching state is not justified by the catalog size.
+
 Do not add manual chunk names or change the React Compiler merely to silence the
 large-chunk warning. A useful split changes the route's initial preload closure;
 moving bytes between filenames without changing that closure is not an

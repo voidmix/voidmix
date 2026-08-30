@@ -12,6 +12,8 @@ export type TranslationValues = Record<string, string | number | Date>;
 
 export type MessageCatalog = MessageTree;
 
+export type LocaleCatalogLoader = (locale: Locale) => Promise<MessageCatalog>;
+
 export type LocaleStorage = {
   read(): Locale | undefined;
   write(locale: Locale): void;

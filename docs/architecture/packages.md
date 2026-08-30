@@ -89,13 +89,14 @@ using the logger transport. The package exposes only server-side mail interfaces
 
 The locale and translation facade shared by renderer and server packages. It
 owns `en`/`zh` normalization, Accept-Language and Cookie parsing, browser and
-Desktop storage adapters, Intl formatters, the React provider, and the internal
-`use-intl` integration. Applications and Mail own their static JSON catalogs.
+Desktop storage adapters, Intl formatters, the synchronous and asynchronous
+React providers, and the internal `use-intl` integration. Applications and
+Mail own their catalog files.
 
-The package exposes no compiler or generated-loader entry. Static catalogs are
-mounted by each composition root, which removes translation Suspense at the
-cost of bundling both supported locales. Domain and contracts remain
-independent of i18n.
+The package exposes a small catalog-loader type but no application-specific
+loader or generated runtime output. Web uses the async provider with its own
+explicit locale-to-import map; Desktop and Mail remain synchronous. Domain and
+contracts remain independent of i18n.
 
 ## `@voidmix/env`
 

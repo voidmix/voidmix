@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { I18nProvider } from "@voidmix/i18n/client";
 
-import { messages } from "../../../i18n/messages";
+import { messages } from "../../../../tests/fixtures/messages";
 import { Composer } from "./composer";
 
 afterEach(() => cleanup());

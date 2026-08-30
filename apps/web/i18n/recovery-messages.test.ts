@@ -11,7 +11,7 @@ import { RECOVERY_MESSAGES, RECOVERY_MESSAGE_KEYS } from "./recovery-messages";
  * drift fails a test instead of shipping.
  */
 async function readCatalog(locale: "en" | "zh"): Promise<Record<string, string>> {
-  const url = new URL(`../../messages/${locale}.json`, import.meta.url);
+  const url = new URL(`../messages/${locale}.json`, import.meta.url);
   const parsed = JSON.parse(await readFile(url, "utf8")) as {
     common?: Record<string, string>;
   };

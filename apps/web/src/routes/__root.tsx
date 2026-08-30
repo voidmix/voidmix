@@ -4,15 +4,15 @@ import {
   createRootRoute,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { I18nProvider, createBrowserLocaleStorage, useLocale } from "@voidmix/i18n/client";
+import { AsyncI18nProvider, createBrowserLocaleStorage, useLocale } from "@voidmix/i18n/client";
 import { AsyncToaster } from "@voidmix/ui/toast";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@voidmix/ui/components/ui/button";
 import { ThemeProvider, ThemeScript, type UserTheme } from "@voidmix/ui/theme";
 import { env } from "../env.js";
-import { messages } from "../i18n/messages";
-import { createRecoveryTranslator, readDocumentLocale } from "../i18n/recovery-messages";
+import { loadWebMessages } from "../../i18n/messages";
+import { createRecoveryTranslator, readDocumentLocale } from "../../i18n/recovery-messages";
 import { getRequestPreferences } from "../lib/request-preferences";
 import { scheduleClientLogger } from "../lib/client-logger";
 import {
@@ -170,12 +170,17 @@ function NotFoundPage() {
 }
 
 function RootDocument({ children }: { children: ReactNode }) {
-  const { locale, theme } = Route.useLoaderData();
+  const { locale, messages, theme } = Route.useLoaderData();
 
   return (
-    <I18nProvider locale={locale} messages={messages} storage={createBrowserLocaleStorage()}>
+    <AsyncI18nProvider
+      locale={locale}
+      messages={messages}
+      loadCatalog={loadWebMessages}
+      storage={createBrowserLocaleStorage()}
+    >
       <LocalizedDocument theme={theme}>{children}</LocalizedDocument>
-    </I18nProvider>
+    </AsyncI18nProvider>
   );
 }
 
