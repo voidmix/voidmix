@@ -1,4 +1,5 @@
 import type { ViteUserConfig } from "vite-plus";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import evlog from "@voidmix/logger/vite";
@@ -6,8 +7,6 @@ import evlog from "@voidmix/logger/vite";
 const host = process.env.TAURI_DEV_HOST;
 const isDevelopment = process.env.NODE_ENV !== "production";
 const vitePlugins = [
-  ...react(),
-  tailwindcss(),
   ...evlog({
     service: "desktop",
     pretty: isDevelopment,
@@ -19,8 +18,18 @@ const vitePlugins = [
       minLevel: isDevelopment ? "debug" : "info",
     },
   }),
+  tailwindcss(),
+  tanstackStart({
+    rsc: { enabled: false },
+    spa: {
+      enabled: true,
+      prerender: { outputPath: "/index" },
+    },
+  }),
+  ...react(),
 ];
 const config: ViteUserConfig = {
+  resolve: { tsconfigPaths: true },
   // The plugin package and Vite+ can carry different Vite type instances.
   // Vite+ receives the same runtime plugin objects after this type boundary.
   plugins: vitePlugins as unknown as NonNullable<ViteUserConfig["plugins"]>,

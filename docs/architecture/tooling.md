@@ -6,7 +6,7 @@
 Bun       dependency installation, lockfile, tests, and repository scripts
 Vite+     development commands, task ordering, caching, checks, builds,
           linting, and formatting
-Nitro     API and TanStack Start server build/deployment shell
+Nitro     API and Web TanStack Start server build/deployment shell
 Node.js   initial Web and API production runtime
 Rust      Tauri native runtime
 ```
@@ -155,7 +155,7 @@ Commands must support CI/non-interactive execution, explicit exit codes, and
 structured logging. Destructive database operations are restricted to local
 development and test environments.
 
-`generate` covers Drizzle only. Route trees are owned by
+`generate` covers Drizzle only. Both application route trees are owned by
 `@tanstack/start-plugin-core`, whose Vite plugin appends the
 `declare module '@tanstack/react-start'` Register footer to
 `routeTree.gen.ts`. `@tanstack/router-cli` knows nothing about Start, so

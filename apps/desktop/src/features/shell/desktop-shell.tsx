@@ -15,8 +15,6 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
-import "@voidmix/ui/styles.css";
-import "../../App.css";
 
 function WindowActions() {
   const t = useTranslations("common");

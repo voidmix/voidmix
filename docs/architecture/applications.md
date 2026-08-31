@@ -55,14 +55,19 @@ browser composition root for authentication and Admin operations.
 
 ## Desktop
 
-`apps/desktop` is a Tauri 2 application with a React/Vite renderer.
+`apps/desktop` is a Tauri 2 application with a TanStack Start SPA renderer.
 
 - Shares `@voidmix/ui`, `@voidmix/client`, and `@voidmix/contracts`.
-- Uses a Vite SPA rather than TanStack Start SSR.
-- Resolves locale from localStorage, `navigator.language`, then English and
-  switches synchronously against the statically mounted catalog.
+- Uses Start file routing and SPA mode with RSC disabled. The Start server build
+  is used only to prerender `dist/client/index.html`; Tauri embeds that client
+  directory and does not ship a JavaScript server runtime.
+- Resolves locale from localStorage, `navigator.language`, then English after
+  hydrating the deterministic English build-time shell, and switches
+  synchronously against the statically mounted catalog.
 - Uses lazy route components so feature code remains separate from the shell
   and shared static catalog.
+- Owns no Start server functions or server routes. Runtime data continues to
+  come from the cloud API through `@voidmix/client`.
 - Rust owns tray behavior, notifications, window lifecycle, and native
   commands.
 - The renderer mounts feature pages directly from `src/features/`; `App.tsx` is

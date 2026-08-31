@@ -2,16 +2,23 @@
 
 ## Purpose
 
-The Tauri 2 cloud client: a React/Vite renderer in a Rust-hosted window. An app
-composition root, never imported by a package.
+The Tauri 2 cloud client: a TanStack Start SPA renderer in a Rust-hosted
+window. An app composition root, never imported by a package.
 
 ## Interface
 
 ```text
 src/
-  main.tsx          renderer entry
   App.tsx           compatibility exports for feature pages
-  router.tsx        code-based route tree built with createRoute/addChildren
+  router.tsx        getRouter() over the generated file-route tree
+  routeTree.gen.ts  generated — do not edit
+  routes/
+    __root.tsx      static document shell, locale bootstrap, DesktopShell layout
+    index.tsx       overview route
+    activity.tsx    activity route
+    devices.tsx     devices route
+    settings.tsx    settings route
+  styles.css        shared UI and Desktop stylesheet entry
   env.ts            desktop environment composition
   features/
     shell/           Tauri-aware desktop shell
@@ -38,13 +45,20 @@ src-tauri/
 
 ## Constraints
 
-- **This app uses code-based routing** (`createRoute` / `addChildren` in
-  `src/router.tsx`), unlike the file-based `apps/web`. Do not copy this pattern
-  into Web, and do not copy Web's route files into here.
-- Route construction mounts feature pages directly. Keep page-specific UI under
-  `src/features/<feature>/`; do not grow `App.tsx` into a page aggregator.
-- Route components are lazy imports. The shell and feature modules use the
-  `@voidmix/i18n` facade against the static catalog mounted by `main.tsx`.
+- This app uses TanStack Start file routing in **SPA mode**. Route modules stay
+  thin and lazy-load page entrypoints from `src/features/<feature>/`; do not
+  grow `App.tsx` into a page aggregator.
+- **`routeTree.gen.ts` is generated; never hand-edit it.** The Start Vite plugin
+  refreshes it during `dev` or `build` and owns the Register footer.
+- `routes/__root.tsx` owns the static HTML document, stylesheet link, locale
+  bootstrap, and DesktopShell layout. The build-time shell starts in English;
+  hydration reads localStorage and `navigator.language` before normal use.
+- Desktop Start has no runtime server. RSC stays disabled, and Desktop route
+  modules must not add server functions or server routes. Backend behavior
+  remains behind `@voidmix/client` and the configured cloud origin.
+- Start writes the Tauri assets to `dist/client/index.html`. Its `dist/server`
+  output exists only to prerender that shell during the build and is not bundled
+  into the installer; keep `src-tauri/tauri.conf.json` pointed at `../dist/client`.
 - `check` runs **two** typecheck passes (`typecheck` and `typecheck:node`) because
   the renderer and the Node-side config have separate tsconfigs. Both must pass.
 - Rust changes additionally require `cargo fmt --check`, `cargo check`, and
@@ -72,6 +86,7 @@ src-tauri/
 ## Verification
 
 ```bash
+bun run --cwd apps/desktop build          # refreshes routeTree.gen.ts and SPA shell
 bun run --cwd apps/desktop check          # runs both typecheck passes
 bun run --cwd apps/desktop test
 bun run desktop:build

@@ -22,6 +22,7 @@
   "dependencies": {
     "@phosphor-icons/react": "catalog:frontend",
     "@tanstack/react-router": "catalog:",
+    "@tanstack/react-start": "catalog:",
     "@tauri-apps/api": "catalog:desktop",
     "@tauri-apps/plugin-opener": "catalog:desktop",
     "@voidmix/client": "workspace:*",

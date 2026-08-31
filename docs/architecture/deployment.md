@@ -82,5 +82,8 @@ meaningful improvement.
 ## Desktop lifecycle
 
 Tauri's Rust process owns the tray, native notifications, and window lifecycle.
-The renderer is a cloud-backed client. The first version has no separate
-background daemon and no offline synchronization engine.
+TanStack Start builds a static SPA shell at `dist/client/index.html`; the
+build-time `dist/server` output only prerenders that shell and is not included
+in the installer. The renderer is a cloud-backed client with no RSC, server
+function, or server-route runtime. The first version has no separate background
+daemon and no offline synchronization engine.
