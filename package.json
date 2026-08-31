@@ -25,11 +25,11 @@
         "drizzle-kit": "1.0.0-rc.5-ab785fc",
         "drizzle-orm": "1.0.0-rc.5-ab785fc",
         "hono": "4.13.5",
-        "ioredis": "5.11.1",
+        "ioredis": "6.0.0",
         "nanoid": "6.0.1",
         "nitro": "3.0.260610-beta",
         "postgres": "3.4.9",
-        "zod": "4.5.2"
+        "zod": "4.5.4"
       },
       "observability": {
         "evlog": "2.27.1"
@@ -60,7 +60,7 @@
         "@testing-library/jest-dom": "7.0.1",
         "@testing-library/react": "16.3.3",
         "@testing-library/user-event": "14.6.6",
-        "@vitest/coverage-v8": "4.1.10",
+        "@vitest/coverage-v8": "4.1.11",
         "esbuild": "0.28.2",
         "jsdom": "30.0.1",
         "lightningcss": "1.33.0",
@@ -72,11 +72,11 @@
         "citty": "0.2.2",
         "oxc-transform-react": "0.147.0",
         "storybook": "10.5.10",
-        "type-fest": "5.8.0",
+        "type-fest": "5.9.0",
         "taze": "21.1.0",
         "typescript": "7.0.2",
-        "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9",
-        "vite-plus": "0.2.9"
+        "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
+        "vite-plus": "0.3.0"
       }
     }
   },
@@ -132,7 +132,7 @@
   "overrides": {
     "esbuild": "catalog:tooling",
     "lightningcss": "catalog:tooling",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0"
   },
   "devEngines": {
     "packageManager": {

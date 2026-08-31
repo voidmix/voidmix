@@ -85,7 +85,10 @@ export interface RedisCacheConnection {
 const GET_AND_DELETE_SCRIPT = `
 -- Verification tokens must be consumed exactly once.
 local value = redis.call("GET", KEYS[1])
-if value then redis.call("DEL", KEYS[1]) end
+-- Redis Lua represents a missing GET as false. Under native RESP3 mapping,
+-- returning that value would become a JavaScript boolean instead of null.
+if not value then return nil end
+redis.call("DEL", KEYS[1])
 return value
 `;
 
@@ -122,6 +125,16 @@ function serialize(value: unknown): string {
 
 function deserialize<T>(value: string | null): T | null {
   return value === null ? null : (JSON.parse(value) as T);
+}
+
+function nullableStringReply(value: unknown): string | null {
+  if (value === null || typeof value === "string") return value;
+  throw new TypeError("Redis returned an unexpected string reply shape.");
+}
+
+function numberReply(value: unknown): number {
+  if (typeof value === "number") return value;
+  throw new TypeError("Redis returned an unexpected number reply shape.");
 }
 
 function resolveDefault<T>(defaultValue: T | (() => T) | undefined): T | null {
@@ -207,9 +220,9 @@ export class RedisCache implements Cache {
   }
 
   async pull<T>(key: string, defaultValue?: T | (() => T)): Promise<T | null> {
-    const raw = (await this.client.eval(GET_AND_DELETE_SCRIPT, 1, this.fullKey(key))) as
-      | string
-      | null;
+    const raw = nullableStringReply(
+      await this.client.eval(GET_AND_DELETE_SCRIPT, 1, this.fullKey(key)),
+    );
     return raw === null ? resolveDefault(defaultValue) : deserialize<T>(raw);
   }
 
@@ -271,12 +284,12 @@ export function createRedisSecondaryStorage(
   return {
     get: (key) => client.get(fullKey(key)),
     async getAndDelete(key) {
-      return (await client.eval(GET_AND_DELETE_SCRIPT, 1, fullKey(key))) as string | null;
+      return nullableStringReply(await client.eval(GET_AND_DELETE_SCRIPT, 1, fullKey(key)));
     },
     async increment(key, ttl) {
       assertTtl(ttl);
       const result = await client.eval(INCREMENT_WITH_TTL_SCRIPT, 1, fullKey(key), 1, ttl);
-      return Number(result);
+      return numberReply(result);
     },
     async set(key, value, ttl) {
       if (ttl !== undefined) {
@@ -301,7 +314,9 @@ export async function createRedisCache(options: RedisCacheOptions): Promise<Redi
   const ownsClient = !options.client;
   const client =
     options.client ??
-    (new Redis(options.url!, {
+    (new Redis<"resp3">(options.url!, {
+      protocol: 3,
+      replyMapping: "resp3",
       connectTimeout: options.connectTimeoutMs ?? 10_000,
       commandTimeout: options.operationTimeoutMs ?? 5_000,
       maxRetriesPerRequest: options.maxRetriesPerRequest ?? 1,

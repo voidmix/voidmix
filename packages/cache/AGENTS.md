@@ -26,6 +26,8 @@ Laravel-like cache facade and Better Auth secondary-storage compatibility.
   primitives, and null. The generic type parameter does not revive Date, class
   instances, Map, Set, or custom prototypes; callers should encode those values
   explicitly. Better Auth values use raw strings.
+- Owned ioredis connections require RESP3 with native reply mapping. New Redis
+  commands must model their RESP3 return shape at the `RedisClientLike` boundary.
 - `getAndDelete` and secondary-storage `increment` retain Redis atomicity.
 - `flush` is limited to this package's generic cache namespace and never uses
   `FLUSHDB`.

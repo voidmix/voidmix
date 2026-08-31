@@ -15,7 +15,8 @@ an external Redis service.
 
 Add `@voidmix/cache` as the server-side Redis boundary. It provides the Laravel-like
 cache facade and the Better Auth secondary-storage adapter using `ioredis`, with
-prefix-scoped keys, atomic consume/counter operations, and direct error propagation.
+prefix-scoped keys, atomic consume/counter operations, direct error propagation,
+and explicit RESP3 connections with native reply mapping.
 
 `REDIS_URL` is optional. When configured, API runtime injects Better Auth secondary
 storage, retains session and verification database persistence, and caches resolved

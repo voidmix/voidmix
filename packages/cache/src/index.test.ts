@@ -48,7 +48,8 @@ class FakeRedis implements RedisClientLike {
     const key = String(args[0]);
     if (script.includes('redis.call("GET", KEYS[1])')) {
       const value = this.values.get(key) ?? null;
-      if (value !== null) await this.del(key);
+      if (value === null) return script.includes("return nil") ? null : false;
+      await this.del(key);
       return value;
     }
     const amount = Number(args[1]);
@@ -131,6 +132,7 @@ describe("RedisCache", () => {
       two: 2,
     });
     await expect(cache.pull<number>("one")).resolves.toBe(1);
+    await expect(cache.pull("missing", "fallback")).resolves.toBe("fallback");
     await expect(cache.has("one")).resolves.toBe(false);
     await expect(cache.increment("counter", 2)).resolves.toBe(2);
     await expect(cache.decrement("counter")).resolves.toBe(1);
@@ -146,6 +148,7 @@ describe("RedisCache", () => {
     await storage.set("token", "raw", 90);
     await expect(storage.get("token")).resolves.toBe("raw");
     await expect(storage.getAndDelete("token")).resolves.toBe("raw");
+    await expect(storage.getAndDelete("token")).resolves.toBeNull();
     await expect(storage.get("token")).resolves.toBeNull();
     await expect(storage.increment("rate", 45)).resolves.toBe(1);
     await expect(storage.increment("rate", 45)).resolves.toBe(2);
@@ -160,5 +163,16 @@ describe("RedisCache", () => {
     const cache = new RedisCache(redis, "voidmix:cache");
 
     await expect(cache.get("key")).rejects.toThrow("redis unavailable");
+  });
+
+  it("rejects unexpected native RESP3 script replies", async () => {
+    const redis = new FakeRedis();
+    redis.eval = vi.fn(async () => false);
+    const cache = new RedisCache(redis, "voidmix:cache");
+    const storage = createRedisSecondaryStorage(redis, "voidmix:better-auth");
+
+    await expect(cache.pull("key")).rejects.toThrow("unexpected string reply shape");
+    await expect(storage.getAndDelete("key")).rejects.toThrow("unexpected string reply shape");
+    await expect(storage.increment("key", 30)).rejects.toThrow("unexpected number reply shape");
   });
 });
