@@ -1,7 +1,8 @@
+"use client";
+
 import { createContext, use, useCallback, useEffect, useMemo, useState } from "react";
 
-export type UserTheme = "light" | "dark" | "system";
-export type AppTheme = "light" | "dark";
+import { THEME_STORAGE_KEY, parseTheme, type AppTheme, type UserTheme } from "./config";
 
 interface ThemeContextValue {
   theme: UserTheme;
@@ -17,14 +18,6 @@ export interface ThemeProviderProps {
   disableTransitionOnChange?: boolean;
   disableScript?: boolean;
   storageKey?: string | false;
-}
-
-export const THEME_STORAGE_KEY = "theme";
-
-const validThemes: ReadonlySet<UserTheme> = new Set(["light", "dark", "system"]);
-
-export function parseTheme(raw: string | null | undefined, fallback: UserTheme): UserTheme {
-  return validThemes.has(raw as UserTheme) ? (raw as UserTheme) : fallback;
 }
 
 function getCookieTheme(storageKey: string, fallback: UserTheme): UserTheme | null {
