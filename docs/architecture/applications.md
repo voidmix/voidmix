@@ -23,8 +23,13 @@ browser composition root for authentication and Admin operations.
   `apps/web/src/features/chat/`. Its preview starts with an empty composer and
   creates deterministic local responses after submission; it does not call the
   API.
-- Authentication pages are grouped under `(auth)/route.tsx` and retain the
-  public `/login`, `/register`, `/reset-password`, and `/verify-email` URLs.
+- Authentication pages are grouped under `(auth)/route.tsx` and expose public
+  `/login`, `/signup`, `/reset-password`, and `/verify-email` URLs. Login and
+  signup validate an internal `redirect` search parameter so protected
+  navigation can return to its original destination without creating an open
+  redirect. Signup also gives Better Auth a same-origin verification callback,
+  so the email flow returns to the Web verification state before the user signs
+  in.
 - `(app)/route.tsx` owns the browser session gate. The nested `(admin)` group
   mounts the Admin shell, `/admin` user directory, and `/admin/settings` mail
   configuration. `/admin/settings/auth` exposes registration and Auth-mail

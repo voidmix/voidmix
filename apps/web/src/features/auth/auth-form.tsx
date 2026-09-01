@@ -9,8 +9,9 @@ import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
+import { createVerificationCallbackUrl, normalizeAuthRedirect } from "./route-search";
 
-export function AuthForm({ mode }: { mode: "login" | "register" }) {
+export function AuthForm({ mode, redirectTo }: { mode: "login" | "signup"; redirectTo?: string }) {
   const t = useTranslations("auth");
   const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
@@ -20,6 +21,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const next = normalizeAuthRedirect(redirectTo);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +34,12 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       const result =
         mode === "login"
           ? await signIn.email({ email, password })
-          : await signUp.email({ email, password, name });
+          : await signUp.email({
+              email,
+              password,
+              name,
+              callbackURL: createVerificationCallbackUrl(window.location.origin, next),
+            });
 
       if (result.error) {
         setError(
@@ -60,19 +67,26 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
     if (!succeeded) return;
 
-    if (mode === "register") {
-      await navigate({ to: "/verify-email" });
+    if (mode !== "login") {
+      await navigate({
+        to: "/verify-email",
+        ...(next ? { search: { redirect: next } } : {}),
+      });
     } else {
-      await navigate({ to: "/admin" });
+      await navigate({ to: next ?? "/admin" });
     }
   }
 
-  if (mode === "register" && !capabilities.registrationAvailable) {
+  if (mode !== "login" && !capabilities.registrationAvailable) {
     return (
       <AuthCard
         description={t("registrationUnavailableDescription")}
         footer={
-          <Link className="font-medium text-foreground hover:underline" to="/login">
+          <Link
+            className="font-medium text-foreground hover:underline"
+            to="/login"
+            {...(next ? { search: { redirect: next } } : {})}
+          >
             {t("backToSignIn")}
           </Link>
         }
@@ -87,19 +101,27 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
   return (
     <AuthCard
-      description={mode === "login" ? t("loginDescription") : t("registerDescription")}
+      description={mode === "login" ? t("loginDescription") : t("signupDescription")}
       footer={
         mode === "login" && capabilities.registrationAvailable ? (
           <span>
             {t("newToVoidmix")}{" "}
-            <Link className="font-medium text-foreground hover:underline" to="/register">
+            <Link
+              className="font-medium text-foreground hover:underline"
+              to="/signup"
+              {...(next ? { search: { redirect: next } } : {})}
+            >
               {t("createAccount")}
             </Link>
           </span>
         ) : (
           <span>
             {t("alreadyHaveAccount")}{" "}
-            <Link className="font-medium text-foreground hover:underline" to="/login">
+            <Link
+              className="font-medium text-foreground hover:underline"
+              to="/login"
+              {...(next ? { search: { redirect: next } } : {})}
+            >
               {t("signIn")}
             </Link>
           </span>
@@ -109,7 +131,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     >
       <form aria-busy={pending} onSubmit={submit}>
         <FieldGroup className="gap-4">
-          {mode === "register" ? (
+          {mode !== "login" ? (
             <Field>
               <FieldLabel htmlFor="auth-name">{t("name")}</FieldLabel>
               <Input
@@ -143,6 +165,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 <Link
                   className="text-[0.8125rem] text-muted-foreground hover:text-foreground hover:underline"
                   to="/reset-password"
+                  {...(next ? { search: { redirect: next } } : {})}
                 >
                   {t("forgotPassword")}
                 </Link>

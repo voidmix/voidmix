@@ -1,13 +1,37 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { VerifyEmail } from "../../features/auth/verify-email";
+import { validateAuthSearch } from "../../features/auth/route-search";
 
 export const Route = createFileRoute("/(auth)/verify-email")({
-  validateSearch: (search: Record<string, unknown>) =>
-    typeof search.token === "string" && search.token ? { token: search.token } : {},
+  validateSearch: (search: Record<string, unknown>) => {
+    const authSearch = validateAuthSearch(search);
+    const token = typeof search.token === "string" && search.token ? search.token : undefined;
+    const verified = search.verified === "1" || search.verified === true;
+    const verificationFailed = typeof search.error === "string" && search.error.length > 0;
+    return {
+      ...authSearch,
+      ...(token ? { token } : {}),
+      ...(verified ? { verified: true } : {}),
+      ...(verificationFailed ? { verificationFailed: true } : {}),
+    };
+  },
   component: VerifyEmailRoute,
+  head: () => ({
+    meta: [
+      { title: "Verify email | Voidmix" },
+      { name: "description", content: "Verify your email address to finish setting up Voidmix." },
+    ],
+  }),
 });
 
 function VerifyEmailRoute() {
-  const { token } = Route.useSearch();
-  return <VerifyEmail {...(token ? { token } : {})} />;
+  const { redirect, token, verified, verificationFailed } = Route.useSearch();
+  return (
+    <VerifyEmail
+      {...(redirect ? { redirectTo: redirect } : {})}
+      {...(token ? { token } : {})}
+      {...(verified ? { verified: true } : {})}
+      {...(verificationFailed ? { verificationFailed: true } : {})}
+    />
+  );
 }

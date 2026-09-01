@@ -10,7 +10,7 @@ export function AuthActions() {
       <Link className={buttonVariants({ variant: "ghost" })} data-slot="button" to="/login">
         {t("signIn")}
       </Link>
-      <Link className={buttonVariants()} data-slot="button" to="/register">
+      <Link className={buttonVariants()} data-slot="button" to="/signup">
         <span className="hidden min-[480px]:inline">{t("createAccount")}</span>
         <span className="min-[480px]:hidden">{t("createAccount")}</span>
       </Link>

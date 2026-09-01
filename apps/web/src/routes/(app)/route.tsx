@@ -1,11 +1,13 @@
-import { Navigate, Outlet, createFileRoute } from "@tanstack/react-router";
+import { Navigate, Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
 
+import { normalizeAuthRedirect } from "../../features/auth/route-search";
 import { useSession } from "../../lib/auth-client";
 
 export const Route = createFileRoute("/(app)")({ component: AuthenticatedAppLayout });
 
 function AuthenticatedAppLayout() {
   const session = useSession();
+  const location = useLocation();
 
   if (session.isPending) {
     return (
@@ -14,7 +16,10 @@ function AuthenticatedAppLayout() {
       </div>
     );
   }
-  if (!session.data) return <Navigate to="/login" />;
+  if (!session.data) {
+    const redirect = normalizeAuthRedirect(location.href);
+    return <Navigate replace to="/login" {...(redirect ? { search: { redirect } } : {})} />;
+  }
 
   return <Outlet />;
 }

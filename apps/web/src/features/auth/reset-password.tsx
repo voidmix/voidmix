@@ -12,10 +12,12 @@ import { useTranslations } from "@voidmix/i18n/client";
 
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
+import { createPasswordResetCallbackUrl, normalizeAuthRedirect } from "./route-search";
 
-export function ResetPassword({ token }: { token?: string }) {
+export function ResetPassword({ token, redirectTo }: { token?: string; redirectTo?: string }) {
   const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
+  const next = normalizeAuthRedirect(redirectTo);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [sent, setSent] = useState(false);
@@ -32,7 +34,7 @@ export function ResetPassword({ token }: { token?: string }) {
         ? await authClient.resetPassword({ newPassword: password, token })
         : await authClient.requestPasswordReset({
             email,
-            redirectTo: `${window.location.origin}/reset-password`,
+            redirectTo: createPasswordResetCallbackUrl(window.location.origin, next),
           });
 
       if (result.error) {
@@ -65,7 +67,11 @@ export function ResetPassword({ token }: { token?: string }) {
       <AuthCard
         description="Password reset email requests are not available with the current system and mail configuration."
         footer={
-          <Link className="font-medium text-foreground hover:underline" to="/login">
+          <Link
+            className="font-medium text-foreground hover:underline"
+            to="/login"
+            {...(next ? { search: { redirect: next } } : {})}
+          >
             Back to sign in
           </Link>
         }
@@ -90,7 +96,12 @@ export function ResetPassword({ token }: { token?: string }) {
       >
         <div className="space-y-5">
           <CheckCircle aria-hidden="true" className="size-9 text-primary" />
-          <Button className="w-full" nativeButton={false} render={<Link to="/login" />} size="lg">
+          <Button
+            className="w-full"
+            nativeButton={false}
+            render={<Link to="/login" {...(next ? { search: { redirect: next } } : {})} />}
+            size="lg"
+          >
             Back to sign in
           </Button>
         </div>
@@ -106,7 +117,11 @@ export function ResetPassword({ token }: { token?: string }) {
           : "Enter your email and we will send you a password reset link."
       }
       footer={
-        <Link className="font-medium text-foreground hover:underline" to="/login">
+        <Link
+          className="font-medium text-foreground hover:underline"
+          to="/login"
+          {...(next ? { search: { redirect: next } } : {})}
+        >
           Back to sign in
         </Link>
       }

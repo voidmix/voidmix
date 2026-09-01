@@ -15,8 +15,8 @@ import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as appadminRouteRouteImport } from './routes/(app)/(admin)/route'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
-import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
+import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
 import { Route as appadminAdminRouteImport } from './routes/(app)/(admin)/admin'
 import { Route as appadminAdminSettingsRouteImport } from './routes/(app)/(admin)/admin/settings'
@@ -49,14 +49,14 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => authRouteRoute,
 } as any)
-const authRegisterRoute = authRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => authRouteRoute,
-} as any)
 const authResetPasswordRoute = authResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => authRouteRoute,
+} as any)
+const authSignupRoute = authSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => authRouteRoute,
 } as any)
 const authVerifyEmailRoute = authVerifyEmailRouteImport.update({
@@ -85,8 +85,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/login': typeof authLoginRoute
-  '/register': typeof authRegisterRoute
   '/reset-password': typeof authResetPasswordRoute
+  '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
   '/admin': typeof appadminAdminRouteWithChildren
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
@@ -96,8 +96,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/login': typeof authLoginRoute
-  '/register': typeof authRegisterRoute
   '/reset-password': typeof authResetPasswordRoute
+  '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
   '/admin': typeof appadminAdminRouteWithChildren
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
@@ -111,8 +111,8 @@ export interface FileRoutesById {
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/(app)/(admin)': typeof appadminRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
-  '/(auth)/register': typeof authRegisterRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
+  '/(auth)/signup': typeof authSignupRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
   '/(app)/(admin)/admin': typeof appadminAdminRouteWithChildren
   '/(app)/(admin)/admin/settings': typeof appadminAdminSettingsRouteWithChildren
@@ -124,8 +124,8 @@ export interface FileRouteTypes {
     | '/'
     | '/manifest.webmanifest'
     | '/login'
-    | '/register'
     | '/reset-password'
+    | '/signup'
     | '/verify-email'
     | '/admin'
     | '/admin/settings'
@@ -135,8 +135,8 @@ export interface FileRouteTypes {
     | '/'
     | '/manifest.webmanifest'
     | '/login'
-    | '/register'
     | '/reset-password'
+    | '/signup'
     | '/verify-email'
     | '/admin'
     | '/admin/settings'
@@ -149,8 +149,8 @@ export interface FileRouteTypes {
     | '/manifest.webmanifest'
     | '/(app)/(admin)'
     | '/(auth)/login'
-    | '/(auth)/register'
     | '/(auth)/reset-password'
+    | '/(auth)/signup'
     | '/(auth)/verify-email'
     | '/(app)/(admin)/admin'
     | '/(app)/(admin)/admin/settings'
@@ -208,18 +208,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof authRouteRoute
     }
-    '/(auth)/register': {
-      id: '/(auth)/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof authRegisterRouteImport
-      parentRoute: typeof authRouteRoute
-    }
     '/(auth)/reset-password': {
       id: '/(auth)/reset-password'
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof authResetPasswordRouteImport
+      parentRoute: typeof authRouteRoute
+    }
+    '/(auth)/signup': {
+      id: '/(auth)/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof authSignupRouteImport
       parentRoute: typeof authRouteRoute
     }
     '/(auth)/verify-email': {
@@ -304,15 +304,15 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 
 interface authRouteRouteChildren {
   authLoginRoute: typeof authLoginRoute
-  authRegisterRoute: typeof authRegisterRoute
   authResetPasswordRoute: typeof authResetPasswordRoute
+  authSignupRoute: typeof authSignupRoute
   authVerifyEmailRoute: typeof authVerifyEmailRoute
 }
 
 const authRouteRouteChildren: authRouteRouteChildren = {
   authLoginRoute: authLoginRoute,
-  authRegisterRoute: authRegisterRoute,
   authResetPasswordRoute: authResetPasswordRoute,
+  authSignupRoute: authSignupRoute,
   authVerifyEmailRoute: authVerifyEmailRoute,
 }
 

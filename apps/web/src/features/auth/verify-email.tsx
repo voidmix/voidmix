@@ -9,13 +9,29 @@ import { AuthCard } from "./auth-card";
 import { useTranslations } from "@voidmix/i18n/client";
 
 import { notifyAuthFailure } from "./feedback";
+import { normalizeAuthRedirect } from "./route-search";
 
 type VerificationStatus = "waiting" | "verifying" | "verified" | "failed";
 
-export function VerifyEmail({ token }: { token?: string }) {
+export function VerifyEmail({
+  token,
+  redirectTo,
+  verified = false,
+  verificationFailed = false,
+}: {
+  token?: string;
+  redirectTo?: string;
+  verified?: boolean;
+  verificationFailed?: boolean;
+}) {
   const translateError = useTranslations("errors");
-  const [status, setStatus] = useState<VerificationStatus>(token ? "verifying" : "waiting");
-  const [error, setError] = useState<string | null>(null);
+  const next = normalizeAuthRedirect(redirectTo);
+  const [status, setStatus] = useState<VerificationStatus>(
+    token ? "verifying" : verified ? "verified" : verificationFailed ? "failed" : "waiting",
+  );
+  const [error, setError] = useState<string | null>(
+    verificationFailed ? "This verification link is invalid or expired." : null,
+  );
 
   useEffect(() => {
     if (!token) return;
@@ -82,7 +98,12 @@ export function VerifyEmail({ token }: { token?: string }) {
         {current.icon}
         {error ? <FieldError>{error}</FieldError> : null}
         {status !== "verifying" ? (
-          <Button className="w-full" nativeButton={false} render={<Link to="/login" />} size="lg">
+          <Button
+            className="w-full"
+            nativeButton={false}
+            render={<Link to="/login" {...(next ? { search: { redirect: next } } : {})} />}
+            size="lg"
+          >
             Back to sign in
           </Button>
         ) : null}

@@ -42,7 +42,7 @@
     "registrationUnavailableBody": "An administrator can reopen registration after verification email delivery is ready.",
     "backToSignIn": "Back to sign in",
     "loginDescription": "Enter your account details to continue to the workspace.",
-    "registerDescription": "Create an account with your work email to get started.",
+    "signupDescription": "Create an account with your work email to get started.",
     "newToVoidmix": "New to Voidmix?",
     "alreadyHaveAccount": "Already have an account?",
     "welcomeBack": "Welcome back",

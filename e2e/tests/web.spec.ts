@@ -8,6 +8,6 @@ test("renders the public workspace home", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login");
   await expect(page.getByRole("link", { name: "Create account" })).toHaveAttribute(
     "href",
-    "/register",
+    "/signup",
   );
 });

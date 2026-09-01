@@ -45,7 +45,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       name: "Name",
       newToVoidmix: "New to Voidmix?",
       password: "Password",
-      registerDescription: "Create an account with your work email to get started.",
+      signupDescription: "Create an account with your work email to get started.",
       registrationFailed: "Registration failed",
       registrationFallback: "Unable to create your account. Try again.",
       registrationUnavailable: "Registration unavailable",
@@ -117,7 +117,7 @@ describe("authentication forms", () => {
   it("creates an account and opens the verification state", async () => {
     mocks.signUpEmail.mockResolvedValue({ data: {}, error: null });
     const user = userEvent.setup();
-    render(<AuthForm mode="register" />);
+    render(<AuthForm mode="signup" />);
 
     await user.type(screen.getByRole("textbox", { name: "Name" }), "Ada Lovelace");
     await user.type(screen.getByRole("textbox", { name: "Email" }), "ada@example.com");
@@ -129,6 +129,7 @@ describe("authentication forms", () => {
         email: "ada@example.com",
         name: "Ada Lovelace",
         password: "password123",
+        callbackURL: expect.stringMatching(/\/verify-email\?verified=1$/),
       });
       expect(mocks.navigate).toHaveBeenCalledWith({ to: "/verify-email" });
     });
@@ -149,6 +150,20 @@ describe("authentication forms", () => {
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
+  it("returns to the requested workspace after signing in", async () => {
+    mocks.signInEmail.mockResolvedValue({ data: {}, error: null });
+    const user = userEvent.setup();
+    render(<AuthForm mode="login" redirectTo="/admin?tab=users" />);
+
+    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => {
+      expect(mocks.navigate).toHaveBeenCalledWith({ to: "/admin?tab=users" });
+    });
+  });
+
   it("hides unavailable registration and password reset entry points", () => {
     mocks.capabilities.registrationAvailable = false;
     mocks.capabilities.passwordResetRequestAvailable = false;
@@ -163,7 +178,7 @@ describe("authentication forms", () => {
   it("shows an unavailable state instead of the registration form", () => {
     mocks.capabilities.registrationAvailable = false;
 
-    render(<AuthForm mode="register" />);
+    render(<AuthForm mode="signup" />);
 
     expect(screen.getByRole("heading", { name: "Registration unavailable" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Create account" })).not.toBeInTheDocument();
@@ -231,5 +246,11 @@ describe("password reset and email verification", () => {
     expect(mocks.verifyEmail).toHaveBeenCalledWith({
       query: { token: "verification-token" },
     });
+  });
+
+  it("renders the completed state when Better Auth redirects after verification", () => {
+    render(<VerifyEmail redirectTo="/admin" verified />);
+
+    expect(screen.getByRole("heading", { name: "Email verified" })).toBeVisible();
   });
 });

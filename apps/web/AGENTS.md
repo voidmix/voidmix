@@ -17,7 +17,7 @@ src/
     manifest[.]webmanifest.ts  server route for the Web App Manifest
     index.tsx        route declaration and home feature composition
     (auth)/route.tsx public authentication group layout
-    (auth)/          login, registration, reset, and verification routes
+    (auth)/          login, signup, reset, and verification routes
     (app)/route.tsx  authenticated group layout and session gate
     (app)/(admin)/route.tsx  AdminShell layout within the authenticated group
     (app)/(admin)/admin.tsx  protected Admin user-directory mount at /admin
