@@ -23,7 +23,13 @@ function navigateTo(href: string) {
   window.location.hash = href.slice(1);
 }
 
-function MobileNavigationMenu({ activeSection }: { activeSection: WorkspaceSectionId }) {
+function MobileNavigationMenu({
+  activeSection,
+  minimal,
+}: {
+  activeSection: WorkspaceSectionId;
+  minimal: boolean;
+}) {
   const t = useTranslations("home");
 
   return (
@@ -61,18 +67,22 @@ function MobileNavigationMenu({ activeSection }: { activeSection: WorkspaceSecti
           })}
         </DropdownMenuGroup>
 
-        <DropdownMenuSeparator />
+        {!minimal ? (
+          <>
+            <DropdownMenuSeparator />
 
-        <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigateTo("#team")}>
-            <UsersThree aria-hidden="true" />
-            {t("team")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigateTo("#settings")}>
-            <Gear aria-hidden="true" />
-            {t("settings")}
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => navigateTo("#team")}>
+                <UsersThree aria-hidden="true" />
+                {t("team")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigateTo("#settings")}>
+                <Gear aria-hidden="true" />
+                {t("settings")}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        ) : null}
 
         <DropdownMenuSeparator />
 
@@ -91,8 +101,10 @@ function MobileNavigationMenu({ activeSection }: { activeSection: WorkspaceSecti
 
 export function MobileNavigation({
   activeSection = "overview",
+  minimal = false,
 }: {
   activeSection?: WorkspaceSectionId;
+  minimal?: boolean;
 }) {
   const t = useTranslations("home");
   const [isMounted, setIsMounted] = useState(false);
@@ -123,7 +135,7 @@ export function MobileNavigation({
         <LanguageSwitcher />
         <ThemeSwitcher />
         {isMounted ? (
-          <MobileNavigationMenu activeSection={activeSection} />
+          <MobileNavigationMenu activeSection={activeSection} minimal={minimal} />
         ) : (
           <Button
             aria-label={t("openWorkspaceNavigation")}

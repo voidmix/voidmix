@@ -2,6 +2,7 @@
 
 import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
@@ -20,6 +21,9 @@ vi.mock("@voidmix/i18n/client", () => ({
       activeProgress: "3 of 4 active",
       admin: "Admin",
       approveFinalColorPass: "Approve final color pass",
+      askVoidmix: "Ask Voidmix",
+      askWorkspace: "Ask about this workspace",
+      sendMessage: "Send message",
       assetsDescription: "Keep final files and handoffs in one place.",
       assetsPreview: "No shared assets have been added yet.",
       assetsState: "Library is ready",
@@ -67,6 +71,8 @@ vi.mock("@voidmix/i18n/client", () => ({
       reviewsState: "Needs attention",
       reviewNow: "Review now",
       settings: "Settings",
+      startDescription: "Start with a brief, a decision, or a question for the workspace.",
+      startTitle: "What should we move forward?",
       threeOnline: "3 online",
       workspace: "Workspace",
       you: "You",
@@ -106,12 +112,32 @@ beforeEach(() => {
 });
 
 describe("workspace layout", () => {
-  it("renders the overview, activity, context, and preview sections", () => {
+  it("starts with a focused chat entry instead of the full workbench", () => {
     render(<WorkspaceLayout />);
 
-    expect(screen.getByRole("heading", { name: "Workspace signal" })).toBeVisible();
-    expect(screen.getByRole("heading", { name: "Continue where you left off" })).toBeVisible();
-    expect(screen.getByRole("complementary", { name: "Current project context" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "What should we move forward?" })).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Ask Voidmix" })).toBeVisible();
+    expect(
+      screen.queryByRole("heading", { name: "Continue where you left off" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("complementary", { name: "Current project context" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Recent")).not.toBeInTheDocument();
+  });
+
+  it("expands into the full workbench after the first chat message", async () => {
+    const user = userEvent.setup();
+    render(<WorkspaceLayout />);
+
+    await user.type(screen.getByRole("textbox", { name: "Ask Voidmix" }), "What is blocked?");
+    await user.click(screen.getByRole("button", { name: "Send message" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: "Workspace signal" })).toBeVisible();
+      expect(screen.getByRole("heading", { name: "Continue where you left off" })).toBeVisible();
+      expect(screen.getByRole("complementary", { name: "Current project context" })).toBeVisible();
+    });
 
     for (const section of ["inbox", "projects", "reviews", "decisions", "assets"]) {
       expect(document.getElementById(section)).toBeInTheDocument();

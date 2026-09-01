@@ -80,6 +80,8 @@
     "switchWorkspace": "Switch workspace",
     "notifications": "Notifications",
     "openWorkspaceNavigation": "Open workspace navigation",
+    "startTitle": "What should we move forward?",
+    "startDescription": "Start with a brief, a decision, or a question for the workspace.",
     "previewEnvironment": "Preview environment",
     "currentProjectContext": "Current project context",
     "currentProject": "Current project",

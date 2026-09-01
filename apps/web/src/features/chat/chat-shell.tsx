@@ -9,12 +9,13 @@ import { MessageList } from "./components/message-list";
 import { createPreviewResponse, initialChatMessages } from "./fixtures";
 import type { ChatMessage } from "./types";
 
-export function ChatShell() {
+export function ChatShell({ onStarted }: { onStarted?: () => void } = {}) {
   const t = useTranslations("home");
   const [messages, setMessages] = useState<readonly ChatMessage[]>(initialChatMessages);
   const hasMessages = messages.length > 0;
 
   function handleSubmit(prompt: string) {
+    onStarted?.();
     setMessages((current) => [
       ...current,
       { id: `user-${current.length}`, role: "user", content: prompt, timestamp: t("now") },

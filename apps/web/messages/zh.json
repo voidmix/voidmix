@@ -80,6 +80,8 @@
     "switchWorkspace": "切换工作区",
     "notifications": "通知",
     "openWorkspaceNavigation": "打开工作区导航",
+    "startTitle": "想先推进什么？",
+    "startDescription": "从一份简报、一项决策或一个工作区问题开始。",
     "previewEnvironment": "预览环境",
     "currentProjectContext": "当前项目上下文",
     "currentProject": "当前项目",

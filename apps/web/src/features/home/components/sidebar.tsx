@@ -14,8 +14,10 @@ import {
 
 export function HomeSidebar({
   activeSection = "overview",
+  minimal = false,
 }: {
   activeSection?: WorkspaceSectionId;
+  minimal?: boolean;
 }) {
   const t = useTranslations("home");
 
@@ -94,35 +96,45 @@ export function HomeSidebar({
         })}
       </nav>
 
-      <div className="mt-7 flex flex-col gap-0.5 border-t border-border pt-[1.15rem] max-[1180px]:hidden">
-        <p className="mb-1.5 px-2.5 text-[0.7rem] font-semibold tracking-[0.025em] text-muted-foreground">
-          {t("recent")}
-        </p>
-        {recentThreads.map((thread) => (
-          <a
-            className="flex min-h-9 items-center gap-2.5 overflow-hidden rounded-md px-2.5 text-[0.72rem] text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
-            href="#thread"
-            key={thread}
-          >
-            <span className="size-1.5 shrink-0 rounded-full bg-input" />
-            {thread}
-          </a>
-        ))}
-      </div>
+      {!minimal ? (
+        <div className="mt-7 flex flex-col gap-0.5 border-t border-border pt-[1.15rem] max-[1180px]:hidden">
+          <p className="mb-1.5 px-2.5 text-[0.7rem] font-semibold tracking-[0.025em] text-muted-foreground">
+            {t("recent")}
+          </p>
+          {recentThreads.map((thread) => (
+            <a
+              className="flex min-h-9 items-center gap-2.5 overflow-hidden rounded-md px-2.5 text-[0.72rem] text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
+              href="#thread"
+              key={thread}
+            >
+              <span className="size-1.5 shrink-0 rounded-full bg-input" />
+              {thread}
+            </a>
+          ))}
+        </div>
+      ) : null}
 
       <div className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3">
-        <a aria-label={t("team")} className={navigationClassName({ current: false })} href="#team">
-          <UsersThree aria-hidden="true" />
-          <span className="max-[1180px]:hidden">{t("team")}</span>
-        </a>
-        <a
-          aria-label={t("settings")}
-          className={navigationClassName({ current: false })}
-          href="#settings"
-        >
-          <Gear aria-hidden="true" />
-          <span className="max-[1180px]:hidden">{t("settings")}</span>
-        </a>
+        {!minimal ? (
+          <>
+            <a
+              aria-label={t("team")}
+              className={navigationClassName({ current: false })}
+              href="#team"
+            >
+              <UsersThree aria-hidden="true" />
+              <span className="max-[1180px]:hidden">{t("team")}</span>
+            </a>
+            <a
+              aria-label={t("settings")}
+              className={navigationClassName({ current: false })}
+              href="#settings"
+            >
+              <Gear aria-hidden="true" />
+              <span className="max-[1180px]:hidden">{t("settings")}</span>
+            </a>
+          </>
+        ) : null}
         <div className="mt-2 flex items-center gap-2.5 border-t border-border px-1 py-3 max-[1180px]:justify-center">
           <Avatar className="max-[1180px]:hidden" name="Alex Morgan" size="small" />
           <span className="flex min-w-0 flex-1 flex-col gap-0.5 max-[1180px]:hidden">
