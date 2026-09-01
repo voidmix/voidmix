@@ -37,12 +37,12 @@ export function HomeNavbar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <AuthActions />
-          <div className="hidden h-5 w-px bg-border sm:block" />
           <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/30 p-0.5">
             <LanguageSwitcher />
             <ThemeSwitcher />
           </div>
+          <div className="hidden h-5 w-px bg-border sm:block" />
+          <AuthActions />
         </div>
       </div>
     </header>

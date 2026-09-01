@@ -1,4 +1,4 @@
-import { CaretDown, Translate } from "@phosphor-icons/react";
+import { Globe } from "@phosphor-icons/react";
 import { useLocale, useSetLocale, useTranslations } from "@voidmix/i18n/client";
 import type { Locale } from "@voidmix/i18n/types";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -36,13 +36,11 @@ export function LanguageSwitcher() {
       onClick={onClick}
       onFocus={preloadLanguageMenu}
       onPointerDown={preloadLanguageMenu}
-      size="sm"
+      size="icon-sm"
       title={`${t("language")}: ${currentLabel}`}
       variant="ghost"
     >
-      <Translate aria-hidden="true" data-icon="inline-start" />
-      <span aria-hidden="true">{locale === "en" ? "EN" : "中文"}</span>
-      <CaretDown aria-hidden="true" data-icon="inline-end" />
+      <Globe aria-hidden="true" />
     </Button>
   );
 

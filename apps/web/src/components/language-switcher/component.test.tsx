@@ -27,6 +27,7 @@ describe("language switcher", () => {
     const trigger = screen.getByRole("button", { name: "Language: English" });
 
     expect(trigger).toHaveAttribute("aria-haspopup", "menu");
+    expect(trigger).not.toHaveTextContent("English");
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
 
     await user.click(trigger);
@@ -46,7 +47,9 @@ describe("language switcher", () => {
       await screen.findByRole("menuitemradio", { name: "简体中文" }, { timeout: 5000 }),
     );
 
-    expect(screen.getByRole("button", { name: "语言: 简体中文" })).toBeVisible();
+    const trigger = screen.getByRole("button", { name: "语言: 简体中文" });
+    expect(trigger).toBeVisible();
+    expect(trigger).not.toHaveTextContent("简体中文");
     expect(write).toHaveBeenCalledWith("zh");
   });
 });
