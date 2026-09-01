@@ -28,6 +28,7 @@ src/
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
   i18n/              catalog loaders, API error codes, recovery copy
+scripts/             read-only production bundle analysis
 tests/               shared Web test fixtures and cross-feature tests
 server/
   env.ts             server-only API/Auth/Mail environment composition
@@ -102,10 +103,10 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Stylesheets: `src/styles.css` imports `@voidmix/ui/styles.css`, then the root
   route imports that single entry with `?url` and feeds it through `head().links`.
 - Dev server is `strictPort` on 3000. Vite plugin order is
-  evlog → nitro → tailwindcss → rsc → tanstackStart → viteReact. RSC is enabled
-  through both `rsc()` and `tanstackStart({ rsc: { enabled: true } })`. The React
-  plugin uses the Oxc-backed React Compiler. Nitro uses explicit Web-format
-  routes with directory scanning and its automatic server entry off.
+  evlog → nitro → tailwindcss → tanstackStart → viteReact. RSC stays disabled
+  until a measured Server Component migration beats the equivalent client build.
+  The React plugin uses the Oxc-backed React Compiler. Nitro uses explicit
+  Web-format routes with directory scanning and its automatic server entry off.
 - Keep menu-heavy secondary interactions out of the home route's initial client
   path. Language, theme, and Composer attachment menus preload on focus or
   pointer interaction and load their Base UI menu implementation on demand.

@@ -1,5 +1,17 @@
 # Web Bundle Baseline
 
+Run the reproducible report after a production build with:
+
+```bash
+bun run --cwd apps/web build
+bun run --cwd apps/web bundle:analyze
+```
+
+The command reads the generated TanStack Start manifest and reports the entry
+chunk, the unique `__root__` + `/` preload closure, HTML module script count,
+initial request count, and level-9 gzip estimates for a cold cache. It is
+read-only and never edits build output.
+
 The home route's bundle budget is measured from the TanStack Start build
 manifest, not from the largest emitted filename alone. Add the unique preloads
 for `__root__` and `/`; those files form the initial JavaScript download for the
@@ -41,6 +53,23 @@ When repeating the measurement:
    and gzip sizes.
 4. Confirm `dropdown-menu` remains absent from the `/` preload list and is an
    import of the language, theme, and attachment menu chunks.
+
+## August 31, 2026 RSC trial
+
+The ActivitySection trial was measured from the same source state in both
+configurations. RSC added a server-component Flight runtime and did not reduce
+the home route's initial client download:
+
+| Build        | Entry gzip | Initial JS gzip | Requests |
+| ------------ | ---------: | --------------: | -------: |
+| RSC enabled  |  134.98 kB |       183.77 kB |       18 |
+| RSC disabled |  127.47 kB |       175.66 kB |       17 |
+
+The trial was removed and the Web build remains RSC-disabled. The current
+client-only home build measures 126.10 kB entry gzip and 170.61 kB across the
+unique initial JS preload closure. The entry is below the previous 137.7 kB
+single-file budget, while the closure remains the authoritative metric for
+future comparisons.
 
 ## Locale catalog split
 

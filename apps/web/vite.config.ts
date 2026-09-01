@@ -2,7 +2,6 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import evlog from "@voidmix/logger/vite";
 import viteReact from "@vitejs/plugin-react";
-import rsc from "@vitejs/plugin-rsc";
 import { nitro } from "nitro/vite";
 import { defineConfig, lazyPlugins } from "vite-plus";
 
@@ -33,8 +32,7 @@ const config = defineConfig({
         traceDeps: ["react"],
       }),
       tailwindcss(),
-      rsc(),
-      tanstackStart({ rsc: { enabled: true } }),
+      tanstackStart(),
       viteReact({ compiler: true }),
     ]) ?? [],
   server: { port: 3000, strictPort: true },

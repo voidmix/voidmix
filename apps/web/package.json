@@ -8,6 +8,7 @@
     "build": "bun run check && vmx env -- vp build",
     "start": "node --enable-source-maps .output/server/index.mjs",
     "preview": "vmx env -- vp preview",
+    "bundle:analyze": "bun run scripts/analyze-bundle.ts",
     "check": "tsc --noEmit -p tsconfig.json",
     "test": "vp test --run --passWithNoTests",
     "test:unit": "vp test --run --passWithNoTests --exclude '**/component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
