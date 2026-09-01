@@ -1,0 +1,23 @@
+apps/web/src/features/admin/users/api-adapter.ts
+  s_c39c5f4065a796::t_a4dedbe715dfe1 43-47
+apps/web/src/features/admin/users/preview-adapter.ts
+  s_c39c5f4065a796::t_1f514acdb144b4 46-50
+apps/web/src/features/admin/users/types.ts
+  s_c39c5f4065a796::t_ee687a2f2de03f 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ded9a583e0786d2d421a08e6da92c60e10c3c66e",
+  "prompts": {},
+  "sessions": {
+    "s_c39c5f4065a796": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05d22-87ae-7631-bfe0-93238149b194",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
