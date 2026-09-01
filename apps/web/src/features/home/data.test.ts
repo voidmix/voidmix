@@ -27,6 +27,17 @@ describe("home view model", () => {
     expect(navigationClassName(item)).not.toContain("bg-primary");
   });
 
+  it("keeps every workspace entry attached to a matching page section", () => {
+    expect(navigation.map(navigationHref)).toEqual([
+      "#overview",
+      "#inbox",
+      "#projects",
+      "#reviews",
+      "#decisions",
+      "#assets",
+    ]);
+  });
+
   it("keeps activity tone classes aligned with the CSS contract", () => {
     expect(activityIndicatorClassName("warning")).toContain("bg-destructive");
     expect(activityStateClassName("complete")).toContain("text-primary");

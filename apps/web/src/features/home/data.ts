@@ -9,13 +9,79 @@ import {
 import { cn } from "@voidmix/ui/lib/utils";
 
 export const navigation = [
-  { label: "Overview", messageKey: "navOverview", icon: House, current: true },
-  { label: "Inbox", messageKey: "navInbox", icon: ChatCircleDots, current: false, count: 4 },
-  { label: "Projects", messageKey: "navProjects", icon: FolderSimple, current: false },
-  { label: "Reviews", messageKey: "navReviews", icon: CheckCircle, current: false, count: 3 },
-  { label: "Decisions", messageKey: "navDecisions", icon: Lightning, current: false },
-  { label: "Assets", messageKey: "navAssets", icon: Stack, current: false },
+  { id: "overview", label: "Overview", messageKey: "navOverview", icon: House, current: true },
+  {
+    id: "inbox",
+    label: "Inbox",
+    messageKey: "navInbox",
+    icon: ChatCircleDots,
+    current: false,
+    count: 4,
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    messageKey: "navProjects",
+    icon: FolderSimple,
+    current: false,
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    messageKey: "navReviews",
+    icon: CheckCircle,
+    current: false,
+    count: 3,
+  },
+  {
+    id: "decisions",
+    label: "Decisions",
+    messageKey: "navDecisions",
+    icon: Lightning,
+    current: false,
+  },
+  { id: "assets", label: "Assets", messageKey: "navAssets", icon: Stack, current: false },
 ] as const;
+
+export type WorkspaceSectionId = (typeof navigation)[number]["id"];
+
+export const workspacePlaceholders = [
+  {
+    id: "inbox",
+    descriptionKey: "inboxDescription",
+    previewKey: "inboxPreview",
+    stateKey: "inboxState",
+  },
+  {
+    id: "projects",
+    descriptionKey: "projectsDescription",
+    previewKey: "projectsPreview",
+    stateKey: "projectsState",
+  },
+  {
+    id: "reviews",
+    descriptionKey: "reviewsDescription",
+    previewKey: "reviewsPreview",
+    stateKey: "reviewsState",
+  },
+  {
+    id: "decisions",
+    descriptionKey: "decisionsDescription",
+    previewKey: "decisionsPreview",
+    stateKey: "decisionsState",
+  },
+  {
+    id: "assets",
+    descriptionKey: "assetsDescription",
+    previewKey: "assetsPreview",
+    stateKey: "assetsState",
+  },
+] as const satisfies ReadonlyArray<{
+  id: Exclude<WorkspaceSectionId, "overview">;
+  descriptionKey: string;
+  previewKey: string;
+  stateKey: string;
+}>;
 
 export const recentThreads = [
   "Final cut / v18",
@@ -76,11 +142,12 @@ export const operators = [
   { name: "Samira Bell", role: "Producer", roleKey: "producer" },
 ] as const;
 
-export function navigationHref(item: { label: string; current: boolean }): string {
-  return item.current ? "#overview" : `#${item.label.toLowerCase()}`;
+export function navigationHref(item: { id?: string; label: string; current: boolean }): string {
+  return `#${item.id ?? (item.current ? "overview" : item.label.toLowerCase())}`;
 }
 
 export const mobileNavigationItems = navigation.map((item) => ({
+  id: item.id,
   label: item.label,
   messageKey: item.messageKey,
   icon: item.icon,

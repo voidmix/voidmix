@@ -14,13 +14,16 @@ import {
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { Logo } from "@voidmix/ui/logo";
 
+import { LanguageSwitcher } from "../../../components/language-switcher";
+import { ThemeSwitcher } from "../../../components/theme-switcher";
 import { mobileNavigationItems } from "../data";
+import type { WorkspaceSectionId } from "../data";
 
 function navigateTo(href: string) {
   window.location.hash = href.slice(1);
 }
 
-function MobileNavigationMenu() {
+function MobileNavigationMenu({ activeSection }: { activeSection: WorkspaceSectionId }) {
   const t = useTranslations("home");
 
   return (
@@ -41,10 +44,16 @@ function MobileNavigationMenu() {
           </DropdownMenuItem>
           {mobileNavigationItems.map((item) => {
             const Icon = item.icon;
+            const current = item.id === activeSection;
 
             return (
-              <DropdownMenuItem key={item.label} onClick={() => navigateTo(item.href)}>
-                <Icon aria-hidden="true" weight={item.current ? "fill" : "regular"} />
+              <DropdownMenuItem
+                aria-current={current ? "page" : undefined}
+                className={current ? "bg-accent text-accent-foreground" : undefined}
+                key={item.label}
+                onClick={() => navigateTo(item.href)}
+              >
+                <Icon aria-hidden="true" weight={current ? "fill" : "regular"} />
                 {t(item.messageKey)}
                 {"count" in item ? <DropdownMenuShortcut>{item.count}</DropdownMenuShortcut> : null}
               </DropdownMenuItem>
@@ -80,7 +89,11 @@ function MobileNavigationMenu() {
   );
 }
 
-export function MobileNavigation() {
+export function MobileNavigation({
+  activeSection = "overview",
+}: {
+  activeSection?: WorkspaceSectionId;
+}) {
   const t = useTranslations("home");
   const [isMounted, setIsMounted] = useState(false);
 
@@ -106,19 +119,23 @@ export function MobileNavigation() {
         </span>
       </div>
 
-      {isMounted ? (
-        <MobileNavigationMenu />
-      ) : (
-        <Button
-          aria-label={t("openWorkspaceNavigation")}
-          className="min-h-11 min-w-11"
-          disabled
-          size="icon-lg"
-          variant="ghost"
-        >
-          <List aria-hidden="true" data-icon="inline-start" weight="bold" />
-        </Button>
-      )}
+      <div className="flex items-center gap-0.5">
+        <LanguageSwitcher />
+        <ThemeSwitcher />
+        {isMounted ? (
+          <MobileNavigationMenu activeSection={activeSection} />
+        ) : (
+          <Button
+            aria-label={t("openWorkspaceNavigation")}
+            className="min-h-11 min-w-11"
+            disabled
+            size="icon-lg"
+            variant="ghost"
+          >
+            <List aria-hidden="true" data-icon="inline-start" weight="bold" />
+          </Button>
+        )}
+      </div>
     </header>
   );
 }

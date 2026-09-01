@@ -6,13 +6,15 @@ import { LanguageSwitcher } from "../../../components/language-switcher";
 import { ThemeSwitcher } from "../../../components/theme-switcher";
 import { AuthActions } from "./auth-actions";
 
-export function HomeNavbar() {
+export function HomeNavbar({ workspace = false }: { workspace?: boolean }) {
   const t = useTranslations("home");
 
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-card">
-      <div className="mx-auto flex min-h-16 w-full max-w-4xl items-center justify-between gap-4 px-4 py-2 sm:px-6">
-        <div className="flex min-w-0 items-center gap-3">
+      <div
+        className={`mx-auto flex min-h-16 w-full items-center gap-4 px-4 py-2 sm:px-6 ${workspace ? "max-w-none justify-end" : "max-w-4xl justify-between"}`}
+      >
+        <div className={`flex min-w-0 items-center gap-3 ${workspace ? "hidden" : ""}`}>
           <Link
             aria-label="Voidmix home"
             className="inline-flex h-9 shrink-0 items-center rounded-lg px-1.5 text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 max-[380px]:[&_[data-slot=logo]>span]:sr-only"
