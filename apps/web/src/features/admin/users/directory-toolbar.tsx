@@ -1,26 +1,42 @@
-import { MagnifyingGlass, SlidersHorizontal } from "@phosphor-icons/react";
+import { CaretDown, DownloadSimple, FunnelSimple, MagnifyingGlass } from "@phosphor-icons/react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@voidmix/ui/components/ui/dropdown-menu";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@voidmix/ui/components/ui/input-group";
-import type { UserStatus } from "./types";
+import type { UserRole, UserStatus } from "./types";
 
 export function DirectoryToolbar({
   query,
   setQuery,
   status,
   setStatus,
+  role,
+  setRole,
+  onExport,
 }: {
   query: string;
   setQuery: Dispatch<SetStateAction<string>>;
   status: UserStatus | undefined;
   setStatus: Dispatch<SetStateAction<UserStatus | undefined>>;
+  role: UserRole | undefined;
+  setRole: Dispatch<SetStateAction<UserRole | undefined>>;
+  onExport: () => void;
 }) {
   return (
-    <div className="flex min-h-16 items-center gap-4 border-b px-4 max-[760px]:flex-wrap max-[760px]:items-stretch max-[760px]:py-3">
+    <div className="flex min-h-16 items-center gap-3 border-b px-4 max-[760px]:flex-wrap max-[760px]:items-stretch max-[760px]:py-3">
       <InputGroup className="max-w-sm max-[760px]:max-w-none max-[760px]:basis-full">
         <InputGroupAddon>
           <MagnifyingGlass weight="regular" />
@@ -44,11 +60,47 @@ export function DirectoryToolbar({
           Suspended
         </FilterButton>
       </div>
-      <Button aria-label="More filters" size="icon-sm" variant="ghost">
-        <SlidersHorizontal weight="regular" />
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              aria-label="Filter by role"
+              className="gap-1.5"
+              size="sm"
+              variant={role ? "secondary" : "outline"}
+            >
+              <FunnelSimple aria-hidden="true" weight="regular" />
+              {role ? roleLabel(role) : "Role"}
+              <CaretDown aria-hidden="true" className="size-3" weight="bold" />
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end" className="min-w-36">
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Filter by role</DropdownMenuLabel>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup
+            onValueChange={(value) => setRole(value === "all" ? undefined : (value as UserRole))}
+            value={role ?? "all"}
+          >
+            <DropdownMenuRadioItem value="all">All roles</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="owner">Owner</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="admin">Admin</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="user">Member</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Button aria-label="Export visible users" onClick={onExport} size="sm" variant="outline">
+        <DownloadSimple aria-hidden="true" weight="regular" />
+        <span className="max-[480px]:hidden">Export</span>
       </Button>
     </div>
   );
+}
+
+function roleLabel(role: UserRole) {
+  return role === "user" ? "Member" : role.charAt(0).toUpperCase() + role.slice(1);
 }
 
 function FilterButton({

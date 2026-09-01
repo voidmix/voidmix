@@ -43,7 +43,11 @@ function matchesInput(user: AdminUser, input: UserListInput) {
   const query = input.query?.trim().toLowerCase();
   const matchesQuery =
     !query || user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query);
-  return matchesQuery && (!input.status || user.status === input.status);
+  return (
+    matchesQuery &&
+    (!input.status || user.status === input.status) &&
+    (!input.role || user.role === input.role)
+  );
 }
 
 export function createPreviewUsersAdapter(

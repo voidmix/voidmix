@@ -1,9 +1,8 @@
-import { Export, UserPlus } from "@phosphor-icons/react";
+import { UserPlus } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 
 import { UserDirectory } from "../../../features/admin/users/directory";
-import { MetricGrid } from "../../../features/admin/users/metric-grid";
 
 export const Route = createFileRoute("/(app)/(admin)/admin")({
   component: AdminUsersRoute,
@@ -31,16 +30,20 @@ function AdminUsersRoute() {
           </p>
         </div>
         <div className="flex gap-2.5 max-[480px]:w-full">
-          <Button className="max-[480px]:flex-1" variant="secondary">
-            <Export data-icon="inline-start" weight="regular" /> Export
-          </Button>
-          <Button className="max-[480px]:flex-1">
+          <Button
+            aria-describedby="invite-user-note"
+            className="max-[480px]:flex-1"
+            disabled
+            title="User invitations are not available yet"
+          >
             <UserPlus data-icon="inline-start" weight="regular" /> Invite user
           </Button>
         </div>
       </header>
-      <MetricGrid />
       <UserDirectory />
+      <p className="sr-only" id="invite-user-note">
+        User invitations will be enabled when the user creation API is available.
+      </p>
     </>
   );
 }

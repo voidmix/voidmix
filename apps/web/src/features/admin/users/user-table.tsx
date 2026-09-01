@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 import type { AdminUser } from "./types";
 import { UserRow } from "./user-row";
 
@@ -5,11 +7,28 @@ export function UserTable({
   users,
   isLoading,
   onToggle,
+  selectedIds,
+  onSelect,
+  onSelectAll,
+  pendingIds,
 }: {
   users: readonly AdminUser[];
   isLoading: boolean;
   onToggle: (user: AdminUser) => void;
+  selectedIds: ReadonlySet<string>;
+  onSelect: (userId: string, selected: boolean) => void;
+  onSelectAll: (selected: boolean) => void;
+  pendingIds: ReadonlySet<string>;
 }) {
+  const selectAllRef = useRef<HTMLInputElement>(null);
+  const selectedVisibleCount = users.filter((user) => selectedIds.has(user.id)).length;
+  const allSelected = users.length > 0 && selectedVisibleCount === users.length;
+  const someSelected = selectedVisibleCount > 0 && !allSelected;
+
+  useEffect(() => {
+    if (selectAllRef.current) selectAllRef.current.indeterminate = someSelected;
+  }, [someSelected]);
+
   return (
     <div className="relative overflow-x-auto">
       <table className="w-full min-w-[52rem] border-collapse">
@@ -18,7 +37,10 @@ export function UserTable({
             <th className="w-11 border-b py-3 pr-4 pl-5 text-left font-mono text-[0.65rem] font-semibold text-muted-foreground uppercase">
               <input
                 aria-label="Select all users"
+                checked={allSelected}
                 className="size-3.5 accent-primary"
+                onChange={(event) => onSelectAll(event.currentTarget.checked)}
+                ref={selectAllRef}
                 type="checkbox"
               />
             </th>
@@ -34,7 +56,14 @@ export function UserTable({
         </thead>
         <tbody className="[&_tr]:transition-colors [&_tr:hover]:bg-muted/40">
           {users.map((user) => (
-            <UserRow key={user.id} onToggle={() => onToggle(user)} user={user} />
+            <UserRow
+              isPending={pendingIds.has(user.id)}
+              key={user.id}
+              onSelect={(selected) => onSelect(user.id, selected)}
+              onToggle={() => onToggle(user)}
+              selected={selectedIds.has(user.id)}
+              user={user}
+            />
           ))}
         </tbody>
       </table>

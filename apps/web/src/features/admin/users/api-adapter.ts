@@ -40,7 +40,11 @@ export function createApiUsersAdapter(
       });
       return page.items
         .map(toAdminUser)
-        .filter((user) => !input.status || user.status === input.status);
+        .filter(
+          (user) =>
+            (!input.status || user.status === input.status) &&
+            (!input.role || user.role === input.role),
+        );
     },
     async updateUserStatus(input) {
       return toAdminUser(await api.admin.users.updateStatus(input));

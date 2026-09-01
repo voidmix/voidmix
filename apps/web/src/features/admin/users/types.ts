@@ -14,6 +14,7 @@ export interface AdminUser {
 export interface UserListInput {
   query?: string;
   status?: UserStatus;
+  role?: UserRole;
 }
 
 export interface AdminUsersClient {

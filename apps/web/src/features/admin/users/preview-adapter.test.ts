@@ -3,7 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { createPreviewUsersAdapter } from "./preview-adapter";
 
 describe("preview users adapter", () => {
-  it("filters by trimmed name/email query and status", async () => {
+  it("filters by trimmed name/email query, status, and role", async () => {
     const adapter = createPreviewUsersAdapter([
       {
         id: "1",
@@ -29,6 +29,9 @@ describe("preview users adapter", () => {
       adapter.listUsers({ query: "  ADA@EXAMPLE  ", status: "active" }),
     ).resolves.toEqual([expect.objectContaining({ id: "1" })]);
     await expect(adapter.listUsers({ status: "active" })).resolves.toHaveLength(1);
+    await expect(adapter.listUsers({ role: "admin" })).resolves.toEqual([
+      expect.objectContaining({ id: "2" }),
+    ]);
   });
 
   it("updates a copied preview record without mutating the fixture", async () => {

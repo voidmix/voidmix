@@ -3,15 +3,30 @@ import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
 import type { AdminUser, UserStatus } from "./types";
 
-export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => void }) {
+export function UserRow({
+  user,
+  onToggle,
+  selected,
+  onSelect,
+  isPending,
+}: {
+  user: AdminUser;
+  onToggle: () => void;
+  selected: boolean;
+  onSelect: (selected: boolean) => void;
+  isPending: boolean;
+}) {
   const tone = statusTone(user.status);
   const actionLabel = user.status === "suspended" ? "Activate" : "Suspend";
+  const isOwner = user.role === "owner";
   return (
     <tr>
       <td className="w-11 border-b py-3 pr-4 pl-5 text-sm text-muted-foreground">
         <input
           aria-label={`Select ${user.name}`}
+          checked={selected}
           className="size-3.5 accent-primary"
+          onChange={(event) => onSelect(event.currentTarget.checked)}
           type="checkbox"
         />
       </td>
@@ -25,22 +40,23 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
         </div>
       </td>
       <td className="border-b px-4 py-3 text-sm text-muted-foreground">
-        <span className="capitalize">{user.role}</span>
+        <span className="capitalize">{user.role === "user" ? "member" : user.role}</span>
       </td>
       <td className="border-b px-4 py-3 text-sm text-muted-foreground">
-        <Badge variant={tone}>{user.status}</Badge>
+        <Badge variant={tone}>{user.status === "active" ? "Active" : "Suspended"}</Badge>
       </td>
       <td className="border-b px-4 py-3 text-sm text-muted-foreground">{user.lastActive}</td>
       <td className="border-b px-4 py-3 text-sm text-muted-foreground">{user.joinedAt}</td>
       <td className="border-b px-4 py-3 text-sm text-muted-foreground">
         <Button
           aria-label={`${actionLabel} ${user.name}`}
-          disabled={user.role === "owner"}
+          disabled={isOwner || isPending}
           onClick={onToggle}
-          size={user.status === "suspended" ? "sm" : "icon-sm"}
+          title={isOwner ? "The owner cannot be suspended" : undefined}
+          size="sm"
           variant="ghost"
         >
-          {user.status === "suspended" ? actionLabel : "•••"}
+          {isPending ? "Saving…" : actionLabel}
         </Button>
       </td>
     </tr>
