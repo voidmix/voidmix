@@ -1,9 +1,9 @@
-import { ArrowRight, Bell, Gear, Plus, UsersThree } from "@phosphor-icons/react";
+import { ArrowRight, Gear, Plus, UsersThree } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
-import { Avatar } from "@voidmix/ui/avatar";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
-import { useSession } from "../../../lib/auth-client";
+import { signOut, useSession } from "../../../lib/auth-client";
 
 import {
   navigation,
@@ -13,6 +13,7 @@ import {
   recentThreads,
   type WorkspaceSectionId,
 } from "../data";
+import { UserDropdown } from "./user-dropdown";
 
 export function HomeSidebar({
   activeSection = "overview",
@@ -24,16 +25,29 @@ export function HomeSidebar({
   variant?: "launcher" | "workspace";
 }) {
   const t = useTranslations("home");
+  const navigate = useNavigate();
   const session = useSession();
   const isLauncher = variant === "launcher";
   const items = isLauncher ? launcherNavigation : navigation;
-  const accountName = session.data?.user.name || session.data?.user.email || t("account");
-  const accountMeta = session.data?.user.email ?? t("admin");
+
+  const handleNewTask =
+    onNewTask ??
+    (() => {
+      window.location.hash = "ask-voidmix";
+    });
+
+  async function handleSignOut() {
+    await signOut();
+    await navigate({ to: "/" });
+  }
+
+  const user = session.data?.user;
+  const role = (user as { role?: string | null } | undefined)?.role;
 
   return (
     <aside
       aria-label={t("workspace")}
-      className="sticky top-0 flex h-dvh min-h-0 flex-col overflow-y-auto border-r border-border bg-muted px-3 py-[1.15rem] pb-[0.9rem] max-[1180px]:px-2.5 max-[760px]:hidden"
+      className="fixed inset-y-0 left-0 z-40 flex h-dvh min-h-0 w-[4.75rem] flex-col overflow-y-auto border-r border-border bg-muted px-2.5 py-[1.15rem] pb-[0.9rem] min-[1181px]:w-[15rem] min-[1181px]:px-3 max-[760px]:hidden"
     >
       <div className="flex flex-col gap-5">
         <a
@@ -67,13 +81,7 @@ export function HomeSidebar({
       <Button
         aria-label={t("newTask")}
         className="mt-5 w-full max-[1180px]:size-10 max-[1180px]:min-h-0 max-[1180px]:px-0"
-        onClick={() => {
-          if (onNewTask) {
-            onNewTask();
-          } else {
-            window.location.hash = "ask-voidmix";
-          }
-        }}
+        onClick={handleNewTask}
         size="lg"
         variant="secondary"
       >
@@ -127,34 +135,42 @@ export function HomeSidebar({
         </div>
       ) : null}
 
-      {!isLauncher ? (
+      {!isLauncher || user ? (
         <div className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3">
-          <a
-            aria-label={t("team")}
-            className={navigationClassName({ current: false })}
-            href="#team"
-          >
-            <UsersThree aria-hidden="true" />
-            <span className="max-[1180px]:hidden">{t("team")}</span>
-          </a>
-          <a
-            aria-label={t("settings")}
-            className={navigationClassName({ current: false })}
-            href="#settings"
-          >
-            <Gear aria-hidden="true" />
-            <span className="max-[1180px]:hidden">{t("settings")}</span>
-          </a>
-          <div className="mt-2 flex items-center gap-2.5 border-t border-border px-1 py-3 max-[1180px]:justify-center">
-            <Avatar className="max-[1180px]:hidden" name={accountName} size="small" />
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5 max-[1180px]:hidden">
-              <strong className="truncate text-[0.72rem]">{accountName}</strong>
-              <small className="text-[0.7rem] font-medium text-muted-foreground">
-                {accountMeta}
-              </small>
-            </span>
-            <Bell aria-label={t("notifications")} className="size-4 text-muted-foreground" />
-          </div>
+          {!isLauncher ? (
+            <>
+              <a
+                aria-label={t("team")}
+                className={navigationClassName({ current: false })}
+                href="#team"
+              >
+                <UsersThree aria-hidden="true" />
+                <span className="max-[1180px]:hidden">{t("team")}</span>
+              </a>
+              <a
+                aria-label={t("settings")}
+                className={navigationClassName({ current: false })}
+                href="#settings"
+              >
+                <Gear aria-hidden="true" />
+                <span className="max-[1180px]:hidden">{t("settings")}</span>
+              </a>
+            </>
+          ) : null}
+          {user ? (
+            <div className="mt-2 border-t border-border pt-2">
+              <UserDropdown
+                onNewTask={handleNewTask}
+                onSignOut={handleSignOut}
+                user={{
+                  email: user.email,
+                  name: user.name,
+                  ...(role !== undefined ? { role } : {}),
+                }}
+                variant="sidebar"
+              />
+            </div>
+          ) : null}
         </div>
       ) : null}
     </aside>

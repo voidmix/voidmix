@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
@@ -225,6 +225,9 @@ describe("workspace launcher", () => {
     await waitFor(() =>
       expect(screen.getAllByRole("button", { name: "Open user menu" })).toHaveLength(2),
     );
+    const sidebar = screen.getByRole("complementary", { name: "Workspace" });
+    expect(sidebar).toHaveClass("fixed");
+    expect(within(sidebar).getByRole("button", { name: "Open user menu" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
   });
 

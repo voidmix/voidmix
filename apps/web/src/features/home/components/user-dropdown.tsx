@@ -23,10 +23,12 @@ export function UserDropdown({
   onNewTask,
   onSignOut,
   user,
+  variant = "header",
 }: {
   onNewTask?: () => void;
   onSignOut: () => Promise<void>;
   user: UserDropdownUser;
+  variant?: "header" | "sidebar";
 }) {
   const t = useTranslations("auth");
   const homeT = useTranslations("home");
@@ -34,6 +36,7 @@ export function UserDropdown({
   const [signingOut, setSigningOut] = useState(false);
   const displayName = user.name || user.email;
   const role = user.role || t("member");
+  const isSidebar = variant === "sidebar";
 
   async function handleSignOut() {
     if (signingOut) return;
@@ -53,24 +56,39 @@ export function UserDropdown({
             aria-expanded={open}
             aria-haspopup="menu"
             aria-label={t("openUserMenu")}
-            className="max-w-48 gap-2 rounded-md px-2 max-[899px]:size-9 max-[899px]:px-0"
+            className={
+              isSidebar
+                ? "min-h-9 w-full justify-start gap-2.5 rounded-md px-1.5 text-left max-[1180px]:size-10 max-[1180px]:min-h-0 max-[1180px]:justify-center max-[1180px]:gap-0 max-[1180px]:px-0"
+                : "max-w-48 gap-2 rounded-md px-2 max-[899px]:size-9 max-[899px]:px-0"
+            }
             title={`${t("openUserMenu")}: ${displayName}`}
             size="sm"
             variant="ghost"
           >
             <Avatar aria-hidden="true" className="size-6" name={displayName} size="small" />
-            <span className="hidden min-w-0 truncate text-xs font-medium min-[900px]:inline">
+            <span
+              className={
+                isSidebar
+                  ? "min-w-0 flex-1 truncate text-xs font-medium max-[1180px]:hidden"
+                  : "hidden min-w-0 truncate text-xs font-medium min-[900px]:inline"
+              }
+            >
               {displayName}
             </span>
             <CaretDown
               aria-hidden="true"
-              className="hidden min-[900px]:inline"
+              className={isSidebar ? "max-[1180px]:hidden" : "hidden min-[900px]:inline"}
               data-icon="inline-end"
             />
           </Button>
         }
       />
-      <DropdownMenuContent align="end" className="min-w-64" sideOffset={8}>
+      <DropdownMenuContent
+        align="end"
+        className="min-w-64"
+        side={isSidebar ? "right" : "bottom"}
+        sideOffset={8}
+      >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-start gap-2.5 px-2 py-2.5">
             <Avatar aria-hidden="true" name={displayName} size="medium" />

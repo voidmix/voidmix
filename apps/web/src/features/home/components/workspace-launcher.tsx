@@ -81,14 +81,14 @@ export function WorkspaceLauncher() {
   }
 
   return (
-    <div className="grid min-h-dvh min-[761px]:grid-cols-[4.75rem_minmax(0,1fr)] min-[1181px]:grid-cols-[15rem_minmax(0,1fr)] max-[760px]:block">
+    <div className="min-h-dvh">
       <HomeSidebar
         activeSection={activeSection}
         onNewTask={() => focusComposer("")}
         variant="launcher"
       />
 
-      <div className="min-w-0">
+      <div className="min-w-0 min-[761px]:pl-[4.75rem] min-[1181px]:pl-[15rem]">
         <div className="max-[760px]:hidden">
           <HomeNavbar workspace />
         </div>
