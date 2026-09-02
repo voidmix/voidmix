@@ -2,17 +2,31 @@ import { ChatCircleDots } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@voidmix/ui/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Composer } from "./components/composer";
 import { MessageList } from "./components/message-list";
 import { createPreviewResponse, initialChatMessages } from "./fixtures";
 import type { ChatMessage } from "./types";
 
-export function ChatShell({ onStarted }: { onStarted?: () => void } = {}) {
+interface ChatShellProps {
+  initialMessages?: readonly ChatMessage[];
+  onMessagesChange?: (messages: readonly ChatMessage[]) => void;
+  onStarted?: () => void;
+}
+
+export function ChatShell({
+  initialMessages = initialChatMessages,
+  onMessagesChange,
+  onStarted,
+}: ChatShellProps = {}) {
   const t = useTranslations("home");
-  const [messages, setMessages] = useState<readonly ChatMessage[]>(initialChatMessages);
+  const [messages, setMessages] = useState<readonly ChatMessage[]>(initialMessages);
   const hasMessages = messages.length > 0;
+
+  useEffect(() => {
+    onMessagesChange?.(messages);
+  }, [messages, onMessagesChange]);
 
   function handleSubmit(prompt: string) {
     onStarted?.();
@@ -31,7 +45,7 @@ export function ChatShell({ onStarted }: { onStarted?: () => void } = {}) {
     return (
       <section className="flex flex-1 items-center justify-center py-12" id="ask-voidmix">
         <div className="w-full">
-          <Composer onSubmit={handleSubmit} />
+          <Composer onSubmit={handleSubmit} variant="launcher" />
           <p className="mt-3 text-center text-xs text-muted-foreground">{t("previewDataStays")}</p>
         </div>
       </section>

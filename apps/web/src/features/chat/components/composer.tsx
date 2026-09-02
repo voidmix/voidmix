@@ -1,6 +1,7 @@
 import { Plus, Sparkle } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { cn } from "@voidmix/ui/lib/utils";
 import {
   useId,
   useLayoutEffect,
@@ -22,14 +23,27 @@ import { SkillMenu } from "./skill-menu";
 import { loadAttachmentMenu } from "./attachment-menu-lazy";
 
 interface ComposerProps {
+  disabled?: boolean;
+  focusKey?: number;
   onSubmit: (prompt: string) => void;
+  onValueChange?: (value: string) => void;
   value?: string;
+  variant?: "launcher" | "conversation";
 }
 
-export function Composer({ onSubmit, value = "" }: ComposerProps) {
+export function Composer({
+  disabled = false,
+  focusKey = 0,
+  onSubmit,
+  onValueChange,
+  value,
+  variant = "conversation",
+}: ComposerProps) {
   const t = useTranslations("home");
-  const [prompt, setPrompt] = useState(value);
-  const [caret, setCaret] = useState(value.length);
+  const [internalPrompt, setInternalPrompt] = useState(value ?? "");
+  const isControlled = value !== undefined;
+  const prompt = isControlled ? value : internalPrompt;
+  const [caret, setCaret] = useState(prompt.length);
   const [activeIndex, setActiveIndex] = useState(0);
   const [dismissed, setDismissed] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -68,8 +82,23 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
     textarea.setSelectionRange(target, target);
   }, [prompt]);
 
+  useLayoutEffect(() => {
+    if (!focusKey) return;
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.focus();
+    textarea.setSelectionRange(prompt.length, prompt.length);
+    setCaret(prompt.length);
+    setFocused(true);
+  }, [focusKey]);
+
+  function updatePrompt(next: string) {
+    if (!isControlled) setInternalPrompt(next);
+    onValueChange?.(next);
+  }
+
   function resetDraft(next: string) {
-    setPrompt(next);
+    updatePrompt(next);
     setCaret(next.length);
     setActiveIndex(0);
     setDismissed(false);
@@ -90,7 +119,8 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
   function appendAttachment(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
-      setPrompt((current) => `${current}${current ? "\n" : ""}[attachment: ${file.name}]`);
+      const next = `${prompt}${prompt ? "\n" : ""}[attachment: ${file.name}]`;
+      updatePrompt(next);
     }
     event.target.value = "";
   }
@@ -99,14 +129,14 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
     if (!skill) return;
     const edit = insertSkillAtCaret(prompt, caret, skill);
     pendingCaretRef.current = edit.caret;
-    setPrompt(edit.value);
+    updatePrompt(edit.value);
     setCaret(edit.caret);
     setActiveIndex(0);
     setDismissed(false);
   }
 
   function handleChange(event: ChangeEvent<HTMLTextAreaElement>) {
-    setPrompt(event.target.value);
+    updatePrompt(event.target.value);
     setCaret(event.target.selectionStart);
     setActiveIndex(0);
     // Any edit revives a menu that Escape dismissed.
@@ -160,6 +190,7 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
       aria-label={t("addAttachmentOrSkill")}
       aria-expanded={attachmentMenuOpen}
       aria-haspopup="menu"
+      disabled={disabled}
       onClick={onClick}
       onFocus={prefetchAttachmentMenu}
       onPointerDown={prefetchAttachmentMenu}
@@ -173,7 +204,11 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
 
   return (
     <form
-      className="relative rounded-xl border border-input bg-card p-2.5 transition-[border-color,box-shadow] focus-within:border-ring/70 focus-within:ring-2 focus-within:ring-ring/20"
+      aria-busy={disabled}
+      className={cn(
+        "relative border border-input bg-card transition-[border-color,box-shadow] focus-within:border-ring/70 focus-within:ring-2 focus-within:ring-ring/20",
+        variant === "launcher" ? "rounded-lg p-3" : "rounded-xl p-2.5",
+      )}
       onSubmit={handleSubmit}
     >
       {isMenuOpen ? (
@@ -197,7 +232,11 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
           aria-controls={isMenuOpen ? listboxId : undefined}
           aria-label={t("askVoidmix")}
           aria-owns={isMenuOpen ? listboxId : undefined}
-          className="min-h-[6rem] min-w-0 flex-1 resize-y border-0 bg-transparent p-0 text-[0.82rem] leading-[1.5] text-foreground outline-none placeholder:text-muted-foreground"
+          className={cn(
+            "min-w-0 flex-1 resize-y border-0 bg-transparent p-0 text-[0.82rem] leading-[1.5] text-foreground outline-none placeholder:text-muted-foreground",
+            variant === "launcher" ? "min-h-[4.5rem]" : "min-h-[6rem]",
+          )}
+          disabled={disabled}
           onBlur={() => setFocused(false)}
           onChange={handleChange}
           onClick={(event) => setCaret(event.currentTarget.selectionStart)}
@@ -206,7 +245,7 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
           onKeyUp={(event) => setCaret(event.currentTarget.selectionStart)}
           placeholder={t("askWorkspace")}
           ref={textareaRef}
-          rows={4}
+          rows={variant === "launcher" ? 3 : 4}
           value={prompt}
         />
       </div>
@@ -236,7 +275,7 @@ export function Composer({ onSubmit, value = "" }: ComposerProps) {
         />
         <Button
           aria-label={t("sendMessage")}
-          disabled={!prompt.trim()}
+          disabled={disabled || !prompt.trim()}
           size="icon"
           type="submit"
           variant="primary"

@@ -45,6 +45,17 @@ export const navigation = [
 
 export type WorkspaceSectionId = (typeof navigation)[number]["id"];
 
+export const launcherNavigation = navigation.filter(
+  (item) => item.id === "overview" || item.id === "projects",
+);
+
+export const launcherPrompts = [
+  { id: "summary", messageKey: "launcherSummary", icon: ChatCircleDots },
+  { id: "blockers", messageKey: "launcherBlockers", icon: Lightning },
+  { id: "review", messageKey: "launcherReview", icon: CheckCircle },
+  { id: "nextSteps", messageKey: "launcherNextSteps", icon: Stack },
+] as const;
+
 export const workspacePlaceholders = [
   {
     id: "inbox",

@@ -1,5 +1,6 @@
 import { Gear, List, Plus, UserCircle, UsersThree } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useEffect, useState } from "react";
 import {
@@ -16,7 +17,8 @@ import { Logo } from "@voidmix/ui/logo";
 
 import { LanguageSwitcher } from "../../../components/language-switcher";
 import { ThemeSwitcher } from "../../../components/theme-switcher";
-import { mobileNavigationItems } from "../data";
+import { useSession } from "../../../lib/auth-client";
+import { launcherNavigation, mobileNavigationItems, navigationHref } from "../data";
 import type { WorkspaceSectionId } from "../data";
 
 function navigateTo(href: string) {
@@ -25,12 +27,19 @@ function navigateTo(href: string) {
 
 function MobileNavigationMenu({
   activeSection,
-  minimal,
+  onNewTask,
+  variant,
 }: {
   activeSection: WorkspaceSectionId;
-  minimal: boolean;
+  onNewTask?: () => void;
+  variant: "launcher" | "workspace";
 }) {
   const t = useTranslations("home");
+  const authT = useTranslations("auth");
+  const navigate = useNavigate();
+  const session = useSession();
+  const isLauncher = variant === "launcher";
+  const items = isLauncher ? launcherNavigation : mobileNavigationItems;
 
   return (
     <DropdownMenu>
@@ -44,11 +53,19 @@ function MobileNavigationMenu({
       <DropdownMenuContent align="end" className="min-w-60" sideOffset={8}>
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("workspace")}</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => navigateTo("#ask-voidmix")}>
+          <DropdownMenuItem
+            onClick={() => {
+              if (onNewTask) {
+                onNewTask();
+              } else {
+                navigateTo("#ask-voidmix");
+              }
+            }}
+          >
             <Plus aria-hidden="true" weight="bold" />
             {t("newTask")}
           </DropdownMenuItem>
-          {mobileNavigationItems.map((item) => {
+          {items.map((item) => {
             const Icon = item.icon;
             const current = item.id === activeSection;
 
@@ -57,7 +74,7 @@ function MobileNavigationMenu({
                 aria-current={current ? "page" : undefined}
                 className={current ? "bg-accent text-accent-foreground" : undefined}
                 key={item.label}
-                onClick={() => navigateTo(item.href)}
+                onClick={() => navigateTo("href" in item ? item.href : navigationHref(item))}
               >
                 <Icon aria-hidden="true" weight={current ? "fill" : "regular"} />
                 {t(item.messageKey)}
@@ -67,7 +84,7 @@ function MobileNavigationMenu({
           })}
         </DropdownMenuGroup>
 
-        {!minimal ? (
+        {!isLauncher ? (
           <>
             <DropdownMenuSeparator />
 
@@ -86,14 +103,30 @@ function MobileNavigationMenu({
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{t("account")}</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => navigateTo("#account")}>
-            <UserCircle aria-hidden="true" />
-            Alex Morgan
-            <DropdownMenuShortcut>{t("admin")}</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        {session.data ? (
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>{t("account")}</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => navigateTo("#account")}>
+              <UserCircle aria-hidden="true" />
+              {session.data.user.name || session.data.user.email}
+              <DropdownMenuShortcut>
+                {(session.data.user as { role?: string }).role ?? t("admin")}
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        ) : (
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>{authT("account")}</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => void navigate({ to: "/login" })}>
+              <UserCircle aria-hidden="true" />
+              {authT("signIn")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void navigate({ to: "/signup" })}>
+              <Plus aria-hidden="true" weight="bold" />
+              {authT("createAccount")}
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -101,10 +134,12 @@ function MobileNavigationMenu({
 
 export function MobileNavigation({
   activeSection = "overview",
-  minimal = false,
+  onNewTask,
+  variant = "workspace",
 }: {
   activeSection?: WorkspaceSectionId;
-  minimal?: boolean;
+  onNewTask?: () => void;
+  variant?: "launcher" | "workspace";
 }) {
   const t = useTranslations("home");
   const [isMounted, setIsMounted] = useState(false);
@@ -135,7 +170,11 @@ export function MobileNavigation({
         <LanguageSwitcher />
         <ThemeSwitcher />
         {isMounted ? (
-          <MobileNavigationMenu activeSection={activeSection} minimal={minimal} />
+          <MobileNavigationMenu
+            activeSection={activeSection}
+            variant={variant}
+            {...(onNewTask ? { onNewTask } : {})}
+          />
         ) : (
           <Button
             aria-label={t("openWorkspaceNavigation")}

@@ -3,23 +3,32 @@ import { useTranslations } from "@voidmix/i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
+import { useSession } from "../../../lib/auth-client";
 
 import {
   navigation,
   navigationClassName,
   navigationHref,
+  launcherNavigation,
   recentThreads,
   type WorkspaceSectionId,
 } from "../data";
 
 export function HomeSidebar({
   activeSection = "overview",
-  minimal = false,
+  onNewTask,
+  variant = "workspace",
 }: {
   activeSection?: WorkspaceSectionId;
-  minimal?: boolean;
+  onNewTask?: () => void;
+  variant?: "launcher" | "workspace";
 }) {
   const t = useTranslations("home");
+  const session = useSession();
+  const isLauncher = variant === "launcher";
+  const items = isLauncher ? launcherNavigation : navigation;
+  const accountName = session.data?.user.name || session.data?.user.email || t("account");
+  const accountMeta = session.data?.user.email ?? t("admin");
 
   return (
     <aside
@@ -59,7 +68,11 @@ export function HomeSidebar({
         aria-label={t("newTask")}
         className="mt-5 w-full max-[1180px]:size-10 max-[1180px]:min-h-0 max-[1180px]:px-0"
         onClick={() => {
-          window.location.hash = "ask-voidmix";
+          if (onNewTask) {
+            onNewTask();
+          } else {
+            window.location.hash = "ask-voidmix";
+          }
         }}
         size="lg"
         variant="secondary"
@@ -72,7 +85,7 @@ export function HomeSidebar({
         <p className="mb-1.5 px-2.5 text-[0.7rem] font-semibold tracking-[0.025em] text-muted-foreground max-[1180px]:hidden">
           {t("workspace")}
         </p>
-        {navigation.map((item) => {
+        {items.map((item) => {
           const Icon = item.icon;
           const current = activeSection === item.id;
 
@@ -96,7 +109,7 @@ export function HomeSidebar({
         })}
       </nav>
 
-      {!minimal ? (
+      {!isLauncher ? (
         <div className="mt-7 flex flex-col gap-0.5 border-t border-border pt-[1.15rem] max-[1180px]:hidden">
           <p className="mb-1.5 px-2.5 text-[0.7rem] font-semibold tracking-[0.025em] text-muted-foreground">
             {t("recent")}
@@ -114,36 +127,36 @@ export function HomeSidebar({
         </div>
       ) : null}
 
-      <div className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3">
-        {!minimal ? (
-          <>
-            <a
-              aria-label={t("team")}
-              className={navigationClassName({ current: false })}
-              href="#team"
-            >
-              <UsersThree aria-hidden="true" />
-              <span className="max-[1180px]:hidden">{t("team")}</span>
-            </a>
-            <a
-              aria-label={t("settings")}
-              className={navigationClassName({ current: false })}
-              href="#settings"
-            >
-              <Gear aria-hidden="true" />
-              <span className="max-[1180px]:hidden">{t("settings")}</span>
-            </a>
-          </>
-        ) : null}
-        <div className="mt-2 flex items-center gap-2.5 border-t border-border px-1 py-3 max-[1180px]:justify-center">
-          <Avatar className="max-[1180px]:hidden" name="Alex Morgan" size="small" />
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5 max-[1180px]:hidden">
-            <strong className="truncate text-[0.72rem]">Alex Morgan</strong>
-            <small className="text-[0.7rem] font-medium text-muted-foreground">{t("admin")}</small>
-          </span>
-          <Bell aria-label={t("notifications")} className="size-4 text-muted-foreground" />
+      {!isLauncher ? (
+        <div className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3">
+          <a
+            aria-label={t("team")}
+            className={navigationClassName({ current: false })}
+            href="#team"
+          >
+            <UsersThree aria-hidden="true" />
+            <span className="max-[1180px]:hidden">{t("team")}</span>
+          </a>
+          <a
+            aria-label={t("settings")}
+            className={navigationClassName({ current: false })}
+            href="#settings"
+          >
+            <Gear aria-hidden="true" />
+            <span className="max-[1180px]:hidden">{t("settings")}</span>
+          </a>
+          <div className="mt-2 flex items-center gap-2.5 border-t border-border px-1 py-3 max-[1180px]:justify-center">
+            <Avatar className="max-[1180px]:hidden" name={accountName} size="small" />
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5 max-[1180px]:hidden">
+              <strong className="truncate text-[0.72rem]">{accountName}</strong>
+              <small className="text-[0.7rem] font-medium text-muted-foreground">
+                {accountMeta}
+              </small>
+            </span>
+            <Bell aria-label={t("notifications")} className="size-4 text-muted-foreground" />
+          </div>
         </div>
-      </div>
+      ) : null}
     </aside>
   );
 }

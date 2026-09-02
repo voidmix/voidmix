@@ -19,6 +19,7 @@ import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-pas
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
 import { Route as appadminAdminRouteImport } from './routes/(app)/(admin)/admin'
+import { Route as appChatChatIdRouteImport } from './routes/(app)/chat.$chatId'
 import { Route as appadminAdminSettingsRouteImport } from './routes/(app)/(admin)/admin/settings'
 import { Route as appadminAdminSettingsAuthRouteImport } from './routes/(app)/(admin)/admin/settings/auth'
 
@@ -69,6 +70,11 @@ const appadminAdminRoute = appadminAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => appadminRouteRoute,
 } as any)
+const appChatChatIdRoute = appChatChatIdRouteImport.update({
+  id: '/chat/$chatId',
+  path: '/chat/$chatId',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appadminAdminSettingsRoute = appadminAdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
   '/admin': typeof appadminAdminRouteWithChildren
+  '/chat/$chatId': typeof appChatChatIdRoute
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
   '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
   '/admin': typeof appadminAdminRouteWithChildren
+  '/chat/$chatId': typeof appChatChatIdRoute
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
   '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/(auth)/signup': typeof authSignupRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
   '/(app)/(admin)/admin': typeof appadminAdminRouteWithChildren
+  '/(app)/chat/$chatId': typeof appChatChatIdRoute
   '/(app)/(admin)/admin/settings': typeof appadminAdminSettingsRouteWithChildren
   '/(app)/(admin)/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/verify-email'
     | '/admin'
+    | '/chat/$chatId'
     | '/admin/settings'
     | '/admin/settings/auth'
   fileRoutesByTo: FileRoutesByTo
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/verify-email'
     | '/admin'
+    | '/chat/$chatId'
     | '/admin/settings'
     | '/admin/settings/auth'
   id:
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/(auth)/signup'
     | '/(auth)/verify-email'
     | '/(app)/(admin)/admin'
+    | '/(app)/chat/$chatId'
     | '/(app)/(admin)/admin/settings'
     | '/(app)/(admin)/admin/settings/auth'
   fileRoutesById: FileRoutesById
@@ -236,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appadminAdminRouteImport
       parentRoute: typeof appadminRouteRoute
     }
+    '/(app)/chat/$chatId': {
+      id: '/(app)/chat/$chatId'
+      path: '/chat/$chatId'
+      fullPath: '/chat/$chatId'
+      preLoaderRoute: typeof appChatChatIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/(admin)/admin/settings': {
       id: '/(app)/(admin)/admin/settings'
       path: '/settings'
@@ -292,10 +311,12 @@ const appadminRouteRouteWithChildren = appadminRouteRoute._addFileChildren(
 
 interface appRouteRouteChildren {
   appadminRouteRoute: typeof appadminRouteRouteWithChildren
+  appChatChatIdRoute: typeof appChatChatIdRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appadminRouteRoute: appadminRouteRouteWithChildren,
+  appChatChatIdRoute: appChatChatIdRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
