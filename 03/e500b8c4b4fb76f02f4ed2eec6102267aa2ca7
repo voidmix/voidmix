@@ -1,0 +1,29 @@
+apps/web/messages/en.json
+  s_c39c5f4065a796::t_4ed710e3733fb5 35-37
+apps/web/messages/zh.json
+  s_c39c5f4065a796::t_f6130798e3e83f 35-37
+apps/web/src/features/home/components/auth-actions.tsx
+  s_c39c5f4065a796::t_6e33531e60c925 3,5,15-16,19-22,26-27
+apps/web/src/features/home/components/component.test.tsx
+  s_c39c5f4065a796::t_19a5c4b50cbce1 9,27,61,82,102,136,218-230
+apps/web/src/features/home/components/mobile-navigation.tsx
+  s_c39c5f4065a796::t_1671e9616bcd41 20,23,105-120,136-137,144-152,174-184
+apps/web/src/features/home/components/user-dropdown.test.tsx
+  s_c39c5f4065a796::t_468314ea8c23fc 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "03e500b8c4b4fb76f02f4ed2eec6102267aa2ca7",
+  "prompts": {},
+  "sessions": {
+    "s_c39c5f4065a796": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05d22-87ae-7631-bfe0-93238149b194",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
