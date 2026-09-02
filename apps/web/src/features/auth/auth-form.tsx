@@ -11,7 +11,15 @@ import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 import { createVerificationCallbackUrl, normalizeAuthRedirect } from "./route-search";
 
-export function AuthForm({ mode, redirectTo }: { mode: "login" | "signup"; redirectTo?: string }) {
+export function AuthForm({
+  mode,
+  onSuccess,
+  redirectTo,
+}: {
+  mode: "login" | "signup";
+  onSuccess?: () => void | Promise<void>;
+  redirectTo?: string;
+}) {
   const t = useTranslations("auth");
   const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
@@ -66,6 +74,11 @@ export function AuthForm({ mode, redirectTo }: { mode: "login" | "signup"; redir
     setPending(false);
 
     if (!succeeded) return;
+
+    if (onSuccess) {
+      await onSuccess();
+      return;
+    }
 
     if (mode !== "login") {
       await navigate({

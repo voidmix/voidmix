@@ -98,6 +98,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       reviewsDescription: "Track approvals before work moves forward.",
       reviewsPreview: "3 reviews are waiting for a decision.",
       reviewsState: "Needs attention",
+      signIn: "Sign in",
       sendMessage: "Send message",
       signingOut: "Signing out…",
       settings: "Settings",
@@ -166,6 +167,13 @@ describe("workspace launcher", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Inbox" })).not.toBeInTheDocument();
     expect(screen.queryByText("Recent")).not.toBeInTheDocument();
+  });
+
+  it("shows a login button in the signed-out desktop sidebar", () => {
+    render(<WorkspaceLayout />);
+
+    const sidebar = screen.getByRole("complementary", { name: "Workspace" });
+    expect(within(sidebar).getByRole("button", { name: "Sign in" })).toBeVisible();
   });
 
   it("fills quick prompts without submitting", async () => {

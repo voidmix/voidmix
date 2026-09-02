@@ -114,6 +114,20 @@ describe("authentication forms", () => {
     });
   });
 
+  it("supports embedded login success callbacks without navigating", async () => {
+    mocks.signInEmail.mockResolvedValue({ data: {}, error: null });
+    const onSuccess = vi.fn();
+    const user = userEvent.setup();
+    render(<AuthForm mode="login" onSuccess={onSuccess} />);
+
+    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce());
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
   it("creates an account and opens the verification state", async () => {
     mocks.signUpEmail.mockResolvedValue({ data: {}, error: null });
     const user = userEvent.setup();

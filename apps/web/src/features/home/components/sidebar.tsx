@@ -14,6 +14,7 @@ import {
   type WorkspaceSectionId,
 } from "../data";
 import { UserDropdown } from "./user-dropdown";
+import { LoginButton } from "./login-button";
 
 export function HomeSidebar({
   activeSection = "overview",
@@ -135,44 +136,46 @@ export function HomeSidebar({
         </div>
       ) : null}
 
-      {!isLauncher || user ? (
-        <div className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3">
-          {!isLauncher ? (
-            <>
-              <a
-                aria-label={t("team")}
-                className={navigationClassName({ current: false })}
-                href="#team"
-              >
-                <UsersThree aria-hidden="true" />
-                <span className="max-[1180px]:hidden">{t("team")}</span>
-              </a>
-              <a
-                aria-label={t("settings")}
-                className={navigationClassName({ current: false })}
-                href="#settings"
-              >
-                <Gear aria-hidden="true" />
-                <span className="max-[1180px]:hidden">{t("settings")}</span>
-              </a>
-            </>
-          ) : null}
-          {user ? (
-            <div className="mt-2 border-t border-border pt-2">
-              <UserDropdown
-                onNewTask={handleNewTask}
-                onSignOut={handleSignOut}
-                user={{
-                  email: user.email,
-                  name: user.name,
-                  ...(role !== undefined ? { role } : {}),
-                }}
-                variant="sidebar"
-              />
-            </div>
-          ) : null}
-        </div>
-      ) : null}
+      <div className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3">
+        {!isLauncher ? (
+          <>
+            <a
+              aria-label={t("team")}
+              className={navigationClassName({ current: false })}
+              href="#team"
+            >
+              <UsersThree aria-hidden="true" />
+              <span className="max-[1180px]:hidden">{t("team")}</span>
+            </a>
+            <a
+              aria-label={t("settings")}
+              className={navigationClassName({ current: false })}
+              href="#settings"
+            >
+              <Gear aria-hidden="true" />
+              <span className="max-[1180px]:hidden">{t("settings")}</span>
+            </a>
+          </>
+        ) : null}
+        {user ? (
+          <div className="mt-2 border-t border-border pt-2">
+            <UserDropdown
+              onNewTask={handleNewTask}
+              onSignOut={handleSignOut}
+              user={{
+                email: user.email,
+                name: user.name,
+                ...(role !== undefined ? { role } : {}),
+              }}
+              variant="sidebar"
+            />
+          </div>
+        ) : session.isPending ? null : (
+          <div className="mt-2 border-t border-border pt-2">
+            <LoginButton />
+          </div>
+        )}
+      </div>
     </aside>
   );
 }
