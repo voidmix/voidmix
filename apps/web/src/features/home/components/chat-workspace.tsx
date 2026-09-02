@@ -100,10 +100,10 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
         />
 
         <div className="min-w-0 min-[761px]:pl-[4.75rem] min-[1181px]:pl-[15rem]">
-          <div className="max-[760px]:hidden">
+          <div className="sticky top-0 z-30 max-[760px]:hidden">
             <HomeNavbar workspace />
           </div>
-          <div className="min-[761px]:hidden">
+          <div className="sticky top-0 z-20 min-[761px]:hidden">
             <MobileNavigation
               activeSection={activeSection}
               onNewTask={() => void navigate({ to: "/" })}

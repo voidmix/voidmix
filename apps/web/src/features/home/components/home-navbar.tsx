@@ -9,7 +9,7 @@ export function HomeNavbar({ workspace = false }: { workspace?: boolean }) {
   const t = useTranslations("home");
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-border bg-card">
+    <header className="relative w-full border-b border-border bg-card">
       <div
         className={`mx-auto flex min-h-16 w-full items-center gap-4 px-4 py-2 sm:px-6 ${workspace ? "max-w-none justify-end" : "max-w-4xl justify-between"}`}
       >
