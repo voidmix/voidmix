@@ -32,6 +32,9 @@
   "auth": {
     "signIn": "Sign in",
     "signOut": "Sign out",
+    "signingOut": "Signing out…",
+    "openUserMenu": "Open user menu",
+    "member": "Member",
     "createAccount": "Create account",
     "signInFailed": "Sign in failed",
     "registrationFailed": "Registration failed",

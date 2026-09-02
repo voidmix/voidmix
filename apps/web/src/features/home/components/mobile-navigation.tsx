@@ -17,9 +17,10 @@ import { Logo } from "@voidmix/ui/logo";
 
 import { LanguageSwitcher } from "../../../components/language-switcher";
 import { ThemeSwitcher } from "../../../components/theme-switcher";
-import { useSession } from "../../../lib/auth-client";
+import { signOut, useSession } from "../../../lib/auth-client";
 import { launcherNavigation, mobileNavigationItems, navigationHref } from "../data";
 import type { WorkspaceSectionId } from "../data";
+import { UserDropdown } from "./user-dropdown";
 
 function navigateTo(href: string) {
   window.location.hash = href.slice(1);
@@ -101,32 +102,22 @@ function MobileNavigationMenu({
           </>
         ) : null}
 
-        <DropdownMenuSeparator />
-
-        {session.data ? (
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>{t("account")}</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigateTo("#account")}>
-              <UserCircle aria-hidden="true" />
-              {session.data.user.name || session.data.user.email}
-              <DropdownMenuShortcut>
-                {(session.data.user as { role?: string }).role ?? t("admin")}
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        ) : (
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>{authT("account")}</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => void navigate({ to: "/login" })}>
-              <UserCircle aria-hidden="true" />
-              {authT("signIn")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void navigate({ to: "/signup" })}>
-              <Plus aria-hidden="true" weight="bold" />
-              {authT("createAccount")}
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        )}
+        {!session.data ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>{authT("account")}</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => void navigate({ to: "/login" })}>
+                <UserCircle aria-hidden="true" />
+                {authT("signIn")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void navigate({ to: "/signup" })}>
+                <Plus aria-hidden="true" weight="bold" />
+                {authT("createAccount")}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -142,11 +133,22 @@ export function MobileNavigation({
   variant?: "launcher" | "workspace";
 }) {
   const t = useTranslations("home");
+  const navigate = useNavigate();
+  const session = useSession();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  async function handleSignOut() {
+    await signOut();
+    await navigate({ to: "/" });
+  }
+
+  const handleNewTask = onNewTask ?? (() => void navigate({ to: "/" }));
+  const user = session.data?.user;
+  const role = (user as { role?: string | null } | undefined)?.role;
 
   return (
     <header className="sticky top-0 z-20 grid min-h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-muted px-4 py-2.5 max-[760px]:grid">
@@ -169,6 +171,17 @@ export function MobileNavigation({
       <div className="flex items-center gap-0.5">
         <LanguageSwitcher />
         <ThemeSwitcher />
+        {isMounted && user ? (
+          <UserDropdown
+            onNewTask={handleNewTask}
+            onSignOut={handleSignOut}
+            user={{
+              email: user.email,
+              name: user.name,
+              ...(role !== undefined ? { role } : {}),
+            }}
+          />
+        ) : null}
         {isMounted ? (
           <MobileNavigationMenu
             activeSection={activeSection}

@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
-const routerMocks = vi.hoisted(() => ({ navigate: vi.fn() }));
+const routerMocks = vi.hoisted(() => ({ navigate: vi.fn(), signOut: vi.fn() }));
 const sessionMocks = vi.hoisted(() => ({
   value: {
     data: null as { user: { name: string; email: string; role?: string } } | null,
@@ -24,6 +24,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 vi.mock("../../../lib/auth-client", () => ({
+  signOut: routerMocks.signOut,
   useSession: () => sessionMocks.value,
 }));
 
@@ -57,6 +58,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       inboxDescription: "Review conversations that need a response.",
       inboxPreview: "4 threads are queued for review.",
       inboxState: "Ready for triage",
+      member: "Member",
       launcherAskProject: "Ask about project",
       launcherBlockers: "Find what is blocking delivery",
       launcherNextSteps: "Turn the brief into next steps",
@@ -77,6 +79,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       now: "Now",
       onTrack: "On track",
       openThread: "Open thread",
+      openUserMenu: "Open user menu",
       openWorkspaceNavigation: "Open workspace navigation",
       operators: "Operators",
       preview: "Preview",
@@ -96,6 +99,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       reviewsPreview: "3 reviews are waiting for a decision.",
       reviewsState: "Needs attention",
       sendMessage: "Send message",
+      signingOut: "Signing out…",
       settings: "Settings",
       startDescription: "Start with a brief, a decision, or a question for the workspace.",
       startTitle: "What should we move forward?",
@@ -129,6 +133,7 @@ import { WorkspaceLayout } from "./workspace-layout";
 afterEach(() => {
   cleanup();
   routerMocks.navigate.mockReset();
+  routerMocks.signOut.mockReset();
   sessionMocks.value = { data: null, isPending: false };
   window.sessionStorage.clear();
   window.history.replaceState(null, "", "/");
@@ -208,6 +213,19 @@ describe("workspace launcher", () => {
       to: "/chat/$chatId",
       params: { chatId: expect.any(String) },
     });
+  });
+
+  it("shows the signed-in account as a user dropdown", async () => {
+    sessionMocks.value = {
+      data: { user: { name: "Ada Lovelace", email: "ada@example.com", role: "user" } },
+      isPending: false,
+    };
+    render(<WorkspaceLayout />);
+
+    await waitFor(() =>
+      expect(screen.getAllByRole("button", { name: "Open user menu" })).toHaveLength(2),
+    );
+    expect(screen.queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
   });
 
   it("keeps launcher navigation scoped to overview and projects", () => {

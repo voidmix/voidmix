@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslations } from "@voidmix/i18n/client";
-import { Button, buttonVariants } from "@voidmix/ui/components/ui/button";
+import { buttonVariants } from "@voidmix/ui/components/ui/button";
 import { signOut, useSession } from "../../../lib/auth-client";
+import { UserDropdown } from "./user-dropdown";
 
 export function AuthActions() {
   const t = useTranslations("auth");
@@ -11,22 +12,19 @@ export function AuthActions() {
   if (session.isPending) return null;
 
   if (session.data) {
-    const name = session.data.user.name || session.data.user.email;
+    const user = session.data.user;
+    const role = (user as { role?: string | null }).role;
 
     return (
-      <nav aria-label={t("account")} className="flex items-center gap-2">
-        <span className="hidden max-w-40 truncate text-xs text-muted-foreground sm:inline">
-          {name}
-        </span>
-        <Button
-          onClick={async () => {
+      <nav aria-label={t("account")} className="flex items-center">
+        <UserDropdown
+          onNewTask={() => void navigate({ to: "/" })}
+          onSignOut={async () => {
             await signOut();
             await navigate({ to: "/" });
           }}
-          variant="ghost"
-        >
-          {t("signOut")}
-        </Button>
+          user={{ email: user.email, name: user.name, ...(role !== undefined ? { role } : {}) }}
+        />
       </nav>
     );
   }

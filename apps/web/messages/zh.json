@@ -32,6 +32,9 @@
   "auth": {
     "signIn": "登录",
     "signOut": "退出登录",
+    "signingOut": "正在退出…",
+    "openUserMenu": "打开用户菜单",
+    "member": "成员",
     "createAccount": "创建账号",
     "signInFailed": "登录失败",
     "registrationFailed": "注册失败",
