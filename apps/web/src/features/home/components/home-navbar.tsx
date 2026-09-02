@@ -4,7 +4,6 @@ import { Logo } from "@voidmix/ui/logo";
 
 import { LanguageSwitcher } from "../../../components/language-switcher";
 import { ThemeSwitcher } from "../../../components/theme-switcher";
-import { AuthActions } from "./auth-actions";
 
 export function HomeNavbar({ workspace = false }: { workspace?: boolean }) {
   const t = useTranslations("home");
@@ -43,8 +42,6 @@ export function HomeNavbar({ workspace = false }: { workspace?: boolean }) {
             <LanguageSwitcher />
             <ThemeSwitcher />
           </div>
-          <div className="hidden h-5 w-px bg-border sm:block" />
-          <AuthActions />
         </div>
       </div>
     </header>

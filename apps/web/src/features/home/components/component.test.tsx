@@ -174,6 +174,8 @@ describe("workspace launcher", () => {
 
     const sidebar = screen.getByRole("complementary", { name: "Workspace" });
     expect(within(sidebar).getByRole("button", { name: "Sign in" })).toBeVisible();
+    expect(screen.queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Create account" })).not.toBeInTheDocument();
   });
 
   it("fills quick prompts without submitting", async () => {
