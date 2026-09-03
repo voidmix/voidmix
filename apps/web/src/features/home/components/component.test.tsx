@@ -35,7 +35,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       activeProgress: "3 of 4 active",
       admin: "Admin",
       askVoidmix: "Ask Voidmix",
-      askWorkspace: "Ask about this workspace",
+      askWorkspace: "Ask about this workspace, e.g. “What’s blocking delivery?”…",
       assetsDescription: "Keep final files and handoffs in one place.",
       assetsPreview: "No shared assets have been added yet.",
       assetsState: "Library is ready",
@@ -59,13 +59,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       inboxPreview: "4 threads are queued for review.",
       inboxState: "Ready for triage",
       member: "Member",
-      launcherAskProject: "Ask about project",
       launcherBlockers: "Find what is blocking delivery",
-      launcherNextSteps: "Turn the brief into next steps",
-      launcherProjectDetail: "3 reviewers ready · delivery is moving forward",
-      launcherProjectPrompt: "What should we do next on the Northstar launch film?",
-      launcherProjectsTitle: "Recent projects",
-      launcherReview: "Prepare the next review decision",
       launcherSummary: "Summarize the current project",
       navAssets: "Assets",
       navDecisions: "Decisions",
@@ -78,12 +72,12 @@ vi.mock("@voidmix/i18n/client", () => ({
       northstarWorkspace: "Northstar workspace",
       now: "Now",
       onTrack: "On track",
-      openThread: "Open thread",
       openUserMenu: "Open user menu",
       openWorkspaceNavigation: "Open workspace navigation",
       operators: "Operators",
       preview: "Preview",
       previewData: "Preview data",
+      launcherPreviewDataStays: "Preview data stays in this browser…",
       previewDataStays: "Northstar preview data stays in this browser.",
       previewEnvironment: "Preview environment",
       previewLabel: "Preview",
@@ -101,13 +95,13 @@ vi.mock("@voidmix/i18n/client", () => ({
       signIn: "Sign in",
       sendMessage: "Send message",
       signingOut: "Signing out…",
+      skipToContent: "Skip to main content",
       settings: "Settings",
       startDescription: "Start with a brief, a decision, or a question for the workspace.",
       startTitle: "What should we move forward?",
       team: "Team",
       threeOnline: "3 online",
       updatedAt: "Updated 8 min ago",
-      viewAll: "View all",
       workspace: "Workspace",
       workspaceSignal: "Workspace signal",
       you: "You",
@@ -160,7 +154,12 @@ describe("workspace launcher", () => {
     expect(screen.getByRole("heading", { name: "What should we move forward?" })).toBeVisible();
     expect(screen.getByRole("textbox", { name: "Ask Voidmix" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Summarize the current project" })).toBeVisible();
-    expect(screen.getByRole("heading", { name: "Recent projects" })).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Recent projects" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Northstar")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveAttribute(
+      "href",
+      "#main-content",
+    );
     expect(screen.queryByRole("heading", { name: "Workspace signal" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("complementary", { name: "Current project context" }),
@@ -241,12 +240,12 @@ describe("workspace launcher", () => {
     expect(screen.queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
   });
 
-  it("keeps launcher navigation scoped to overview and projects", () => {
+  it("keeps launcher navigation scoped to overview", () => {
     window.location.hash = "#projects";
     render(<WorkspaceLayout />);
 
-    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("href", "#projects");
+    expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "page");
+    expect(screen.queryByRole("link", { name: "Projects" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Reviews" })).not.toBeInTheDocument();
   });
 

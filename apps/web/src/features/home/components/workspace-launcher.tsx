@@ -1,7 +1,5 @@
-import { ArrowRight, Stack } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
 import { useNavigate } from "@tanstack/react-router";
-import { Button } from "@voidmix/ui/components/ui/button";
 import { useEffect, useState } from "react";
 
 import { useSession } from "../../../lib/auth-client";
@@ -13,11 +11,11 @@ import { HomeSidebar } from "./sidebar";
 import { MobileNavigation } from "./mobile-navigation";
 import { launcherPrompts } from "../data";
 
-const launcherSections = new Set(["overview", "projects"]);
+const launcherSections = new Set(["overview"]);
 
-function readLauncherSection(): "overview" | "projects" {
+function readLauncherSection(): "overview" {
   if (typeof window === "undefined") return "overview";
-  return window.location.hash.slice(1) === "projects" ? "projects" : "overview";
+  return "overview";
 }
 
 function createInitialMessages(prompt: string, t: (key: string) => string): readonly ChatMessage[] {
@@ -36,7 +34,7 @@ export function WorkspaceLauncher() {
   const t = useTranslations("home");
   const session = useSession();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<"overview" | "projects">(readLauncherSection);
+  const [activeSection, setActiveSection] = useState<"overview">(readLauncherSection);
   const [draft, setDraft] = useState("");
   const [focusKey, setFocusKey] = useState(0);
 
@@ -82,6 +80,12 @@ export function WorkspaceLauncher() {
 
   return (
     <div className="min-h-dvh">
+      <a
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:ring-2 focus:ring-ring"
+        href="#main-content"
+      >
+        {t("skipToContent")}
+      </a>
       <HomeSidebar
         activeSection={activeSection}
         onNewTask={() => focusComposer("")}
@@ -100,13 +104,13 @@ export function WorkspaceLauncher() {
           />
         </div>
 
-        <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-[clamp(4.5rem,14vh,8.5rem)] max-[760px]:px-4 max-[760px]:pb-16 max-[760px]:pt-12 sm:px-8">
+        <main
+          className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-[clamp(4.5rem,14vh,8.5rem)] max-[760px]:px-4 max-[760px]:pb-16 max-[760px]:pt-12 sm:px-8"
+          id="main-content"
+        >
           <section aria-labelledby="launcher-title" className="scroll-mt-24" id="overview">
             <div className="mx-auto max-w-[760px]">
               <div className="mb-7 text-center">
-                <span className="font-mono text-[0.68rem] text-muted-foreground">
-                  {t("northstarWorkspace")}
-                </span>
                 <h1
                   className="mt-2 text-balance text-[clamp(1.9rem,4vw,2.75rem)] font-bold tracking-[-0.04em]"
                   id="launcher-title"
@@ -127,7 +131,7 @@ export function WorkspaceLauncher() {
                 variant="launcher"
               />
               <p className="mt-3 text-center text-xs text-muted-foreground">
-                {t("previewDataStays")}
+                {t("launcherPreviewDataStays")}
               </p>
 
               <div className="mt-8 grid gap-x-8 gap-y-1 min-[561px]:grid-cols-2">
@@ -146,49 +150,6 @@ export function WorkspaceLauncher() {
                   );
                 })}
               </div>
-            </div>
-          </section>
-
-          <section
-            aria-labelledby="launcher-projects-title"
-            className="mt-24 scroll-mt-24 border-t border-border pt-6"
-            id="projects"
-          >
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <span className="font-mono text-[0.68rem] text-muted-foreground">
-                  {t("workspace")}
-                </span>
-                <h2
-                  className="mt-1.5 text-xl font-semibold tracking-[-0.02em]"
-                  id="launcher-projects-title"
-                >
-                  {t("launcherProjectsTitle")}
-                </h2>
-              </div>
-              <span className="font-mono text-[0.68rem] text-muted-foreground">
-                {t("previewLabel")}
-              </span>
-            </div>
-
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4">
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-foreground">
-                  <Stack aria-hidden="true" weight="bold" />
-                </span>
-                <div className="min-w-0">
-                  <strong className="block truncate text-sm">{t("northstarLaunch")}</strong>
-                  <p className="mt-1 text-xs text-muted-foreground">{t("launcherProjectDetail")}</p>
-                </div>
-              </div>
-              <Button
-                className="shrink-0"
-                onClick={() => focusComposer(t("launcherProjectPrompt"))}
-                variant="ghost"
-              >
-                {t("launcherAskProject")}
-                <ArrowRight aria-hidden="true" data-icon="inline-end" />
-              </Button>
             </div>
           </section>
         </main>

@@ -232,6 +232,7 @@ export function Composer({
           aria-controls={isMenuOpen ? listboxId : undefined}
           aria-label={t("askVoidmix")}
           aria-owns={isMenuOpen ? listboxId : undefined}
+          autoComplete="off"
           className={cn(
             "min-w-0 flex-1 resize-y border-0 bg-transparent p-0 text-[0.82rem] leading-[1.5] text-foreground outline-none placeholder:text-muted-foreground",
             variant === "launcher" ? "min-h-[4.5rem]" : "min-h-[6rem]",
@@ -243,6 +244,7 @@ export function Composer({
           onFocus={() => setFocused(true)}
           onKeyDown={handleKeyDown}
           onKeyUp={(event) => setCaret(event.currentTarget.selectionStart)}
+          name="prompt"
           placeholder={t("askWorkspace")}
           ref={textareaRef}
           rows={variant === "launcher" ? 3 : 4}

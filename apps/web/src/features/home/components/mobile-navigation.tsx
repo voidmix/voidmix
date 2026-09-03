@@ -136,6 +136,7 @@ export function MobileNavigation({
   const navigate = useNavigate();
   const session = useSession();
   const [isMounted, setIsMounted] = useState(false);
+  const isLauncher = variant === "launcher";
 
   useEffect(() => {
     setIsMounted(true);
@@ -151,22 +152,26 @@ export function MobileNavigation({
   const role = (user as { role?: string | null } | undefined)?.role;
 
   return (
-    <header className="relative grid min-h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-muted px-4 py-2.5 max-[760px]:grid">
+    <header
+      className={`home-mobile-navigation relative grid min-h-16 items-center gap-3 border-b border-border bg-muted py-2.5 max-[760px]:grid ${isLauncher ? "grid-cols-[auto_minmax(0,1fr)]" : "grid-cols-[auto_minmax(0,1fr)_auto]"}`}
+    >
       <a aria-label="Voidmix home" className="inline-flex text-foreground" href="/">
         <Logo className="text-base" />
       </a>
 
-      <div className="flex min-w-0 items-center gap-2.5">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-[0.35rem] bg-primary text-[0.72rem] font-extrabold text-primary-foreground">
-          N
-        </span>
-        <span className="flex min-w-0 flex-col">
-          <small className="text-[0.68rem] leading-tight text-muted-foreground">
-            {t("workspace")}
-          </small>
-          <strong className="truncate text-[0.78rem] leading-[1.35]">Northstar</strong>
-        </span>
-      </div>
+      {!isLauncher ? (
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-[0.35rem] bg-primary text-[0.72rem] font-extrabold text-primary-foreground">
+            N
+          </span>
+          <span className="flex min-w-0 flex-col">
+            <small className="text-[0.68rem] leading-tight text-muted-foreground">
+              {t("workspace")}
+            </small>
+            <strong className="truncate text-[0.78rem] leading-[1.35]">Northstar</strong>
+          </span>
+        </div>
+      ) : null}
 
       <div className="flex items-center gap-0.5">
         <LanguageSwitcher />

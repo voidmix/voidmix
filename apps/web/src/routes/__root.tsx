@@ -37,6 +37,16 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1, viewport-fit=cover",
       },
       {
+        name: "theme-color",
+        content: "#ffffff",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        name: "theme-color",
+        content: "#171717",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
         title: "Voidmix | Creative work, one live signal",
       },
       {

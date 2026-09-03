@@ -58,25 +58,27 @@ export function HomeSidebar({
         >
           <Logo className="text-[1.08rem] max-[1180px]:[&>span]:hidden [&>img]:size-6" />
         </a>
-        <Button
-          aria-label={t("switchWorkspace")}
-          className="min-h-[3.1rem] w-full justify-start gap-2.5 rounded-[0.55rem] border border-border bg-card px-2.5 py-2.5 text-left transition-colors hover:border-input hover:bg-primary/10 max-[1180px]:size-10 max-[1180px]:min-h-0 max-[1180px]:justify-center max-[1180px]:gap-0 max-[1180px]:px-0"
-          variant="ghost"
-        >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-[0.35rem] bg-primary text-[0.72rem] font-extrabold text-primary-foreground">
-            N
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-[0.78rem] font-bold max-[1180px]:hidden">
-            <small className="text-[0.7rem] font-medium text-muted-foreground">
-              {t("workspace")}
-            </small>
-            Northstar
-          </span>
-          <ArrowRight
-            aria-hidden="true"
-            className="size-3.5 rotate-90 text-muted-foreground max-[1180px]:hidden"
-          />
-        </Button>
+        {!isLauncher ? (
+          <Button
+            aria-label={t("switchWorkspace")}
+            className="min-h-[3.1rem] w-full justify-start gap-2.5 rounded-[0.55rem] border border-border bg-card px-2.5 py-2.5 text-left transition-colors hover:border-input hover:bg-primary/10 max-[1180px]:size-10 max-[1180px]:min-h-0 max-[1180px]:justify-center max-[1180px]:gap-0 max-[1180px]:px-0"
+            variant="ghost"
+          >
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-[0.35rem] bg-primary text-[0.72rem] font-extrabold text-primary-foreground">
+              N
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-[0.78rem] font-bold max-[1180px]:hidden">
+              <small className="text-[0.7rem] font-medium text-muted-foreground">
+                {t("workspace")}
+              </small>
+              Northstar
+            </span>
+            <ArrowRight
+              aria-hidden="true"
+              className="size-3.5 rotate-90 text-muted-foreground max-[1180px]:hidden"
+            />
+          </Button>
+        ) : null}
       </div>
 
       <Button

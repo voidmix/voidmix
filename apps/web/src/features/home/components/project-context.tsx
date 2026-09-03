@@ -1,8 +1,7 @@
-import { ArrowRight, CheckCircle, FileText, FolderSimple, Pulse } from "@phosphor-icons/react";
+import { CheckCircle, FileText, FolderSimple, Pulse } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
-import { Button } from "@voidmix/ui/components/ui/button";
 
 import { operators } from "../data";
 
@@ -38,10 +37,6 @@ export function ProjectContext() {
         <p className="mt-2 text-[0.72rem] leading-[1.5] text-secondary-foreground text-pretty">
           {t("decisionDescription")}
         </p>
-        <Button className="h-auto p-0" variant="link">
-          {t("reviewNow")}
-          <ArrowRight aria-hidden="true" data-icon="inline-end" weight="bold" />
-        </Button>
       </div>
 
       <div className="border-b border-border py-5">
@@ -89,10 +84,6 @@ export function ProjectContext() {
             </div>
           ))}
         </div>
-        <Button className="mt-4 h-auto p-0" variant="link">
-          {t("viewTeam")}
-          <ArrowRight aria-hidden="true" data-icon="inline-end" weight="bold" />
-        </Button>
       </div>
     </aside>
   );

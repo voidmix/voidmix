@@ -1,6 +1,5 @@
-import { ArrowRight, Pulse } from "@phosphor-icons/react";
+import { Pulse } from "@phosphor-icons/react";
 import { useTranslations } from "@voidmix/i18n/client";
-import { Button } from "@voidmix/ui/components/ui/button";
 import { cn } from "@voidmix/ui/lib/utils";
 
 import { activityIndicatorClassName, activityItems, activityStateClassName } from "../data";
@@ -23,7 +22,6 @@ export function ActivitySection() {
             {t("continueWhereLeftOff")}
           </h2>
         </div>
-        <Button variant="link">{t("viewAll")}</Button>
       </div>
 
       <div className="border-t border-border" aria-label={t("recentWorkspaceActivity")}>
@@ -54,12 +52,6 @@ export function ActivitySection() {
               </div>
               <div className="flex flex-col items-end gap-1.5 max-[760px]:col-start-2 max-[760px]:w-full max-[760px]:flex-row max-[760px]:items-center max-[760px]:justify-between">
                 <span className={activityStateClassName(item.tone)}>{t(item.stateKey)}</span>
-                {isFeatured ? (
-                  <Button className="h-auto p-0" variant="link">
-                    {t("openThread")}
-                    <ArrowRight aria-hidden="true" data-icon="inline-end" weight="bold" />
-                  </Button>
-                ) : null}
               </div>
             </article>
           );

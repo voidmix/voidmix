@@ -3,6 +3,7 @@
 :root {
   color: var(--foreground);
   background: var(--background);
+  color-scheme: light;
   font-family: Geist, ui-sans-serif, system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -11,6 +12,10 @@
 html {
   background: var(--background);
   scroll-behavior: smooth;
+}
+
+:where(.dark, [data-theme="dark"]) {
+  color-scheme: dark;
 }
 
 body {
@@ -41,5 +46,16 @@ a:not([data-slot="button"]):focus-visible {
   *::before,
   *::after {
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-mobile-navigation {
+    padding-inline-end: max(1rem, env(safe-area-inset-right));
+    padding-inline-start: max(1rem, env(safe-area-inset-left));
+  }
+
+  .home-footer {
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
   }
 }

@@ -45,7 +45,10 @@ function WorkspacePlaceholder({
             <Icon aria-hidden="true" weight="regular" />
           </span>
           <div className="min-w-0">
-            <h2 className="text-[0.95rem] font-semibold tracking-[-0.015em]" id={`${id}-title`}>
+            <h2
+              className="text-balance text-[0.95rem] font-semibold tracking-[-0.015em]"
+              id={`${id}-title`}
+            >
               {t(navigationItem.messageKey)}
             </h2>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">

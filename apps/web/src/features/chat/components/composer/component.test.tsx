@@ -30,6 +30,17 @@ function optionNames() {
 }
 
 describe("chat composer skill menu", () => {
+  it("uses a named autocomplete-off textarea with an example placeholder", () => {
+    const { textarea } = renderComposer();
+
+    expect(textarea).toHaveAttribute("name", "prompt");
+    expect(textarea).toHaveAttribute("autocomplete", "off");
+    expect(textarea).toHaveAttribute(
+      "placeholder",
+      "Ask about this workspace, e.g. “What’s blocking delivery?”…",
+    );
+  });
+
   it("opens the skill listbox when a slash starts a token", async () => {
     const { textarea, user } = renderComposer();
 

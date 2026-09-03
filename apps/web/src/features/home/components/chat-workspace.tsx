@@ -120,7 +120,7 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
                       {t("northstarWorkspace")} / Chat
                     </span>
                     <h1
-                      className="mt-1.5 text-[clamp(1.65rem,3vw,2.4rem)] font-bold tracking-[-0.035em]"
+                      className="mt-1.5 text-balance text-[clamp(1.65rem,3vw,2.4rem)] font-bold tracking-[-0.035em]"
                       id="overview-title"
                     >
                       {t("workspaceSignal")}
