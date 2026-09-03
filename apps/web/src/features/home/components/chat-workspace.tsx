@@ -92,7 +92,7 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
 
   return (
     <main className="flex min-h-dvh flex-col bg-background">
-      <div className="min-h-dvh">
+      <div className="min-h-0 flex-1">
         <HomeSidebar
           activeSection={activeSection}
           onNewTask={() => void navigate({ to: "/" })}

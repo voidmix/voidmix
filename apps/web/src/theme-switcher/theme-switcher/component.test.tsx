@@ -47,6 +47,8 @@ describe("theme switcher", () => {
       "System",
     ]);
     expect(screen.getByRole("radio", { name: "System" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: "System" })).toHaveClass("bg-background");
+    expect(screen.getByRole("radio", { name: "System" })).not.toHaveClass("bg-primary");
   });
 
   it("updates the selected theme and supports arrow-key navigation", async () => {

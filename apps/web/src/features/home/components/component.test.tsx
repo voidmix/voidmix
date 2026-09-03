@@ -59,8 +59,6 @@ vi.mock("@voidmix/i18n/client", () => ({
       inboxPreview: "4 threads are queued for review.",
       inboxState: "Ready for triage",
       member: "Member",
-      launcherBlockers: "Find what is blocking delivery",
-      launcherSummary: "Summarize the current project",
       navAssets: "Assets",
       navDecisions: "Decisions",
       navInbox: "Inbox",
@@ -77,7 +75,6 @@ vi.mock("@voidmix/i18n/client", () => ({
       operators: "Operators",
       preview: "Preview",
       previewData: "Preview data",
-      launcherPreviewDataStays: "Preview data stays in this browser…",
       previewDataStays: "Northstar preview data stays in this browser.",
       previewEnvironment: "Preview environment",
       previewLabel: "Preview",
@@ -153,13 +150,19 @@ describe("workspace launcher", () => {
 
     expect(screen.getByRole("heading", { name: "What should we move forward?" })).toBeVisible();
     expect(screen.getByRole("textbox", { name: "Ask Voidmix" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Summarize the current project" })).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: "Summarize the current project" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Find what is blocking delivery" }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Recent projects" })).not.toBeInTheDocument();
     expect(screen.queryByText("Northstar")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveAttribute(
       "href",
       "#main-content",
     );
+    expect(screen.queryByText("Preview data stays in this browser…")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Workspace signal" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("complementary", { name: "Current project context" }),
@@ -175,19 +178,6 @@ describe("workspace launcher", () => {
     expect(within(sidebar).getByRole("button", { name: "Sign in" })).toBeVisible();
     expect(screen.queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Create account" })).not.toBeInTheDocument();
-  });
-
-  it("fills quick prompts without submitting", async () => {
-    const user = userEvent.setup();
-    render(<WorkspaceLayout />);
-
-    await user.click(screen.getByRole("button", { name: "Find what is blocking delivery" }));
-
-    expect(screen.getByRole("textbox", { name: "Ask Voidmix" })).toHaveValue(
-      "Find what is blocking delivery",
-    );
-    expect(routerMocks.navigate).not.toHaveBeenCalled();
-    expect(screen.getByRole("textbox", { name: "Ask Voidmix" })).toHaveFocus();
   });
 
   it("stores the local chat and redirects signed-out users to login", async () => {

@@ -59,7 +59,7 @@ export function ThemeSwitcher() {
             aria-label={label}
             className={cn(
               "text-muted-foreground",
-              selected && "bg-primary text-primary-foreground hover:bg-primary/80",
+              selected && "bg-background text-foreground shadow-xs hover:bg-background",
             )}
             key={option.value}
             onClick={() => setTheme(option.value)}

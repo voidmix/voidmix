@@ -160,7 +160,7 @@ export function HomeSidebar({
           </>
         ) : null}
         {user ? (
-          <div className="mt-2 border-t border-border pt-2">
+          <div className="mt-2 pt-2">
             <UserDropdown
               onNewTask={handleNewTask}
               onSignOut={handleSignOut}
@@ -173,7 +173,7 @@ export function HomeSidebar({
             />
           </div>
         ) : session.isPending ? null : (
-          <div className="mt-2 border-t border-border pt-2">
+          <div className="mt-2 pt-2">
             <LoginButton />
           </div>
         )}

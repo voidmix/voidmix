@@ -47,11 +47,6 @@ export type WorkspaceSectionId = (typeof navigation)[number]["id"];
 
 export const launcherNavigation = navigation.filter((item) => item.id === "overview");
 
-export const launcherPrompts = [
-  { id: "summary", messageKey: "launcherSummary", icon: ChatCircleDots },
-  { id: "blockers", messageKey: "launcherBlockers", icon: Lightning },
-] as const;
-
 export const workspacePlaceholders = [
   {
     id: "inbox",
@@ -165,9 +160,8 @@ export const mobileNavigationItems = navigation.map((item) => ({
 
 export function navigationClassName(item: { current: boolean }): string {
   return cn(
-    "flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-[0.76rem] text-muted-foreground transition-colors hover:bg-card hover:text-foreground [&_svg]:size-4",
-    item.current &&
-      "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+    "flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-[0.76rem] text-muted-foreground transition-colors hover:bg-card hover:text-foreground max-[1180px]:justify-center max-[1180px]:px-0 [&_svg]:size-4",
+    item.current && "bg-background text-foreground hover:bg-background hover:text-foreground",
   );
 }
 

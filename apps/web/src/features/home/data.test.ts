@@ -15,8 +15,9 @@ describe("home view model", () => {
     const item = { label: "Overview", current: true } as const;
 
     expect(navigationHref(item)).toBe("#overview");
-    expect(navigationClassName(item)).toContain("bg-primary");
-    expect(navigationClassName(item)).toContain("text-primary-foreground");
+    expect(navigationClassName(item)).toContain("bg-background");
+    expect(navigationClassName(item)).toContain("text-foreground");
+    expect(navigationClassName(item)).toContain("max-[1180px]:justify-center");
   });
 
   it("creates stable targets for inactive navigation items", () => {

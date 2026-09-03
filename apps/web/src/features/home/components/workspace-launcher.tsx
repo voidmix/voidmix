@@ -9,7 +9,6 @@ import type { ChatMessage } from "../../chat/types";
 import { HomeNavbar } from "./home-navbar";
 import { HomeSidebar } from "./sidebar";
 import { MobileNavigation } from "./mobile-navigation";
-import { launcherPrompts } from "../data";
 
 const launcherSections = new Set(["overview"]);
 
@@ -79,7 +78,7 @@ export function WorkspaceLauncher() {
   }
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-0 flex-1">
       <a
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:ring-2 focus:ring-ring"
         href="#main-content"
@@ -130,26 +129,6 @@ export function WorkspaceLauncher() {
                 value={draft}
                 variant="launcher"
               />
-              <p className="mt-3 text-center text-xs text-muted-foreground">
-                {t("launcherPreviewDataStays")}
-              </p>
-
-              <div className="mt-8 grid gap-x-8 gap-y-1 min-[561px]:grid-cols-2">
-                {launcherPrompts.map((prompt) => {
-                  const Icon = prompt.icon;
-                  return (
-                    <button
-                      className="group flex min-h-10 items-center gap-2.5 rounded-md px-2 text-left text-[0.78rem] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                      key={prompt.id}
-                      onClick={() => focusComposer(t(prompt.messageKey))}
-                      type="button"
-                    >
-                      <Icon aria-hidden="true" className="size-4 shrink-0" />
-                      <span>{t(prompt.messageKey)}</span>
-                    </button>
-                  );
-                })}
-              </div>
             </div>
           </section>
         </main>
