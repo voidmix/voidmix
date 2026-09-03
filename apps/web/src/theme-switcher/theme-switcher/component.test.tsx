@@ -37,29 +37,29 @@ function renderThemeSwitcher() {
 }
 
 describe("theme switcher", () => {
-  it("keeps the menu out of the initial render and loads it on open", async () => {
-    const user = renderThemeSwitcher();
-    const trigger = screen.getByRole("button", { name: "Theme: System" });
+  it("renders an accessible segmented control with the current theme selected", () => {
+    renderThemeSwitcher();
 
-    expect(trigger).toHaveAttribute("aria-haspopup", "menu");
-    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
-
-    await user.click(trigger);
-
-    expect(await screen.findByRole("menu", {}, { timeout: 5000 })).toBeVisible();
-    expect(screen.getAllByRole("menuitemradio").map((item) => item.textContent)).toEqual([
+    expect(screen.getByRole("radiogroup", { name: "Theme" })).toBeVisible();
+    expect(screen.getAllByRole("radio").map((item) => item.getAttribute("aria-label"))).toEqual([
       "Light",
       "Dark",
       "System",
     ]);
+    expect(screen.getByRole("radio", { name: "System" })).toHaveAttribute("aria-checked", "true");
   });
 
-  it("updates the trigger label after selecting a theme", async () => {
+  it("updates the selected theme and supports arrow-key navigation", async () => {
     const user = renderThemeSwitcher();
 
-    await user.click(screen.getByRole("button", { name: "Theme: System" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: "Dark" }, { timeout: 5000 }));
+    await user.click(screen.getByRole("radio", { name: "Dark" }));
 
-    expect(screen.getByRole("button", { name: "Theme: Dark" })).toBeVisible();
+    expect(screen.getByRole("radio", { name: "Dark" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: "System" })).toHaveAttribute("aria-checked", "false");
+
+    await user.keyboard("{ArrowRight}");
+
+    expect(screen.getByRole("radio", { name: "System" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("radio", { name: "System" })).toHaveFocus();
   });
 });

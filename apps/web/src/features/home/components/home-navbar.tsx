@@ -38,10 +38,8 @@ export function HomeNavbar({ workspace = false }: { workspace?: boolean }) {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/30 p-0.5">
-            <LanguageSwitcher />
-            <ThemeSwitcher />
-          </div>
+          <LanguageSwitcher />
+          <ThemeSwitcher />
         </div>
       </div>
     </header>

@@ -1,12 +1,12 @@
-import { Suspense, useState } from "react";
+import { useRef, type KeyboardEvent } from "react";
 
 import { Desktop, Moon, Sun } from "@phosphor-icons/react";
 
 import { Button } from "@voidmix/ui/components/ui/button";
+import { cn } from "@voidmix/ui/lib/utils";
 import { useTheme, type UserTheme } from "@voidmix/ui/theme";
 
 import { useTranslations } from "@voidmix/i18n/client";
-import { LazyThemeMenu, loadThemeMenu } from "./theme-menu-lazy";
 import { themeOptions } from "./theme-options";
 
 const themeIcons: Record<UserTheme, typeof Sun> = {
@@ -16,47 +16,67 @@ const themeIcons: Record<UserTheme, typeof Sun> = {
 };
 
 export function ThemeSwitcher() {
-  const { theme } = useTheme();
+  const { setTheme, theme } = useTheme();
   const t = useTranslations("common");
-  const [open, setOpen] = useState(false);
-  const [menuReady, setMenuReady] = useState(false);
-  const selected = themeOptions.find((option) => option.value === theme) ?? themeOptions.at(-1)!;
-  const Icon = themeIcons[selected.value];
-  const themeLabel = t(
-    `theme${theme === "light" ? "Light" : theme === "dark" ? "Dark" : "System"}`,
-  );
-  const prefetchMenu = () => {
-    void loadThemeMenu().catch(() => undefined);
+  const optionRefs = useRef<Array<HTMLElement | null>>([]);
+
+  const labelFor = (value: UserTheme) =>
+    t(`theme${value === "light" ? "Light" : value === "dark" ? "Dark" : "System"}`);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const key = event.key;
+    if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"].includes(key)) {
+      return;
+    }
+
+    event.preventDefault();
+    const nextIndex =
+      key === "Home"
+        ? 0
+        : key === "End"
+          ? themeOptions.length - 1
+          : (index + (key === "ArrowRight" || key === "ArrowDown" ? 1 : -1) + themeOptions.length) %
+            themeOptions.length;
+    const nextOption = themeOptions[nextIndex]!;
+    setTheme(nextOption.value);
+    optionRefs.current[nextIndex]?.focus();
   };
-  const openMenu = () => {
-    setOpen(true);
-    void loadThemeMenu()
-      .then(() => setMenuReady(true))
-      .catch(() => setOpen(false));
-  };
-  const createTrigger = (onClick?: () => void) => (
-    <Button
-      aria-label={`${t("theme")}: ${themeLabel}`}
-      aria-expanded={open}
-      aria-haspopup="menu"
-      onClick={onClick}
-      onFocus={prefetchMenu}
-      onPointerDown={prefetchMenu}
-      size="icon-sm"
-      title={`${t("theme")}: ${themeLabel}`}
-      variant="ghost"
+
+  return (
+    <div
+      aria-label={t("theme")}
+      className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/30 p-0.5"
+      role="radiogroup"
     >
-      <Icon aria-hidden="true" />
-    </Button>
+      {themeOptions.map((option, index) => {
+        const Icon = themeIcons[option.value];
+        const selected = option.value === theme;
+        const label = labelFor(option.value);
+
+        return (
+          <Button
+            aria-checked={selected}
+            aria-label={label}
+            className={cn(
+              "text-muted-foreground",
+              selected && "bg-primary text-primary-foreground hover:bg-primary/80",
+            )}
+            key={option.value}
+            onClick={() => setTheme(option.value)}
+            onKeyDown={(event) => handleKeyDown(event, index)}
+            ref={(element) => {
+              optionRefs.current[index] = element;
+            }}
+            role="radio"
+            size="icon-sm"
+            tabIndex={selected ? 0 : -1}
+            title={`${t("theme")}: ${label}`}
+            variant="ghost"
+          >
+            <Icon aria-hidden="true" />
+          </Button>
+        );
+      })}
+    </div>
   );
-
-  if (menuReady) {
-    return (
-      <Suspense fallback={createTrigger()}>
-        <LazyThemeMenu onOpenChange={setOpen} open={open} trigger={createTrigger()} />
-      </Suspense>
-    );
-  }
-
-  return createTrigger(openMenu);
 }
