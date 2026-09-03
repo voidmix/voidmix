@@ -39,7 +39,6 @@
     "@types/react": "catalog:tooling",
     "@types/react-dom": "catalog:tooling",
     "@vitejs/plugin-react": "catalog:tooling",
-    "@vitejs/plugin-rsc": "catalog:tooling",
     "@vitest/coverage-v8": "catalog:tooling",
     "@voidmix/tsconfig": "workspace:*",
     "jsdom": "catalog:tooling",

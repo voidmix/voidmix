@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@orpc/contract": "catalog:",
-    "zod": "catalog:backend"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",

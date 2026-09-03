@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "type-fest": "catalog:tooling",
-    "zod": "catalog:backend"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",

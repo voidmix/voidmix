@@ -18,23 +18,37 @@ real compatibility tests and benchmarks justify a change.
 
 The root `package.json` centralizes versions with Bun catalogs:
 
-- Default: React, TanStack Router/Start, oRPC, and UUID.
-- `catalog:tooling`: TypeScript, Type-fest, Vite+, Vite alias, React
-  types/plugin and its Oxc React Compiler transform, Citty, Dotenvx, and related
-  tooling, Vitest coverage, and Playwright. Vitest itself is absent because
-  Vite+ bundles the runner.
-- `catalog:backend`: Hono, Nitro, Drizzle, PostgreSQL, and Zod.
-- `catalog:observability`: Evlog.
-- `catalog:frontend`: Base UI, Phosphor Icons, Tailwind CSS, CVA, `clsx`, and
-  `tailwind-merge`.
-- `catalog:desktop`: Tauri packages.
+| Catalog            | Scope                               | Representative dependencies                                                                                                                 |
+| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `catalog:`         | Shared runtime and contracts        | React, TanStack Router/Start, oRPC, Better Auth, `use-intl`, UUID, Zod, Evlog                                                               |
+| `catalog:backend`  | Server and data tooling             | Hono, Nitro, Drizzle, PostgreSQL, Redis, Nanoid                                                                                             |
+| `catalog:frontend` | UI, email, and native surfaces      | Base UI, Phosphor Icons, Tailwind CSS, CVA, `clsx`, `tailwind-merge`, Tauri, Resend                                                         |
+| `catalog:tooling`  | Build, test, and repository tooling | Vite+, Vite alias, TypeScript, Storybook, `esbuild`, `jiti`, React types/plugin, Oxc transform, Citty, Dotenvx, Vitest coverage, Playwright |
+
+Vitest itself is absent from the catalogs because Vite+ bundles the runner;
+`@vitest/coverage-v8` remains explicit so its version can track that bundled
+runner.
 
 Internal packages use `workspace:*`. Change third-party versions in the root
 catalog rather than individual workspace manifests.
 
-The root override pins `lightningcss` to a single compatible native binding
-version. Treat changes to this override as toolchain upgrades: update the
-catalog, regenerate `bun.lock`, and run the full verification suite.
+Stable dependencies that can upgrade independently use caret semver ranges
+(`^`). Exact versions remain for
+pre-release packages, tightly coupled toolchains, and native bindings whose
+versions must move together: oRPC, Drizzle RC, Nitro beta, Storybook, Vite+,
+Vitest coverage, and Lightning CSS.
+
+Root overrides are reserved for cross-cutting toolchain constraints:
+
+- `esbuild` follows `catalog:tooling` so every compatible consumer resolves to
+  one version.
+- `jiti` follows `catalog:tooling` so transitive packages cannot reintroduce an
+  older exact 2.x version.
+- `lightningcss` follows `catalog:tooling` to keep native bindings aligned.
+- `vite` aliases to the Vite+ core implementation.
+
+Treat changes to these overrides as toolchain upgrades: update the catalog,
+regenerate `bun.lock`, and run the full verification suite.
 
 ## TypeScript presets
 

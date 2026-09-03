@@ -11,9 +11,9 @@ web app with an embedded typed Hono API, an operations console, and a Tauri
 desktop client.
 
 Dependency versions are centralized with Bun Catalogs in the root
-`package.json`: the default catalog covers React/TanStack/oRPC, while named
-`tooling`, `backend`, `observability`, and `desktop` catalogs keep their
-respective stacks in lockstep.
+`package.json`: the default catalog covers shared runtime and contract
+dependencies, while named `tooling`, `backend`, and `frontend` catalogs keep
+their respective stacks in lockstep.
 
 See the [documentation index](./docs/README.md) and
 [architecture overview](./docs/architecture/README.md) for workspace

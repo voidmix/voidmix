@@ -23,8 +23,8 @@
     "@phosphor-icons/react": "catalog:frontend",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-start": "catalog:",
-    "@tauri-apps/api": "catalog:desktop",
-    "@tauri-apps/plugin-opener": "catalog:desktop",
+    "@tauri-apps/api": "catalog:frontend",
+    "@tauri-apps/plugin-opener": "catalog:frontend",
     "@voidmix/client": "workspace:*",
     "@voidmix/env": "workspace:*",
     "@voidmix/i18n": "workspace:*",
@@ -34,7 +34,7 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "catalog:desktop",
+    "@tauri-apps/cli": "catalog:frontend",
     "@types/node": "catalog:tooling",
     "@types/react": "catalog:tooling",
     "@types/react-dom": "catalog:tooling",

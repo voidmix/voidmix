@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@voidmix/env": "workspace:*",
-    "evlog": "catalog:observability"
+    "evlog": "catalog:"
   },
   "devDependencies": {
     "@orpc/server": "catalog:",
