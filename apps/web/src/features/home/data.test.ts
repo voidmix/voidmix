@@ -17,7 +17,7 @@ describe("home view model", () => {
     expect(navigationHref(item)).toBe("#overview");
     expect(navigationClassName(item)).toContain("bg-background");
     expect(navigationClassName(item)).toContain("text-foreground");
-    expect(navigationClassName(item)).toContain("max-[1180px]:justify-center");
+    expect(navigationClassName({ ...item, compact: true })).toContain("min-[761px]:justify-center");
   });
 
   it("creates stable targets for inactive navigation items", () => {

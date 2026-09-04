@@ -9,12 +9,24 @@ import type { ChatMessage } from "../../chat/types";
 import { HomeNavbar } from "./home-navbar";
 import { HomeSidebar } from "./sidebar";
 import { MobileNavigation } from "./mobile-navigation";
+import { WorkspacePlaceholders } from "./workspace-placeholder";
+import { toggleSidebar, useSidebarOpen } from "../sidebar-store";
+import type { WorkspaceSectionId } from "../data";
 
-const launcherSections = new Set(["overview"]);
+const launcherSections = new Set<WorkspaceSectionId>([
+  "overview",
+  "inbox",
+  "projects",
+  "reviews",
+  "decisions",
+  "assets",
+]);
 
-function readLauncherSection(): "overview" {
+function readLauncherSection(): WorkspaceSectionId {
   if (typeof window === "undefined") return "overview";
-  return "overview";
+
+  const section = window.location.hash.slice(1) as WorkspaceSectionId;
+  return launcherSections.has(section) ? section : "overview";
 }
 
 function createInitialMessages(prompt: string, t: (key: string) => string): readonly ChatMessage[] {
@@ -33,15 +45,17 @@ export function WorkspaceLauncher() {
   const t = useTranslations("home");
   const session = useSession();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<"overview">(readLauncherSection);
+  const [activeSection, setActiveSection] = useState<WorkspaceSectionId>(readLauncherSection);
   const [draft, setDraft] = useState("");
   const [focusKey, setFocusKey] = useState(0);
+  const sidebarOpen = useSidebarOpen();
 
   useEffect(() => {
     const handleHashChange = () => {
       const next = readLauncherSection();
       setActiveSection(next);
-      if (!launcherSections.has(window.location.hash.slice(1))) {
+      const hashSection = window.location.hash.slice(1) as WorkspaceSectionId;
+      if (!launcherSections.has(hashSection)) {
         window.history.replaceState(
           null,
           "",
@@ -54,6 +68,15 @@ export function WorkspaceLauncher() {
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
+
+  useEffect(() => {
+    if (activeSection === "overview") return;
+
+    const section = document.getElementById(activeSection);
+    if (section && "scrollIntoView" in section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [activeSection]);
 
   function focusComposer(prompt: string) {
     setDraft(prompt);
@@ -88,12 +111,15 @@ export function WorkspaceLauncher() {
       <HomeSidebar
         activeSection={activeSection}
         onNewTask={() => focusComposer("")}
+        collapsed={!sidebarOpen}
         variant="launcher"
       />
 
-      <div className="min-w-0 min-[761px]:pl-[4.75rem] min-[1181px]:pl-[15rem]">
+      <div
+        className={`min-w-0 transition-[padding] duration-200 ease-out motion-reduce:transition-none ${sidebarOpen ? "min-[761px]:pl-[15rem]" : "min-[761px]:pl-[4.5rem]"}`}
+      >
         <div className="sticky top-0 z-30 max-[760px]:hidden">
-          <HomeNavbar workspace />
+          <HomeNavbar onSidebarToggle={toggleSidebar} sidebarOpen={sidebarOpen} workspace />
         </div>
         <div className="sticky top-0 z-20 min-[761px]:hidden">
           <MobileNavigation
@@ -130,6 +156,12 @@ export function WorkspaceLauncher() {
                 variant="launcher"
               />
             </div>
+
+            {activeSection !== "overview" ? (
+              <div className="mt-10">
+                <WorkspacePlaceholders activeSection={activeSection} launcher />
+              </div>
+            ) : null}
           </section>
         </main>
       </div>

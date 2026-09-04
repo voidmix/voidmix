@@ -45,7 +45,9 @@ export const navigation = [
 
 export type WorkspaceSectionId = (typeof navigation)[number]["id"];
 
-export const launcherNavigation = navigation.filter((item) => item.id === "overview");
+// The launcher uses the same destinations as the workspace so the sidebar
+// stays predictable across the handoff from a new task to an active chat.
+export const launcherNavigation = navigation;
 
 export const workspacePlaceholders = [
   {
@@ -158,9 +160,11 @@ export const mobileNavigationItems = navigation.map((item) => ({
   ...("count" in item ? { count: item.count } : {}),
 }));
 
-export function navigationClassName(item: { current: boolean }): string {
+export function navigationClassName(item: { current: boolean; compact?: boolean }): string {
   return cn(
-    "flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-[0.76rem] text-muted-foreground transition-colors hover:bg-card hover:text-foreground max-[1180px]:justify-center max-[1180px]:px-0 [&_svg]:size-4",
+    "flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-[0.76rem] text-muted-foreground transition-colors hover:bg-card hover:text-foreground [&_svg]:size-4",
+    item.compact &&
+      "min-[761px]:mx-auto min-[761px]:w-10 min-[761px]:min-h-10 min-[761px]:justify-center min-[761px]:gap-0 min-[761px]:px-0",
     item.current && "bg-background text-foreground hover:bg-background hover:text-foreground",
   );
 }

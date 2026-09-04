@@ -12,7 +12,7 @@ function preloadLoginDialog() {
   void import("./login-dialog");
 }
 
-export function LoginButton() {
+export function LoginButton({ compact = false }: { compact?: boolean }) {
   const t = useTranslations("auth");
   const [open, setOpen] = useState(false);
   const [dialogReady, setDialogReady] = useState(false);
@@ -20,7 +20,7 @@ export function LoginButton() {
   const createTrigger = (onClick?: () => void) => (
     <Button
       aria-label={t("signIn")}
-      className="w-full justify-start gap-2.5 rounded-md px-1.5 text-left max-[1180px]:size-10 max-[1180px]:min-h-0 max-[1180px]:justify-center max-[1180px]:gap-0 max-[1180px]:px-0"
+      className={`w-full justify-start gap-2.5 rounded-md px-1.5 text-left ${compact ? "mx-auto size-10 min-h-0 justify-center gap-0 px-0" : ""}`}
       onClick={onClick}
       onFocus={preloadLoginDialog}
       onPointerDown={preloadLoginDialog}
@@ -28,8 +28,8 @@ export function LoginButton() {
       title={t("signIn")}
       variant="ghost"
     >
-      <SignIn aria-hidden="true" data-icon="inline-start" weight="bold" />
-      <span className="max-[1180px]:hidden">{t("signIn")}</span>
+      <SignIn aria-hidden="true" weight="bold" />
+      <span className={compact ? "hidden" : ""}>{t("signIn")}</span>
     </Button>
   );
 

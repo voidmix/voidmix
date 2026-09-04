@@ -18,6 +18,7 @@ import { ProjectContext } from "./project-context";
 import { HomeSidebar } from "./sidebar";
 import { WorkspacePlaceholders } from "./workspace-placeholder";
 import { type WorkspaceSectionId } from "../data";
+import { toggleSidebar, useSidebarOpen } from "../sidebar-store";
 
 const sectionIds = new Set<WorkspaceSectionId>([
   "overview",
@@ -41,6 +42,7 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
   const [activeSection, setActiveSection] = useState<WorkspaceSectionId>(readActiveSection);
   const [localSession, setLocalSession] = useState<LocalChatSession | null>(null);
   const [sessionLoaded, setSessionLoaded] = useState(false);
+  const sidebarOpen = useSidebarOpen();
 
   useEffect(() => {
     setLocalSession(readLocalChatSession(chatId));
@@ -96,12 +98,15 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
         <HomeSidebar
           activeSection={activeSection}
           onNewTask={() => void navigate({ to: "/" })}
+          collapsed={!sidebarOpen}
           variant="workspace"
         />
 
-        <div className="min-w-0 min-[761px]:pl-[4.75rem] min-[1181px]:pl-[15rem]">
+        <div
+          className={`min-w-0 transition-[padding] duration-200 ease-out motion-reduce:transition-none ${sidebarOpen ? "min-[761px]:pl-[15rem]" : "min-[761px]:pl-[4.5rem]"}`}
+        >
           <div className="sticky top-0 z-30 max-[760px]:hidden">
-            <HomeNavbar workspace />
+            <HomeNavbar onSidebarToggle={toggleSidebar} sidebarOpen={sidebarOpen} workspace />
           </div>
           <div className="sticky top-0 z-20 min-[761px]:hidden">
             <MobileNavigation
@@ -145,7 +150,7 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
           </div>
         </div>
       </div>
-      <HomeFooter />
+      <HomeFooter sidebarCollapsed={!sidebarOpen} />
     </main>
   );
 }

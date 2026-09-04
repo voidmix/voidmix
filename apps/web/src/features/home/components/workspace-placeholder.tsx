@@ -5,11 +5,21 @@ import { buttonVariants } from "@voidmix/ui/components/ui/button";
 
 import { navigation, workspacePlaceholders, type WorkspaceSectionId } from "../data";
 
-export function WorkspacePlaceholders() {
+export function WorkspacePlaceholders({
+  activeSection,
+  launcher = false,
+}: {
+  activeSection?: WorkspaceSectionId;
+  launcher?: boolean;
+} = {}) {
+  const items = activeSection
+    ? workspacePlaceholders.filter((item) => item.id === activeSection)
+    : workspacePlaceholders;
+
   return (
     <div className="grid gap-3">
-      {workspacePlaceholders.map((item) => (
-        <WorkspacePlaceholder key={item.id} {...item} />
+      {items.map((item) => (
+        <WorkspacePlaceholder key={item.id} launcher={launcher} {...item} />
       ))}
     </div>
   );
@@ -20,11 +30,13 @@ function WorkspacePlaceholder({
   descriptionKey,
   previewKey,
   stateKey,
+  launcher = false,
 }: {
   id: Exclude<WorkspaceSectionId, "overview">;
   descriptionKey: string;
   previewKey: string;
   stateKey: string;
+  launcher?: boolean;
 }) {
   const t = useTranslations("home");
   const navigationItem = navigation.find((item) => item.id === id);
@@ -32,6 +44,7 @@ function WorkspacePlaceholder({
   if (!navigationItem) return null;
 
   const Icon = navigationItem.icon;
+  const resolvedPreviewKey = launcher && id === "projects" ? "projectsLauncherPreview" : previewKey;
 
   return (
     <section
@@ -63,7 +76,7 @@ function WorkspacePlaceholder({
         <div className="flex min-w-0 items-center gap-2 text-xs">
           <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-input" />
           <span className="font-medium">{t(stateKey)}</span>
-          <span className="truncate text-muted-foreground">{t(previewKey)}</span>
+          <span className="truncate text-muted-foreground">{t(resolvedPreviewKey)}</span>
         </div>
         <a
           className={`${buttonVariants({ variant: "link" })} h-auto shrink-0 p-0`}

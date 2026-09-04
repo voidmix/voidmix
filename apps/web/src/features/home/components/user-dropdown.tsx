@@ -24,11 +24,13 @@ export function UserDropdown({
   onSignOut,
   user,
   variant = "header",
+  compact = false,
 }: {
   onNewTask?: () => void;
   onSignOut: () => Promise<void>;
   user: UserDropdownUser;
   variant?: "header" | "sidebar";
+  compact?: boolean;
 }) {
   const t = useTranslations("auth");
   const homeT = useTranslations("home");
@@ -58,7 +60,7 @@ export function UserDropdown({
             aria-label={t("openUserMenu")}
             className={
               isSidebar
-                ? "min-h-9 w-full justify-start gap-2.5 rounded-md px-1.5 text-left max-[1180px]:size-10 max-[1180px]:min-h-0 max-[1180px]:justify-center max-[1180px]:gap-0 max-[1180px]:px-0"
+                ? `min-h-9 w-full justify-start gap-2.5 rounded-md px-1.5 text-left ${compact ? "mx-auto size-10 min-h-0 justify-center gap-0 px-0" : ""}`
                 : "max-w-48 gap-2 rounded-md px-2 max-[899px]:size-9 max-[899px]:px-0"
             }
             title={`${t("openUserMenu")}: ${displayName}`}
@@ -69,7 +71,7 @@ export function UserDropdown({
             <span
               className={
                 isSidebar
-                  ? "min-w-0 flex-1 truncate text-xs font-medium max-[1180px]:hidden"
+                  ? `min-w-0 flex-1 truncate text-xs font-medium ${compact ? "hidden" : ""}`
                   : "hidden min-w-0 truncate text-xs font-medium min-[900px]:inline"
               }
             >
@@ -77,8 +79,7 @@ export function UserDropdown({
             </span>
             <CaretDown
               aria-hidden="true"
-              className={isSidebar ? "max-[1180px]:hidden" : "hidden min-[900px]:inline"}
-              data-icon="inline-end"
+              className={isSidebar ? `${compact ? "hidden" : ""}` : "hidden min-[900px]:inline"}
             />
           </Button>
         }

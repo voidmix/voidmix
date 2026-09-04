@@ -42,6 +42,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       chatUnavailableDescription: "This local chat is no longer available.",
       chatUnavailableTitle: "This local chat is no longer available",
       chatLoading: "Loading local chat…",
+      collapseSidebar: "Collapse sidebar",
       conversation: "Conversation",
       continueWhereLeftOff: "Continue where you left off",
       creativeLead: "Creative lead",
@@ -51,6 +52,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       decisionsPreview: "Decision history will appear here.",
       decisionsState: "No unresolved decisions",
       editor: "Editor",
+      expandSidebar: "Expand sidebar",
       featuredDetail: "Review the color pass and close the last delivery decision.",
       featuredMeta: "Northstar / Launch film · Updated 8 min ago",
       featuredState: "On track",
@@ -81,6 +83,7 @@ vi.mock("@voidmix/i18n/client", () => ({
       previewResponse: "The final color pass remains the current blocker.",
       producer: "Producer",
       projectsDescription: "Keep briefs, ownership, and delivery state together.",
+      projectsLauncherPreview: "An active project is ready for review.",
       projectsPreview: "Northstar / Launch film is active.",
       projectsState: "1 active project",
       release: "Release",
@@ -120,6 +123,7 @@ vi.mock("@voidmix/ui/logo", () => ({
 import { createLocalChatSession, readLocalChatSession } from "../../chat/local-chat-store";
 import type { ChatMessage } from "../../chat/types";
 import { ChatWorkspace } from "./chat-workspace";
+import { resetSidebar } from "../sidebar-store";
 import { WorkspaceLayout } from "./workspace-layout";
 
 afterEach(() => {
@@ -127,6 +131,7 @@ afterEach(() => {
   routerMocks.navigate.mockReset();
   routerMocks.signOut.mockReset();
   sessionMocks.value = { data: null, isPending: false };
+  resetSidebar();
   window.sessionStorage.clear();
   window.history.replaceState(null, "", "/");
 });
@@ -150,6 +155,9 @@ describe("workspace launcher", () => {
 
     expect(screen.getByRole("heading", { name: "What should we move forward?" })).toBeVisible();
     expect(screen.getByRole("textbox", { name: "Ask Voidmix" })).toBeVisible();
+    const sidebar = screen.getByRole("complementary", { name: "Workspace" });
+    expect(sidebar).toHaveClass("w-[15rem]");
+    expect(within(sidebar).getByRole("button", { name: "New task" })).toHaveClass("justify-start");
     expect(
       screen.queryByRole("button", { name: "Summarize the current project" }),
     ).not.toBeInTheDocument();
@@ -167,7 +175,11 @@ describe("workspace launcher", () => {
     expect(
       screen.queryByRole("complementary", { name: "Current project context" }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Inbox" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Inbox" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Projects" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Reviews" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Decisions" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Assets" })).toBeVisible();
     expect(screen.queryByText("Recent")).not.toBeInTheDocument();
   });
 
@@ -176,8 +188,29 @@ describe("workspace launcher", () => {
 
     const sidebar = screen.getByRole("complementary", { name: "Workspace" });
     expect(within(sidebar).getByRole("button", { name: "Sign in" })).toBeVisible();
+    expect(within(sidebar).getByRole("button", { name: "New task" })).toBeVisible();
     expect(screen.queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Create account" })).not.toBeInTheDocument();
+  });
+
+  it("toggles the desktop sidebar from the workspace header", async () => {
+    const user = userEvent.setup();
+    render(<WorkspaceLayout />);
+
+    const sidebar = screen.getByRole("complementary", { name: "Workspace" });
+    const toggle = screen.getByRole("button", { name: "Collapse sidebar" });
+
+    expect(toggle).toHaveAttribute("aria-controls", "workspace-sidebar");
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(sidebar).toHaveClass("w-[15rem]");
+
+    await user.click(toggle);
+
+    expect(screen.getByRole("button", { name: "Expand sidebar" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(sidebar).toHaveClass("w-[4.5rem]");
   });
 
   it("stores the local chat and redirects signed-out users to login", async () => {
@@ -230,13 +263,14 @@ describe("workspace launcher", () => {
     expect(screen.queryByRole("button", { name: "Sign out" })).not.toBeInTheDocument();
   });
 
-  it("keeps launcher navigation scoped to overview", () => {
+  it("keeps launcher navigation attached to preview sections", () => {
     window.location.hash = "#projects";
     render(<WorkspaceLayout />);
 
-    expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "page");
-    expect(screen.queryByRole("link", { name: "Projects" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Reviews" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("region", { name: "Projects" })).toBeVisible();
+    expect(screen.getByText("An active project is ready for review.")).toBeVisible();
+    expect(screen.queryByText("Northstar")).not.toBeInTheDocument();
   });
 
   it("keeps language and theme controls icon-only in the utility areas", () => {
