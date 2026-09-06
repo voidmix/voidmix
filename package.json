@@ -11,6 +11,7 @@
       "@orpc/client": "2.0.0-beta.32",
       "@orpc/contract": "2.0.0-beta.32",
       "@orpc/server": "2.0.0-beta.32",
+      "@earendil-works/pi-coding-agent": "0.85.1",
       "@better-auth/drizzle-adapter": "^1.7.2",
       "better-auth": "^1.7.2",
       "evlog": "^2.28.1",

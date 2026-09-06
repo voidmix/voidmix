@@ -1,4 +1,4 @@
-import { SidebarSimple } from "@phosphor-icons/react";
+import { MagnifyingGlass, SidebarSimple } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -6,15 +6,18 @@ import { Logo } from "@voidmix/ui/logo";
 
 import { LanguageSwitcher } from "../../../components/language-switcher";
 import { ThemeSwitcher } from "../../../components/theme-switcher";
+import type { DemoOverlayState } from "./demo-overlay";
 
 export function HomeNavbar({
   workspace = false,
   sidebarOpen = true,
   onSidebarToggle,
+  onOpenOverlay,
 }: {
   workspace?: boolean;
   sidebarOpen?: boolean;
   onSidebarToggle?: () => void;
+  onOpenOverlay?: (state: Exclude<DemoOverlayState, null>) => void;
 }) {
   const t = useTranslations("home");
 
@@ -64,7 +67,35 @@ export function HomeNavbar({
           </div>
         )}
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
+          {workspace ? (
+            <>
+              <Button
+                aria-label={t("switchWorkspace")}
+                className="hidden min-w-0 max-w-[18rem] justify-start gap-2 text-left sm:flex"
+
+                variant="ghost"
+              >
+                <span className="grid size-6 shrink-0 place-items-center rounded bg-primary text-[0.62rem] font-bold text-primary-foreground">
+                  N
+                </span>
+                <span className="min-w-0">
+                  <strong className="block truncate text-xs">{t("northstarWorkspace")}</strong>
+                  <small className="block truncate text-[0.62rem] text-muted-foreground">
+                    {t("workspaceSummary")}
+                  </small>
+                </span>
+              </Button>
+              <Button
+                aria-label={t("quickSearch")}
+                onClick={() => onOpenOverlay?.({ kind: "search" })}
+                size="icon"
+                variant="ghost"
+              >
+                <MagnifyingGlass />
+              </Button>
+            </>
+          ) : null}
           <LanguageSwitcher />
           <ThemeSwitcher />
         </div>

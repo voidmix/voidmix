@@ -35,6 +35,7 @@ apps/storybook  Storybook UI component workbench
 e2e             Playwright Web smoke tests, including protected Admin routes
 
 packages/ui         Shared visual primitives
+packages/ai         Server-side Pi Agent adapter
 packages/api-runtime Shared Hono, oRPC, Better Auth, and database composition
 packages/cache      Redis cache facade and Better Auth secondary storage
 packages/client     Typed oRPC client

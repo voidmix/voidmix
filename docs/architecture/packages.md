@@ -13,6 +13,14 @@ Settings DTOs model effective values, sources, inherited safe values, and
 optional per-field mutations. The public Auth capability DTO intentionally
 contains only three booleans.
 
+## `@voidmix/ai`
+
+The server-side AI adapter for Pi. It owns provider lifecycle, SDK-specific
+session management, project tool registration, and conversion to stable
+Voidmix run events. It receives domain repositories and authenticated context
+through dependency injection, never creates database connections, reads HTTP
+sessions, or exposes Pi SDK types to API and Web consumers.
+
 ## `@voidmix/client`
 
 The transport adapter. `createApiClient({ baseUrl?, headers, fetch })` returns a

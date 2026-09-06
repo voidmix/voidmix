@@ -1,210 +1,197 @@
-import { Gear, List, Plus, UserCircle, UsersThree } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
-import { useNavigate } from "@tanstack/react-router";
-import { Button } from "@voidmix/ui/components/ui/button";
-import { useEffect, useState } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@voidmix/ui/components/ui/dropdown-menu";
-import { Logo } from "@voidmix/ui/logo";
-
+  House,
+  List,
+  Plus,
+  FolderSimple,
+  ChatCircleDots,
+  UsersThree,
+  Gear,
+  X,
+} from "@phosphor-icons/react";
+import { useNavigate } from "@tanstack/react-router";
+import { useTranslations } from "@voidmix/i18n/client";
+import { Button } from "@voidmix/ui/components/ui/button";
+import { useState } from "react";
+import { navigation, type WorkspaceSectionId } from "../data";
+import type { DemoOverlayState } from "./demo-overlay";
+import { UserDropdown } from "./user-dropdown";
+import { useSession, signOut } from "../../../lib/auth-client";
 import { LanguageSwitcher } from "../../../components/language-switcher";
 import { ThemeSwitcher } from "../../../components/theme-switcher";
-import { signOut, useSession } from "../../../lib/auth-client";
-import { launcherNavigation, mobileNavigationItems, navigationHref } from "../data";
-import type { WorkspaceSectionId } from "../data";
-import { UserDropdown } from "./user-dropdown";
-
-function navigateTo(href: string) {
-  window.location.hash = href.slice(1);
-}
-
-function MobileNavigationMenu({
-  activeSection,
-  onNewTask,
-  variant,
-}: {
-  activeSection: WorkspaceSectionId;
-  onNewTask?: () => void;
-  variant: "launcher" | "workspace";
-}) {
-  const t = useTranslations("home");
-  const authT = useTranslations("auth");
-  const navigate = useNavigate();
-  const session = useSession();
-  const isLauncher = variant === "launcher";
-  const items = isLauncher ? launcherNavigation : mobileNavigationItems;
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button aria-label={t("openWorkspaceNavigation")} size="icon-lg" variant="ghost">
-            <List aria-hidden="true" data-icon="inline-start" weight="bold" />
-          </Button>
-        }
-      />
-      <DropdownMenuContent align="end" className="min-w-60" sideOffset={8}>
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{t("workspace")}</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => {
-              if (onNewTask) {
-                onNewTask();
-              } else {
-                navigateTo("#ask-voidmix");
-              }
-            }}
-          >
-            <Plus aria-hidden="true" weight="bold" />
-            {t("newTask")}
-          </DropdownMenuItem>
-          {items.map((item) => {
-            const Icon = item.icon;
-            const current = item.id === activeSection;
-
-            return (
-              <DropdownMenuItem
-                aria-current={current ? "page" : undefined}
-                className={current ? "bg-accent text-accent-foreground" : undefined}
-                key={item.label}
-                onClick={() => navigateTo("href" in item ? item.href : navigationHref(item))}
-              >
-                <Icon aria-hidden="true" weight={current ? "fill" : "regular"} />
-                {t(item.messageKey)}
-                {"count" in item ? <DropdownMenuShortcut>{item.count}</DropdownMenuShortcut> : null}
-              </DropdownMenuItem>
-            );
-          })}
-        </DropdownMenuGroup>
-
-        {!isLauncher ? (
-          <>
-            <DropdownMenuSeparator />
-
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigateTo("#team")}>
-                <UsersThree aria-hidden="true" />
-                {t("team")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigateTo("#settings")}>
-                <Gear aria-hidden="true" />
-                {t("settings")}
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </>
-        ) : null}
-
-        {!session.data ? (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>{authT("account")}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => void navigate({ to: "/login" })}>
-                <UserCircle aria-hidden="true" />
-                {authT("signIn")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => void navigate({ to: "/signup" })}>
-                <Plus aria-hidden="true" weight="bold" />
-                {authT("createAccount")}
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </>
-        ) : null}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
+import { Logo } from "@voidmix/ui/logo";
 
 export function MobileNavigation({
   activeSection = "overview",
   onNewTask,
-  variant = "workspace",
+  onOpenOverlay: _onOpenOverlay,
+  variant: _variant = "workspace",
 }: {
   activeSection?: WorkspaceSectionId;
   onNewTask?: () => void;
+  onOpenOverlay?: (state: Exclude<DemoOverlayState, null>) => void;
   variant?: "launcher" | "workspace";
 }) {
   const t = useTranslations("home");
   const navigate = useNavigate();
   const session = useSession();
-  const [isMounted, setIsMounted] = useState(false);
-  const isLauncher = variant === "launcher";
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  const [moreOpen, setMoreOpen] = useState(false);
+  const extras = [navigation[3], navigation[4], navigation[5]];
+  const handleNewTask = onNewTask ?? (() => void navigate({ to: "/" }));
+  const user = session.data?.user;
+  const role = (user as { role?: string | null } | undefined)?.role;
   async function handleSignOut() {
     await signOut();
     await navigate({ to: "/" });
   }
-
-  const handleNewTask = onNewTask ?? (() => void navigate({ to: "/" }));
-  const user = session.data?.user;
-  const role = (user as { role?: string | null } | undefined)?.role;
-
+  function select(id: WorkspaceSectionId) {
+    setMoreOpen(false);
+    window.location.hash = id;
+  }
   return (
-    <header
-      className={`home-mobile-navigation relative grid min-h-16 items-center gap-3 border-b border-border bg-muted py-2.5 max-[760px]:grid ${isLauncher ? "grid-cols-[auto_minmax(0,1fr)]" : "grid-cols-[auto_minmax(0,1fr)_auto]"}`}
-    >
-      <a aria-label="Voidmix home" className="inline-flex text-foreground" href="/">
-        <Logo className="text-base" />
-      </a>
-
-      {!isLauncher ? (
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-[0.35rem] bg-primary text-[0.72rem] font-extrabold text-primary-foreground">
-            N
+    <>
+      <header className="home-mobile-navigation sticky top-0 z-30 grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/95 px-4 py-2 supports-backdrop-filter:backdrop-blur-sm">
+        <a aria-label="Voidmix home" className="inline-flex text-foreground" href="/">
+          <Logo className="text-base" />
+        </a>
+        <button className="min-w-0 text-left">
+          <span className="block truncate text-[0.68rem] text-muted-foreground">
+            {t("workspace")}
           </span>
-          <span className="flex min-w-0 flex-col">
-            <small className="text-[0.68rem] leading-tight text-muted-foreground">
-              {t("workspace")}
-            </small>
-            <strong className="truncate text-[0.78rem] leading-[1.35]">Northstar</strong>
-          </span>
-        </div>
-      ) : null}
-
-      <div className="flex items-center gap-0.5">
-        <LanguageSwitcher />
-        <ThemeSwitcher />
-        {isMounted && user ? (
-          <UserDropdown
-            onNewTask={handleNewTask}
-            onSignOut={handleSignOut}
-            user={{
-              email: user.email,
-              name: user.name,
-              ...(role !== undefined ? { role } : {}),
-            }}
-          />
-        ) : null}
-        {isMounted ? (
-          <MobileNavigationMenu
-            activeSection={activeSection}
-            variant={variant}
-            {...(onNewTask ? { onNewTask } : {})}
-          />
-        ) : (
+          <strong className="block truncate text-xs">{t("northstarWorkspace")}</strong>
+        </button>
+        <div className="flex items-center gap-1">
+          <LanguageSwitcher />
+          <ThemeSwitcher />
+          {user ? (
+            <UserDropdown
+              onNewTask={handleNewTask}
+              onSignOut={handleSignOut}
+              user={{ email: user.email, name: user.name, ...(role !== undefined ? { role } : {}) }}
+            />
+          ) : null}
           <Button
-            aria-label={t("openWorkspaceNavigation")}
-            className="min-h-11 min-w-11"
-            disabled
-            size="icon-lg"
+            aria-label={t("moreNavigation")}
+            onClick={() => setMoreOpen(true)}
+            size="icon"
             variant="ghost"
           >
-            <List aria-hidden="true" data-icon="inline-start" weight="bold" />
+            <List weight="bold" />
           </Button>
-        )}
-      </div>
-    </header>
+        </div>
+      </header>
+      <nav
+        aria-label={t("workspace")}
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-background/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 supports-backdrop-filter:backdrop-blur-sm"
+      >
+        <MobileNavButton
+          icon={House}
+          label={t("navOverview")}
+          active={activeSection === "overview"}
+          onClick={() => select("overview")}
+        />
+        <MobileNavButton
+          icon={ChatCircleDots}
+          label={t("navInbox")}
+          active={activeSection === "inbox"}
+          onClick={() => select("inbox")}
+        />
+        <Button
+          aria-label={t("newTask")}
+          className="mx-auto -mt-5 size-12 rounded-full border-4 border-background shadow-lg"
+          onClick={handleNewTask}
+          size="icon-lg"
+          variant="primary"
+        >
+          <Plus weight="bold" />
+        </Button>
+        <MobileNavButton
+          icon={FolderSimple}
+          label={t("navProjects")}
+          active={activeSection === "projects"}
+          onClick={() => select("projects")}
+        />
+        <MobileNavButton
+          icon={List}
+          label={t("moreNavigation")}
+          active={moreOpen}
+          onClick={() => setMoreOpen(true)}
+        />
+      </nav>
+      {moreOpen ? (
+        <div className="fixed inset-0 z-50 bg-black/30" onClick={() => setMoreOpen(false)}>
+          <section
+            aria-label={t("moreNavigation")}
+            className="absolute inset-x-0 bottom-0 rounded-t-xl border-t border-border bg-background p-5 pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">{t("moreNavigation")}</h2>
+              <Button
+                aria-label={t("closePanel")}
+                onClick={() => setMoreOpen(false)}
+                size="icon"
+                variant="ghost"
+              >
+                <X />
+              </Button>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {extras.map((item) => (
+                <button
+                  className="grid min-h-20 place-items-center gap-2 rounded-md border border-border p-2 text-center text-xs hover:bg-muted"
+                  key={item.id}
+                  onClick={() => select(item.id)}
+                >
+                  <item.icon className="text-lg" />
+                  {t(item.messageKey)}
+                </button>
+              ))}
+              <button
+                className="grid min-h-20 place-items-center gap-2 rounded-md border border-border p-2 text-center text-xs hover:bg-muted"
+                onClick={() => {
+                  setMoreOpen(false);
+                  window.location.hash = "team";
+                }}
+              >
+                <UsersThree className="text-lg" />
+                {t("team")}
+              </button>
+              <button
+                className="grid min-h-20 place-items-center gap-2 rounded-md border border-border p-2 text-center text-xs hover:bg-muted"
+                onClick={() => {
+                  setMoreOpen(false);
+                  window.location.hash = "settings";
+                }}
+              >
+                <Gear className="text-lg" />
+                {t("settings")}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+    </>
+  );
+}
+function MobileNavButton({
+  icon: Icon,
+  label,
+  active,
+  onClick,
+}: {
+  icon: typeof House;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      aria-current={active ? "page" : undefined}
+      className={`grid min-h-11 place-items-center gap-0.5 rounded-md px-1 text-[0.62rem] ${active ? "bg-muted text-foreground" : "text-muted-foreground"}`}
+      onClick={onClick}
+    >
+      <Icon weight={active ? "fill" : "regular"} />
+      <span>{label}</span>
+    </button>
   );
 }

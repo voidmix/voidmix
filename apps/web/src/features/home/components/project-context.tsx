@@ -3,14 +3,18 @@ import { useTranslations } from "@voidmix/i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 
-import { operators } from "../data";
+import { operators, signals } from "../data";
+import type { DemoOverlayState } from "./demo-overlay";
 
-export function ProjectContext() {
+export function ProjectContext({
+  onOpenOverlay,
+  label = "currentProjectContext",
+}: { onOpenOverlay?: (state: Exclude<DemoOverlayState, null>) => void; label?: string } = {}) {
   const t = useTranslations("home");
 
   return (
     <aside
-      aria-label={t("currentProjectContext")}
+      aria-label={t(label)}
       className="sticky top-6 min-h-0 max-h-[calc(100dvh-18rem)] overflow-y-auto rounded-xl border border-border bg-sidebar p-[1.15rem] min-[1181px]:col-start-2 min-[1181px]:row-span-2 max-[1180px]:static max-[1180px]:max-h-none max-[1180px]:overflow-visible"
     >
       <div className="flex items-start justify-between">
@@ -31,9 +35,12 @@ export function ProjectContext() {
         <span className="block text-[0.7rem] font-semibold text-muted-foreground">
           {t("nextDecision")}
         </span>
-        <strong className="mt-2.5 block text-[0.84rem] leading-[1.35]">
+        <button
+          className="mt-2.5 block text-left text-[0.84rem] font-semibold leading-[1.35] hover:underline"
+          onClick={() => onOpenOverlay?.({ kind: "item", item: signals[0]! })}
+        >
           {t("approveFinalColorPass")}
-        </strong>
+        </button>
         <p className="mt-2 text-[0.72rem] leading-[1.5] text-secondary-foreground text-pretty">
           {t("decisionDescription")}
         </p>

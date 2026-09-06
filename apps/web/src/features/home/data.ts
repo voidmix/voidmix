@@ -187,3 +187,94 @@ export function activityStateClassName(tone: ActivityTone): string {
     tone === "complete" && "text-primary",
   );
 }
+
+// A single fixture feeds the queue, timeline, badges, and project context.
+export interface SignalItem {
+  id: string;
+  titleKey: string;
+  detailKey: string;
+  priority: number;
+  status: "pending" | "blocked" | "working" | "complete";
+  owner: string;
+  timestamp: number;
+  action: "review" | "decide" | "open";
+  relatedSection: "inbox" | "reviews" | "decisions" | "projects";
+}
+
+export const signals: readonly SignalItem[] = [
+  {
+    id: "color",
+    titleKey: "signalColor",
+    detailKey: "signalColorDetail",
+    priority: 1,
+    status: "blocked",
+    owner: "Samira Bell",
+    timestamp: 8,
+    action: "decide",
+    relatedSection: "decisions",
+  },
+  {
+    id: "feedback",
+    titleKey: "signalFeedback",
+    detailKey: "signalFeedbackDetail",
+    priority: 2,
+    status: "pending",
+    owner: "Leo Wang",
+    timestamp: 12,
+    action: "review",
+    relatedSection: "inbox",
+  },
+  {
+    id: "brief",
+    titleKey: "signalBrief",
+    detailKey: "signalBriefDetail",
+    priority: 3,
+    status: "pending",
+    owner: "Samira Bell",
+    timestamp: 24,
+    action: "review",
+    relatedSection: "reviews",
+  },
+  {
+    id: "sound",
+    titleKey: "signalSound",
+    detailKey: "signalSoundDetail",
+    priority: 4,
+    status: "working",
+    owner: "Mina Cole",
+    timestamp: 32,
+    action: "open",
+    relatedSection: "projects",
+  },
+  {
+    id: "lock",
+    titleKey: "signalLock",
+    detailKey: "signalLockDetail",
+    priority: 5,
+    status: "complete",
+    owner: "Leo Wang",
+    timestamp: 45,
+    action: "open",
+    relatedSection: "reviews",
+  },
+];
+
+export function signalCounts(items: readonly SignalItem[]) {
+  return {
+    inbox: items.filter((item) => item.status === "pending" || item.status === "blocked").length,
+    reviews: items.filter((item) => item.action === "review" && item.status !== "complete").length,
+    decisions: items.filter((item) => item.action === "decide" && item.status !== "complete")
+      .length,
+  };
+}
+
+export const navigationGroups = [
+  { key: "workspaceGroup", ids: ["overview", "inbox", "projects"] },
+  { key: "productionGroup", ids: ["reviews", "decisions", "assets"] },
+] as const;
+
+export const quickTemplates = [
+  { label: "templateBrief", prompt: "promptBrief" },
+  { label: "templateFeedback", prompt: "promptFeedback" },
+  { label: "templateRelease", prompt: "promptRelease" },
+] as const;

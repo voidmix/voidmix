@@ -101,3 +101,7 @@ export function updateLocalChatSession(id: string, messages: readonly ChatMessag
 export function localChatStorageKey() {
   return STORAGE_KEY;
 }
+
+export function listLocalChatSessions(): readonly LocalChatSession[] {
+  return Object.values(readSessions()).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
