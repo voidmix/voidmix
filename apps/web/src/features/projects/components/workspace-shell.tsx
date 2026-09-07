@@ -206,7 +206,7 @@ export function WorkspaceShell({
           >
             <Bell aria-hidden="true" />
           </Button>
-          <div className="flex items-center gap-1 max-[520px]:hidden">
+          <div className="flex items-center gap-1 max-[800px]:hidden">
             <LanguageSwitcher />
             <ThemeSwitcher />
           </div>
