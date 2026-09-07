@@ -129,7 +129,7 @@ export function WorkspaceShell({
           aria-label="Voidmix"
           className={cn("block w-fit px-3 text-[17px]", collapsed && "px-2")}
         >
-          <Logo />
+          <Logo className={collapsed ? "[&>span]:hidden" : undefined} />
         </Link>
         <nav className="mt-8 grid gap-1" aria-label={t("workspace")}>
           {renderNav(collapsed)}
