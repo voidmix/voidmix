@@ -29,7 +29,8 @@
     "@voidmix/ui": "workspace:*",
     "better-auth": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@tanstack/router-cli": "catalog:tooling",

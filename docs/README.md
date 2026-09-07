@@ -30,6 +30,8 @@ deployment boundaries, and coding-agent guidance.
   expectations, and the Vite+/Vitest plugin boundary.
 - [Web bundle baseline](./development/web-bundle.md) — how to compare the home
   route's initial client preloads and deferred interaction chunks.
+- [Workspace preview](./development/workspace-preview.md) — Clean Signal routes,
+  preview data boundaries, project interactions, Pi states, and verification.
 - [File structure](./development/file-structure.md) — where a new file goes
   inside a workspace, and the conventions policy enforces.
 - [Coding agents](./development/agents.md) — read order, default decisions,

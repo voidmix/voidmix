@@ -25,6 +25,21 @@ storytelling.
 - **Desktop** is a light field workstation. It uses the same geometry and
   achromatic vocabulary while remaining comfortable for long sessions.
 
+### Clean Signal workspace
+
+The Web home and project routes are operating surfaces, not marketing stages.
+They use a quiet tonal sidebar, a restrained command entry, compact task rows,
+three project summaries, and a collapsed activity history. The home offers one
+command submission action; project creation belongs to the project list.
+The responsive shell uses a 224px desktop sidebar, an optional 72px compact
+mode, and a modal navigation menu at 800px and below. Project tabs remain URL
+state so switching projects preserves the current tab and task filter.
+
+These pages currently use an explicitly labelled, tab-local preview adapter.
+Pi runs demonstrate cancellable local task creation, not a live model response.
+See [workspace preview](../development/workspace-preview.md) for data boundaries
+and verification. Admin and Desktop retain their existing composition and tokens.
+
 ## Shared vocabulary
 
 - Void `#0A0A0A` and Cloud `#F5F5F5` form the primary dark and light fields.

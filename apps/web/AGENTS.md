@@ -24,6 +24,8 @@ src/
     (app)/(admin)/admin/settings.tsx  mail settings mount at /admin/settings
     (app)/(admin)/admin/settings/auth.tsx  auth policy at /admin/settings/auth
   features/home/     home view data, components/, and feature CSS
+  features/projects/ preview data facade, project pages, shell, tasks and settings
+  features/pi/       project-bound preview conversations and cancellable runs
   features/chat/     chat entry, fixtures, types, components/, and CSS
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
@@ -46,6 +48,14 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Own no shared primitive — those belong in `@voidmix/ui`.
 
 ## Constraints
+
+- `/`, `/projects`, `/projects/$projectId`, and the project Pi route share the
+  Clean Signal preview shell. These public routes contain only explicitly
+  labelled sample data; they are not authorization gates for live project APIs.
+- `features/projects/workspace-data.tsx` owns data-source injection. Views use
+  its snapshot and operations rather than accessing sessionStorage or Pi SDKs.
+  Preview writes are tab-local; a live adapter must use `@voidmix/client`, never
+  `@voidmix/ai` or server imports. See [workspace preview](../../docs/development/workspace-preview.md).
 
 - File-based routing. Add `src/routes/<path>.tsx` exporting
   `export const Route = createFileRoute("/path")({ component: X })`. Server-only

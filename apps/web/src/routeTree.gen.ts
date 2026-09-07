@@ -18,9 +18,12 @@ import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
 import { Route as appadminAdminRouteImport } from './routes/(app)/(admin)/admin'
 import { Route as appChatChatIdRouteImport } from './routes/(app)/chat.$chatId'
 import { Route as appadminAdminSettingsRouteImport } from './routes/(app)/(admin)/admin/settings'
+import { Route as ProjectsProjectIdPiSessionIdRouteImport } from './routes/projects.$projectId_.pi.$sessionId'
 import { Route as appadminAdminSettingsAuthRouteImport } from './routes/(app)/(admin)/admin/settings/auth'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +68,16 @@ const authVerifyEmailRoute = authVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => authRouteRoute,
 } as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const appadminAdminRoute = appadminAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -80,6 +93,12 @@ const appadminAdminSettingsRoute = appadminAdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => appadminAdminRoute,
 } as any)
+const ProjectsProjectIdPiSessionIdRoute =
+  ProjectsProjectIdPiSessionIdRouteImport.update({
+    id: '/projects/$projectId_/pi/$sessionId',
+    path: '/projects/$projectId/pi/$sessionId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const appadminAdminSettingsAuthRoute =
   appadminAdminSettingsAuthRouteImport.update({
     id: '/auth',
@@ -94,9 +113,12 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects/': typeof ProjectsIndexRoute
   '/admin': typeof appadminAdminRouteWithChildren
   '/chat/$chatId': typeof appChatChatIdRoute
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
+  '/projects/$projectId/pi/$sessionId': typeof ProjectsProjectIdPiSessionIdRoute
   '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
 export interface FileRoutesByTo {
@@ -106,9 +128,12 @@ export interface FileRoutesByTo {
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects': typeof ProjectsIndexRoute
   '/admin': typeof appadminAdminRouteWithChildren
   '/chat/$chatId': typeof appChatChatIdRoute
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
+  '/projects/$projectId/pi/$sessionId': typeof ProjectsProjectIdPiSessionIdRoute
   '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
 export interface FileRoutesById {
@@ -122,9 +147,12 @@ export interface FileRoutesById {
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects/': typeof ProjectsIndexRoute
   '/(app)/(admin)/admin': typeof appadminAdminRouteWithChildren
   '/(app)/chat/$chatId': typeof appChatChatIdRoute
   '/(app)/(admin)/admin/settings': typeof appadminAdminSettingsRouteWithChildren
+  '/projects/$projectId_/pi/$sessionId': typeof ProjectsProjectIdPiSessionIdRoute
   '/(app)/(admin)/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
 }
 export interface FileRouteTypes {
@@ -136,9 +164,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/verify-email'
+    | '/projects/$projectId'
+    | '/projects/'
     | '/admin'
     | '/chat/$chatId'
     | '/admin/settings'
+    | '/projects/$projectId/pi/$sessionId'
     | '/admin/settings/auth'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -148,9 +179,12 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/verify-email'
+    | '/projects/$projectId'
+    | '/projects'
     | '/admin'
     | '/chat/$chatId'
     | '/admin/settings'
+    | '/projects/$projectId/pi/$sessionId'
     | '/admin/settings/auth'
   id:
     | '__root__'
@@ -163,9 +197,12 @@ export interface FileRouteTypes {
     | '/(auth)/reset-password'
     | '/(auth)/signup'
     | '/(auth)/verify-email'
+    | '/projects/$projectId'
+    | '/projects/'
     | '/(app)/(admin)/admin'
     | '/(app)/chat/$chatId'
     | '/(app)/(admin)/admin/settings'
+    | '/projects/$projectId_/pi/$sessionId'
     | '/(app)/(admin)/admin/settings/auth'
   fileRoutesById: FileRoutesById
 }
@@ -174,6 +211,9 @@ export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
   authRouteRoute: typeof authRouteRouteWithChildren
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
+  ProjectsProjectIdPiSessionIdRoute: typeof ProjectsProjectIdPiSessionIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -241,6 +281,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authVerifyEmailRouteImport
       parentRoute: typeof authRouteRoute
     }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$projectId': {
+      id: '/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof ProjectsProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(app)/(admin)/admin': {
       id: '/(app)/(admin)/admin'
       path: '/admin'
@@ -261,6 +315,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/settings'
       preLoaderRoute: typeof appadminAdminSettingsRouteImport
       parentRoute: typeof appadminAdminRoute
+    }
+    '/projects/$projectId_/pi/$sessionId': {
+      id: '/projects/$projectId_/pi/$sessionId'
+      path: '/projects/$projectId/pi/$sessionId'
+      fullPath: '/projects/$projectId/pi/$sessionId'
+      preLoaderRoute: typeof ProjectsProjectIdPiSessionIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(app)/(admin)/admin/settings/auth': {
       id: '/(app)/(admin)/admin/settings/auth'
@@ -346,6 +407,9 @@ const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
   authRouteRoute: authRouteRouteWithChildren,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  ProjectsProjectIdRoute: ProjectsProjectIdRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
+  ProjectsProjectIdPiSessionIdRoute: ProjectsProjectIdPiSessionIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
