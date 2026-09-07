@@ -8,9 +8,9 @@ transported or stored.
 
 ## Interface
 
-| Path | Purpose                                                                  |
-| ---- | ------------------------------------------------------------------------ |
-| `.`  | `src/index.ts` — entity types, `UserRepository`, `DomainError`, usecases |
+| Path | Purpose                                                                     |
+| ---- | --------------------------------------------------------------------------- |
+| `.`  | `src/index.ts` — context exports, repository ports, domain errors, usecases |
 
 ## Ownership
 
@@ -19,6 +19,12 @@ transported or stored.
   initial administrator creation, typed mail and authentication settings rules,
   source/inheritance models, derived public Auth capabilities, and durable
   audit-event creation.
+- Own workspace membership types and the actor-plus-workspace access
+  administration seam. Active owners and editors may write; active viewers
+  may read. Missing memberships are denied.
+- Own asset path/version/conflict invariants and Agent run/step/lease state
+  machines. Repository commands that cross records declare an atomic contract;
+  adapters must preserve it.
 - Own the **repository interfaces**. The dependency direction is inverted on
   purpose: `@voidmix/db` depends on this package to learn what to implement.
 - Own no transport concern. Business rules throw `DomainError`; only the API
@@ -33,9 +39,10 @@ transported or stored.
   (`createUserAdministration({ users, now, id })`), not classes.
 - `now` and `id` are injectable with defaults. This is what makes tests
   deterministic — do not reach for `new Date()` or a UUID library inline.
-- `DomainError` carries a **closed string-literal union** `code` as its first
-  constructor argument. Adding a code is a compile error in `@voidmix/api-runtime`'s
-  `mapDomainError`, whose switch is exhaustive with no `default`. Let it guide you.
+- `DomainError` is the common business-error base. Each bounded context owns a
+  closed string-literal code union and may expose a context-specific subclass.
+  Add the corresponding explicit mapping in `@voidmix/api-runtime` whenever a
+  context adds a transport-visible error code.
 - `getX` returns `T | null` and never throws; mutators return the updated entity
   or `void`.
 - **Guard ordering in `updateStatus` is load-bearing**: not-found →

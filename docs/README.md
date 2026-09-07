@@ -7,6 +7,8 @@ deployment boundaries, and coding-agent guidance.
 
 - [Architecture overview](./architecture/README.md) — system shape, workspace
   map, dependency direction, and design rules.
+- [Domain glossary](../CONTEXT.md) — shared terms for workspaces, projects,
+  assets, sync, Agent runs, and boundary layers.
 - [Applications](./architecture/applications.md) — Web (including Admin), Desktop, API,
   and Storybook: what each is for, how it is built, and how it is deployed.
 - [Shared packages](./architecture/packages.md) — contracts, client, domain,

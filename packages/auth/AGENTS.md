@@ -29,6 +29,10 @@ the single grant lookup that answers whether a session may do something.
   to `permissions` must never silently expand an existing role.
 - Auth settings deliberately split read from write: Admin and Owner may read;
   only Owner may write. Keep this split when adding related procedures or UI.
+- Workspace permissions (`workspace.assets.*` and `workspace.agents.*`) are
+  granted by the global role table but never replace workspace membership:
+  the API also requires an active membership and applies its owner/editor/viewer
+  role.
 - `hasPermission(session: Session | null, permission)` accepts `null` and returns
   `false` for it. Callers must still distinguish "no session" (401) from
   "insufficient role" (403); `@voidmix/api-runtime`'s `requirePermission` does that.

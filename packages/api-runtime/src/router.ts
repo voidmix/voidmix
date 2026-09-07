@@ -1,6 +1,11 @@
 import { hasPermission, type Permission, type Session } from "@voidmix/auth";
 import { apiContract } from "@voidmix/contracts";
-import { DomainError } from "@voidmix/core";
+import {
+  AgentDomainError,
+  AssetDomainError,
+  DomainError,
+  WorkspaceAccessError,
+} from "@voidmix/core";
 import { MailUnavailableError } from "@voidmix/mail/server";
 import { implement, ORPCError } from "@orpc/server";
 import type {
@@ -236,7 +241,221 @@ export function createApiRouter(options: CreateApiRouterOptions) {
         },
       },
     },
+    workspace: {
+      assets: {
+        create: os.workspace.assets.create
+          .use(requirePermission("workspace.assets.write"))
+          .handler(async ({ context, input }) => {
+            await assertWorkspaceAccess(options.modules, context, input.workspaceId, "write");
+            const assets = requireAssets(options.modules);
+            try {
+              return await assets.create(input);
+            } catch (error) {
+              throw mapDomainError(error);
+            }
+          }),
+        get: os.workspace.assets.get
+          .use(requirePermission("workspace.assets.read"))
+          .handler(async ({ context, input }) => {
+            const assets = requireAssets(options.modules);
+            try {
+              const asset = await assets.get(input.assetId);
+              if (!asset) throw new ORPCError("NOT_FOUND", { message: "Asset not found." });
+              await assertWorkspaceAccess(options.modules, context, asset.workspaceId, "read");
+              return asset;
+            } catch (error) {
+              throw mapDomainError(error);
+            }
+          }),
+        commitVersion: os.workspace.assets.commitVersion
+          .use(requirePermission("workspace.assets.write"))
+          .handler(async ({ context, input }) => {
+            await assertWorkspaceAccess(options.modules, context, input.workspaceId, "write");
+            const assets = requireAssets(options.modules);
+            try {
+              return await assets.commitVersion({
+                workspaceId: input.workspaceId,
+                assetId: input.assetId,
+                blobHash: input.blobHash,
+                byteSize: input.byteSize,
+                expectedHeadVersionId: input.expectedHeadVersionId,
+                parentVersionId: input.parentVersionId,
+                idempotencyKey: input.idempotencyKey,
+                ...(input.contentType !== undefined ? { contentType: input.contentType } : {}),
+                ...(input.localVersionId !== undefined
+                  ? { localVersionId: input.localVersionId }
+                  : {}),
+                actorId: context.principal.session.user.id,
+              });
+            } catch (error) {
+              throw mapDomainError(error);
+            }
+          }),
+        resolveConflict: os.workspace.assets.resolveConflict
+          .use(requirePermission("workspace.assets.write"))
+          .handler(async ({ context, input }) => {
+            const assets = requireAssets(options.modules);
+            try {
+              const conflict = await assets.getConflict(input.conflictId);
+              if (!conflict) throw new ORPCError("NOT_FOUND", { message: "Conflict not found." });
+              await assertWorkspaceAccess(options.modules, context, conflict.workspaceId, "write");
+              return await assets.resolveConflict({
+                conflictId: input.conflictId,
+                actorId: context.principal.session.user.id,
+              });
+            } catch (error) {
+              throw mapDomainError(error);
+            }
+          }),
+      },
+      agents: {
+        runs: {
+          create: os.workspace.agents.runs.create
+            .use(requirePermission("workspace.agents.write"))
+            .handler(async ({ context, input }) => {
+              await assertWorkspaceAccess(options.modules, context, input.workspaceId, "write");
+              const agents = requireAgents(options.modules);
+              try {
+                return await agents.createRun({
+                  ...input,
+                  requestedBy: context.principal.session.user.id,
+                });
+              } catch (error) {
+                throw mapDomainError(error);
+              }
+            }),
+          get: os.workspace.agents.runs.get
+            .use(requirePermission("workspace.agents.read"))
+            .handler(async ({ context, input }) => {
+              const agents = requireAgents(options.modules);
+              try {
+                const run = await agents.getRun(input.runId);
+                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                await assertWorkspaceAccess(options.modules, context, run.workspaceId, "read");
+                return run;
+              } catch (error) {
+                throw mapDomainError(error);
+              }
+            }),
+          transition: os.workspace.agents.runs.transition
+            .use(requirePermission("workspace.agents.write"))
+            .handler(async ({ context, input }) => {
+              const agents = requireAgents(options.modules);
+              try {
+                const run = await agents.getRun(input.runId);
+                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
+                return await agents.transitionRun(input);
+              } catch (error) {
+                throw mapDomainError(error);
+              }
+            }),
+          acquireLease: os.workspace.agents.runs.acquireLease
+            .use(requirePermission("workspace.agents.write"))
+            .handler(async ({ context, input }) => {
+              const agents = requireAgents(options.modules);
+              try {
+                const run = await agents.getRun(input.runId);
+                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
+                return await agents.acquireLease(input);
+              } catch (error) {
+                throw mapDomainError(error);
+              }
+            }),
+          heartbeat: os.workspace.agents.runs.heartbeat
+            .use(requirePermission("workspace.agents.write"))
+            .handler(async ({ context, input }) => {
+              const agents = requireAgents(options.modules);
+              try {
+                const run = await agents.getRun(input.runId);
+                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
+                return await agents.heartbeat(input);
+              } catch (error) {
+                throw mapDomainError(error);
+              }
+            }),
+        },
+        steps: {
+          create: os.workspace.agents.steps.create
+            .use(requirePermission("workspace.agents.write"))
+            .handler(async ({ context, input }) => {
+              const agents = requireAgents(options.modules);
+              try {
+                const run = await agents.getRun(input.runId);
+                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
+                return await agents.createStep(input);
+              } catch (error) {
+                throw mapDomainError(error);
+              }
+            }),
+          transition: os.workspace.agents.steps.transition
+            .use(requirePermission("workspace.agents.write"))
+            .handler(async ({ context, input }) => {
+              const agents = requireAgents(options.modules);
+              try {
+                const step = await agents.getStep(input.stepId);
+                if (!step) throw new ORPCError("NOT_FOUND", { message: "Agent step not found." });
+                const run = await agents.getRun(step.runId);
+                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
+                return await agents.transitionStep({
+                  stepId: input.stepId,
+                  status: input.status,
+                  ...(input.error !== undefined ? { error: input.error } : {}),
+                });
+              } catch (error) {
+                throw mapDomainError(error);
+              }
+            }),
+        },
+      },
+    },
   });
+}
+
+function requireAssets(modules: ApiModules) {
+  if (!modules.assets)
+    throw new ORPCError("INTERNAL_SERVER_ERROR", { message: "Assets module is not configured." });
+  return modules.assets;
+}
+
+function requireAgents(modules: ApiModules) {
+  if (!modules.agents)
+    throw new ORPCError("INTERNAL_SERVER_ERROR", { message: "Agents module is not configured." });
+  return modules.agents;
+}
+
+async function assertWorkspaceAccess(
+  modules: ApiModules,
+  context: ApiContext,
+  workspaceId: string,
+  access: "read" | "write",
+): Promise<void> {
+  const session = context.auth.session;
+  if (!session) throw new ORPCError("UNAUTHORIZED");
+  const workspaceAccess = modules.workspaceAccess;
+  if (!workspaceAccess) {
+    context.log?.set({
+      actor: { type: "user", id: session.user.id },
+      workspace: { id: workspaceId },
+      access,
+      permissionResult: "denied",
+      reason: "workspace_access_not_configured",
+    });
+    throw new ORPCError("FORBIDDEN", { message: "Workspace access is not configured." });
+  }
+  try {
+    if (access === "read") {
+      await workspaceAccess.assertRead({ actorId: session.user.id, workspaceId });
+    } else {
+      await workspaceAccess.assertWrite({ actorId: session.user.id, workspaceId });
+    }
+  } catch (error) {
+    throw mapDomainError(error);
+  }
 }
 
 function assertPermission(context: ApiContext, permission: Permission): Session {
@@ -252,12 +471,46 @@ function assertPermission(context: ApiContext, permission: Permission): Session 
 }
 
 function mapDomainError(error: unknown): ORPCError<string, unknown> {
+  if (error instanceof ORPCError) return error;
+  if (error instanceof WorkspaceAccessError) {
+    return new ORPCError("FORBIDDEN", { message: error.message, cause: error });
+  }
   if (error instanceof MailUnavailableError) {
     return new ORPCError("MAIL_NOT_CONFIGURED", {
       message: error.message,
       data: { missing: error.missing },
       cause: error,
     });
+  }
+  if (error instanceof AssetDomainError || error instanceof AgentDomainError) {
+    switch (error.code) {
+      case "ASSET_NOT_FOUND":
+      case "ASSET_VERSION_NOT_FOUND":
+      case "ASSET_CONFLICT_NOT_FOUND":
+      case "AGENT_RUN_NOT_FOUND":
+      case "AGENT_STEP_NOT_FOUND":
+      case "AGENT_LEASE_NOT_FOUND":
+        return new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+      case "ASSET_PATH_CONFLICT":
+      case "ASSET_HEAD_CONFLICT":
+      case "ASSET_PARENT_CONFLICT":
+      case "ASSET_ALREADY_DELETED":
+      case "ASSET_IDEMPOTENCY_CONFLICT":
+      case "ASSET_CONFLICT_ALREADY_RESOLVED":
+      case "AGENT_INVALID_STATUS_TRANSITION":
+      case "AGENT_CONCURRENT_MODIFICATION":
+      case "AGENT_TERMINAL_RUN":
+      case "AGENT_LEASE_HELD":
+      case "AGENT_LEASE_EXPIRED":
+      case "AGENT_LEASE_OWNER":
+        return new ORPCError("CONFLICT", { message: error.message, cause: error });
+      case "ASSET_PATH_INVALID":
+      case "ASSET_INVALID_VERSION":
+      case "AGENT_TOOL_NOT_ALLOWED":
+      case "AGENT_INVALID_INPUT":
+        return new ORPCError("BAD_REQUEST", { message: error.message, cause: error });
+    }
+    return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
   }
   if (!(error instanceof DomainError)) {
     return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
@@ -280,4 +533,5 @@ function mapDomainError(error: unknown): ORPCError<string, unknown> {
         cause: error,
       });
   }
+  return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
 }

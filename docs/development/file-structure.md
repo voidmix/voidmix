@@ -31,6 +31,25 @@ packages/<name>/
   package.json        the exports map is the public interface — keep it narrow
 ```
 
+`@voidmix/core` is the deliberate exception to a single flat source file. Its
+bounded contexts live beside their ports and application services:
+
+```text
+packages/core/src/
+  identity/   users and audit records
+  settings/   typed system policy and mail configuration
+  workspace/  membership and workspace access
+  projects/   project/task ports and facade
+  assets/     immutable versions and sync conflicts
+  agents/     runs, steps, leases, and tool capabilities
+  shared/     small cross-context value types and errors
+```
+
+Keep the package root as the only public barrel. A context belongs here when it
+contains a framework-independent rule or port; an application feature remains
+under `apps/*/src/features/` and owns presentation, transport facades, and
+fallback data.
+
 Do not add a `src/types.ts`, `src/utils.ts`, or `src/constants.ts` by reflex. A
 type belongs beside the thing it describes until a second consumer exists.
 

@@ -1,4 +1,20 @@
 import type {
+  AgentLease,
+  AgentCommandRepository,
+  AgentLeaseRepository,
+  AgentRun,
+  AgentRunStatus,
+  AgentRunRepository,
+  AgentStep,
+  AgentStepStatus,
+  AgentStepRepository,
+  Asset,
+  AssetRepository,
+  AssetVersion,
+  AssetVersionCommitOutcome,
+  AssetVersionRepository,
+  SyncConflict,
+  SyncConflictRepository,
   AuditEvent,
   AuthSettings,
   AuthSettingsView,
@@ -14,8 +30,10 @@ import type {
   UserPage,
   UserRepository,
   UserStatus,
+  WorkspaceMembership,
+  WorkspaceMembershipRepository,
 } from "@voidmix/core";
-import { createDefaultAuthSettings } from "@voidmix/core";
+import { createDefaultAuthSettings, isTerminalRunStatus } from "@voidmix/core";
 
 type StoredConfigurationValue = {
   value: string;
@@ -112,6 +130,25 @@ export class InMemoryUserRepository implements UserRepository {
       )
       .slice(0, limit)
       .map((event) => ({ ...event, metadata: { ...event.metadata } }));
+  }
+}
+
+export class InMemoryWorkspaceMembershipRepository implements WorkspaceMembershipRepository {
+  readonly memberships = new Map<string, WorkspaceMembership>();
+
+  constructor(seed: readonly WorkspaceMembership[] = []) {
+    for (const membership of seed) this.memberships.set(membership.id, cloneMembership(membership));
+  }
+
+  async getByUserAndWorkspace(input: {
+    userId: string;
+    workspaceId: string;
+  }): Promise<WorkspaceMembership | null> {
+    const membership = [...this.memberships.values()].find(
+      (candidate) =>
+        candidate.userId === input.userId && candidate.workspaceId === input.workspaceId,
+    );
+    return membership ? cloneMembership(membership) : null;
   }
 }
 
@@ -292,6 +329,401 @@ export class InMemorySystemSettingsRepository implements SystemSettingsRepositor
   async appendMailTestAudit(event: AuditEvent): Promise<void> {
     this.auditEvents.push({ ...event, metadata: { ...event.metadata } });
   }
+}
+
+const cloneDate = (value: Date): Date => new Date(value);
+const cloneMembership = (membership: WorkspaceMembership): WorkspaceMembership => ({
+  ...membership,
+  createdAt: cloneDate(membership.createdAt),
+  updatedAt: cloneDate(membership.updatedAt),
+});
+const cloneAsset = (asset: Asset): Asset => ({
+  ...asset,
+  createdAt: cloneDate(asset.createdAt),
+  updatedAt: cloneDate(asset.updatedAt),
+});
+const cloneAssetVersion = (version: AssetVersion): AssetVersion => ({
+  ...version,
+  createdAt: cloneDate(version.createdAt),
+});
+const cloneConflict = (conflict: SyncConflict): SyncConflict => ({
+  ...conflict,
+  detectedAt: cloneDate(conflict.detectedAt),
+  ...(conflict.resolvedAt ? { resolvedAt: cloneDate(conflict.resolvedAt) } : {}),
+});
+const cloneRun = (run: AgentRun): AgentRun => ({
+  ...run,
+  createdAt: cloneDate(run.createdAt),
+  updatedAt: cloneDate(run.updatedAt),
+});
+const cloneStep = (step: AgentStep): AgentStep => ({
+  ...step,
+  ...(step.startedAt ? { startedAt: cloneDate(step.startedAt) } : {}),
+  ...(step.finishedAt ? { finishedAt: cloneDate(step.finishedAt) } : {}),
+});
+const cloneLease = (lease: AgentLease): AgentLease => ({
+  ...lease,
+  acquiredAt: cloneDate(lease.acquiredAt),
+  heartbeatAt: cloneDate(lease.heartbeatAt),
+  expiresAt: cloneDate(lease.expiresAt),
+});
+
+export class InMemoryAssetRepository implements AssetRepository {
+  readonly assets = new Map<string, Asset>();
+
+  constructor(seed: readonly Asset[] = []) {
+    for (const asset of seed) this.assets.set(asset.id, cloneAsset(asset));
+  }
+
+  async getById(id: string): Promise<Asset | null> {
+    const asset = this.assets.get(id);
+    return asset ? cloneAsset(asset) : null;
+  }
+
+  async getByPath(input: { workspaceId: string; path: string }): Promise<Asset | null> {
+    const asset = [...this.assets.values()].find(
+      (candidate) => candidate.workspaceId === input.workspaceId && candidate.path === input.path,
+    );
+    return asset ? cloneAsset(asset) : null;
+  }
+
+  async createIfPathAvailable(asset: Asset) {
+    const existing = [...this.assets.values()].find(
+      (candidate) => candidate.workspaceId === asset.workspaceId && candidate.path === asset.path,
+    );
+    if (existing) return { status: "path_conflict" as const };
+    const stored = cloneAsset(asset);
+    this.assets.set(asset.id, stored);
+    return { status: "created" as const, asset: cloneAsset(stored) };
+  }
+}
+
+export class InMemoryAssetVersionRepository implements AssetVersionRepository {
+  readonly versions = new Map<string, AssetVersion>();
+
+  constructor(seed: readonly AssetVersion[] = []) {
+    for (const version of seed) this.versions.set(version.id, cloneAssetVersion(version));
+  }
+
+  async getById(id: string): Promise<AssetVersion | null> {
+    const version = this.versions.get(id);
+    return version ? cloneAssetVersion(version) : null;
+  }
+
+  async getByIdempotencyKey(input: {
+    assetId: string;
+    idempotencyKey: string;
+  }): Promise<AssetVersion | null> {
+    const version = [...this.versions.values()].find(
+      (candidate) =>
+        candidate.assetId === input.assetId && candidate.idempotencyKey === input.idempotencyKey,
+    );
+    return version ? cloneAssetVersion(version) : null;
+  }
+}
+
+/** Build a complete in-memory asset repository graph with atomic head commits. */
+export function createInMemoryAssetRepositories(): {
+  assets: InMemoryAssetRepository;
+  versions: InMemoryAssetVersionRepository;
+  conflicts: InMemorySyncConflictRepository;
+  commitVersion(input: {
+    version: AssetVersion;
+    expectedHeadVersionId: string | null;
+  }): Promise<AssetVersionCommitOutcome>;
+} {
+  const assets = new InMemoryAssetRepository();
+  const versions = new InMemoryAssetVersionRepository();
+  const conflicts = new InMemorySyncConflictRepository();
+  let commitTail: Promise<void> = Promise.resolve();
+
+  const commitVersion = (input: {
+    version: AssetVersion;
+    expectedHeadVersionId: string | null;
+  }): Promise<AssetVersionCommitOutcome> => {
+    const operation = commitTail.then(() => {
+      const asset = assets.assets.get(input.version.assetId);
+      if (!asset) return { status: "not_found" as const };
+
+      // Idempotent retries must be replayed before evaluating the caller's
+      // observed head. A successful first request may already have advanced
+      // the head by the time a concurrent retry enters this critical section.
+      const existing = [...versions.versions.values()].find(
+        (candidate) =>
+          candidate.assetId === input.version.assetId &&
+          candidate.idempotencyKey === input.version.idempotencyKey,
+      );
+      if (existing) {
+        return {
+          status: "committed" as const,
+          version: cloneAssetVersion(existing),
+          asset: cloneAsset(asset),
+        };
+      }
+
+      if (asset.workspaceId !== input.version.workspaceId || asset.status !== "active") {
+        return { status: "not_found" as const };
+      }
+      if (asset.headVersionId !== input.expectedHeadVersionId) {
+        return {
+          status: "head_conflict" as const,
+          actualHeadVersionId: asset.headVersionId,
+        };
+      }
+
+      versions.versions.set(input.version.id, cloneAssetVersion(input.version));
+      const updated = {
+        ...asset,
+        headVersionId: input.version.id,
+        updatedAt: input.version.createdAt,
+      };
+      assets.assets.set(asset.id, cloneAsset(updated));
+      return {
+        status: "committed" as const,
+        version: cloneAssetVersion(input.version),
+        asset: cloneAsset(updated),
+      };
+    });
+    // A failed operation must not permanently poison the queue.
+    commitTail = operation.then(
+      () => undefined,
+      () => undefined,
+    );
+    return operation;
+  };
+  return {
+    assets,
+    versions,
+    conflicts,
+    commitVersion,
+  };
+}
+
+export class InMemorySyncConflictRepository implements SyncConflictRepository {
+  readonly conflicts = new Map<string, SyncConflict>();
+
+  constructor(seed: readonly SyncConflict[] = []) {
+    for (const conflict of seed) this.conflicts.set(conflict.id, cloneConflict(conflict));
+  }
+
+  async getById(id: string): Promise<SyncConflict | null> {
+    const conflict = this.conflicts.get(id);
+    return conflict ? cloneConflict(conflict) : null;
+  }
+
+  async save(conflict: SyncConflict): Promise<void> {
+    this.conflicts.set(conflict.id, cloneConflict(conflict));
+  }
+
+  async resolve(conflict: SyncConflict) {
+    const current = this.conflicts.get(conflict.id);
+    if (!current) return { status: "not_found" as const };
+    if (current.status === "resolved") {
+      return { status: "already_resolved" as const, conflict: cloneConflict(current) };
+    }
+    const resolved = cloneConflict(conflict);
+    this.conflicts.set(conflict.id, resolved);
+    return { status: "resolved" as const, conflict: cloneConflict(resolved) };
+  }
+}
+
+export class InMemoryAgentRunRepository implements AgentRunRepository {
+  readonly runs = new Map<string, AgentRun>();
+
+  constructor(seed: readonly AgentRun[] = []) {
+    for (const run of seed) this.runs.set(run.id, cloneRun(run));
+  }
+
+  async getById(id: string): Promise<AgentRun | null> {
+    const run = this.runs.get(id);
+    return run ? cloneRun(run) : null;
+  }
+
+  async save(run: AgentRun): Promise<void> {
+    this.runs.set(run.id, cloneRun(run));
+  }
+}
+
+export class InMemoryAgentStepRepository implements AgentStepRepository {
+  readonly steps = new Map<string, AgentStep>();
+
+  constructor(seed: readonly AgentStep[] = []) {
+    for (const step of seed) this.steps.set(step.id, cloneStep(step));
+  }
+
+  async getById(id: string): Promise<AgentStep | null> {
+    const step = this.steps.get(id);
+    return step ? cloneStep(step) : null;
+  }
+}
+
+export class InMemoryAgentLeaseRepository implements AgentLeaseRepository {
+  readonly leases = new Map<string, AgentLease>();
+
+  constructor(seed: readonly AgentLease[] = []) {
+    for (const lease of seed) this.leases.set(lease.runId, cloneLease(lease));
+  }
+
+  async getByRunId(runId: string): Promise<AgentLease | null> {
+    const lease = this.leases.get(runId);
+    return lease ? cloneLease(lease) : null;
+  }
+}
+
+/**
+ * Atomic Agent commands for the in-memory adapter. The queue mirrors the row
+ * locks used by the PostgreSQL implementation and makes race tests behave
+ * like production even though each individual map operation is synchronous.
+ */
+export class InMemoryAgentCommandRepository implements AgentCommandRepository {
+  private tail: Promise<void> = Promise.resolve();
+
+  constructor(
+    private readonly runs: InMemoryAgentRunRepository,
+    private readonly steps: InMemoryAgentStepRepository,
+    private readonly leases: InMemoryAgentLeaseRepository,
+  ) {}
+
+  private enqueue<Result>(operation: () => Result): Promise<Result> {
+    const result = this.tail.then(operation);
+    this.tail = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
+
+  acquireLease(input: { runId: string; holderId: string; now: Date; leaseDurationMs: number }) {
+    return this.enqueue(() => {
+      const run = this.runs.runs.get(input.runId);
+      if (!run) return { status: "run_not_found" as const };
+      if (run.status === "succeeded" || run.status === "failed" || run.status === "cancelled") {
+        return { status: "terminal" as const };
+      }
+      const existing = this.leases.leases.get(input.runId);
+      const existingIsActive =
+        existing !== undefined && existing.expiresAt.getTime() > input.now.getTime();
+      if (existingIsActive) {
+        if (existing.holderId !== input.holderId)
+          return { status: "held" as const, lease: cloneLease(existing) };
+      }
+      const lease: AgentLease = {
+        runId: input.runId,
+        holderId: input.holderId,
+        acquiredAt: existingIsActive ? existing.acquiredAt : input.now,
+        heartbeatAt: input.now,
+        expiresAt: new Date(input.now.getTime() + input.leaseDurationMs),
+      };
+      this.leases.leases.set(input.runId, cloneLease(lease));
+      const updatedRun: AgentRun =
+        run.status === "queued"
+          ? { ...run, status: "running", updatedAt: input.now }
+          : cloneRun(run);
+      this.runs.runs.set(run.id, cloneRun(updatedRun));
+      return { status: "acquired" as const, run: updatedRun, lease: cloneLease(lease) };
+    });
+  }
+
+  heartbeat(input: { runId: string; holderId: string; now: Date; leaseDurationMs: number }) {
+    return this.enqueue(() => {
+      const run = this.runs.runs.get(input.runId);
+      if (!run) return { status: "run_not_found" as const };
+      if (run.status === "succeeded" || run.status === "failed" || run.status === "cancelled") {
+        this.leases.leases.delete(input.runId);
+        return { status: "terminal" as const };
+      }
+      const lease = this.leases.leases.get(input.runId);
+      if (!lease) return { status: "not_found" as const };
+      if (lease.holderId !== input.holderId) return { status: "owner" as const };
+      if (lease.expiresAt.getTime() <= input.now.getTime()) return { status: "expired" as const };
+      const renewed: AgentLease = {
+        ...lease,
+        heartbeatAt: input.now,
+        expiresAt: new Date(input.now.getTime() + input.leaseDurationMs),
+      };
+      this.leases.leases.set(input.runId, cloneLease(renewed));
+      return { status: "renewed" as const, lease: cloneLease(renewed) };
+    });
+  }
+
+  createStep(input: { runId: string; stepId: string; name: string; now: Date }) {
+    return this.enqueue(() => {
+      const run = this.runs.runs.get(input.runId);
+      if (!run) return { status: "run_not_found" as const };
+      if (run.status === "succeeded" || run.status === "failed" || run.status === "cancelled") {
+        return { status: "terminal" as const };
+      }
+      const sequence =
+        [...this.steps.steps.values()]
+          .filter((step) => step.runId === input.runId)
+          .reduce((max, step) => Math.max(max, step.sequence), 0) + 1;
+      const step: AgentStep = {
+        id: input.stepId,
+        runId: input.runId,
+        sequence,
+        status: "queued",
+        name: input.name,
+        startedAt: null,
+        finishedAt: null,
+        error: null,
+      };
+      this.steps.steps.set(step.id, cloneStep(step));
+      const updatedRun: AgentRun = {
+        ...run,
+        currentStepId: step.id,
+        updatedAt: input.now,
+      };
+      this.runs.runs.set(run.id, cloneRun(updatedRun));
+      return { status: "created" as const, run: updatedRun, step: cloneStep(step) };
+    });
+  }
+
+  transitionRun(input: { run: AgentRun; expectedStatus: AgentRunStatus }) {
+    return this.enqueue(() => {
+      const current = this.runs.runs.get(input.run.id);
+      if (!current) return { status: "run_not_found" as const };
+      if (current.status !== input.expectedStatus)
+        return { status: "conflict" as const, run: cloneRun(current) };
+      // The service passes a snapshot so the adapter can compare the expected
+      // status. Preserve fields written by commands that raced ahead while the
+      // snapshot was being prepared (for example currentStepId from createStep).
+      const updated: AgentRun = {
+        ...current,
+        status: input.run.status,
+        updatedAt: input.run.updatedAt,
+      };
+      this.runs.runs.set(input.run.id, cloneRun(updated));
+      if (isTerminalRunStatus(updated.status)) this.leases.leases.delete(input.run.id);
+      return { status: "updated" as const, run: cloneRun(updated) };
+    });
+  }
+
+  transitionStep(input: { step: AgentStep; expectedStatus: AgentStepStatus }) {
+    return this.enqueue(() => {
+      const run = this.runs.runs.get(input.step.runId);
+      if (!run) return { status: "run_not_found" as const };
+      if (isTerminalRunStatus(run.status)) return { status: "terminal" as const };
+      const current = this.steps.steps.get(input.step.id);
+      if (!current) return { status: "step_not_found" as const };
+      if (current.status !== input.expectedStatus)
+        return { status: "conflict" as const, step: cloneStep(current) };
+      this.steps.steps.set(input.step.id, cloneStep(input.step));
+      return { status: "updated" as const, step: cloneStep(input.step) };
+    });
+  }
+}
+
+/** Build a complete in-memory Agent repository graph with atomic commands. */
+export function createInMemoryAgentRepositories(): {
+  runs: InMemoryAgentRunRepository;
+  steps: InMemoryAgentStepRepository;
+  leases: InMemoryAgentLeaseRepository;
+  commands: InMemoryAgentCommandRepository;
+} {
+  const runs = new InMemoryAgentRunRepository();
+  const steps = new InMemoryAgentStepRepository();
+  const leases = new InMemoryAgentLeaseRepository();
+  return { runs, steps, leases, commands: new InMemoryAgentCommandRepository(runs, steps, leases) };
 }
 
 function parseBoolean(value: string | undefined, fallback: boolean): boolean {

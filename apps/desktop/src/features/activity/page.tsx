@@ -7,6 +7,7 @@ import {
   ShieldCheck,
 } from "@phosphor-icons/react";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { PageHeader } from "@voidmix/ui/page-header";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useTranslations } from "@voidmix/i18n/client";
 import { useState } from "react";
@@ -57,15 +58,16 @@ export function ActivityPage() {
 
   return (
     <div className="page">
-      <header className="page-header">
-        <div>
-          <h1>{t("title")}</h1>
-          <p>{t("description")}</p>
-        </div>
-        <Button className="secondary-button" variant="secondary">
-          {t("exportLog")}
-        </Button>
-      </header>
+      <PageHeader
+        className="page-header"
+        title={t("title")}
+        description={t("description")}
+        action={
+          <Button className="secondary-button" variant="secondary">
+            {t("exportLog")}
+          </Button>
+        }
+      />
       <div className="filter-row" role="toolbar" aria-label={t("filters")}>
         {filters.map((item) => (
           <Button

@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vite-plus/test";
 import { CommandInput } from "./command-input";
 import { EmptyState } from "./empty-state";
 import { StatusBadge } from "./status-badge";
+import { SectionHeading } from "./section-heading";
 
 describe("workspace primitives", () => {
   it("disables empty input and exposes the submit action", () => {
@@ -68,5 +69,17 @@ describe("workspace primitives", () => {
     );
     expect(screen.getByText("Blocked")).toBeVisible();
     expect(screen.getByRole("button", { name: "Create project" })).toBeVisible();
+  });
+  it("renders a labelled section with optional description and action", () => {
+    render(
+      <SectionHeading
+        title="Recent activity"
+        description="The latest workspace changes"
+        action={<button type="button">View all</button>}
+      />,
+    );
+    expect(screen.getByRole("heading", { level: 2, name: "Recent activity" })).toBeVisible();
+    expect(screen.getByText("The latest workspace changes")).toBeVisible();
+    expect(screen.getByRole("button", { name: "View all" })).toBeVisible();
   });
 });

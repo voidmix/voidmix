@@ -1,6 +1,6 @@
 # Architecture Overview
 
-> Status: implemented scaffold, updated August 23, 2026.
+> Status: implemented scaffold, updated September 8, 2026.
 
 Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud Web
 application with an integrated operations console and Hono API, plus a Tauri
@@ -38,6 +38,13 @@ flowchart LR
 
 The API is the business boundary. Web and Desktop never access the database
 directly.
+
+The domain language and aggregate boundaries are recorded in the root
+[`CONTEXT.md`](../../CONTEXT.md). `@voidmix/core` is the domain-kernel package;
+its source is organized by business context rather than by application
+features. Application features remain in `apps/web/src/features/` and
+`apps/desktop/src/features/`. See [ADR-0008](./decisions/0008-domain-contexts-stay-in-core.md)
+for the package and extraction rule.
 
 ## Workspace layout
 
@@ -83,6 +90,10 @@ Rules:
 4. Every protected Admin operation is authorized by the API.
 5. Operational logs never contain raw credentials or session tokens.
 6. New shared packages require a stable interface and at least two consumers.
+7. Domain rules stay in core; adapters provide storage, AI, mail, processing,
+   export, and notification capabilities through explicit ports.
+8. Hono owns HTTP and streaming mechanics; oRPC owns typed structured procedure
+   contracts. Neither transport layer owns domain rules.
 
 ## Detailed documents
 

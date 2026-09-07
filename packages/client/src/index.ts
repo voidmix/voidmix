@@ -21,6 +21,21 @@ export interface CreateApiClientOptions {
   fetch?: typeof globalThis.fetch;
 }
 
+// Keep mutation requests out of GET batching/deduplication. This mirrors the
+// server's allow-list while leaving the client type fully generated from the
+// shared contract.
+const mutationProcedureNames = new Set([
+  "create",
+  "updateStatus",
+  "update",
+  "sendTest",
+  "commitVersion",
+  "resolveConflict",
+  "transition",
+  "acquireLease",
+  "heartbeat",
+]);
+
 export function createApiClient(options: CreateApiClientOptions = {}): ApiClient {
   const toHeaders = (value: ApiHeaders): Headers => {
     const entries = Object.entries(value).filter(
@@ -39,7 +54,7 @@ export function createApiClient(options: CreateApiClientOptions = {}): ApiClient
     url: "/rpc",
     ...(baseUrl ? { origin: baseUrl } : {}),
     method: (_requestOptions, path) =>
-      ["updateStatus", "update", "sendTest"].includes(path.at(-1) ?? "") ? "POST" : "GET",
+      mutationProcedureNames.has(path.at(-1) ?? "") ? "POST" : "GET",
     plugins: [
       new DedupeLinkPlugin({ groups: [readRequestGroup] }),
       new BatchLinkPlugin({ groups: [readRequestGroup], maxSize: 10, mode: "buffered" }),

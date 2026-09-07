@@ -134,6 +134,92 @@ export const publicAuthCapabilitiesSchema = z.object({
   passwordResetRequestAvailable: z.boolean(),
 });
 
+export const workspaceMembershipRoleSchema = z.enum(["owner", "editor", "viewer"]);
+export const workspaceMembershipStatusSchema = z.enum(["active", "suspended"]);
+export const workspaceMembershipSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().trim().min(1),
+  userId: z.string().min(1),
+  role: workspaceMembershipRoleSchema,
+  status: workspaceMembershipStatusSchema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const assetStatusSchema = z.enum(["active", "deleted"]);
+export const syncConflictStatusSchema = z.enum(["open", "resolved"]);
+export const assetSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().trim().min(1),
+  path: z.string().min(1),
+  status: assetStatusSchema,
+  headVersionId: z.string().min(1).nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export const assetVersionSchema = z.object({
+  id: z.string().min(1),
+  assetId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  blobHash: z.string().regex(/^[a-f0-9]{16,}$/),
+  byteSize: z.number().int().nonnegative(),
+  contentType: z.string().min(1).nullable(),
+  parentVersionId: z.string().min(1).nullable(),
+  createdBy: z.string().min(1),
+  createdAt: z.date(),
+  idempotencyKey: z.string().min(1),
+});
+export const syncConflictSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  assetId: z.string().min(1),
+  localVersionId: z.string().min(1).nullable(),
+  remoteVersionId: z.string().min(1).nullable(),
+  expectedHeadVersionId: z.string().min(1).nullable(),
+  actualHeadVersionId: z.string().min(1).nullable(),
+  status: syncConflictStatusSchema,
+  detectedAt: z.date(),
+  resolvedAt: z.date().nullable(),
+  resolvedBy: z.string().min(1).nullable(),
+});
+
+export const agentRunStatusSchema = z.enum([
+  "queued",
+  "running",
+  "waiting_for_approval",
+  "succeeded",
+  "failed",
+  "cancelled",
+]);
+export const agentStepStatusSchema = agentRunStatusSchema;
+export const agentRunSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  requestedBy: z.string().min(1),
+  status: agentRunStatusSchema,
+  goal: z.string().min(1),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  currentStepId: z.string().min(1).nullable(),
+});
+export const agentStepSchema = z.object({
+  id: z.string().min(1),
+  runId: z.string().min(1),
+  sequence: z.number().int().nonnegative(),
+  status: agentStepStatusSchema,
+  name: z.string().min(1),
+  startedAt: z.date().nullable(),
+  finishedAt: z.date().nullable(),
+  error: z.string().nullable(),
+});
+export const agentLeaseSchema = z.object({
+  runId: z.string().min(1),
+  holderId: z.string().min(1),
+  acquiredAt: z.date(),
+  heartbeatAt: z.date(),
+  expiresAt: z.date(),
+});
+
 const MailNotConfiguredError = error("MAIL_NOT_CONFIGURED", {
   message: "Mail configuration is not ready.",
   data: z.object({ missing: z.array(z.enum(["RESEND_API_KEY", "MAIL_FROM"])) }),
@@ -186,12 +272,82 @@ const updateAuthSettings = oc.input(updateAuthSettingsSchema).output(authSetting
 
 const getPublicAuthCapabilities = oc.input(z.object({})).output(publicAuthCapabilitiesSchema);
 
+const createAsset = oc
+  .input(z.object({ workspaceId: z.string().trim().min(1), path: z.string().min(1).max(1024) }))
+  .output(assetSchema);
+const getAsset = oc.input(z.object({ assetId: z.string().min(1) })).output(assetSchema);
+const commitAssetVersion = oc
+  .input(
+    z.object({
+      workspaceId: z.string().trim().min(1),
+      assetId: z.string().min(1),
+      blobHash: z.string().regex(/^[a-f0-9]{16,}$/),
+      byteSize: z.number().int().nonnegative(),
+      contentType: z.string().min(1).nullable().optional(),
+      expectedHeadVersionId: z.string().min(1).nullable(),
+      parentVersionId: z.string().min(1).nullable(),
+      idempotencyKey: z.string().trim().min(1).max(500),
+      localVersionId: z.string().min(1).nullable().optional(),
+    }),
+  )
+  .output(z.object({ version: assetVersionSchema, asset: assetSchema }));
+const resolveAssetConflict = oc
+  .input(z.object({ conflictId: z.string().min(1) }))
+  .output(syncConflictSchema);
+
+const createAgentRun = oc
+  .input(
+    z.object({ workspaceId: z.string().trim().min(1), goal: z.string().trim().min(1).max(10_000) }),
+  )
+  .output(agentRunSchema);
+const getAgentRun = oc.input(z.object({ runId: z.string().min(1) })).output(agentRunSchema);
+const transitionAgentRun = oc
+  .input(z.object({ runId: z.string().min(1), status: agentRunStatusSchema }))
+  .output(agentRunSchema);
+const acquireAgentLease = oc
+  .input(z.object({ runId: z.string().min(1), holderId: z.string().min(1).max(200) }))
+  .output(agentLeaseSchema);
+const heartbeatAgentLease = acquireAgentLease.output(agentLeaseSchema);
+const createAgentStep = oc
+  .input(z.object({ runId: z.string().min(1), name: z.string().trim().min(1).max(500) }))
+  .output(agentStepSchema);
+const transitionAgentStep = oc
+  .input(
+    z.object({
+      stepId: z.string().min(1),
+      status: agentStepStatusSchema,
+      error: z.string().max(10_000).nullable().optional(),
+    }),
+  )
+  .output(agentStepSchema);
+
 export const apiContract = {
   health,
   public: {
     auth: {
       capabilities: {
         get: getPublicAuthCapabilities,
+      },
+    },
+  },
+  workspace: {
+    assets: {
+      create: createAsset,
+      get: getAsset,
+      commitVersion: commitAssetVersion,
+      resolveConflict: resolveAssetConflict,
+    },
+    agents: {
+      runs: {
+        create: createAgentRun,
+        get: getAgentRun,
+        transition: transitionAgentRun,
+        acquireLease: acquireAgentLease,
+        heartbeat: heartbeatAgentLease,
+      },
+      steps: {
+        create: createAgentStep,
+        transition: transitionAgentStep,
       },
     },
   },
@@ -228,3 +384,10 @@ export type MailTestResultDto = z.infer<typeof mailTestResultSchema>;
 export type AuthSettingsDto = z.infer<typeof authSettingsSchema>;
 export type UpdateAuthSettingsDto = z.infer<typeof updateAuthSettingsSchema>;
 export type PublicAuthCapabilitiesDto = z.infer<typeof publicAuthCapabilitiesSchema>;
+export type WorkspaceMembershipDto = z.infer<typeof workspaceMembershipSchema>;
+export type AssetDto = z.infer<typeof assetSchema>;
+export type AssetVersionDto = z.infer<typeof assetVersionSchema>;
+export type SyncConflictDto = z.infer<typeof syncConflictSchema>;
+export type AgentRunDto = z.infer<typeof agentRunSchema>;
+export type AgentStepDto = z.infer<typeof agentStepSchema>;
+export type AgentLeaseDto = z.infer<typeof agentLeaseSchema>;

@@ -1,4 +1,5 @@
 import { Button } from "@voidmix/ui/components/ui/button";
+import { PageHeader } from "@voidmix/ui/page-header";
 import { useTranslations } from "@voidmix/i18n/client";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useMemo, useState } from "react";
@@ -57,12 +58,7 @@ export function SettingsPage() {
 
   return (
     <div className="page settings-page">
-      <header className="page-header">
-        <div>
-          <h1>{t("title")}</h1>
-          <p>{t("description")}</p>
-        </div>
-      </header>
+      <PageHeader className="page-header" title={t("title")} description={t("description")} />
       {sections.map((section) => (
         <section className="settings-section" key={section.title}>
           <h2>{section.title}</h2>

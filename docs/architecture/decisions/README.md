@@ -34,3 +34,4 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 - [ADR-0005: Recipient locale on mail inputs](./0005-recipient-locale-on-mail-inputs.md)
 - [ADR-0006: Optional Redis cache and Better Auth secondary storage](./0006-redis-cache-and-auth-secondary-storage.md)
 - [ADR-0007: Web locale catalogs load by locale](./0007-web-locale-catalog-loading.md)
+- [ADR-0008: Keep domain contexts in one core package until stable consumers exist](./0008-domain-contexts-stay-in-core.md)

@@ -2,6 +2,10 @@ export const roles = ["user", "admin", "owner"] as const;
 export type Role = (typeof roles)[number];
 
 export const permissions = [
+  "workspace.assets.read",
+  "workspace.assets.write",
+  "workspace.agents.read",
+  "workspace.agents.write",
   "admin.users.read",
   "admin.users.write",
   "admin.audit.read",
@@ -27,8 +31,17 @@ export interface Session {
 }
 
 const grants: Record<Role, ReadonlySet<Permission>> = {
-  user: new Set(),
+  user: new Set([
+    "workspace.assets.read",
+    "workspace.assets.write",
+    "workspace.agents.read",
+    "workspace.agents.write",
+  ]),
   admin: new Set([
+    "workspace.assets.read",
+    "workspace.assets.write",
+    "workspace.agents.read",
+    "workspace.agents.write",
     "admin.users.read",
     "admin.users.write",
     "admin.audit.read",
@@ -39,6 +52,10 @@ const grants: Record<Role, ReadonlySet<Permission>> = {
     "admin.settings.auth.read",
   ]),
   owner: new Set([
+    "workspace.assets.read",
+    "workspace.assets.write",
+    "workspace.agents.read",
+    "workspace.agents.write",
     "admin.users.read",
     "admin.users.write",
     "admin.audit.read",

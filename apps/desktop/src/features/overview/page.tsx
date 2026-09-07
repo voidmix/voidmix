@@ -17,6 +17,8 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { PageHeader } from "@voidmix/ui/page-header";
+import { SectionHeading } from "@voidmix/ui/section-heading";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import type { CSSProperties } from "react";
@@ -90,15 +92,17 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
   const t = useTranslations("overview");
   return (
     <section className="work-panel queue-panel" aria-labelledby="queue-title">
-      <div className="section-heading">
-        <div>
-          <h2 id="queue-title">{t("transferQueue")}</h2>
-          <p>{t("queueDescription")}</p>
-        </div>
-        <Button className="quiet-button" variant="ghost">
-          {t("viewActivity")} <CaretRight size={14} />
-        </Button>
-      </div>
+      <SectionHeading
+        className="section-heading"
+        title={t("transferQueue")}
+        titleId="queue-title"
+        description={t("queueDescription")}
+        action={
+          <Button className="quiet-button" variant="ghost">
+            {t("viewActivity")} <CaretRight size={14} />
+          </Button>
+        }
+      />
       <div className="queue-list">
         {jobs.map((job) => (
           <div className="queue-item" key={job.id}>
@@ -133,20 +137,22 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
 
   return (
     <section className="work-panel storage-panel" aria-labelledby="storage-title">
-      <div className="section-heading">
-        <div>
-          <h2 id="storage-title">{t("storage")}</h2>
-          <p>{t("storageDescription", { percent: usedPercent })}</p>
-        </div>
-        <Button
-          className="icon-button"
-          size="icon"
-          variant="ghost"
-          aria-label={t("storageOptions")}
-        >
-          <DotsThree size={16} />
-        </Button>
-      </div>
+      <SectionHeading
+        className="section-heading"
+        title={t("storage")}
+        titleId="storage-title"
+        description={t("storageDescription", { percent: usedPercent })}
+        action={
+          <Button
+            className="icon-button"
+            size="icon"
+            variant="ghost"
+            aria-label={t("storageOptions")}
+          >
+            <DotsThree size={16} />
+          </Button>
+        }
+      />
       <div className="storage-total">
         <div
           className="storage-ring"
@@ -231,39 +237,40 @@ export function OverviewPage() {
 
   return (
     <div className="page overview-page">
-      <header className="page-header">
-        <div>
-          <h1>{t("title")}</h1>
-          <p>{t("description")}</p>
-        </div>
-        <div className="page-actions">
-          <span className={cn("data-source", source)}>
-            <WifiHigh size={13} />
-            {source === "cloud"
-              ? t("cloudData")
-              : source === "connected"
-                ? t("apiOnline")
-                : t("previewData")}
-          </span>
-          <Button
-            className="secondary-button"
-            variant="secondary"
-            onClick={() => void refresh()}
-            disabled={loading}
-          >
-            <ArrowsClockwise size={14} className={loading ? "rotating" : ""} />
-            {t("refresh")}
-          </Button>
-          <Button
-            className="primary-button"
-            variant="primary"
-            onClick={() => setPaused((value) => !value)}
-          >
-            {paused ? <Play size={14} /> : <Pause size={14} />}
-            {paused ? t("resumeSync") : t("pauseSync")}
-          </Button>
-        </div>
-      </header>
+      <PageHeader
+        className="page-header"
+        title={t("title")}
+        description={t("description")}
+        action={
+          <div className="page-actions">
+            <span className={cn("data-source", source)}>
+              <WifiHigh size={13} />
+              {source === "cloud"
+                ? t("cloudData")
+                : source === "connected"
+                  ? t("apiOnline")
+                  : t("previewData")}
+            </span>
+            <Button
+              className="secondary-button"
+              variant="secondary"
+              onClick={() => void refresh()}
+              disabled={loading}
+            >
+              <ArrowsClockwise size={14} className={loading ? "rotating" : ""} />
+              {t("refresh")}
+            </Button>
+            <Button
+              className="primary-button"
+              variant="primary"
+              onClick={() => setPaused((value) => !value)}
+            >
+              {paused ? <Play size={14} /> : <Pause size={14} />}
+              {paused ? t("resumeSync") : t("pauseSync")}
+            </Button>
+          </div>
+        }
+      />
 
       <section className="sync-banner">
         <div className="sync-orbit" aria-hidden="true">

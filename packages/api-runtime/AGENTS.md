@@ -16,8 +16,9 @@ depending on Nitro or an application.
 ## Ownership
 
 - Own Hono routes, oRPC procedure handlers, permission enforcement, session
-  resolution, CORS, Better Auth composition, dynamic mail/auth policy
-  resolution, and production repository wiring.
+  resolution, workspace-membership access checks, CORS, Better Auth
+  composition, dynamic mail/auth policy resolution, and production repository
+  wiring.
 - Own no domain rule, wire schema, deployment listener, or Nitro lifecycle.
 
 ## Constraints
@@ -49,6 +50,10 @@ depending on Nitro or an application.
 - Keep the header session resolver as an explicit development/test seam. The
   production runtime always uses Better Auth and rejects suspended users. The
   resolver is not part of the package root interface.
+- Workspace procedures require both the global permission and an active
+  workspace membership. Missing membership configuration fails closed with
+  `FORBIDDEN`; access is checked using the authenticated actor and resource
+  workspace, never a client-supplied actor id.
 - `createApiApp` requires explicit `ApiModules`, session resolver, origin policy,
   and Auth handler injection. `createApiModules` is the public process-scoped
   composition seam; seed repositories and header sessions belong only in tests.

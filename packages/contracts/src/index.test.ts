@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { authSettingsSchema, mailSettingsSchema, userSchema } from "./index.js";
+import {
+  agentRunSchema,
+  apiContract,
+  assetSchema,
+  assetVersionSchema,
+  authSettingsSchema,
+  mailSettingsSchema,
+  syncConflictSchema,
+  userSchema,
+} from "./index.js";
 
 describe("userSchema", () => {
   it("preserves native Date values for the RPC protocol", () => {
@@ -113,5 +122,80 @@ describe("authSettingsSchema", () => {
     });
 
     expect(settings.updatedAt).toBe(updatedAt);
+  });
+});
+
+describe("workspace schemas and contract", () => {
+  it("keeps asset and Agent dates native and exposes the typed procedure tree", () => {
+    const timestamp = new Date("2026-09-08T00:00:00.000Z");
+    const asset = assetSchema.parse({
+      id: "asset-1",
+      workspaceId: "workspace-1",
+      path: "docs/readme.md",
+      status: "active",
+      headVersionId: null,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+    const version = assetVersionSchema.parse({
+      id: "version-1",
+      assetId: asset.id,
+      workspaceId: asset.workspaceId,
+      blobHash: "0123456789abcdef",
+      byteSize: 12,
+      contentType: null,
+      parentVersionId: null,
+      createdBy: "user-1",
+      createdAt: timestamp,
+      idempotencyKey: "upload-1",
+    });
+    const run = agentRunSchema.parse({
+      id: "run-1",
+      workspaceId: asset.workspaceId,
+      requestedBy: "user-1",
+      status: "queued",
+      goal: "Index assets",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      currentStepId: null,
+    });
+
+    expect(asset.createdAt).toBe(timestamp);
+    expect(version.createdAt).toBe(timestamp);
+    expect(run.updatedAt).toBe(timestamp);
+    expect(apiContract.workspace.assets.commitVersion).toBeDefined();
+    expect(apiContract.workspace.agents.runs.heartbeat).toBeDefined();
+  });
+
+  it("rejects malformed asset versions and conflicts", () => {
+    expect(() =>
+      assetVersionSchema.parse({
+        id: "version-1",
+        assetId: "asset-1",
+        workspaceId: "workspace-1",
+        blobHash: "not-a-hash",
+        byteSize: 1,
+        contentType: null,
+        parentVersionId: null,
+        createdBy: "user-1",
+        createdAt: new Date(),
+        idempotencyKey: "upload-1",
+      }),
+    ).toThrow();
+    expect(() =>
+      syncConflictSchema.parse({
+        id: "conflict-1",
+        workspaceId: "workspace-1",
+        assetId: "asset-1",
+        localVersionId: null,
+        remoteVersionId: null,
+        expectedHeadVersionId: null,
+        actualHeadVersionId: null,
+        status: "open",
+        detectedAt: "not-a-date",
+        resolvedAt: null,
+        resolvedBy: null,
+      }),
+    ).toThrow();
   });
 });

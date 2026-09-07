@@ -1,7 +1,15 @@
 import { createApiClient } from "@voidmix/client";
-import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "@voidmix/db";
+import {
+  createInMemoryAgentRepositories,
+  createInMemoryAssetRepositories,
+  InMemorySystemSettingsRepository,
+  InMemoryUserRepository,
+  InMemoryWorkspaceMembershipRepository,
+} from "@voidmix/db";
 import type {
   MailSettingsFallback,
+  AgentRepositories,
+  AssetRepositories,
   SystemSettingsRepository,
   User,
   UserRepository,
@@ -271,6 +279,94 @@ describe("API", () => {
     await expect(client.admin.users.list({ limit: 20 })).rejects.toMatchObject({
       code: "UNAUTHORIZED",
     });
+  });
+
+  it("rejects GET requests for mutation procedures", async () => {
+    const { app } = setup("owner", "owner-1");
+    const data = encodeURIComponent(JSON.stringify({ userId: "user-1", status: "suspended" }));
+    const response = await app.request(`/rpc/admin/users/updateStatus?data=${data}`, {
+      method: "GET",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+      },
+    });
+
+    // The Fetch handler intentionally leaves a disallowed method unmatched;
+    // Hono then returns its ordinary 404 without invoking the mutation.
+    expect(response.status).toBe(404);
+  });
+
+  it("serves workspace assets and Agent runs through typed protected procedures", async () => {
+    const assetRepositories: AssetRepositories = createInMemoryAssetRepositories();
+    const agentRepositories: AgentRepositories = createInMemoryAgentRepositories();
+    const modules = createApiModules({
+      users: new InMemoryUserRepository(seed),
+      settings: new InMemorySystemSettingsRepository(),
+      mailFallback: testMailFallback,
+      mailer: testMailer,
+      assets: assetRepositories,
+      agents: agentRepositories,
+      workspaceMemberships: new InMemoryWorkspaceMembershipRepository([
+        {
+          id: "membership-owner-1",
+          workspaceId: "workspace-1",
+          userId: "owner-1",
+          role: "owner",
+          status: "active",
+          createdAt: new Date("2026-01-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+        },
+      ]),
+      id: (() => {
+        let sequence = 0;
+        return () => `domain-${++sequence}`;
+      })(),
+    });
+    const app = createTestApiApp({ modules });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: { "x-voidmix-user-id": "owner-1", "x-voidmix-role": "owner" },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    const asset = await client.workspace.assets.create({
+      workspaceId: "workspace-1",
+      path: "docs/readme.md",
+    });
+    expect(asset).toMatchObject({ id: "domain-1", path: "docs/readme.md", status: "active" });
+    const run = await client.workspace.agents.runs.create({
+      workspaceId: "workspace-1",
+      goal: "Index workspace",
+    });
+    expect(run).toMatchObject({ id: "domain-2", requestedBy: "owner-1", status: "queued" });
+    await expect(
+      client.workspace.assets.create({ workspaceId: "workspace-1", path: "docs/readme.md" }),
+    ).rejects.toMatchObject({ code: "CONFLICT" });
+
+    const nonMemberClient = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: { "x-voidmix-user-id": "user-1", "x-voidmix-role": "user" },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+    await expect(
+      nonMemberClient.workspace.assets.create({
+        workspaceId: "workspace-1",
+        path: "docs/private.md",
+      }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
+  it("rejects unauthenticated workspace procedures", async () => {
+    const app = createTestApiApp({ resolveSession: async () => null });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(
+      client.workspace.assets.create({ workspaceId: "workspace-1", path: "docs/readme.md" }),
+    ).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 
   it("uses explicitly injected business modules", async () => {

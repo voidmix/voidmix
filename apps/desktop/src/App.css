@@ -7,26 +7,23 @@
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  color: oklch(0.2 0.03 145);
-  background: oklch(0.97 0.008 145);
+  color: var(--foreground);
+  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --ink: oklch(0.2 0.03 145);
-  --ink-soft: oklch(0.4 0.03 145);
-  --muted: oklch(0.5 0.025 145);
-  --line: oklch(0.86 0.014 145);
-  --line-strong: oklch(0.78 0.02 145);
-  --surface: oklch(0.995 0.003 145);
-  --surface-alt: oklch(0.94 0.015 145);
-  --primary: oklch(0.2 0.03 145);
-  --primary-deep: oklch(0.14 0.024 145);
-  --primary-soft: oklch(0.93 0.09 112);
-  --accent: oklch(0.9 0.2 112);
+  --ink: var(--foreground);
+  --ink-soft: var(--muted-foreground);
+  --muted: var(--muted-foreground);
+  --line: var(--border);
+  --line-strong: color-mix(in oklch, var(--border), var(--foreground) 25%);
+  --surface: var(--card);
+  --surface-alt: var(--secondary);
+  --primary-deep: var(--foreground);
+  --primary-soft: var(--secondary);
   --success: oklch(0.62 0.15 153);
   --warning: oklch(0.7 0.14 78);
-  --sidebar: oklch(0.955 0.012 145);
   --z-sticky: 10;
   --z-toast: 30;
 }
@@ -57,7 +54,7 @@ button {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 button:disabled {
@@ -128,7 +125,7 @@ button:disabled {
     color 160ms ease;
 }
 .nav-link:hover {
-  background: oklch(0.92 0.02 145);
+  background: var(--sidebar-accent);
   color: var(--ink);
 }
 .nav-link.active {
@@ -174,8 +171,8 @@ button:disabled {
 }
 .workspace-switcher [data-slot="avatar"] {
   border-radius: 8px;
-  background: oklch(0.9 0.1 112);
-  color: oklch(0.28 0.07 112);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
 .workspace-switcher > svg {
   color: var(--muted);
@@ -210,7 +207,7 @@ button:disabled {
   height: 59px;
   padding: 0 28px;
   border-bottom: 1px solid var(--line);
-  background: oklch(0.99 0.004 145 / 0.96);
+  background: color-mix(in oklch, var(--background) 96%, transparent);
   -webkit-app-region: drag;
 }
 .search-trigger {
@@ -289,7 +286,7 @@ kbd {
   height: 4px;
   border: 1px solid var(--surface);
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--muted-foreground);
 }
 
 .window-hide,
@@ -384,7 +381,7 @@ kbd {
 }
 .primary-button {
   background: var(--primary);
-  color: oklch(0.97 0.008 145);
+  color: var(--primary-foreground);
 }
 .primary-button:hover {
   background: var(--primary-deep);
@@ -421,9 +418,9 @@ kbd {
   gap: 14px;
   min-height: 86px;
   padding: 16px 18px;
-  border: 1px solid oklch(0.8 0.035 145);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: oklch(0.96 0.028 112);
+  background: var(--secondary);
 }
 .sync-orbit {
   display: grid;
@@ -433,12 +430,12 @@ kbd {
   height: 48px;
   border-radius: 50%;
   background: var(--primary);
-  color: oklch(0.97 0.008 145);
+  color: var(--primary-foreground);
 }
 .sync-orbit::before {
   position: absolute;
   inset: -5px;
-  border: 1px solid oklch(0.2 0.03 145 / 0.22);
+  border: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent);
   border-radius: 50%;
   content: "";
 }
@@ -447,7 +444,7 @@ kbd {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--muted-foreground);
 }
 .orbit-dot.one {
   top: -2px;
@@ -456,7 +453,7 @@ kbd {
 .orbit-dot.two {
   bottom: 2px;
   left: 3px;
-  background: oklch(0.8 0.1 78);
+  background: var(--muted-foreground);
 }
 .sync-banner > div:nth-child(2) {
   display: flex;
@@ -725,10 +722,10 @@ kbd {
   background: var(--primary);
 }
 .storage-swatch.accent {
-  background: var(--accent);
+  background: var(--muted-foreground);
 }
 .storage-swatch.muted {
-  background: oklch(0.72 0.025 145);
+  background: var(--border);
 }
 
 .device-strip {

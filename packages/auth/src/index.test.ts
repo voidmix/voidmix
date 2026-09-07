@@ -27,4 +27,10 @@ describe("hasPermission", () => {
     expect(hasPermission(session("owner"), "admin.settings.auth.write")).toBe(true);
     expect(hasPermission(session("user"), "admin.settings.mail.read")).toBe(false);
   });
+
+  it("keeps workspace capability grants separate from membership access", () => {
+    expect(hasPermission(session("user"), "workspace.assets.read")).toBe(true);
+    expect(hasPermission(session("user"), "workspace.agents.write")).toBe(true);
+    expect(hasPermission(session("admin"), "workspace.assets.write")).toBe(true);
+  });
 });

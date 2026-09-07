@@ -1,5 +1,6 @@
 import { DeviceMobile, Laptop, Monitor, Sparkle, X } from "@phosphor-icons/react";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { PageHeader } from "@voidmix/ui/page-header";
 import { useTranslations } from "@voidmix/i18n/client";
 import { demoCloudSnapshot } from "../../lib/cloud";
 
@@ -8,15 +9,16 @@ export function DevicesPage() {
   const devices = demoCloudSnapshot.devices;
   return (
     <div className="page">
-      <header className="page-header">
-        <div>
-          <h1>{t("title")}</h1>
-          <p>{t("description")}</p>
-        </div>
-        <Button className="primary-button" variant="primary">
-          <Sparkle size={14} /> {t("pair")}
-        </Button>
-      </header>
+      <PageHeader
+        className="page-header"
+        title={t("title")}
+        description={t("description")}
+        action={
+          <Button className="primary-button" variant="primary">
+            <Sparkle size={14} /> {t("pair")}
+          </Button>
+        }
+      />
       <section className="device-list" aria-label={t("registered")}>
         {devices.map((device) => {
           const Icon =

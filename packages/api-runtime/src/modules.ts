@@ -3,10 +3,16 @@ import {
   createMailSettingsAdministration,
   createPublicAuthCapabilities,
   createUserAdministration,
+  createAssetAdministration,
+  createAgentAdministration,
+  type AgentRepositories,
+  type AssetRepositories,
   type AuthSettings,
   type MailSettingsFallback,
   type SystemSettingsRepository,
   type UserRepository,
+  createWorkspaceAccessAdministration,
+  type WorkspaceMembershipRepository,
 } from "@voidmix/core";
 import type { Mailer } from "@voidmix/mail/types";
 
@@ -18,6 +24,12 @@ export interface CreateApiModulesOptions {
   now?: () => Date;
   id?: () => string;
   resolveAuthSettings?: () => Promise<AuthSettings>;
+  /** Optional until the host wires persistent asset repositories. */
+  assets?: AssetRepositories;
+  /** Optional until the host wires persistent agent repositories. */
+  agents?: AgentRepositories;
+  /** Workspace membership is an independent authorization seam. */
+  workspaceMemberships?: WorkspaceMembershipRepository;
 }
 
 export interface ApiModules {
@@ -27,6 +39,9 @@ export interface ApiModules {
     mail: ReturnType<typeof createMailSettingsAdministration>;
   };
   publicAuthCapabilities: ReturnType<typeof createPublicAuthCapabilities>;
+  assets?: ReturnType<typeof createAssetAdministration>;
+  agents?: ReturnType<typeof createAgentAdministration>;
+  workspaceAccess?: ReturnType<typeof createWorkspaceAccessAdministration>;
 }
 
 export function createApiModules(options: CreateApiModulesOptions): ApiModules {
@@ -55,5 +70,30 @@ export function createApiModules(options: CreateApiModulesOptions): ApiModules {
       mailFallback: options.mailFallback,
       ...(options.resolveAuthSettings ? { resolveAuthSettings: options.resolveAuthSettings } : {}),
     }),
+    ...(options.assets
+      ? {
+          assets: createAssetAdministration({
+            repositories: options.assets,
+            ...(options.now ? { now: options.now } : {}),
+            ...(options.id ? { id: options.id } : {}),
+          }),
+        }
+      : {}),
+    ...(options.agents
+      ? {
+          agents: createAgentAdministration({
+            repositories: options.agents,
+            ...(options.now ? { now: options.now } : {}),
+            ...(options.id ? { id: options.id } : {}),
+          }),
+        }
+      : {}),
+    ...(options.workspaceMemberships
+      ? {
+          workspaceAccess: createWorkspaceAccessAdministration({
+            memberships: options.workspaceMemberships,
+          }),
+        }
+      : {}),
   };
 }

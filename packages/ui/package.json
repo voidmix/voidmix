@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./page-header": "./src/page-header.tsx",
+    "./section-heading": "./src/section-heading.tsx",
     "./empty-state": "./src/empty-state.tsx",
     "./status-badge": "./src/status-badge.tsx",
     "./command-input": "./src/command-input.tsx",

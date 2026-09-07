@@ -39,6 +39,21 @@ type ApiEnv = {
   };
 };
 
+// The contract currently names mutations with verbs that are safe to classify
+// at the transport boundary. Keep this list explicit: GET requests are
+// subject to CSRF protection and may be batched/deduplicated by the client.
+const mutationProcedureNames = new Set([
+  "create",
+  "updateStatus",
+  "update",
+  "sendTest",
+  "commitVersion",
+  "resolveConflict",
+  "transition",
+  "acquireLease",
+  "heartbeat",
+]);
+
 export function createApiApp(options: CreateApiAppOptions) {
   const router = createApiRouter({
     modules: options.modules,
@@ -64,9 +79,10 @@ export function createApiApp(options: CreateApiAppOptions) {
         new GetMethodCsrfProtectionHandlerPlugin<ApiContext>(),
         new TimeoutHandlerPlugin<ApiContext>({ timeout: 15_000 }),
       ],
-      allowMethods: (method, _procedure, path) =>
-        method === "POST" ||
-        (method === "GET" && !["updateStatus", "update", "sendTest"].includes(path.at(-1) ?? "")),
+      allowMethods: (method, _procedure, path) => {
+        const isMutation = mutationProcedureNames.has(path.at(-1) ?? "");
+        return isMutation ? method === "POST" : method === "GET" || method === "POST";
+      },
       errorStatusMap: { ...COMMON_ERROR_STATUS_MAP, MAIL_NOT_CONFIGURED: 503 },
     }),
     {

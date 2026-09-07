@@ -7,17 +7,17 @@ Page layout and product-specific composition stay in the owning application.
 
 ## Interface
 
-| Path                                | Purpose                                               |
-| ----------------------------------- | ----------------------------------------------------- |
-| `./components/ui/*`                 | Tree-shakable generated shadcn components             |
-| `./avatar`, `./logo`                | Compatibility/product-specific wrapper exports        |
-| `./toast`                           | Lazy Toast manager and `AsyncToaster` wrapper         |
-| `.`                                 | Empty compatibility entrypoint                        |
-| `./styles.css`                      | what applications import: the shared base-nova tokens |
-| `./styles/globals.css`              | the shadcn-owned Tailwind entry and oklch token block |
-| `./page-header`, `./empty-state`    | Generic heading and actionable empty-state primitives |
-| `./command-input`, `./status-badge` | Labelled command form and text-based status           |
-| `./lib/*`                           | `cn` and CVA helpers                                  |
+| Path                                                  | Purpose                                               |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| `./components/ui/*`                                   | Tree-shakable generated shadcn components             |
+| `./avatar`, `./logo`                                  | Compatibility/product-specific wrapper exports        |
+| `./toast`                                             | Lazy Toast manager and `AsyncToaster` wrapper         |
+| `.`                                                   | Empty compatibility entrypoint                        |
+| `./styles.css`                                        | what applications import: the shared base-nova tokens |
+| `./styles/globals.css`                                | the shadcn-owned Tailwind entry and oklch token block |
+| `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives |
+| `./command-input`, `./status-badge`                   | Labelled command form and text-based status           |
+| `./lib/*`                                             | `cn` and CVA helpers                                  |
 
 ## Ownership
 

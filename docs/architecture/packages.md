@@ -51,17 +51,25 @@ policy cache; Admin settings views and mail secrets remain database-backed.
 
 ## `@voidmix/core`
 
-Framework-independent business rules and repository interfaces. It owns:
+Framework-independent business rules and repository interfaces. Its single
+public barrel is organized into bounded contexts:
 
-- User and audit event types.
-- User listing and cursor pagination.
-- User status transitions.
-- Self-suspension and final-administrator protection.
-- Idempotent initial administrator creation.
-- Durable audit event creation.
-- Typed mail settings validation, availability checks, and audit creation.
-- Typed authentication policy normalization and audit creation.
-- Settings source/inheritance vocabulary and derived public Auth capabilities.
+- `identity` owns users, audit events, status transitions, and administrator
+  protection.
+- `settings` owns typed mail/Auth policy, source and inheritance rules, and
+  public Auth capability derivation.
+- `workspace` owns membership lookup and actor-plus-workspace read/write
+  access (`owner`/`editor` write, `viewer` read).
+- `projects` owns the existing project/task port and application facade.
+- `assets` owns canonical paths, immutable versions, heads, idempotency, and
+  sync conflict rules. Version insertion and head movement use an atomic
+  repository command.
+- `agents` owns run/step state transitions, leases, scoped tool capabilities,
+  and the atomic command ports required by concurrent workers.
+
+These contexts remain one package until a second independent server consumer
+creates a stable extraction seam. UI features under `apps/*/src/features` are
+composition and presentation modules, not domain modules.
 
 It does not import React, Hono, Nitro, or Drizzle.
 
@@ -136,8 +144,19 @@ const env = createEnv({
 The database adapter package.
 
 - Drizzle PostgreSQL schema lives in `src/schema.ts`.
-- `PostgresUserRepository` and `PostgresSystemSettingsRepository` are the
-  production adapters; matching in-memory adapters support development/tests.
+- `PostgresUserRepository`, `PostgresSystemSettingsRepository`, workspace
+  membership, asset, and Agent repositories are the production adapters;
+  matching in-memory adapters support development/tests.
+- `createPostgresAssetRepositories` and
+  `createInMemoryAssetRepositories` expose the complete asset adapter graph;
+  path creation is unique and atomic, while `commitVersion` performs version
+  insertion, idempotent replay, and head CAS in one transaction/critical
+  section. Sync conflict resolution also changes `open` to `resolved` with a
+  compare-and-set.
+- `PostgresAgentCommandRepository` and `createInMemoryAgentRepositories`
+  provide the Agent aggregate's atomic commands. Run rows serialize leases and
+  step sequence allocation, and expected-state predicates reject stale
+  transitions without overwriting other fields.
 - `system_settings` stores typed ordinary configuration keys and
   `system_secrets` stores write-only secret values. Both record the updater and
   timestamp.

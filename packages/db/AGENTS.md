@@ -19,8 +19,9 @@ under `drizzle/`.
 
 ## Ownership
 
-- Own the Drizzle schema, user and system-settings repositories in PostgreSQL
-  and memory, and migration execution.
+- Own the Drizzle schema, user, workspace-membership, asset, agent, and
+  system-settings repositories in PostgreSQL and memory, plus migration
+  execution.
 - Own no business rule and no interface definition — both belong to
   `@voidmix/core`.
 
@@ -31,6 +32,17 @@ under `drizzle/`.
   `@voidmix/contracts`.
 - PostgreSQL and in-memory implementations must be updated together when a
   domain repository interface changes.
+- Asset adapters expose a complete repository graph whose `commitVersion`
+  operation inserts the immutable version and advances the head with a
+  compare-and-set in one transaction (or serialized in-memory critical
+  section). Asset path creation is also atomic. Do not reintroduce split
+  version/head writes or read-before-insert uniqueness checks in a handler.
+  Conflict resolution uses an `open`-state compare-and-set so two resolvers
+  cannot both claim success.
+- Agent adapters expose atomic commands for lease acquisition and renewal,
+  step sequence allocation, and status transitions. PostgreSQL serializes on
+  run rows and uses conditional status updates; the in-memory graph uses one
+  command queue so concurrency tests retain production semantics.
 - Auth policy reuses `system_settings` with the fixed keys
   `auth.registration_mode`, `auth.allowed_email_domains`,
   `mail.welcome_enabled`, `mail.verification_enabled`, and

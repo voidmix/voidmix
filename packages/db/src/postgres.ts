@@ -1,4 +1,20 @@
 import type {
+  AgentLease,
+  AgentCommandRepository,
+  AgentLeaseRepository,
+  AgentRun,
+  AgentRunStatus,
+  AgentRunRepository,
+  AgentStep,
+  AgentStepStatus,
+  AgentStepRepository,
+  Asset,
+  AssetRepository,
+  AssetVersion,
+  AssetVersionCommitOutcome,
+  AssetVersionRepository,
+  SyncConflict,
+  SyncConflictRepository,
   AuditEvent,
   AuthSettings,
   AuthSettingsView,
@@ -14,14 +30,29 @@ import type {
   UserPage,
   UserRepository,
   UserStatus,
+  WorkspaceMembership,
+  WorkspaceMembershipRepository,
 } from "@voidmix/core";
-import { createDefaultAuthSettings } from "@voidmix/core";
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { createDefaultAuthSettings, isTerminalRunStatus } from "@voidmix/core";
+import { and, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres, { type Sql } from "postgres";
 
-import { auditEvents, relations, systemSecrets, systemSettings, users } from "./schema.js";
+import {
+  agentLeases,
+  agentRuns,
+  agentSteps,
+  assetVersions,
+  assets,
+  auditEvents,
+  relations,
+  syncConflicts,
+  systemSecrets,
+  systemSettings,
+  users,
+  workspaceMemberships,
+} from "./schema.js";
 
 const mailSettingKeys = [
   "mail.enabled",
@@ -156,6 +187,27 @@ export class PostgresUserRepository implements UserRepository {
       .from(auditEvents)
       .orderBy(desc(auditEvents.occurredAt), desc(auditEvents.id))
       .limit(limit);
+  }
+}
+
+export class PostgresWorkspaceMembershipRepository implements WorkspaceMembershipRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async getByUserAndWorkspace(input: {
+    userId: string;
+    workspaceId: string;
+  }): Promise<WorkspaceMembership | null> {
+    const [row] = await this.db
+      .select()
+      .from(workspaceMemberships)
+      .where(
+        and(
+          eq(workspaceMemberships.userId, input.userId),
+          eq(workspaceMemberships.workspaceId, input.workspaceId),
+        ),
+      )
+      .limit(1);
+    return row ?? null;
   }
 }
 
@@ -400,6 +452,450 @@ export class PostgresSystemSettingsRepository implements SystemSettingsRepositor
 
   async appendMailTestAudit(event: AuditEvent): Promise<void> {
     await this.db.insert(auditEvents).values(toAuditInsert(event));
+  }
+}
+
+export class PostgresAssetRepository implements AssetRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async getById(id: string): Promise<Asset | null> {
+    const [row] = await this.db.select().from(assets).where(eq(assets.id, id)).limit(1);
+    return row ?? null;
+  }
+
+  async getByPath(input: { workspaceId: string; path: string }): Promise<Asset | null> {
+    const [row] = await this.db
+      .select()
+      .from(assets)
+      .where(and(eq(assets.workspaceId, input.workspaceId), eq(assets.path, input.path)))
+      .limit(1);
+    return row ?? null;
+  }
+
+  async createIfPathAvailable(asset: Asset) {
+    const [row] = await this.db
+      .insert(assets)
+      .values(asset)
+      .onConflictDoNothing({ target: [assets.workspaceId, assets.path] })
+      .returning();
+    return row ? { status: "created" as const, asset: row } : { status: "path_conflict" as const };
+  }
+}
+
+export class PostgresAssetVersionRepository implements AssetVersionRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async getById(id: string): Promise<AssetVersion | null> {
+    const [row] = await this.db
+      .select()
+      .from(assetVersions)
+      .where(eq(assetVersions.id, id))
+      .limit(1);
+    return row ?? null;
+  }
+
+  async getByIdempotencyKey(input: {
+    assetId: string;
+    idempotencyKey: string;
+  }): Promise<AssetVersion | null> {
+    const [row] = await this.db
+      .select()
+      .from(assetVersions)
+      .where(
+        and(
+          eq(assetVersions.assetId, input.assetId),
+          eq(assetVersions.idempotencyKey, input.idempotencyKey),
+        ),
+      )
+      .limit(1);
+    return row ?? null;
+  }
+}
+
+/**
+ * Build the complete asset adapter graph. Version insertion and head movement
+ * happen in one transaction with a compare-and-set on the observed head.
+ */
+export function createPostgresAssetRepositories(db: PostgresJsDatabase): {
+  assets: PostgresAssetRepository;
+  versions: PostgresAssetVersionRepository;
+  conflicts: PostgresSyncConflictRepository;
+  commitVersion(input: {
+    version: AssetVersion;
+    expectedHeadVersionId: string | null;
+  }): Promise<AssetVersionCommitOutcome>;
+} {
+  const assetsRepository = new PostgresAssetRepository(db);
+  const versionsRepository = new PostgresAssetVersionRepository(db);
+  const conflictsRepository = new PostgresSyncConflictRepository(db);
+  return {
+    assets: assetsRepository,
+    versions: versionsRepository,
+    conflicts: conflictsRepository,
+    async commitVersion({ version, expectedHeadVersionId }) {
+      return db.transaction(async (tx) => {
+        const existingRows = await tx
+          .select()
+          .from(assetVersions)
+          .where(
+            and(
+              eq(assetVersions.assetId, version.assetId),
+              eq(assetVersions.idempotencyKey, version.idempotencyKey),
+            ),
+          )
+          .limit(1);
+        const existing = existingRows[0];
+        if (existing) {
+          const [currentAsset] = await tx
+            .select()
+            .from(assets)
+            .where(eq(assets.id, version.assetId))
+            .limit(1);
+          return currentAsset
+            ? { status: "committed", version: existing, asset: currentAsset }
+            : { status: "not_found" };
+        }
+
+        const headCondition =
+          expectedHeadVersionId === null
+            ? isNull(assets.headVersionId)
+            : eq(assets.headVersionId, expectedHeadVersionId);
+        const [updatedAsset] = await tx
+          .update(assets)
+          .set({ headVersionId: version.id, updatedAt: version.createdAt })
+          .where(
+            and(
+              eq(assets.id, version.assetId),
+              eq(assets.workspaceId, version.workspaceId),
+              eq(assets.status, "active"),
+              headCondition,
+            ),
+          )
+          .returning();
+        if (!updatedAsset) {
+          // Another transaction may have committed the same idempotency key
+          // while this transaction waited on the compare-and-set row lock.
+          // Treat that replay as success; the domain layer validates that its
+          // payload matches the original command.
+          const [replayedVersion] = await tx
+            .select()
+            .from(assetVersions)
+            .where(
+              and(
+                eq(assetVersions.assetId, version.assetId),
+                eq(assetVersions.idempotencyKey, version.idempotencyKey),
+              ),
+            )
+            .limit(1);
+          if (replayedVersion) {
+            const [currentAsset] = await tx
+              .select()
+              .from(assets)
+              .where(eq(assets.id, version.assetId))
+              .limit(1);
+            return currentAsset
+              ? { status: "committed", version: replayedVersion, asset: currentAsset }
+              : { status: "not_found" };
+          }
+          const [currentAsset] = await tx
+            .select()
+            .from(assets)
+            .where(eq(assets.id, version.assetId))
+            .limit(1);
+          return currentAsset
+            ? { status: "head_conflict", actualHeadVersionId: currentAsset.headVersionId }
+            : { status: "not_found" };
+        }
+        await tx.insert(assetVersions).values(version);
+        return { status: "committed", version, asset: updatedAsset };
+      });
+    },
+  };
+}
+
+export class PostgresSyncConflictRepository implements SyncConflictRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async getById(id: string): Promise<SyncConflict | null> {
+    const [row] = await this.db
+      .select()
+      .from(syncConflicts)
+      .where(eq(syncConflicts.id, id))
+      .limit(1);
+    return row ?? null;
+  }
+
+  async save(conflict: SyncConflict): Promise<void> {
+    await this.db.insert(syncConflicts).values(conflict);
+  }
+
+  async resolve(conflict: SyncConflict) {
+    const [resolved] = await this.db
+      .update(syncConflicts)
+      .set({
+        status: "resolved",
+        resolvedAt: conflict.resolvedAt,
+        resolvedBy: conflict.resolvedBy,
+      })
+      .where(and(eq(syncConflicts.id, conflict.id), eq(syncConflicts.status, "open")))
+      .returning();
+    if (resolved) return { status: "resolved" as const, conflict: resolved };
+    const [current] = await this.db
+      .select()
+      .from(syncConflicts)
+      .where(eq(syncConflicts.id, conflict.id))
+      .limit(1);
+    return current
+      ? { status: "already_resolved" as const, conflict: current }
+      : { status: "not_found" as const };
+  }
+}
+
+export class PostgresAgentRunRepository implements AgentRunRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async getById(id: string): Promise<AgentRun | null> {
+    const [row] = await this.db.select().from(agentRuns).where(eq(agentRuns.id, id)).limit(1);
+    return row ?? null;
+  }
+
+  async save(run: AgentRun): Promise<void> {
+    await this.db.insert(agentRuns).values(run);
+  }
+}
+
+export class PostgresAgentStepRepository implements AgentStepRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async getById(id: string): Promise<AgentStep | null> {
+    const [row] = await this.db.select().from(agentSteps).where(eq(agentSteps.id, id)).limit(1);
+    return row ?? null;
+  }
+}
+
+export class PostgresAgentLeaseRepository implements AgentLeaseRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async getByRunId(runId: string): Promise<AgentLease | null> {
+    const [row] = await this.db
+      .select()
+      .from(agentLeases)
+      .where(eq(agentLeases.runId, runId))
+      .limit(1);
+    return row ?? null;
+  }
+}
+
+/**
+ * Transactional Agent commands. Run rows are the serialization point for
+ * leases and step allocation; conditional status predicates protect all
+ * transitions from stale workers.
+ */
+export class PostgresAgentCommandRepository implements AgentCommandRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+
+  async acquireLease(input: {
+    runId: string;
+    holderId: string;
+    now: Date;
+    leaseDurationMs: number;
+  }) {
+    return this.db.transaction(async (tx) => {
+      const [run] = await tx
+        .select()
+        .from(agentRuns)
+        .where(eq(agentRuns.id, input.runId))
+        .for("update")
+        .limit(1);
+      if (!run) return { status: "run_not_found" as const };
+      if (isTerminalRunStatus(run.status)) return { status: "terminal" as const };
+
+      const [existing] = await tx
+        .select()
+        .from(agentLeases)
+        .where(eq(agentLeases.runId, input.runId))
+        .for("update")
+        .limit(1);
+      const existingIsActive =
+        existing !== undefined && existing.expiresAt.getTime() > input.now.getTime();
+      if (existingIsActive) {
+        if (existing.holderId !== input.holderId) {
+          return { status: "held" as const, lease: existing };
+        }
+      }
+
+      const lease: AgentLease = {
+        runId: input.runId,
+        holderId: input.holderId,
+        acquiredAt: existingIsActive ? existing.acquiredAt : input.now,
+        heartbeatAt: input.now,
+        expiresAt: new Date(input.now.getTime() + input.leaseDurationMs),
+      };
+      const [savedLease] = await tx
+        .insert(agentLeases)
+        .values(lease)
+        .onConflictDoUpdate({
+          target: agentLeases.runId,
+          set: {
+            holderId: lease.holderId,
+            acquiredAt: lease.acquiredAt,
+            heartbeatAt: lease.heartbeatAt,
+            expiresAt: lease.expiresAt,
+          },
+        })
+        .returning();
+      if (!savedLease) return { status: "run_not_found" as const };
+
+      const currentRun =
+        run.status === "queued"
+          ? ((
+              await tx
+                .update(agentRuns)
+                .set({ status: "running", updatedAt: input.now })
+                .where(eq(agentRuns.id, run.id))
+                .returning()
+            )[0] ?? { ...run, status: "running", updatedAt: input.now })
+          : run;
+      return { status: "acquired" as const, run: currentRun, lease: savedLease };
+    });
+  }
+
+  async heartbeat(input: { runId: string; holderId: string; now: Date; leaseDurationMs: number }) {
+    return this.db.transaction(async (tx) => {
+      const [run] = await tx
+        .select()
+        .from(agentRuns)
+        .where(eq(agentRuns.id, input.runId))
+        .for("update")
+        .limit(1);
+      if (!run) return { status: "run_not_found" as const };
+      if (isTerminalRunStatus(run.status)) {
+        await tx.delete(agentLeases).where(eq(agentLeases.runId, input.runId));
+        return { status: "terminal" as const };
+      }
+      const [lease] = await tx
+        .select()
+        .from(agentLeases)
+        .where(eq(agentLeases.runId, input.runId))
+        .for("update")
+        .limit(1);
+      if (!lease) return { status: "not_found" as const };
+      if (lease.holderId !== input.holderId) return { status: "owner" as const };
+      if (lease.expiresAt.getTime() <= input.now.getTime()) return { status: "expired" as const };
+      const [renewed] = await tx
+        .update(agentLeases)
+        .set({
+          heartbeatAt: input.now,
+          expiresAt: new Date(input.now.getTime() + input.leaseDurationMs),
+        })
+        .where(eq(agentLeases.runId, input.runId))
+        .returning();
+      return renewed
+        ? { status: "renewed" as const, lease: renewed }
+        : { status: "not_found" as const };
+    });
+  }
+
+  async createStep(input: { runId: string; stepId: string; name: string; now: Date }) {
+    return this.db.transaction(async (tx) => {
+      const [run] = await tx
+        .select()
+        .from(agentRuns)
+        .where(eq(agentRuns.id, input.runId))
+        .for("update")
+        .limit(1);
+      if (!run) return { status: "run_not_found" as const };
+      if (isTerminalRunStatus(run.status)) return { status: "terminal" as const };
+      const [sequenceRow] = await tx
+        .select({ value: sql<number>`coalesce(max(${agentSteps.sequence}), 0) + 1` })
+        .from(agentSteps)
+        .where(eq(agentSteps.runId, input.runId));
+      const step: AgentStep = {
+        id: input.stepId,
+        runId: input.runId,
+        sequence: Number(sequenceRow?.value ?? 1),
+        status: "queued",
+        name: input.name,
+        startedAt: null,
+        finishedAt: null,
+        error: null,
+      };
+      await tx.insert(agentSteps).values(step);
+      const updatedRun = (
+        await tx
+          .update(agentRuns)
+          .set({ currentStepId: step.id, updatedAt: input.now })
+          .where(eq(agentRuns.id, input.runId))
+          .returning()
+      )[0] ?? { ...run, currentStepId: step.id, updatedAt: input.now };
+      return { status: "created" as const, run: updatedRun, step };
+    });
+  }
+
+  async transitionRun(input: { run: AgentRun; expectedStatus: AgentRunStatus }) {
+    return this.db.transaction(async (tx) => {
+      const [updated] = await tx
+        .update(agentRuns)
+        .set({
+          status: input.run.status,
+          updatedAt: input.run.updatedAt,
+        })
+        .where(and(eq(agentRuns.id, input.run.id), eq(agentRuns.status, input.expectedStatus)))
+        .returning();
+      if (!updated) {
+        const [current] = await tx
+          .select()
+          .from(agentRuns)
+          .where(eq(agentRuns.id, input.run.id))
+          .limit(1);
+        return current
+          ? { status: "conflict" as const, run: current }
+          : { status: "run_not_found" as const };
+      }
+      if (isTerminalRunStatus(updated.status)) {
+        await tx.delete(agentLeases).where(eq(agentLeases.runId, updated.id));
+      }
+      return { status: "updated" as const, run: updated };
+    });
+  }
+
+  async transitionStep(input: { step: AgentStep; expectedStatus: AgentStepStatus }) {
+    return this.db.transaction(async (tx) => {
+      const [currentStep] = await tx
+        .select()
+        .from(agentSteps)
+        .where(eq(agentSteps.id, input.step.id))
+        .for("update")
+        .limit(1);
+      if (!currentStep) return { status: "step_not_found" as const };
+      const [run] = await tx
+        .select()
+        .from(agentRuns)
+        .where(eq(agentRuns.id, currentStep.runId))
+        .for("update")
+        .limit(1);
+      if (!run) return { status: "run_not_found" as const };
+      if (isTerminalRunStatus(run.status)) return { status: "terminal" as const };
+      if (currentStep.status !== input.expectedStatus) {
+        return { status: "conflict" as const, step: currentStep };
+      }
+      const [updated] = await tx
+        .update(agentSteps)
+        .set({
+          runId: input.step.runId,
+          sequence: input.step.sequence,
+          status: input.step.status,
+          name: input.step.name,
+          startedAt: input.step.startedAt,
+          finishedAt: input.step.finishedAt,
+          error: input.step.error,
+        })
+        .where(eq(agentSteps.id, input.step.id))
+        .returning();
+      return updated
+        ? { status: "updated" as const, step: updated }
+        : { status: "step_not_found" as const };
+    });
   }
 }
 

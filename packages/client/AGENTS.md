@@ -19,6 +19,9 @@ browser's same-origin `/rpc`; external consumers provide an absolute origin.
 - Keep that policy limited to safe read batching/deduplication and mutation
   safety; the client type remains `ContractRouterClient<typeof apiContract>` —
   **fully generic**.
+- Mutation procedure names (`create`, `update`, `updateStatus`, `sendTest`,
+  `commitVersion`, `resolveConflict`, `transition`, `acquireLease`, and
+  `heartbeat`) must use POST. Keep the client and API handler lists in sync.
 
 ## Constraints
 

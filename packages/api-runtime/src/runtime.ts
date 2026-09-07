@@ -1,7 +1,13 @@
 import {
   connectDatabase,
+  PostgresAgentLeaseRepository,
+  PostgresAgentCommandRepository,
+  PostgresAgentRunRepository,
+  PostgresAgentStepRepository,
+  createPostgresAssetRepositories,
   PostgresSystemSettingsRepository,
   PostgresUserRepository,
+  PostgresWorkspaceMembershipRepository,
 } from "@voidmix/db";
 import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
 import type { AuthSettings, MailSettingsFallback } from "@voidmix/core";
@@ -107,10 +113,18 @@ export async function createApiRuntime({
     });
     const modules = createApiModules({
       users: new PostgresUserRepository(connection.db),
+      workspaceMemberships: new PostgresWorkspaceMembershipRepository(connection.db),
       settings,
       mailFallback,
       mailer,
       resolveAuthSettings: getAuthSettings,
+      assets: createPostgresAssetRepositories(connection.db),
+      agents: {
+        runs: new PostgresAgentRunRepository(connection.db),
+        steps: new PostgresAgentStepRepository(connection.db),
+        leases: new PostgresAgentLeaseRepository(connection.db),
+        commands: new PostgresAgentCommandRepository(connection.db),
+      },
     });
     let closePromise: Promise<void> | undefined;
 

@@ -82,7 +82,10 @@ export function createFakeProvider(tools?: AiToolRegistry): AiProvider {
   const sessions = new Map<string, AiSession>();
   return {
     async createSession(input) {
-      const session = { id: `pis_${input.projectId}`, providerSessionId: `fake_${input.projectId}` };
+      const session = {
+        id: `pis_${input.projectId}`,
+        providerSessionId: `fake_${input.projectId}`,
+      };
       sessions.set(session.id, session);
       return session;
     },
@@ -93,7 +96,8 @@ export function createFakeProvider(tools?: AiToolRegistry): AiProvider {
       }
       yield { type: "thinking", active: true };
       yield { type: "text_delta", text: `Prepared next steps for ${input.project.name}.` };
-      if (tools) yield { type: "tool_result", callId: "fake", name: "list_tasks", output: tools.names() };
+      if (tools)
+        yield { type: "tool_result", callId: "fake", name: "list_tasks", output: tools.names() };
       yield { type: "thinking", active: false };
       yield { type: "completed", text: `Prepared next steps for ${input.project.name}.` };
     },
@@ -107,7 +111,18 @@ export function createFakeProvider(tools?: AiToolRegistry): AiProvider {
 }
 
 export function createPiProvider(options: { cwd?: string; agentDir?: string } = {}): AiProvider {
-  const sessions = new Map<string, { session: { prompt: (prompt: string) => Promise<void>; subscribe: (listener: (event: unknown) => void) => () => void; dispose: () => void; sessionId: string }; provider: AiSession }>();
+  const sessions = new Map<
+    string,
+    {
+      session: {
+        prompt: (prompt: string) => Promise<void>;
+        subscribe: (listener: (event: unknown) => void) => () => void;
+        dispose: () => void;
+        sessionId: string;
+      };
+      provider: AiSession;
+    }
+  >();
 
   return {
     async createSession(input) {
@@ -117,7 +132,10 @@ export function createPiProvider(options: { cwd?: string; agentDir?: string } = 
         ...(options.agentDir ? { agentDir: options.agentDir } : {}),
         noTools: "all",
       });
-      const provider = { id: `pis_${input.projectId}`, providerSessionId: result.session.sessionId };
+      const provider = {
+        id: `pis_${input.projectId}`,
+        providerSessionId: result.session.sessionId,
+      };
       sessions.set(provider.id, { session: result.session, provider });
       return provider;
     },
@@ -138,10 +156,19 @@ export function createPiProvider(options: { cwd?: string; agentDir?: string } = 
         if (isTerminalPiEvent(event)) resolve?.();
       });
       const prompt = stored.session.prompt(input.prompt).catch((error: unknown) => {
-        events.push({ type: "failed", message: error instanceof Error ? error.message : "AI run failed." });
+        events.push({
+          type: "failed",
+          message: error instanceof Error ? error.message : "AI run failed.",
+        });
         resolve?.();
       });
-      while (events.length === 0 || !events.some((event) => event.type === "completed" || event.type === "failed" || event.type === "cancelled")) {
+      while (
+        events.length === 0 ||
+        !events.some(
+          (event) =>
+            event.type === "completed" || event.type === "failed" || event.type === "cancelled",
+        )
+      ) {
         if (input.signal?.aborted) {
           await this.cancel(input.session.id);
           yield { type: "cancelled" };
@@ -170,7 +197,8 @@ function normalizePiEvent(event: unknown): AiRunEvent | null {
   const value = event as Record<string, unknown>;
   if (value.type === "message_update" && typeof value.assistantMessageEvent === "object") {
     const update = value.assistantMessageEvent as Record<string, unknown>;
-    if (update.type === "text_delta" && typeof update.delta === "string") return { type: "text_delta", text: update.delta };
+    if (update.type === "text_delta" && typeof update.delta === "string")
+      return { type: "text_delta", text: update.delta };
     if (update.type === "thinking_start") return { type: "thinking", active: true };
     if (update.type === "thinking_end") return { type: "thinking", active: false };
   }
@@ -179,7 +207,12 @@ function normalizePiEvent(event: unknown): AiRunEvent | null {
 }
 
 function isTerminalPiEvent(event: unknown): boolean {
-  return typeof event === "object" && event !== null && "type" in event && (event.type === "agent_end" || event.type === "agent_error");
+  return (
+    typeof event === "object" &&
+    event !== null &&
+    "type" in event &&
+    (event.type === "agent_end" || event.type === "agent_error")
+  );
 }
 
 function readString(input: unknown, key: string): string {
@@ -187,6 +220,7 @@ function readString(input: unknown, key: string): string {
     throw new Error(`Missing AI tool input: ${key}`);
   }
   const value = (input as Record<string, unknown>)[key];
-  if (typeof value !== "string" || value.length === 0) throw new Error(`Invalid AI tool input: ${key}`);
+  if (typeof value !== "string" || value.length === 0)
+    throw new Error(`Invalid AI tool input: ${key}`);
   return value;
 }

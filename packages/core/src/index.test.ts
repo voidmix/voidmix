@@ -3,16 +3,60 @@ import {
   createAuthSettingsAdministration,
   createDefaultAuthSettings,
   createMailSettingsAdministration,
+  createProjectAdministration,
+  createPublicAuthCapabilities,
   createUserAdministration,
   type AuditEvent,
   type AuthSettings,
   type AuthSettingsView,
   type MailSettings,
   type MailSettingsFallback,
+  type ProjectRepository,
   type SystemSettingsRepository,
   type User,
   type UserRepository,
 } from "./index";
+
+describe("project administration", () => {
+  it("delegates project and task operations to its repository", async () => {
+    const calls: string[] = [];
+    const project: ProjectRepository = {
+      async list(ownerId) {
+        calls.push("list:" + ownerId);
+        return [];
+      },
+      async getById(id) {
+        calls.push("get:" + id);
+        return null;
+      },
+      async create(input) {
+        calls.push("create:" + input.ownerId);
+        throw new Error("unused");
+      },
+      async update(input) {
+        calls.push("update:" + input.id);
+        throw new Error("unused");
+      },
+      async listTasks(projectId) {
+        calls.push("tasks:" + projectId);
+        return [];
+      },
+      async createTask(input) {
+        calls.push("create-task:" + input.projectId);
+        throw new Error("unused");
+      },
+      async updateTask(input) {
+        calls.push("update-task:" + input.taskId);
+        throw new Error("unused");
+      },
+    };
+    const service = createProjectAdministration({ projects: project });
+    await service.list("owner-1");
+    await service.get("project-1");
+    await service.tasks("project-1");
+    expect(calls).toEqual(["list:owner-1", "get:project-1", "tasks:project-1"]);
+  });
+});
 
 function repository(seed: User[]): UserRepository {
   const users = new Map(seed.map((user) => [user.id, user]));
@@ -60,6 +104,14 @@ const admin: User = {
   createdAt: new Date("2026-01-01T00:00:00.000Z"),
 };
 
+const fallback: MailSettingsFallback = {
+  enabled: { value: true, source: "default" },
+  from: { value: null, source: "missing" },
+  fromName: { value: "Voidmix", source: "default" },
+  templatesBaseUrl: { value: null, source: "missing" },
+  resendApiKey: { value: null, source: "missing" },
+};
+
 describe("user administration", () => {
   it("prevents an administrator from suspending themselves", async () => {
     const service = createUserAdministration({ users: repository([admin]) });
@@ -88,14 +140,6 @@ describe("user administration", () => {
 });
 
 describe("mail settings administration", () => {
-  const fallback: MailSettingsFallback = {
-    enabled: { value: true, source: "default" },
-    from: { value: null, source: "missing" },
-    fromName: { value: "Voidmix", source: "default" },
-    templatesBaseUrl: { value: null, source: "missing" },
-    resendApiKey: { value: null, source: "missing" },
-  };
-
   it("rejects invalid typed mail settings before persistence", async () => {
     const updateMailSettings = async (): Promise<MailSettings> => {
       throw new Error("must not persist");
@@ -146,6 +190,25 @@ describe("mail settings administration", () => {
 });
 
 describe("auth settings administration", () => {
+  it("exposes capabilities only when verification mail is configured", async () => {
+    const service = createPublicAuthCapabilities({
+      settings: settingsRepository({}),
+      mailFallback: {
+        enabled: { value: true, source: "default" },
+        from: { value: null, source: "missing" },
+        fromName: { value: "Voidmix", source: "default" },
+        templatesBaseUrl: { value: null, source: "missing" },
+        resendApiKey: { value: null, source: "missing" },
+      },
+    });
+
+    await expect(service.get()).resolves.toEqual({
+      registrationAvailable: false,
+      verificationEmailRequestAvailable: false,
+      passwordResetRequestAvailable: false,
+    });
+  });
+
   it("normalizes and deduplicates allowed email domains before persistence", async () => {
     let persisted: AuthSettingsView | undefined;
     let audit: AuditEvent | undefined;

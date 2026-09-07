@@ -18,6 +18,10 @@ and no barrel to update.
 
 - Own the request and response shape of every procedure, and the DTO types that
   consumers import.
+- The `workspace.assets` and `workspace.agents` trees describe immutable asset
+  versions, sync conflicts, Agent runs/steps, and leases. Keep their output
+  dates as native `Date` values and preserve the input fields needed for
+  workspace authorization and idempotent commands.
 - Own nothing else: no network calls, no database access, no business rules.
 
 ## Constraints

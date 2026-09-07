@@ -118,6 +118,17 @@ Current procedures:
 ```text
 health
 public.auth.capabilities.get
+workspace.assets.create
+workspace.assets.get
+workspace.assets.commitVersion
+workspace.assets.resolveConflict
+workspace.agents.runs.create
+workspace.agents.runs.get
+workspace.agents.runs.transition
+workspace.agents.runs.acquireLease
+workspace.agents.runs.heartbeat
+workspace.agents.steps.create
+workspace.agents.steps.transition
 admin.users.list
 admin.users.get
 admin.users.updateStatus
@@ -133,8 +144,9 @@ admin.settings.auth.update
 runtime requires `DATABASE_URL`; the seeded in-memory repository is reserved
 for direct `@voidmix/api-runtime` tests that inject it explicitly.
 
-The oRPC beta transport uses GET for read-only procedures and POST for status or
-settings updates and test delivery. The client and Fetch handler batch concurrent reads, deduplicate
+The oRPC beta transport uses GET for read-only procedures and POST for every
+mutation, including asset commits, conflict resolution, Agent transitions, and
+lease operations. The client and Fetch handler batch concurrent reads, deduplicate
 identical in-flight reads, compress payloads above 1 KiB, propagate an
 `x-request-id` response header, retry rate-limited/unavailable reads when the
 server supplies `Retry-After`, enforce a 1 MiB request-body limit, and enforce a
