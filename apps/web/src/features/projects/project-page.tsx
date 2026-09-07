@@ -11,6 +11,13 @@ import { ProjectSettings } from "./components/project-settings";
 import { ActivityList } from "./components/activity-list";
 import { useWorkspaceData } from "./workspace-data";
 import { taskStatusSchema, type ProjectTab, type TaskFilter } from "./types";
+import {
+  workspaceContextSelectClass,
+  workspaceFieldClass,
+  workspaceInputClass,
+  workspaceLabelClass,
+  workspaceSearchRowClass,
+} from "./workspace-styles";
 
 export function ProjectPage({
   projectId,
@@ -46,14 +53,14 @@ export function ProjectPage({
     });
   }
   return (
-    <WorkspaceShell title={project.name}>
+    <WorkspaceShell title={project.name} projectSearch={{ tab, filter }}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link to="/projects" className="text-xs text-muted-foreground">
           ← {t("back")}
         </Link>
         <select
           aria-label={t("chooseProject")}
-          className="signal-context-select max-w-full"
+          className={`${workspaceContextSelectClass} max-w-full`}
           value={projectId}
           onChange={(event) => {
             setUndo(null);
@@ -76,7 +83,10 @@ export function ProjectPage({
         description={project.description || t("projectDescription")}
         action={<StatusBadge label={t(project.status)} tone="active" />}
       />
-      <nav className="signal-project-tabs" aria-label={t("projects")}>
+      <nav
+        className="my-[30px] flex gap-6 overflow-x-auto border-b border-border max-[520px]:gap-5"
+        aria-label={t("projects")}
+      >
         {(["overview", "tasks", "pi", "activity", "settings"] as const).map((item) => (
           <Link
             key={item}
@@ -84,6 +94,7 @@ export function ProjectPage({
             params={{ projectId }}
             search={{ tab: item, filter }}
             aria-current={tab === item ? "page" : undefined}
+            className="flex shrink-0 items-center gap-2 border-b-2 border-transparent py-3 text-[13px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none aria-[current=page]:border-foreground aria-[current=page]:text-foreground [&_span]:text-[11px]"
           >
             {t(item)}
             {item === "tasks" ? <span>{tasks.length}</span> : null}
@@ -91,7 +102,10 @@ export function ProjectPage({
         ))}
       </nav>
       {undo ? (
-        <div role="status" className="signal-feedback">
+        <div
+          role="status"
+          className="mb-5 flex items-center justify-between gap-3 rounded-lg border border-border px-3.5 py-2 text-[13px]"
+        >
           <span>{t("saved")}</span>
           <Button
             size="sm"
@@ -107,13 +121,13 @@ export function ProjectPage({
       ) : null}
       {tab === "overview" ? (
         <div className="grid gap-8">
-          <div className="signal-overview-grid">
+          <div className="grid grid-cols-[1.5fr_1fr] gap-9 max-[520px]:grid-cols-1">
             <section>
-              <h2 className="signal-label">{t("goal")}</h2>
+              <h2 className={workspaceLabelClass}>{t("goal")}</h2>
               <p className="mt-3 text-sm leading-7">{project.description || t("notSet")}</p>
             </section>
             <section>
-              <h2 className="signal-label">{t("milestone")}</h2>
+              <h2 className={workspaceLabelClass}>{t("milestone")}</h2>
               <p className="mt-3 text-sm">{project.milestone || t("notSet")}</p>
               <p className="mt-3 text-xs text-muted-foreground">
                 {t("taskCount", {
@@ -131,7 +145,7 @@ export function ProjectPage({
                 .map((task) => (
                   <Link
                     key={task.id}
-                    className="signal-search-row"
+                    className={workspaceSearchRowClass}
                     to="/projects/$projectId"
                     params={{ projectId }}
                     search={{ tab: "tasks", filter: "blocked" }}
@@ -151,10 +165,10 @@ export function ProjectPage({
       ) : null}
       {tab === "tasks" ? (
         <>
-          <label className="signal-field mb-5 w-fit">
+          <label className={`${workspaceFieldClass} mb-5 w-fit`}>
             {t("status")}
             <select
-              className="signal-input"
+              className={`${workspaceInputClass} w-auto`}
               value={filter}
               onChange={(event) => {
                 void navigate({
@@ -199,7 +213,7 @@ export function ProjectPage({
                   <Link
                     to="/projects/$projectId/pi/$sessionId"
                     params={{ projectId, sessionId: session.id }}
-                    className="signal-search-row"
+                    className={workspaceSearchRowClass}
                   >
                     <span className="min-w-0 flex-1 truncate">
                       {session.prompt || t("session")}

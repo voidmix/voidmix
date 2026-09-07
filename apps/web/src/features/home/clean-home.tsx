@@ -10,6 +10,10 @@ import { ProjectCard } from "../projects/components/project-card";
 import { ActivityList } from "../projects/components/activity-list";
 import { WorkspaceShell } from "../projects/components/workspace-shell";
 import { useWorkspaceData } from "../projects/workspace-data";
+import {
+  workspaceContextSelectClass,
+  workspaceProjectGridClass,
+} from "../projects/workspace-styles";
 
 export function CleanHome() {
   const t = useTranslations("workspaceUi");
@@ -31,10 +35,20 @@ export function CleanHome() {
   }
   return (
     <WorkspaceShell current="home">
-      <section className="signal-command" aria-labelledby="signal-home-title">
-        <p className="signal-eyebrow">VOIDMIX / {t("home")}</p>
-        <h1 id="signal-home-title">{t("title")}</h1>
-        <p className="signal-subtitle">{t("subtitle")}</p>
+      <section
+        className="mx-auto mt-[26px] mb-[54px] max-w-[740px] max-[800px]:mt-[18px] max-[520px]:mb-9"
+        aria-labelledby="signal-home-title"
+      >
+        <p className="text-center text-[10px] text-muted-foreground">VOIDMIX / {t("home")}</p>
+        <h1
+          id="signal-home-title"
+          className="mt-[18px] mb-3 text-center text-[42px] leading-[1.2] font-medium text-balance max-[800px]:text-4xl max-[520px]:text-[28px]"
+        >
+          {t("title")}
+        </h1>
+        <p className="mb-[30px] text-center text-sm leading-[1.7] text-muted-foreground">
+          {t("subtitle")}
+        </p>
         <CommandInput
           value={draft}
           onChange={setDraft}
@@ -49,7 +63,7 @@ export function CleanHome() {
                 aria-label={t("chooseProject")}
                 value={projectId ?? ""}
                 onChange={(event) => setSelected(event.target.value)}
-                className="signal-context-select"
+                className={workspaceContextSelectClass}
               >
                 {home.projects.map((project) => (
                   <option key={project.id} value={project.id}>
@@ -57,11 +71,11 @@ export function CleanHome() {
                   </option>
                 ))}
               </select>
-              <span className="signal-keyhint">{t("draftHint")}</span>
+              <span className="max-[1100px]:hidden">{t("draftHint")}</span>
             </div>
           }
         />
-        <div className="signal-templates">
+        <div className="mt-3 flex flex-wrap justify-center gap-2 text-muted-foreground max-[520px]:gap-0.5 max-[520px]:[&_button]:text-[11px]">
           {(
             [
               { key: "brief", icon: FileText },
@@ -79,23 +93,29 @@ export function CleanHome() {
           {t("previewNote")}
         </p>
       </section>
-      <section className="signal-section" aria-labelledby="attention-title">
-        <div className="signal-section-heading">
-          <h2 id="attention-title">{t("attention")}</h2>
+      <section className="mt-[34px]" aria-labelledby="attention-title">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h2 id="attention-title" className="text-sm font-medium">
+            {t("attention")}
+          </h2>
           <span className="text-xs text-muted-foreground">
             {String(home.attention.length).padStart(2, "0")}
           </span>
         </div>
         {home.attention.length ? (
-          <ul className="signal-attention">
+          <ul className="divide-y divide-border border-t border-border">
             {home.attention.map((task) => (
               <li key={task.id}>
                 <Link
                   to="/projects/$projectId"
                   params={{ projectId: task.projectId }}
                   search={{ tab: "tasks", filter: "all" }}
+                  className="flex items-center gap-3.5 rounded-md px-1 py-[15px] transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
                 >
-                  <span className="signal-task-marker" aria-hidden="true">
+                  <span
+                    className="grid size-7 shrink-0 place-items-center rounded-full border border-border text-[13px] text-muted-foreground"
+                    aria-hidden="true"
+                  >
                     {task.status === "blocked" ? "!" : "○"}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -121,9 +141,11 @@ export function CleanHome() {
           <EmptyState title={t("nothing")} description={t("nothingDetail")} />
         )}
       </section>
-      <section className="signal-section" aria-labelledby="projects-title">
-        <div className="signal-section-heading">
-          <h2 id="projects-title">{t("progress")}</h2>
+      <section className="mt-[34px]" aria-labelledby="projects-title">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h2 id="projects-title" className="text-sm font-medium">
+            {t("progress")}
+          </h2>
           <Link
             to="/projects"
             className="inline-flex items-center gap-2 text-xs text-muted-foreground"
@@ -133,7 +155,7 @@ export function CleanHome() {
           </Link>
         </div>
         {home.projects.length ? (
-          <div className="signal-project-grid">
+          <div className={workspaceProjectGridClass}>
             {home.projects.slice(0, 3).map((project) => (
               <ProjectCard project={project} key={project.id} />
             ))}
@@ -146,8 +168,8 @@ export function CleanHome() {
           />
         )}
       </section>
-      <details className="signal-section signal-activity">
-        <summary>
+      <details className="mt-[34px] border-t border-border pt-5 [&[open]>summary::after]:content-['−']">
+        <summary className="flex cursor-pointer items-center justify-between text-[13px] text-muted-foreground after:ml-3 after:content-['+'] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
           {t("activity")}
           <span className="text-xs text-muted-foreground">{home.activity.length}</span>
         </summary>

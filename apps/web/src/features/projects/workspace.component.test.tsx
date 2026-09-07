@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
@@ -10,6 +10,7 @@ import { PiPage } from "../pi/pi-page";
 import { createPreviewAdapter } from "./preview-adapter";
 import { ProjectPage } from "./project-page";
 import { WorkspaceDataProvider } from "./workspace-data";
+import { resetWorkspaceShell } from "./workspace-shell-store";
 
 const navigate = vi.hoisted(() => vi.fn());
 vi.mock("@tanstack/react-router", () => ({
@@ -17,7 +18,7 @@ vi.mock("@tanstack/react-router", () => ({
     children,
     to,
     params,
-    search: _search,
+    search,
     ...props
   }: {
     children: ReactNode;
@@ -30,6 +31,7 @@ vi.mock("@tanstack/react-router", () => ({
         (path, [key, value]) => path.replace(`$${key}`, value),
         to,
       )}
+      data-search={search ? JSON.stringify(search) : undefined}
       {...props}
     >
       {children}
@@ -63,6 +65,7 @@ vi.mock("@voidmix/i18n/client", () => ({
 beforeEach(() => {
   sessionStorage.clear();
   navigate.mockReset();
+  resetWorkspaceShell();
 });
 afterEach(cleanup);
 
@@ -156,6 +159,48 @@ describe("Clean Signal workspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(source.getSnapshot().tasks[0]?.status).toBe("blocked");
   });
+  it("keeps a quick status update when the open task editor is saved", async () => {
+    const source = createPreviewAdapter();
+    render(
+      <WorkspaceDataProvider source={source}>
+        <ProjectPage projectId="northstar" tab="tasks" filter="all" />
+      </WorkspaceDataProvider>,
+    );
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Approve final color pass/, expanded: false }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Done: Approve final color pass" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+    expect(source.getSnapshot().tasks[0]?.status).toBe("done");
+  });
+  it("preserves the active project tab and filter in recent-project links", async () => {
+    render(
+      <WorkspaceDataProvider source={createPreviewAdapter()}>
+        <ProjectPage projectId="northstar" tab="tasks" filter="blocked" />
+      </WorkspaceDataProvider>,
+    );
+    const sidebar = await screen.findByRole("complementary");
+    expect(within(sidebar).getByRole("link", { name: "Q3 / Brand campaign" })).toHaveAttribute(
+      "data-search",
+      JSON.stringify({ tab: "tasks", filter: "blocked" }),
+    );
+  });
+  it("keeps the workspace sidebar collapsed across route remounts", async () => {
+    const source = createPreviewAdapter();
+    const first = render(
+      <WorkspaceDataProvider source={source}>
+        <CleanHome />
+      </WorkspaceDataProvider>,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Collapse sidebar" }));
+    first.unmount();
+    render(
+      <WorkspaceDataProvider source={source}>
+        <ProjectPage projectId="northstar" tab="overview" filter="all" />
+      </WorkspaceDataProvider>,
+    );
+    expect(await screen.findByRole("button", { name: "Expand sidebar" })).toBeVisible();
+  });
   it("opens search with the keyboard and filters grouped results", async () => {
     const user = userEvent.setup();
     render(
@@ -170,6 +215,18 @@ describe("Clean Signal workspace", () => {
     expect(screen.getByText("No matches")).toBeVisible();
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+  it("restores focus to the search button when its dialog closes", async () => {
+    const user = userEvent.setup();
+    render(
+      <WorkspaceDataProvider source={createPreviewAdapter()}>
+        <CleanHome />
+      </WorkspaceDataProvider>,
+    );
+    const searchButton = await screen.findByRole("button", { name: "Search workspace" });
+    await user.click(searchButton);
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(searchButton).toHaveFocus());
   });
   it("handles a long title and a missing project without breaking navigation", async () => {
     const source = createPreviewAdapter();

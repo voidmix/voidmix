@@ -1,5 +1,4 @@
 @import "@voidmix/ui/styles.css";
-@import "./features/projects/workspace.css";
 
 :root {
   color: var(--foreground);

@@ -8,6 +8,7 @@ import {
 } from "@voidmix/ui/components/ui/dialog";
 import { useState } from "react";
 import { projectViewSchema, type ProjectView } from "../types";
+import { workspaceFieldClass, workspaceInputClass } from "../workspace-styles";
 
 export function ProjectSettings({
   project,
@@ -28,39 +29,39 @@ export function ProjectSettings({
           if (draft.name.trim()) onSave({ ...draft, name: draft.name.trim() });
         }}
       >
-        <label className="signal-field">
+        <label className={workspaceFieldClass}>
           {t("name")}
           <input
-            className="signal-input"
+            className={workspaceInputClass}
             value={draft.name}
             onChange={(event) => setDraft({ ...draft, name: event.target.value })}
             maxLength={120}
             required
           />
         </label>
-        <label className="signal-field">
+        <label className={workspaceFieldClass}>
           {t("description")}
           <textarea
-            className="signal-input"
+            className={workspaceInputClass}
             rows={4}
             value={draft.description}
             onChange={(event) => setDraft({ ...draft, description: event.target.value })}
             maxLength={2000}
           />
         </label>
-        <label className="signal-field">
+        <label className={workspaceFieldClass}>
           {t("milestone")}
           <input
-            className="signal-input"
+            className={workspaceInputClass}
             value={draft.milestone}
             onChange={(event) => setDraft({ ...draft, milestone: event.target.value })}
             maxLength={200}
           />
         </label>
-        <label className="signal-field">
+        <label className={workspaceFieldClass}>
           {t("status")}
           <select
-            className="signal-input"
+            className={workspaceInputClass}
             value={draft.status}
             onChange={(event) =>
               setDraft({

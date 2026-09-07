@@ -12,7 +12,7 @@ export function ProjectCard({ project }: { project: HomeViewModel["projects"][nu
       to="/projects/$projectId"
       params={{ projectId: project.id }}
       search={{ tab: "overview", filter: "all" }}
-      className="signal-project-card"
+      className="block min-w-0 rounded-lg border border-border bg-card p-5 transition-colors hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
     >
       <div className="flex items-center justify-between">
         <FolderSimple aria-hidden="true" className="size-5 text-muted-foreground" />

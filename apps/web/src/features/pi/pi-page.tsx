@@ -14,6 +14,7 @@ import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useEffect, useRef, useState } from "react";
 import { WorkspaceShell } from "../projects/components/workspace-shell";
 import { useWorkspaceData } from "../projects/workspace-data";
+import { workspaceLabelClass } from "../projects/workspace-styles";
 import { RunTimeline } from "./run-timeline";
 import { runPreview } from "./preview-runner";
 
@@ -27,6 +28,7 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
   const [draft, setDraft] = useState("");
   const [confirm, setConfirm] = useState(false);
   const controller = useRef<AbortController | null>(null);
+  const confirmInvoker = useRef<HTMLElement | null>(null);
   useEffect(
     () => () => {
       controller.current?.abort();
@@ -58,9 +60,14 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
     ).finally(() => {
       if (controller.current === current) controller.current = null;
     });
+    setTimeout(() => document.querySelector<HTMLElement>("[data-pi-stop]")?.focus(), 0);
+  }
+  function closeConfirm() {
+    setConfirm(false);
+    queueMicrotask(() => confirmInvoker.current?.isConnected && confirmInvoker.current.focus());
   }
   return (
-    <WorkspaceShell title={`${project.name} / Pi`}>
+    <WorkspaceShell title={`${project.name} / Pi`} projectSearch={{ tab: "pi", filter: "all" }}>
       <Link
         to="/projects/$projectId"
         params={{ projectId }}
@@ -85,13 +92,13 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
           />
         }
       />
-      <section className="signal-capabilities">
+      <section className="my-7 rounded-lg bg-muted px-[22px] py-5">
         <h2 className="text-sm font-medium">{t("capabilities")}</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("capabilitiesDetail")}</p>
       </section>
       {session.prompt ? (
-        <div className="signal-prompt">
-          <span className="signal-label">{t("goal")}</span>
+        <div className="max-w-[700px] py-[18px]">
+          <span className={workspaceLabelClass}>{t("goal")}</span>
           <p className="mt-2 whitespace-pre-wrap text-sm leading-7 [overflow-wrap:anywhere]">
             {session.prompt}
           </p>
@@ -114,11 +121,11 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
               : ""}
       </div>
       {session.status === "running" ? (
-        <Button onClick={() => controller.current?.abort()} variant="secondary">
+        <Button data-pi-stop onClick={() => controller.current?.abort()} variant="secondary">
           {t("stop")}
         </Button>
       ) : task ? (
-        <section className="signal-result">
+        <section className="rounded-lg border border-border bg-card p-[22px]">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-medium">{t("runResult")}</h2>
             <StatusBadge label={t("completed")} tone="complete" />
@@ -153,7 +160,11 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
               setDraft(value);
               source.updateSession({ ...session, prompt: value });
             }}
-            onSubmit={() => setConfirm(true)}
+            onSubmit={() => {
+              confirmInvoker.current =
+                document.activeElement instanceof HTMLElement ? document.activeElement : null;
+              setConfirm(true);
+            }}
             label={t("ask")}
             placeholder={t("placeholder")}
             submitLabel={t(session.status === "failed" ? "retry" : "run")}
@@ -166,12 +177,17 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
         </div>
       )}
       <p className="mt-5 text-xs leading-6 text-muted-foreground">{t("previewNote")}</p>
-      <Dialog open={confirm} onOpenChange={setConfirm}>
+      <Dialog
+        open={confirm}
+        onOpenChange={(open) => {
+          if (!open) closeConfirm();
+        }}
+      >
         <DialogContent showCloseButton={false}>
           <DialogTitle>{t("confirm")}</DialogTitle>
           <DialogDescription>{t("confirmDetail")}</DialogDescription>
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => setConfirm(false)}>
+            <Button variant="ghost" onClick={closeConfirm}>
               {t("cancel")}
             </Button>
             <Button variant="primary" onClick={start}>

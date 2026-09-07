@@ -4,6 +4,7 @@ import { EmptyState } from "@voidmix/ui/empty-state";
 import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useState } from "react";
 import { taskStatusSchema, type TaskView } from "../types";
+import { workspaceFieldClass, workspaceInputClass } from "../workspace-styles";
 
 export function TaskList({
   tasks,
@@ -29,7 +30,7 @@ export function TaskList({
         }}
       >
         <input
-          className="signal-input min-w-0 flex-1"
+          className={`${workspaceInputClass} min-w-0 flex-1`}
           aria-label={t("taskTitle")}
           placeholder={t("taskTitle")}
           maxLength={300}
@@ -63,9 +64,13 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
     <div className="py-4">
       <div className="flex flex-wrap items-center gap-3">
         <button
-          className="signal-task-check"
+          className="grid size-8 shrink-0 place-items-center rounded-full border border-border transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
           aria-label={`${task.status === "done" ? t("restore") : t("done")}: ${task.title}`}
-          onClick={() => onUpdate({ ...task, status: task.status === "done" ? "todo" : "done" })}
+          onClick={() => {
+            const status = task.status === "done" ? "todo" : "done";
+            setDraft((current) => ({ ...current, status }));
+            onUpdate({ ...task, status });
+          }}
         >
           {task.status === "done" ? "✓" : "○"}
         </button>
@@ -95,38 +100,38 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
       </div>
       {editing ? (
         <form
-          className="signal-task-editor"
+          className="mt-3.5 grid grid-cols-2 gap-4 rounded-lg bg-muted p-5 max-[520px]:grid-cols-1"
           onSubmit={(event) => {
             event.preventDefault();
             if (!draft.title.trim()) return;
-            onUpdate({ ...draft, title: draft.title.trim() });
+            onUpdate({ ...task, ...draft, title: draft.title.trim() });
             setEditing(false);
           }}
         >
-          <label className="signal-field">
+          <label className={workspaceFieldClass}>
             {t("taskTitle")}
             <input
-              className="signal-input"
+              className={workspaceInputClass}
               value={draft.title}
               maxLength={300}
               required
               onChange={(event) => setDraft({ ...draft, title: event.target.value })}
             />
           </label>
-          <label className="signal-field">
+          <label className={workspaceFieldClass}>
             {t("owner")}
             <input
-              className="signal-input"
+              className={workspaceInputClass}
               value={draft.owner}
               maxLength={80}
               required
               onChange={(event) => setDraft({ ...draft, owner: event.target.value })}
             />
           </label>
-          <label className="signal-field">
+          <label className={workspaceFieldClass}>
             {t("status")}
             <select
-              className="signal-input"
+              className={workspaceInputClass}
               value={draft.status}
               onChange={(event) =>
                 setDraft({ ...draft, status: taskStatusSchema.parse(event.target.value) })
@@ -139,10 +144,10 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
               ))}
             </select>
           </label>
-          <label className="signal-field">
+          <label className={workspaceFieldClass}>
             {t("priority")}
             <select
-              className="signal-input"
+              className={workspaceInputClass}
               value={draft.priority}
               onChange={(event) =>
                 setDraft({ ...draft, priority: event.target.value === "high" ? "high" : "normal" })

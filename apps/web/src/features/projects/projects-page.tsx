@@ -14,6 +14,11 @@ import { useState } from "react";
 import { WorkspaceShell } from "./components/workspace-shell";
 import { ProjectCard } from "./components/project-card";
 import { useWorkspaceData } from "./workspace-data";
+import {
+  workspaceFieldClass,
+  workspaceInputClass,
+  workspaceProjectGridClass,
+} from "./workspace-styles";
 
 export function ProjectsPage() {
   const t = useTranslations("workspaceUi");
@@ -40,9 +45,9 @@ export function ProjectsPage() {
           </Button>
         }
       />
-      <div className="signal-filters">
+      <div className="my-[30px] flex items-center gap-4 max-[520px]:flex-col max-[520px]:items-start">
         <input
-          className="signal-input"
+          className={`${workspaceInputClass} max-w-80`}
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -59,7 +64,7 @@ export function ProjectsPage() {
         </label>
       </div>
       {projects.length ? (
-        <div className="signal-project-grid">
+        <div className={workspaceProjectGridClass}>
           {projects.map((project) => {
             const tasks = snapshot.tasks.filter((task) => task.projectId === project.id);
             return (
@@ -105,10 +110,10 @@ export function ProjectsPage() {
               });
             }}
           >
-            <label className="signal-field">
+            <label className={workspaceFieldClass}>
               {t("name")}
               <input
-                className="signal-input"
+                className={workspaceInputClass}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 maxLength={120}
