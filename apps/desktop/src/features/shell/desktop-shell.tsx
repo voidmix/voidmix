@@ -91,11 +91,11 @@ export function DesktopShell() {
         </nav>
 
         <div className="sidebar-spacer" />
-        <div className="workspace-switcher">
-          <Avatar name="Acme Studio" size="small" />
+        <div className="workspace-switcher account-switcher">
+          <Avatar name="Zack" size="small" />
           <span>
-            <strong>Acme Studio</strong>
-            <small>Team workspace</small>
+            <strong>Zack</strong>
+            <small>Personal studio</small>
           </span>
           <DotsThree size={16} aria-hidden="true" weight="regular" />
         </div>
@@ -114,7 +114,7 @@ export function DesktopShell() {
         <header className="titlebar" data-tauri-drag-region>
           <Button className="search-trigger" variant="outline">
             <MagnifyingGlass size={15} weight="regular" />
-            <span>{t("searchWorkspace")}</span>
+            <span>{t("searchWorkspace").replace("workspace", "projects")}</span>
             <kbd>
               <Command size={11} />K
             </kbd>

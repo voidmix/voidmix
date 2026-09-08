@@ -19,10 +19,10 @@
     "browserPreview": "Browser preview",
     "trayMessage": "Tray controls are available in the desktop build.",
     "hideToTray": "Hide VoidMix to the system tray",
-    "searchWorkspace": "Search workspace"
+    "searchWorkspace": "Search projects"
   },
   "overview": {
-    "title": "Workspace signal",
+    "title": "Your studio is in motion",
     "description": "Transfers, storage, and connected devices are operating normally.",
     "cloudData": "Cloud data",
     "apiOnline": "API online",

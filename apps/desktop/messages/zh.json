@@ -19,10 +19,10 @@
     "browserPreview": "浏览器预览",
     "trayMessage": "系统托盘控制仅在桌面版本中可用。",
     "hideToTray": "将 VoidMix 隐藏到系统托盘",
-    "searchWorkspace": "搜索工作区"
+    "searchWorkspace": "搜索项目"
   },
   "overview": {
-    "title": "工作区状态",
+    "title": "你的工作室正在运转",
     "description": "传输、存储和已连接设备均运行正常。",
     "cloudData": "云端数据",
     "apiOnline": "API 在线",

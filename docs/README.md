@@ -15,6 +15,9 @@ deployment boundaries, and coding-agent guidance.
   auth, i18n, mail, env, DB, logger, UI, scripts, and TypeScript presets.
 - [Product design](./architecture/design.md) — brand posture, cross-surface
   intensity, visual vocabulary, and accessibility rules.
+- [Project Studio migration](./architecture/project-studio.md) — approved
+  project-first product direction, current implementation audit, migration
+  sequence, compatibility, and acceptance criteria.
 - [Toolchain](./architecture/tooling.md) — Bun catalogs, Vite+, TypeScript,
   shadcn/Base UI, and repository automation.
 - [Runtime and deployment](./architecture/deployment.md) — production runtimes,

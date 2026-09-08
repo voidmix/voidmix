@@ -100,6 +100,7 @@ Rules:
 - [Applications](./applications.md)
 - [Shared packages](./packages.md)
 - [Product design](./design.md)
+- [Project Studio migration](./project-studio.md)
 - [Toolchain](./tooling.md)
 - [Runtime and deployment](./deployment.md)
 - [Decision records](./decisions/README.md)

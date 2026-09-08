@@ -1,4 +1,11 @@
-import { Bell, FolderSimple, House, MagnifyingGlass, SidebarSimple } from "@phosphor-icons/react";
+import {
+  Bell,
+  Files,
+  FolderSimple,
+  House,
+  MagnifyingGlass,
+  SidebarSimple,
+} from "@phosphor-icons/react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -32,7 +39,7 @@ export function WorkspaceShell({
   title,
 }: {
   children: ReactNode;
-  current?: "home" | "projects";
+  current?: "home" | "projects" | "library";
   projectSearch?: { tab: ProjectTab; filter: TaskFilter };
   title?: string;
 }) {
@@ -80,6 +87,7 @@ export function WorkspaceShell({
     [
       { to: "/", label: t("home") },
       { to: "/projects", label: t("projects") },
+      { to: "/library", label: t("library") },
     ] as const
   ).filter((page) => matches(page.label));
   const renderNav = (compact = false) => (
@@ -96,6 +104,19 @@ export function WorkspaceShell({
       >
         <House aria-hidden="true" />
         <span className={compact ? "hidden" : undefined}>{t("home")}</span>
+      </Link>
+      <Link
+        to="/library"
+        onClick={() => close(false)}
+        className={cn(
+          "flex min-h-[38px] items-center gap-[11px] rounded-lg px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none [&_svg]:size-[18px] [&_svg]:shrink-0",
+          current === "library" && "bg-background text-foreground",
+        )}
+        aria-current={current === "library" ? "page" : undefined}
+        title={t("library")}
+      >
+        <Files aria-hidden="true" />
+        <span className={compact ? "hidden" : undefined}>{t("library")}</span>
       </Link>
       <Link
         to="/projects"
@@ -122,7 +143,7 @@ export function WorkspaceShell({
           "fixed inset-y-0 left-0 z-[35] flex flex-col overflow-y-auto border-r border-border bg-muted px-3.5 pt-[26px] pb-[22px] transition-[width] duration-150 motion-reduce:transition-none max-[800px]:hidden",
           collapsed ? "w-18" : "w-56 max-[1100px]:w-50",
         )}
-        aria-label={t("workspace")}
+        aria-label="Primary navigation"
       >
         <Link
           to="/"
@@ -131,7 +152,7 @@ export function WorkspaceShell({
         >
           <Logo className={collapsed ? "[&>span]:hidden" : undefined} />
         </Link>
-        <nav className="mt-8 grid gap-1" aria-label={t("workspace")}>
+        <nav className="mt-8 grid gap-1" aria-label="Primary navigation">
           {renderNav(collapsed)}
         </nav>
         <div className={cn("mt-9", collapsed && "hidden")}>
@@ -187,7 +208,7 @@ export function WorkspaceShell({
             <SidebarSimple aria-hidden="true" />
           </Button>
           <span className="min-w-0 flex-1 truncate text-sm">
-            <span className="text-muted-foreground">{t("workspace")}</span>
+            <span className="text-muted-foreground">Voidmix</span>
             {title ? <span className="max-[520px]:hidden"> / {title}</span> : null}
           </span>
           <Button
