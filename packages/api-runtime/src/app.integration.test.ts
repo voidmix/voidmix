@@ -2,6 +2,9 @@ import { createApiClient } from "@voidmix/client";
 import {
   createInMemoryAgentRepositories,
   createInMemoryAssetRepositories,
+  createInMemoryProjectStudioRepositories,
+  InMemoryBlobStorageRepository,
+  InMemoryProjectRepository,
   InMemorySystemSettingsRepository,
   InMemoryUserRepository,
   InMemoryWorkspaceMembershipRepository,
@@ -14,12 +17,13 @@ import type {
   User,
   UserRepository,
 } from "@voidmix/core";
+import { ProjectDomainError } from "@voidmix/core";
 import { configureLogger } from "@voidmix/logger";
 import type { Mailer } from "@voidmix/mail/types";
 import { describe, expect, it } from "vite-plus/test";
 
 import { createApiApp } from "./app.js";
-import { createApiModules, type ApiModules } from "./modules.js";
+import { createApiModules, type ApiModules, type ProjectStudioService } from "./modules.js";
 import { createHeaderSessionResolver, type SessionResolver } from "./session.js";
 
 const seed: User[] = [
@@ -63,6 +67,74 @@ const testMailer: Mailer = {
   sendWelcome: async () => {},
   sendTest: async () => {},
 };
+
+const studioTimestamp = new Date("2026-09-09T00:00:00.000Z");
+const studioProject = {
+  id: "project-1",
+  workspaceId: "workspace-1",
+  ownerId: "owner-1",
+  title: "Launch film",
+  description: null,
+  cover: null,
+  thumbnail: null,
+  stage: "draft" as const,
+  archived: false,
+  archivedAt: null,
+  stageWasDefaulted: false,
+  progress: null,
+  deadline: null,
+  lastActivityAt: studioTimestamp,
+  createdAt: studioTimestamp,
+  updatedAt: studioTimestamp,
+  brief: null,
+  tasks: [],
+  members: [],
+  assetReferences: [],
+  reviews: [],
+  sessions: [],
+};
+
+function createStudioService(overrides: Partial<ProjectStudioService> = {}): ProjectStudioService {
+  const unavailable = async (): Promise<never> => {
+    throw new Error("Unexpected Project Studio service call.");
+  };
+  return {
+    getSnapshot: unavailable,
+    listProjects: unavailable,
+    getProject: unavailable,
+    createProject: unavailable,
+    updateProject: unavailable,
+    archiveProject: unavailable,
+    restoreProject: unavailable,
+    listProjectAssets: unavailable,
+    createProjectAsset: unavailable,
+    listProjectTasks: unavailable,
+    getProjectTask: unavailable,
+    createProjectTask: unavailable,
+    updateProjectTask: unavailable,
+    searchLibrary: unavailable,
+    getAssetWorkspace: unavailable,
+    listAssetVersions: unavailable,
+    listReviews: unavailable,
+    getReview: unavailable,
+    createReview: unavailable,
+    updateReview: unavailable,
+    resolveReview: unavailable,
+    listFeedback: unavailable,
+    getFeedback: unavailable,
+    createFeedback: unavailable,
+    updateFeedback: unavailable,
+    listActivity: unavailable,
+    createPiSession: unavailable,
+    getPiSession: unavailable,
+    cancelPiSession: unavailable,
+    retryPiSession: unavailable,
+    addProjectMember: unavailable,
+    updateProjectMember: unavailable,
+    removeProjectMember: unavailable,
+    ...overrides,
+  };
+}
 
 function createTestApiApp(
   options: {
@@ -316,6 +388,20 @@ describe("API", () => {
     expect(response.status).toBe(404);
   });
 
+  it("rejects GET requests for Project Studio mutations", async () => {
+    const { app } = setup("owner", "owner-1");
+    const data = encodeURIComponent(JSON.stringify({ projectId: "project-1" }));
+    const response = await app.request(`/rpc/projects/archive?data=${data}`, {
+      method: "GET",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+      },
+    });
+
+    expect(response.status).toBe(404);
+  });
+
   it("serves workspace assets and Agent runs through typed protected procedures", async () => {
     const assetRepositories: AssetRepositories = createInMemoryAssetRepositories();
     const agentRepositories: AgentRepositories = createInMemoryAgentRepositories();
@@ -374,6 +460,317 @@ describe("API", () => {
         path: "docs/private.md",
       }),
     ).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
+  it("enforces Blob upload ownership and returns bounded downloads", async () => {
+    const users = new InMemoryUserRepository(seed);
+    const blobStorage = new InMemoryBlobStorageRepository({
+      now: () => studioTimestamp,
+      id: () => "upload-1",
+    });
+    const modules = createApiModules({
+      users,
+      settings: new InMemorySystemSettingsRepository({ auditEvents: users.auditEvents }),
+      mailFallback: testMailFallback,
+      mailer: testMailer,
+      blobStorage,
+      workspaceMemberships: new InMemoryWorkspaceMembershipRepository([
+        {
+          id: "membership-owner-1",
+          workspaceId: "workspace-1",
+          userId: "owner-1",
+          role: "owner",
+          status: "active",
+          createdAt: studioTimestamp,
+          updatedAt: studioTimestamp,
+        },
+      ]),
+    });
+    const app = createTestApiApp({ modules });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+      },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+    const blobHash = "fa690b82061edfd2852629aeba8a8977b57e40fcb77d1a7a28b26cba62591204";
+    const upload = await client.workspace.assets.upload.create({
+      workspaceId: "workspace-1",
+      byteSize: 3,
+      contentType: "text/plain",
+      expectedHash: blobHash,
+    });
+    await expect(
+      client.workspace.assets.upload.complete({
+        uploadId: upload.id,
+        byteSize: 3,
+        contentType: "text/plain",
+        blobHash,
+        body: Buffer.from("hey").toString("base64"),
+      }),
+    ).resolves.toMatchObject({ blobHash, byteSize: 3 });
+    await expect(
+      client.workspace.assets.download.get({ workspaceId: "workspace-1", blobHash }),
+    ).resolves.toMatchObject({ body: Buffer.from("hey").toString("base64") });
+
+    const otherClient = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: { "x-voidmix-user-id": "user-1", "x-voidmix-role": "user" },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+    await expect(
+      otherClient.workspace.assets.download.get({ workspaceId: "workspace-1", blobHash }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
+  it("serves Project Studio procedures through the injected service port", async () => {
+    const service = createStudioService({
+      getProject: async () => studioProject,
+      listProjects: async () => ({ items: [studioProject], nextCursor: null }),
+      getSnapshot: async ({ actorId }) => ({
+        account: {
+          id: actorId,
+          email: "owner@example.com",
+          displayName: "Owner",
+          workspaceIds: ["workspace-1"],
+        },
+        projects: [studioProject],
+        reviewAttention: [],
+        recentActivity: [],
+        activeSessions: [],
+        nextProjectsCursor: null,
+      }),
+    });
+    const repository = new InMemoryUserRepository(seed);
+    const modules = createApiModules({
+      users: repository,
+      settings: new InMemorySystemSettingsRepository(),
+      mailFallback: testMailFallback,
+      mailer: testMailer,
+      studio: service,
+      workspaceMemberships: new InMemoryWorkspaceMembershipRepository([
+        {
+          id: "membership-owner-1",
+          workspaceId: "workspace-1",
+          userId: "owner-1",
+          role: "owner",
+          status: "active",
+          createdAt: studioTimestamp,
+          updatedAt: studioTimestamp,
+        },
+      ]),
+    });
+    const app = createTestApiApp({ modules });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+        "x-voidmix-email": "owner@example.com",
+        "x-voidmix-display-name": "Owner",
+      },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(client.studio.snapshot.get({})).resolves.toMatchObject({
+      projects: [{ id: "project-1" }],
+    });
+    await expect(client.projects.list({})).resolves.toMatchObject({
+      items: [{ id: "project-1" }],
+    });
+    await expect(client.projects.get({ projectId: "project-1" })).resolves.toMatchObject({
+      id: "project-1",
+    });
+  });
+
+  it("persists the Pi session lifecycle through the API", async () => {
+    const timestamp = new Date("2026-09-09T00:00:00.000Z");
+    const repositories = createInMemoryProjectStudioRepositories({
+      id: (() => {
+        let sequence = 0;
+        return () => `studio-${++sequence}`;
+      })(),
+      now: () => timestamp,
+    });
+    const agentRepositories = createInMemoryAgentRepositories();
+    const users = new InMemoryUserRepository(seed);
+    let idSequence = 0;
+    const modules = createApiModules({
+      users,
+      settings: new InMemorySystemSettingsRepository({ auditEvents: users.auditEvents }),
+      mailFallback: testMailFallback,
+      mailer: testMailer,
+      projects: new InMemoryProjectRepository([
+        {
+          id: "project-1",
+          name: "Launch film",
+          description: "A film",
+          status: "active",
+          ownerId: "owner-1",
+          workspaceId: "workspace-1",
+          stage: "draft",
+          archived: false,
+          archivedAt: null,
+          previousStage: null,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      ]),
+      workspaceMemberships: new InMemoryWorkspaceMembershipRepository([
+        {
+          id: "membership-1",
+          workspaceId: "workspace-1",
+          userId: "owner-1",
+          role: "owner",
+          status: "active",
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      ]),
+      agents: agentRepositories,
+      projectStudioRepositories: repositories,
+      id: () => `studio-${++idSequence}`,
+    });
+    const app = createTestApiApp({ modules });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+        "x-voidmix-email": "owner@example.com",
+        "x-voidmix-display-name": "Owner",
+      },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    const created = await client.pi.sessions.create({
+      projectId: "project-1",
+      prompt: "Prepare the launch brief",
+      context: { source: "integration-test" },
+      idempotencyKey: "pi-create-1",
+    });
+    expect(created).toMatchObject({
+      id: "studio-1",
+      projectId: "project-1",
+      status: "queued",
+      context: { source: "integration-test" },
+      run: { status: "queued" },
+    });
+
+    await expect(client.pi.sessions.get({ sessionId: created.id })).resolves.toMatchObject({
+      id: created.id,
+      run: { runId: created.agentRunId },
+    });
+
+    const cancelled = await client.pi.sessions.cancel({ sessionId: created.id });
+    expect(cancelled).toMatchObject({ status: "cancelled", run: { status: "cancelled" } });
+
+    const retried = await client.pi.sessions.retry({
+      sessionId: created.id,
+      idempotencyKey: "pi-retry-1",
+    });
+    expect(retried).toMatchObject({
+      id: created.id,
+      agentRunId: "studio-2",
+      status: "queued",
+      completedAt: null,
+      run: { runId: "studio-2", status: "queued" },
+    });
+  });
+
+  it("rejects Project Studio calls when the module is not configured", async () => {
+    const result = setup("owner", "owner-1");
+
+    await expect(result.client.projects.list({})).rejects.toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+    });
+    expect(result.lastResponse?.status).toBe(500);
+  });
+
+  it("checks the resource workspace before Project Studio mutations", async () => {
+    const service = createStudioService({
+      getProject: async () => ({ ...studioProject, workspaceId: "workspace-2" }),
+    });
+    const modules = createApiModules({
+      users: new InMemoryUserRepository(seed),
+      settings: new InMemorySystemSettingsRepository(),
+      mailFallback: testMailFallback,
+      mailer: testMailer,
+      studio: service,
+      workspaceMemberships: new InMemoryWorkspaceMembershipRepository([
+        {
+          id: "membership-owner-1",
+          workspaceId: "workspace-1",
+          userId: "owner-1",
+          role: "owner",
+          status: "active",
+          createdAt: studioTimestamp,
+          updatedAt: studioTimestamp,
+        },
+      ]),
+    });
+    const app = createTestApiApp({ modules });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+        "x-voidmix-email": "owner@example.com",
+        "x-voidmix-display-name": "Owner",
+      },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(client.projects.get({ projectId: "project-1" })).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    });
+  });
+
+  it("maps Project domain errors to typed RPC errors", async () => {
+    const service = createStudioService({
+      getProject: async () => studioProject,
+      updateProject: async () => {
+        throw new ProjectDomainError(
+          "PROJECT_INVALID_STAGE_TRANSITION",
+          "Project stage cannot change from draft to delivered.",
+        );
+      },
+    });
+    const modules = createApiModules({
+      users: new InMemoryUserRepository(seed),
+      settings: new InMemorySystemSettingsRepository(),
+      mailFallback: testMailFallback,
+      mailer: testMailer,
+      studio: service,
+      workspaceMemberships: new InMemoryWorkspaceMembershipRepository([
+        {
+          id: "membership-owner-1",
+          workspaceId: "workspace-1",
+          userId: "owner-1",
+          role: "owner",
+          status: "active",
+          createdAt: studioTimestamp,
+          updatedAt: studioTimestamp,
+        },
+      ]),
+    });
+    const app = createTestApiApp({ modules });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      headers: {
+        "x-voidmix-user-id": "owner-1",
+        "x-voidmix-role": "owner",
+        "x-voidmix-email": "owner@example.com",
+        "x-voidmix-display-name": "Owner",
+      },
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(
+      client.projects.update({ projectId: "project-1", stage: "delivered" }),
+    ).rejects.toMatchObject({ code: "CONFLICT" });
   });
 
   it("rejects unauthenticated workspace procedures", async () => {

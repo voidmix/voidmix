@@ -12,6 +12,13 @@ test("renders the public workspace home", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Create account" })).toHaveCount(0);
 });
 
+test("redirects unauthenticated Project Studio routes to sign in", async ({ page }) => {
+  await page.goto("/projects");
+
+  await expect(page).toHaveURL(/\/login\?redirect=%2Fprojects/);
+  await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+});
+
 test("keeps the desktop workspace navbar pinned while scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");

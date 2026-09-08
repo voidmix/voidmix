@@ -1,13 +1,21 @@
 import {
+  studioPreviewDataSchema,
+  studioPreviewEnvelopeSchema,
   studioSnapshotSchema,
   type HomeViewModel,
+  type LibrarySearchView,
   type PiSessionView,
+  type ProjectAssetView,
   type ProjectView,
+  type StudioPreviewData,
+  type StudioPreviewEnvelope,
+  type StudioAssetReference,
   type TaskView,
   type StudioSnapshot,
 } from "./types";
 
-const storageKey = "voidmix.workspace.preview.v1";
+export const previewStorageKey = "voidmix.project-studio.preview.v2";
+export const legacyPreviewStorageKey = "voidmix.workspace.preview.v1";
 const seed: StudioSnapshot = {
   version: 1,
   projects: [
@@ -95,13 +103,102 @@ export interface ProjectStudioDataSource {
   subscribe(this: void, listener: () => void): () => void;
   hydrate(): void | Promise<void>;
   getHome(): HomeViewModel;
+  getProjectAssets(projectId: string): ProjectAssetView[];
+  searchLibrary?(query: string): Promise<LibrarySearchView>;
   createProject(name: string): ProjectView;
   updateProject(project: ProjectView): void;
   createTask(projectId: string, title: string): TaskView;
   updateTask(task: TaskView): void;
   removeTask(taskId: string): void;
+  uploadAsset?(projectId: string, file: File): Promise<StudioAssetReference>;
+  attachAsset?(
+    projectId: string,
+    assetId: string,
+    versionId?: string | null,
+  ): Promise<StudioAssetReference>;
   createSession(projectId: string, prompt: string): PiSessionView;
+  startSession?(session: PiSessionView): Promise<PiSessionView>;
   updateSession(session: PiSessionView): void;
+  getPersistenceWarning(this: void): boolean;
+}
+
+function projectToPreviewData(project: ProjectView) {
+  const stage =
+    project.status === "completed"
+      ? "delivered"
+      : project.status === "archived"
+        ? "draft"
+        : "in_progress";
+  return {
+    id: project.id,
+    title: project.name,
+    description: project.description,
+    stage,
+    archived: project.status === "archived",
+    legacyStatus: project.status,
+    stageWasDefaulted: project.status === "archived",
+    cover: null,
+    thumbnail: null,
+    deadline: null,
+    milestone: project.milestone,
+    updatedAt: project.updatedAt,
+  };
+}
+
+function snapshotToPreviewData(snapshot: StudioSnapshot): StudioPreviewData {
+  return studioPreviewDataSchema.parse({
+    projects: snapshot.projects.map(projectToPreviewData),
+    tasks: snapshot.tasks,
+    activity: snapshot.activity,
+    sessions: snapshot.sessions,
+    assets: [],
+    reviews: [],
+    projectMembers: [],
+  });
+}
+
+function previewDataToSnapshot(data: StudioPreviewData): StudioSnapshot {
+  return {
+    version: 1,
+    projects: data.projects.map((project) => ({
+      id: project.id,
+      name: project.title,
+      description: project.description,
+      status: project.archived
+        ? "archived"
+        : project.stage === "delivered"
+          ? "completed"
+          : project.legacyStatus === "paused"
+            ? "paused"
+            : "active",
+      milestone: project.milestone,
+      updatedAt: project.updatedAt,
+    })),
+    tasks: data.tasks,
+    activity: data.activity,
+    sessions: data.sessions,
+  };
+}
+
+function envelopeFor(snapshot: StudioSnapshot, migratedFrom: 1 | null): StudioPreviewEnvelope {
+  return studioPreviewEnvelopeSchema.parse({
+    version: 2,
+    migratedFrom,
+    data: snapshotToPreviewData(snapshot),
+  });
+}
+
+function migrateV1(snapshot: StudioSnapshot): StudioPreviewEnvelope {
+  return envelopeFor(snapshot, 1);
+}
+
+function cancelRunningSessions(snapshot: StudioSnapshot): StudioSnapshot {
+  return {
+    ...snapshot,
+    sessions: snapshot.sessions.map((session) =>
+      session.status === "running" ? { ...session, status: "cancelled" } : session,
+    ),
+  };
 }
 
 export function createProjectStudioPreviewAdapter(
@@ -109,16 +206,29 @@ export function createProjectStudioPreviewAdapter(
 ): ProjectStudioDataSource {
   let snapshot = structuredClone(initial);
   let hydrated = false;
+  let persistenceWarning = false;
+  let migratedFrom: 1 | null = null;
+  let storageWriteBlocked = false;
   const listeners = new Set<() => void>();
   const id = () => crypto.randomUUID();
+  function notify() {
+    listeners.forEach((listener) => listener());
+  }
+  function persist(next: StudioSnapshot, migratedFrom: 1 | null = null) {
+    if (storageWriteBlocked) return false;
+    try {
+      sessionStorage.setItem(previewStorageKey, JSON.stringify(envelopeFor(next, migratedFrom)));
+      persistenceWarning = false;
+      return true;
+    } catch {
+      persistenceWarning = true;
+      return false;
+    }
+  }
   function publish(next: StudioSnapshot) {
     snapshot = next;
-    try {
-      sessionStorage.setItem(storageKey, JSON.stringify(next));
-    } catch {
-      hydrated = true;
-    }
-    listeners.forEach((listener) => listener());
+    persist(next, migratedFrom);
+    notify();
   }
   function activity(
     projectId: string,
@@ -146,21 +256,57 @@ export function createProjectStudioPreviewAdapter(
       if (hydrated || typeof window === "undefined") return;
       hydrated = true;
       try {
-        const raw = sessionStorage.getItem(storageKey);
-        if (!raw) return;
-        const parsed = studioSnapshotSchema.safeParse(JSON.parse(raw));
-        if (parsed.success)
-          publish({
-            ...parsed.data,
-            sessions: parsed.data.sessions.map((session) =>
-              session.status === "running" ? { ...session, status: "cancelled" } : session,
-            ),
-          });
+        const storedV2 = sessionStorage.getItem(previewStorageKey);
+        if (storedV2 !== null) {
+          let decodedV2: unknown;
+          try {
+            decodedV2 = JSON.parse(storedV2);
+          } catch {
+            storageWriteBlocked = true;
+            return;
+          }
+          const parsedV2 = studioPreviewEnvelopeSchema.safeParse(decodedV2);
+          if (!parsedV2.success) {
+            storageWriteBlocked = true;
+            return;
+          }
+          migratedFrom = parsedV2.data.migratedFrom;
+          const restored = cancelRunningSessions(previewDataToSnapshot(parsedV2.data.data));
+          snapshot = restored;
+          if (
+            restored.sessions.some(
+              (session, index) => session !== parsedV2.data.data.sessions[index],
+            )
+          )
+            persist(restored, parsedV2.data.migratedFrom);
+          notify();
+          return;
+        }
+
+        const storedV1 = sessionStorage.getItem(legacyPreviewStorageKey);
+        if (storedV1 !== null) {
+          const parsedV1 = studioSnapshotSchema.safeParse(JSON.parse(storedV1));
+          if (!parsedV1.success) {
+            persist(snapshot);
+            return;
+          }
+          const migrated = migrateV1(parsedV1.data);
+          const restored = cancelRunningSessions(previewDataToSnapshot(migrated.data));
+          migratedFrom = 1;
+          persist(restored, migratedFrom);
+          snapshot = restored;
+          notify();
+          return;
+        }
+
+        persist(snapshot);
       } catch {
         return;
       }
     },
     getHome: () => homeView(snapshot),
+    getProjectAssets: () => [],
+    getPersistenceWarning: () => persistenceWarning,
     createProject(name) {
       const project: ProjectView = {
         id: id(),

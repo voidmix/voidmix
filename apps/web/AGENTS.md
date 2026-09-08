@@ -92,9 +92,10 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   initializes it at startup and closes it through Nitro's `close` hook.
 - `server/env.ts` is never imported by browser modules. Keep database, Auth, mail,
   and allowed-origin values on the server side of the Web bundle.
-- `(app)/route.tsx` is the established client-side session gate. It is
-  navigation aid, not authorization enforcement. There is still no loader,
-  `beforeLoad`, or server function precedent in this app.
+- `(app)/route.tsx` uses a server-side session-cookie check as an SSR navigation
+  aid and retains the client-side session gate for hydration and stale-cookie
+  recovery. It is navigation aid, not authorization enforcement; the API
+  runtime remains the final authorization boundary.
 - `(app)/(admin)/route.tsx` owns the AdminShell layout. Keep the authenticated
   group focused on session navigation and keep `/admin` page mounting and typed
   settings adapters in the nested Admin group. Settings API failures are shown

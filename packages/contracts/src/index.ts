@@ -226,6 +226,215 @@ export const agentLeaseSchema = z.object({
   expiresAt: z.date(),
 });
 
+export const projectStageSchema = z.enum(["draft", "in_progress", "review", "delivered"]);
+export const projectMemberRoleSchema = z.enum(["owner", "editor", "commenter", "viewer"]);
+export const projectMemberStatusSchema = z.enum(["active", "removed"]);
+
+export const projectMemberSchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  userId: z.string().min(1),
+  role: projectMemberRoleSchema,
+  status: projectMemberStatusSchema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+const projectProgressSchema = z.number().min(0).max(1).nullable();
+
+export const projectSummarySchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  ownerId: z.string().min(1),
+  title: z.string().trim().min(1).max(500),
+  description: z.string().nullable(),
+  cover: z.string().trim().min(1).nullable(),
+  thumbnail: z.string().trim().min(1).nullable(),
+  stage: projectStageSchema,
+  archived: z.boolean(),
+  archivedAt: z.date().nullable(),
+  stageWasDefaulted: z.boolean(),
+  progress: projectProgressSchema,
+  deadline: z.date().nullable(),
+  lastActivityAt: z.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const projectTaskStatusSchema = z.enum(["todo", "in_progress", "blocked", "done"]);
+export const projectTaskSchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  title: z.string().trim().min(1).max(500),
+  status: projectTaskStatusSchema,
+  createdBy: z.string().min(1),
+  updatedAt: z.date(),
+});
+
+export const assetReferenceSchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  assetId: z.string().min(1),
+  versionId: z.string().min(1).nullable(),
+  workspaceId: z.string().min(1),
+  label: z.string().trim().min(1).max(500).nullable(),
+  createdAt: z.date(),
+});
+
+export const assetVersionReferenceSchema = z.object({
+  id: z.string().min(1),
+  assetId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  blobHash: z.string().regex(/^[a-f0-9]{16,}$/),
+  byteSize: z.number().int().nonnegative(),
+  contentType: z.string().min(1).nullable(),
+  createdBy: z.string().min(1),
+  createdAt: z.date(),
+});
+
+export const reviewStatusSchema = z.enum([
+  "draft",
+  "open",
+  "changes_requested",
+  "approved",
+  "closed",
+]);
+export const feedbackStatusSchema = z.enum(["open", "resolved"]);
+
+export const reviewSchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  targetVersionId: z.string().min(1).nullable(),
+  status: reviewStatusSchema,
+  title: z.string().trim().min(1).max(500),
+  requestedBy: z.string().min(1),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  resolvedAt: z.date().nullable(),
+  resolvedBy: z.string().min(1).nullable(),
+});
+
+export const feedbackSchema = z.object({
+  id: z.string().min(1),
+  reviewId: z.string().min(1),
+  projectId: z.string().min(1),
+  targetVersionId: z.string().min(1),
+  authorId: z.string().min(1),
+  body: z.string().trim().min(1).max(10_000),
+  status: feedbackStatusSchema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  resolvedAt: z.date().nullable(),
+  resolvedBy: z.string().min(1).nullable(),
+});
+
+export const activityTypeSchema = z.enum([
+  "project.created",
+  "project.updated",
+  "project.stage.changed",
+  "project.archived",
+  "project.restored",
+  "asset.added",
+  "asset.version.committed",
+  "review.created",
+  "review.status.changed",
+  "feedback.created",
+  "feedback.resolved",
+  "pi.session.started",
+  "pi.session.completed",
+]);
+
+export const activitySchema = z.object({
+  id: z.string().min(1),
+  type: activityTypeSchema,
+  accountId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  projectId: z.string().min(1).nullable(),
+  actorId: z.string().min(1),
+  targetId: z.string().min(1).nullable(),
+  summary: z.string().trim().min(1).max(1_000),
+  occurredAt: z.date(),
+});
+
+export const piSessionStatusSchema = agentRunStatusSchema;
+export const piSessionSchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  workspaceId: z.string().min(1),
+  agentRunId: z.string().min(1),
+  requestedBy: z.string().min(1),
+  prompt: z.string().min(1).max(10_000),
+  context: z.record(z.string(), z.unknown()),
+  status: piSessionStatusSchema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  completedAt: z.date().nullable(),
+});
+
+export const projectDetailSchema = projectSummarySchema.extend({
+  brief: z.string().nullable(),
+  tasks: z.array(projectTaskSchema),
+  members: z.array(projectMemberSchema),
+  assetReferences: z.array(assetReferenceSchema),
+  reviews: z.array(reviewSchema),
+  sessions: z.array(piSessionSchema),
+});
+
+export const piRunProjectionSchema = z.object({
+  sessionId: z.string().min(1),
+  runId: z.string().min(1),
+  status: agentRunStatusSchema,
+  currentStepId: z.string().min(1).nullable(),
+  progress: projectProgressSchema,
+  error: z.string().nullable(),
+  startedAt: z.date().nullable(),
+  finishedAt: z.date().nullable(),
+});
+
+export const piSessionDetailSchema = piSessionSchema.extend({
+  run: piRunProjectionSchema,
+});
+
+export const librarySearchResultSchema = z.object({
+  assets: z.array(assetSchema),
+  versions: z.array(assetVersionReferenceSchema),
+  projects: z.array(projectSummarySchema),
+  nextCursor: z.string().nullable(),
+});
+
+export const cursorPageInfoSchema = z.object({
+  nextCursor: z.string().nullable(),
+});
+
+export const createCursorPageSchema = <Item extends z.ZodType>(item: Item) =>
+  z.object({
+    items: z.array(item),
+    nextCursor: z.string().nullable(),
+  });
+
+export const projectPageSchema = createCursorPageSchema(projectSummarySchema);
+export const projectTaskPageSchema = createCursorPageSchema(projectTaskSchema);
+export const reviewPageSchema = createCursorPageSchema(reviewSchema);
+export const feedbackPageSchema = createCursorPageSchema(feedbackSchema);
+export const activityPageSchema = createCursorPageSchema(activitySchema);
+export const assetReferencePageSchema = createCursorPageSchema(assetReferenceSchema);
+export const assetVersionReferencePageSchema = createCursorPageSchema(assetVersionReferenceSchema);
+export const piSessionPageSchema = createCursorPageSchema(piSessionSchema);
+
+export const studioSnapshotSchema = z.object({
+  account: accountProfileSchema.extend({
+    /** Active Workspace ids used by the Web adapter for create operations. */
+    workspaceIds: z.array(z.string().trim().min(1)),
+  }),
+  projects: z.array(projectSummarySchema),
+  reviewAttention: z.array(reviewSchema),
+  recentActivity: z.array(activitySchema),
+  activeSessions: z.array(piSessionSchema),
+  nextProjectsCursor: z.string().nullable(),
+});
+
 const MailNotConfiguredError = error("MAIL_NOT_CONFIGURED", {
   message: "Mail configuration is not ready.",
   data: z.object({ missing: z.array(z.enum(["RESEND_API_KEY", "MAIL_FROM"])) }),
@@ -279,6 +488,238 @@ const updateAuthSettings = oc.input(updateAuthSettingsSchema).output(authSetting
 const getPublicAuthCapabilities = oc.input(z.object({})).output(publicAuthCapabilitiesSchema);
 const getAccountProfile = oc.input(z.object({})).output(accountProfileSchema);
 
+const getStudioSnapshot = oc.input(z.object({})).output(studioSnapshotSchema);
+
+const listProjects = oc
+  .input(
+    z.object({
+      stage: projectStageSchema.optional(),
+      archived: z.boolean().optional(),
+      limit: z.number().int().min(1).max(100).default(20),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(projectPageSchema);
+
+const getProject = oc.input(z.object({ projectId: z.string().min(1) })).output(projectDetailSchema);
+
+const createProject = oc
+  .input(
+    z.object({
+      workspaceId: z.string().trim().min(1).optional(),
+      title: z.string().trim().min(1).max(500),
+      description: z.string().max(10_000).nullable().optional(),
+      deadline: z.date().nullable().optional(),
+      idempotencyKey: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(projectDetailSchema);
+
+const updateProject = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      title: z.string().trim().min(1).max(500).optional(),
+      description: z.string().max(10_000).nullable().optional(),
+      cover: z.string().trim().min(1).nullable().optional(),
+      thumbnail: z.string().trim().min(1).nullable().optional(),
+      deadline: z.date().nullable().optional(),
+      stage: projectStageSchema.optional(),
+    }),
+  )
+  .output(projectDetailSchema);
+
+const archiveProject = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(projectSummarySchema);
+const restoreProject = archiveProject.output(projectSummarySchema);
+
+const addProjectMember = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      userId: z.string().min(1),
+      role: projectMemberRoleSchema,
+    }),
+  )
+  .output(projectMemberSchema);
+const updateProjectMember = addProjectMember;
+const removeProjectMember = oc
+  .input(z.object({ projectId: z.string().min(1), userId: z.string().min(1) }))
+  .output(projectMemberSchema);
+
+const listProjectTasks = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      status: projectTaskStatusSchema.optional(),
+      limit: z.number().int().min(1).max(100).default(50),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(projectTaskPageSchema);
+
+const createProjectTask = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      title: z.string().trim().min(1).max(500),
+      idempotencyKey: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(projectTaskSchema);
+
+const updateProjectTask = oc
+  .input(
+    z.object({
+      taskId: z.string().min(1),
+      title: z.string().trim().min(1).max(500).optional(),
+      status: projectTaskStatusSchema.optional(),
+    }),
+  )
+  .output(projectTaskSchema);
+
+const listProjectAssets = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      limit: z.number().int().min(1).max(100).default(20),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(assetReferencePageSchema);
+
+const createProjectAsset = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      assetId: z.string().min(1),
+      versionId: z.string().min(1).nullable().optional(),
+      label: z.string().trim().max(200).nullable().optional(),
+    }),
+  )
+  .output(assetReferenceSchema);
+
+const listAssetVersions = oc
+  .input(
+    z.object({
+      assetId: z.string().min(1),
+      limit: z.number().int().min(1).max(100).default(20),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(assetVersionReferencePageSchema);
+
+const searchLibrary = oc
+  .input(
+    z.object({
+      query: z.string().trim().min(1).max(200).optional(),
+      projectId: z.string().min(1).optional(),
+      limit: z.number().int().min(1).max(100).default(20),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(librarySearchResultSchema);
+
+const listReviews = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      status: reviewStatusSchema.optional(),
+      limit: z.number().int().min(1).max(100).default(20),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(reviewPageSchema);
+
+const createReview = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      targetVersionId: z.string().min(1).nullable(),
+      title: z.string().trim().min(1).max(500),
+      idempotencyKey: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(reviewSchema);
+
+const updateReview = oc
+  .input(
+    z.object({
+      reviewId: z.string().min(1),
+      status: reviewStatusSchema,
+    }),
+  )
+  .output(reviewSchema);
+
+const resolveReview = oc.input(z.object({ reviewId: z.string().min(1) })).output(reviewSchema);
+
+const listFeedback = oc
+  .input(
+    z.object({
+      reviewId: z.string().min(1),
+      status: feedbackStatusSchema.optional(),
+      limit: z.number().int().min(1).max(100).default(20),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(feedbackPageSchema);
+
+const createFeedback = oc
+  .input(
+    z.object({
+      reviewId: z.string().min(1),
+      targetVersionId: z.string().min(1),
+      body: z.string().trim().min(1).max(10_000),
+      idempotencyKey: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(feedbackSchema);
+
+const updateFeedback = oc
+  .input(
+    z.object({
+      feedbackId: z.string().min(1),
+      status: feedbackStatusSchema,
+    }),
+  )
+  .output(feedbackSchema);
+
+const listActivity = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1).optional(),
+      limit: z.number().int().min(1).max(100).default(50),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(activityPageSchema);
+
+const createPiSession = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      prompt: z.string().trim().min(1).max(10_000),
+      context: z.record(z.string(), z.unknown()).default({}),
+      idempotencyKey: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(piSessionDetailSchema);
+
+const getPiSession = oc
+  .input(z.object({ sessionId: z.string().min(1) }))
+  .output(piSessionDetailSchema);
+
+const cancelPiSession = getPiSession;
+const retryPiSession = oc
+  .input(
+    z.object({
+      sessionId: z.string().min(1),
+      idempotencyKey: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(piSessionDetailSchema);
+
 const createAsset = oc
   .input(z.object({ workspaceId: z.string().trim().min(1), path: z.string().min(1).max(1024) }))
   .output(assetSchema);
@@ -301,6 +742,47 @@ const commitAssetVersion = oc
 const resolveAssetConflict = oc
   .input(z.object({ conflictId: z.string().min(1) }))
   .output(syncConflictSchema);
+const createBlobUpload = oc
+  .input(
+    z.object({
+      workspaceId: z.string().min(1),
+      byteSize: z.number().int().nonnegative(),
+      contentType: z.string().min(1),
+      expectedHash: z.string().regex(/^[a-f0-9]{64}$/),
+    }),
+  )
+  .output(
+    z.object({
+      id: z.string(),
+      workspaceId: z.string(),
+      actorId: z.string(),
+      byteSize: z.number(),
+      contentType: z.string(),
+      expectedHash: z.string(),
+      expiresAt: z.date(),
+    }),
+  );
+const completeBlobUpload = oc
+  .input(
+    z.object({
+      uploadId: z.string().min(1),
+      byteSize: z.number().int().nonnegative(),
+      contentType: z.string().min(1),
+      blobHash: z.string().regex(/^[a-f0-9]{64}$/),
+      body: z.string().optional(),
+    }),
+  )
+  .output(z.object({ blobHash: z.string(), byteSize: z.number(), contentType: z.string() }));
+const getBlobDownload = oc
+  .input(z.object({ workspaceId: z.string().min(1), blobHash: z.string().regex(/^[a-f0-9]{64}$/) }))
+  .output(
+    z.object({
+      blobHash: z.string(),
+      byteSize: z.number(),
+      contentType: z.string().nullable(),
+      body: z.string(),
+    }),
+  );
 
 const createAgentRun = oc
   .input(
@@ -333,6 +815,59 @@ export const apiContract = {
   account: {
     profile: { get: getAccountProfile },
   },
+  studio: {
+    snapshot: { get: getStudioSnapshot },
+  },
+  projects: {
+    list: listProjects,
+    get: getProject,
+    create: createProject,
+    update: updateProject,
+    archive: archiveProject,
+    restore: restoreProject,
+    members: {
+      add: addProjectMember,
+      update: updateProjectMember,
+      remove: removeProjectMember,
+    },
+    assets: {
+      list: listProjectAssets,
+      create: createProjectAsset,
+    },
+    tasks: {
+      list: listProjectTasks,
+      create: createProjectTask,
+      update: updateProjectTask,
+    },
+  },
+  library: {
+    search: searchLibrary,
+    versions: {
+      list: listAssetVersions,
+    },
+  },
+  reviews: {
+    list: listReviews,
+    create: createReview,
+    update: updateReview,
+    resolve: resolveReview,
+    feedback: {
+      list: listFeedback,
+      create: createFeedback,
+      update: updateFeedback,
+    },
+  },
+  activity: {
+    list: listActivity,
+  },
+  pi: {
+    sessions: {
+      create: createPiSession,
+      get: getPiSession,
+      cancel: cancelPiSession,
+      retry: retryPiSession,
+    },
+  },
   public: {
     auth: {
       capabilities: {
@@ -346,6 +881,8 @@ export const apiContract = {
       get: getAsset,
       commitVersion: commitAssetVersion,
       resolveConflict: resolveAssetConflict,
+      upload: { create: createBlobUpload, complete: completeBlobUpload },
+      download: { get: getBlobDownload },
     },
     agents: {
       runs: {
@@ -402,3 +939,18 @@ export type SyncConflictDto = z.infer<typeof syncConflictSchema>;
 export type AgentRunDto = z.infer<typeof agentRunSchema>;
 export type AgentStepDto = z.infer<typeof agentStepSchema>;
 export type AgentLeaseDto = z.infer<typeof agentLeaseSchema>;
+export type ProjectStage = z.infer<typeof projectStageSchema>;
+export type ProjectMemberDto = z.infer<typeof projectMemberSchema>;
+export type ProjectSummaryDto = z.infer<typeof projectSummarySchema>;
+export type ProjectDetailDto = z.infer<typeof projectDetailSchema>;
+export type ProjectTaskDto = z.infer<typeof projectTaskSchema>;
+export type AssetReferenceDto = z.infer<typeof assetReferenceSchema>;
+export type AssetVersionReferenceDto = z.infer<typeof assetVersionReferenceSchema>;
+export type ReviewDto = z.infer<typeof reviewSchema>;
+export type FeedbackDto = z.infer<typeof feedbackSchema>;
+export type ActivityDto = z.infer<typeof activitySchema>;
+export type PiSessionDto = z.infer<typeof piSessionSchema>;
+export type PiRunProjectionDto = z.infer<typeof piRunProjectionSchema>;
+export type PiSessionDetailDto = z.infer<typeof piSessionDetailSchema>;
+export type LibrarySearchResultDto = z.infer<typeof librarySearchResultSchema>;
+export type StudioSnapshotDto = z.infer<typeof studioSnapshotSchema>;

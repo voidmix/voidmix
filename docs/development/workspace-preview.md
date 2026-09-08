@@ -15,14 +15,22 @@ compatibility components remain unchanged; the root route uses `CleanHome`.
 
 ## Data and honesty
 
-The project and Pi contracts/handlers are not yet implemented in the server.
-These routes therefore use `ProjectStudioDataSource` with a preview implementation,
-not an API probe that silently substitutes successful fake data. All screens
-identify preview mode. No provider key, model request, external mutation or
-server-side authorization is implied by a successful preview interaction.
+The preview source remains the default for the public preview routes. Project
+Studio contracts and API handlers now exist, and the first live server slice
+supports project and task reads/writes through `PostgresProjectRepository`.
+The authenticated route group injects the remote source; it never falls back
+to preview data after a network or authorization failure.
+
+The remaining live gates are documented in
+[`project-studio.md`](../architecture/project-studio.md): direct object-storage
+HTTP for Blob bytes, durable Pi execution and reconnect, authenticated device
+revocation and online sync status, real PostgreSQL migration evidence, opaque
+keyset cursors, and the 256 KiB snapshot ceiling. Review/Feedback and the
+existing Blob/Pi repository slices are implementation seams; their presence
+does not make the corresponding UI or production boundary complete.
 
 The adapter keeps projects, tasks, activities and conversations together in
-`sessionStorage` under `voidmix.workspace.preview.v1`. A versioned schema
+`sessionStorage` under `voidmix.project-studio.preview.v2`. A versioned schema
 validates restored data and revives dates at this browser-storage boundary.
 Malformed data returns to the seed; storage unavailability leaves in-memory
 editing usable. Normal updates persist across a refresh in the same tab.
@@ -32,9 +40,9 @@ Closing the tab discards the preview. State is not shared with user accounts.
 Views use a stable snapshot subscription and named operations from the facade;
 the home asks for an aggregate, rather than issuing per-widget requests.
 Hydration has loading, failure and retry UI. Source injection permits tests
-without network access. A future live adapter must map authorized oRPC DTOs
-from `@voidmix/client` into these same view models and surface real failures;
-it must not import the server-side `@voidmix/ai` package into Web.
+without network access. The live adapter maps authorized oRPC DTOs from
+`@voidmix/client` into these same view models and surfaces real failures; it
+does not import the server-side `@voidmix/ai` package into Web.
 
 ## Interaction contract
 
@@ -48,8 +56,8 @@ it must not import the server-side `@voidmix/ai` package into Web.
   Project settings support editing, archive confirmation, restore and undo.
 - Search groups projects, tasks, conversations and pages; Ctrl/Cmd+K opens it.
   Modal controls use Base UI for focus management and Escape dismissal.
-- Permission settings explicitly explain that member management is unavailable
-  until the authenticated project API exists.
+- Permission settings explicitly explain that member management is available
+  only with an active Workspace membership and project management access.
 
 ## Verification
 
@@ -63,4 +71,5 @@ Use the Start Vite plugin through dev/build to regenerate routes; never edit
 `routeTree.gen.ts`. Browser checks cover 1280px, 768px, and 390px layouts, Pi
 cancel/retry, same-tab reload, task undo and settings persistence. Real-data
 and live Pi integration checks require the remaining backend work; they are
-not represented by preview tests.
+not represented by preview tests. Direct Blob transport, device revocation,
+and real PostgreSQL migration checks are also outside preview verification.

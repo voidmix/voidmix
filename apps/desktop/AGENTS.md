@@ -14,15 +14,20 @@ src/
   routeTree.gen.ts  generated — do not edit
   routes/
     __root.tsx      static document shell, locale bootstrap, DesktopShell layout
-    index.tsx       overview route
+    index.tsx       Home/overview route
     activity.tsx    activity route
     devices.tsx     devices route
+    projects.tsx    projects list route
+    projects.$projectId.tsx project detail route
+    library.tsx     library route
     settings.tsx    settings route
   styles.css        shared UI and Desktop stylesheet entry
   env.ts            desktop environment composition
   features/
     shell/           Tauri-aware desktop shell
     overview/        overview page composition
+    projects/        project list and detail composition
+    library/         library composition
     activity/        activity page composition
     devices/         devices page composition
     settings/        settings page composition
@@ -74,6 +79,11 @@ src-tauri/
   rather than silent.
 - `lib/cloud/source.ts` selects between the remote and demo adapters; pages must
   consume `loadCloudSnapshot()` and never implement transport or fallback logic.
+- Primary navigation uses Home, Projects, Library, Activity, and Settings.
+  Devices remains reachable from Settings and is not a primary destination.
+  Project and Library pages use `src/lib/project-studio.ts` for the shared API
+  client. They label preview, cloud, loading, and unavailable states explicitly;
+  they never silently replace a failed live request with demo data.
 - Closing the main window hides it instead of exiting; the tray menu shows,
   hides, or quits. `src-tauri/src/lib.rs` owns that behaviour and reports it to
   the renderer as `trayEnabled`, which is false in a plain browser preview.

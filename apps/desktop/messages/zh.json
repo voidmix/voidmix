@@ -6,6 +6,9 @@
     "control": "控制台",
     "notifications": "通知",
     "overview": "概览",
+    "home": "首页",
+    "projects": "项目",
+    "library": "素材库",
     "activity": "活动",
     "devices": "设备",
     "settings": "设置",
@@ -105,7 +108,36 @@
     "transferSummaries": "传输摘要",
     "transferSummariesDescription": "大型上传或下载完成时通知我。",
     "workspaceChanges": "工作区变更",
-    "workspaceChangesDescription": "设备和访问权限发生变化时显示桌面通知。"
+    "workspaceChangesDescription": "设备和访问权限发生变化时显示桌面通知。",
+    "devices": "设备",
+    "manageDevices": "管理已注册设备"
+  },
+  "projects": {
+    "title": "项目",
+    "description": "让想法从简报走向交付。",
+    "newProject": "新建项目",
+    "projectList": "项目列表",
+    "openProject": "打开 {title}",
+    "backToProjects": "返回项目",
+    "missing": "找不到项目",
+    "summary": "项目摘要",
+    "progress": "进度",
+    "deadline": "截止时间",
+    "tasks": "任务",
+    "draft": "草稿",
+    "in_progress": "进行中",
+    "review": "评审"
+  },
+  "library": {
+    "title": "素材库",
+    "description": "让简报、媒体和版本都靠近创作工作。",
+    "addAsset": "添加素材",
+    "search": "搜索素材库",
+    "searchPlaceholder": "搜索素材和简报",
+    "assetList": "素材列表",
+    "video": "视频",
+    "brief": "简报",
+    "audio": "音频"
   },
   "errors": {
     "userNotFound": "找不到请求的用户。",

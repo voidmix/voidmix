@@ -25,10 +25,16 @@ user can observe them.
 
 - English and Simplified Chinese shell translations with a no-refresh language
   switcher that remembers the selected locale.
+- Projects, project detail, and Library destinations with responsive preview
+  cards, task progress, deadlines, and asset search entry points.
 
 ### Changed
 
 - Renamed the desktop application from Voidmix Cloud/Voidmix Field to VoidMix.
+- Primary navigation now follows Home, Projects, Library, Activity, and Settings;
+  Devices is managed from Settings.
+- Projects and Library now load through the typed cloud API when configured, with
+  explicit Preview data and unavailable states when live data is unavailable.
 
 `0.1.0` has not been released; there are no tags and CI has no release job, so
 the version in the three manifests is a placeholder rather than a shipped build.

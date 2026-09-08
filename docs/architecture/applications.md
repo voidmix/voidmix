@@ -55,6 +55,10 @@ browser composition root for authentication and Admin operations.
 - Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
   through explicit Nitro Web-format routes.
 - Uses the shared typed client with same-origin cookie requests.
+- The initial live Project Studio slice exposes project and task reads/writes
+  through the shared client. Preview routes continue using the injected v2
+  preview source until the authenticated live route switch is enabled; Review,
+  Blob, and durable Pi capabilities remain separate rollout work.
 - Requires `DATABASE_URL` and the server Auth environment at startup. Mail may
   be configured later through Admin or supplied through compatibility variables.
 
@@ -71,6 +75,10 @@ browser composition root for authentication and Admin operations.
   synchronously against the statically mounted catalog.
 - Uses lazy route components so feature code remains separate from the shell
   and shared static catalog.
+- Desktop navigation now exposes Home, Projects, Library, Activity, and
+  Settings. Devices remains available from Settings, and Project/Library
+  screens currently use labelled deterministic preview content while their live
+  Project Studio adapter is rolled out.
 - Owns no Start server functions or server routes. Runtime data continues to
   come from the cloud API through `@voidmix/client`.
 - Rust owns tray behavior, notifications, window lifecycle, and native
@@ -138,6 +146,13 @@ admin.settings.mail.update
 admin.settings.mail.sendTest
 admin.settings.auth.get
 admin.settings.auth.update
+studio.snapshot.get
+projects.list / get / create / update / archive / restore
+projects.tasks.list / create / update
+library.search
+reviews.list / create / update / resolve
+activity.list
+pi.sessions.create / get / cancel / retry
 ```
 
 `GET /health` is available on both Web and the compatibility service. The

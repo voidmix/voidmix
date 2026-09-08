@@ -28,12 +28,18 @@ export default defineConfig({
       testMatch: /admin\.spec\.ts/,
       use: { baseURL: webUrl },
     },
+    {
+      name: "project-studio",
+      testMatch: /project-studio\.spec\.ts/,
+      use: { baseURL: webUrl },
+    },
   ],
   webServer: [
     {
       command: "bun run --cwd apps/web dev -- --host 127.0.0.1",
       cwd: repositoryRoot,
       env: {
+        VOIDMIX_REPOSITORY_ENV: repositoryRoot,
         ALLOWED_ORIGINS: webUrl,
         AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
         AUTH_URL: webUrl,

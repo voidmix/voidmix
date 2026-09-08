@@ -47,6 +47,48 @@ export const workspaceMembershipStatusEnum = pgEnum("workspace_membership_status
   "active",
   "suspended",
 ]);
+export const projectStageEnum = pgEnum("project_stage", [
+  "draft",
+  "in_progress",
+  "review",
+  "delivered",
+]);
+export const projectTaskStatusEnum = pgEnum("project_task_status", [
+  "todo",
+  "in_progress",
+  "blocked",
+  "done",
+]);
+export const reviewStatusEnum = pgEnum("review_status", [
+  "draft",
+  "open",
+  "changes_requested",
+  "approved",
+  "closed",
+]);
+export const feedbackStatusEnum = pgEnum("feedback_status", ["open", "resolved"]);
+export const activityTypeEnum = pgEnum("activity_type", [
+  "project.created",
+  "project.updated",
+  "project.stage.changed",
+  "project.archived",
+  "project.restored",
+  "asset.added",
+  "asset.version.committed",
+  "review.created",
+  "review.status.changed",
+  "feedback.created",
+  "feedback.resolved",
+  "pi.session.started",
+  "pi.session.completed",
+]);
+export const projectMemberRoleEnum = pgEnum("project_member_role", [
+  "owner",
+  "editor",
+  "commenter",
+  "viewer",
+]);
+export const projectMemberStatusEnum = pgEnum("project_member_status", ["active", "removed"]);
 
 export const users = pgTable(
   "users",
@@ -90,6 +132,200 @@ export const workspaceMemberships = pgTable(
     uniqueIndex("workspace_memberships_workspace_user_idx").on(table.workspaceId, table.userId),
     index("workspace_memberships_user_id_idx").on(table.userId),
     index("workspace_memberships_workspace_status_idx").on(table.workspaceId, table.status),
+  ],
+);
+
+export const projects = pgTable(
+  "projects",
+  {
+    id: text("id").primaryKey(),
+    workspaceId: text("workspace_id").notNull(),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    stage: projectStageEnum("stage").notNull().default("draft"),
+    archived: boolean("archived").notNull().default(false),
+    archivedAt: timestamp("archived_at", { withTimezone: true, mode: "date" }),
+    previousStage: projectStageEnum("previous_stage"),
+    deadline: timestamp("deadline", { withTimezone: true, mode: "date" }),
+    cover: text("cover"),
+    thumbnail: text("thumbnail"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("projects_workspace_id_updated_at_idx").on(table.workspaceId, table.updatedAt),
+    index("projects_owner_id_idx").on(table.ownerId),
+    index("projects_stage_archived_idx").on(table.stage, table.archived),
+  ],
+);
+
+export const projectTasks = pgTable(
+  "project_tasks",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    status: projectTaskStatusEnum("status").notNull().default("todo"),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("project_tasks_project_id_updated_at_idx").on(table.projectId, table.updatedAt),
+    index("project_tasks_project_id_status_idx").on(table.projectId, table.status),
+    index("project_tasks_created_by_idx").on(table.createdBy),
+  ],
+);
+
+export const projectMembers = pgTable(
+  "project_members",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    workspaceId: text("workspace_id").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: projectMemberRoleEnum("role").notNull(),
+    status: projectMemberStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("project_members_project_id_user_id_idx").on(table.projectId, table.userId),
+    index("project_members_project_id_status_idx").on(table.projectId, table.status),
+    index("project_members_workspace_id_user_id_idx").on(table.workspaceId, table.userId),
+  ],
+);
+
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    workspaceId: text("workspace_id").notNull(),
+    targetVersionId: text("target_version_id"),
+    status: reviewStatusEnum("status").notNull().default("draft"),
+    title: text("title").notNull(),
+    requestedBy: text("requested_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true, mode: "date" }),
+    resolvedBy: text("resolved_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (table) => [
+    index("reviews_project_id_updated_at_idx").on(table.projectId, table.updatedAt),
+    index("reviews_project_id_status_idx").on(table.projectId, table.status),
+  ],
+);
+
+export const feedback = pgTable(
+  "feedback",
+  {
+    id: text("id").primaryKey(),
+    reviewId: text("review_id")
+      .notNull()
+      .references(() => reviews.id, { onDelete: "cascade" }),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    targetVersionId: text("target_version_id").notNull(),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    body: text("body").notNull(),
+    status: feedbackStatusEnum("status").notNull().default("open"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true, mode: "date" }),
+    resolvedBy: text("resolved_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (table) => [
+    index("feedback_review_id_created_at_idx").on(table.reviewId, table.createdAt),
+    index("feedback_project_id_idx").on(table.projectId),
+    index("feedback_author_id_idx").on(table.authorId),
+  ],
+);
+
+export const activities = pgTable(
+  "activities",
+  {
+    id: text("id").primaryKey(),
+    type: activityTypeEnum("type").notNull(),
+    accountId: text("account_id").notNull(),
+    workspaceId: text("workspace_id").notNull(),
+    projectId: text("project_id").references(() => projects.id, { onDelete: "cascade" }),
+    actorId: text("actor_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    targetId: text("target_id"),
+    summary: text("summary").notNull(),
+    occurredAt: timestamp("occurred_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("activities_account_id_occurred_at_idx").on(table.accountId, table.occurredAt),
+    index("activities_project_id_occurred_at_idx").on(table.projectId, table.occurredAt),
+    index("activities_workspace_id_occurred_at_idx").on(table.workspaceId, table.occurredAt),
+  ],
+);
+
+export const piSessions = pgTable(
+  "pi_sessions",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    workspaceId: text("workspace_id").notNull(),
+    agentRunId: text("agent_run_id")
+      .notNull()
+      .references(() => agentRuns.id, { onDelete: "restrict" }),
+    requestedBy: text("requested_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    prompt: text("prompt").notNull(),
+    context: jsonb("context").$type<Record<string, unknown>>().notNull(),
+    status: agentRunStatusEnum("status").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+    completedAt: timestamp("completed_at", { withTimezone: true, mode: "date" }),
+  },
+  (table) => [
+    uniqueIndex("pi_sessions_agent_run_id_idx").on(table.agentRunId),
+    index("pi_sessions_project_id_updated_at_idx").on(table.projectId, table.updatedAt),
   ],
 );
 
@@ -271,6 +507,28 @@ export const assetVersions = pgTable(
   ],
 );
 
+export const assetReferences = pgTable(
+  "asset_references",
+  {
+    id: text("id").primaryKey(),
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    assetId: text("asset_id")
+      .notNull()
+      .references(() => assets.id, { onDelete: "cascade" }),
+    versionId: text("version_id").references(() => assetVersions.id, { onDelete: "set null" }),
+    workspaceId: text("workspace_id").notNull(),
+    label: text("label"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("asset_references_project_id_asset_id_idx").on(table.projectId, table.assetId),
+    index("asset_references_project_id_created_at_idx").on(table.projectId, table.createdAt),
+    index("asset_references_asset_id_idx").on(table.assetId),
+  ],
+);
+
 export const syncConflicts = pgTable(
   "sync_conflicts",
   {
@@ -358,6 +616,13 @@ export const agentLeases = pgTable(
 export const schema = {
   users,
   workspaceMemberships,
+  projects,
+  projectTasks,
+  projectMembers,
+  reviews,
+  feedback,
+  activities,
+  piSessions,
   auditEvents,
   authSessions,
   authAccounts,
@@ -366,6 +631,7 @@ export const schema = {
   systemSecrets,
   assets,
   assetVersions,
+  assetReferences,
   syncConflicts,
   agentRuns,
   agentSteps,
@@ -404,6 +670,14 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.users.id,
       to: r.authAccounts.userId,
     }),
+    ownedProjects: r.many.projects({
+      from: r.users.id,
+      to: r.projects.ownerId,
+    }),
+    createdProjectTasks: r.many.projectTasks({
+      from: r.users.id,
+      to: r.projectTasks.createdBy,
+    }),
   },
   workspaceMemberships: {
     user: r.one.users({
@@ -411,6 +685,52 @@ export const relations = defineRelations(schema, (r) => ({
       to: r.users.id,
       optional: false,
     }),
+  },
+  projects: {
+    owner: r.one.users({ from: r.projects.ownerId, to: r.users.id, optional: false }),
+    tasks: r.many.projectTasks({ from: r.projects.id, to: r.projectTasks.projectId }),
+    piSessions: r.many.piSessions({ from: r.projects.id, to: r.piSessions.projectId }),
+    assetReferences: r.many.assetReferences({
+      from: r.projects.id,
+      to: r.assetReferences.projectId,
+    }),
+  },
+  projectTasks: {
+    project: r.one.projects({ from: r.projectTasks.projectId, to: r.projects.id, optional: false }),
+    creator: r.one.users({ from: r.projectTasks.createdBy, to: r.users.id, optional: false }),
+  },
+  projectMembers: {
+    project: r.one.projects({
+      from: r.projectMembers.projectId,
+      to: r.projects.id,
+      optional: false,
+    }),
+    user: r.one.users({ from: r.projectMembers.userId, to: r.users.id, optional: false }),
+  },
+  reviews: {
+    project: r.one.projects({ from: r.reviews.projectId, to: r.projects.id, optional: false }),
+    requestedByUser: r.one.users({ from: r.reviews.requestedBy, to: r.users.id, optional: false }),
+    resolvedByUser: r.one.users({ from: r.reviews.resolvedBy, to: r.users.id }),
+    feedback: r.many.feedback({ from: r.reviews.id, to: r.feedback.reviewId }),
+  },
+  feedback: {
+    review: r.one.reviews({ from: r.feedback.reviewId, to: r.reviews.id, optional: false }),
+    project: r.one.projects({ from: r.feedback.projectId, to: r.projects.id, optional: false }),
+    author: r.one.users({ from: r.feedback.authorId, to: r.users.id, optional: false }),
+    resolvedByUser: r.one.users({ from: r.feedback.resolvedBy, to: r.users.id }),
+  },
+  activities: {
+    project: r.one.projects({ from: r.activities.projectId, to: r.projects.id }),
+    actor: r.one.users({ from: r.activities.actorId, to: r.users.id, optional: false }),
+  },
+  piSessions: {
+    project: r.one.projects({ from: r.piSessions.projectId, to: r.projects.id, optional: false }),
+    agentRun: r.one.agentRuns({
+      from: r.piSessions.agentRunId,
+      to: r.agentRuns.id,
+      optional: false,
+    }),
+    requester: r.one.users({ from: r.piSessions.requestedBy, to: r.users.id, optional: false }),
   },
   auditEvents: {
     actor: r.one.users({
@@ -446,6 +766,7 @@ export const relations = defineRelations(schema, (r) => ({
   },
   assets: {
     versions: r.many.assetVersions({ from: r.assets.id, to: r.assetVersions.assetId }),
+    references: r.many.assetReferences({ from: r.assets.id, to: r.assetReferences.assetId }),
     conflicts: r.many.syncConflicts({ from: r.assets.id, to: r.syncConflicts.assetId }),
   },
   assetVersions: {
@@ -456,6 +777,15 @@ export const relations = defineRelations(schema, (r) => ({
       optional: false,
     }),
   },
+  assetReferences: {
+    project: r.one.projects({
+      from: r.assetReferences.projectId,
+      to: r.projects.id,
+      optional: false,
+    }),
+    asset: r.one.assets({ from: r.assetReferences.assetId, to: r.assets.id, optional: false }),
+    version: r.one.assetVersions({ from: r.assetReferences.versionId, to: r.assetVersions.id }),
+  },
   syncConflicts: {
     asset: r.one.assets({ from: r.syncConflicts.assetId, to: r.assets.id, optional: false }),
     resolvedByUser: r.one.users({ from: r.syncConflicts.resolvedBy, to: r.users.id }),
@@ -464,6 +794,7 @@ export const relations = defineRelations(schema, (r) => ({
     requester: r.one.users({ from: r.agentRuns.requestedBy, to: r.users.id, optional: false }),
     steps: r.many.agentSteps({ from: r.agentRuns.id, to: r.agentSteps.runId }),
     lease: r.one.agentLeases({ from: r.agentRuns.id, to: r.agentLeases.runId }),
+    piSession: r.one.piSessions({ from: r.agentRuns.id, to: r.piSessions.agentRunId }),
   },
   agentSteps: {
     run: r.one.agentRuns({ from: r.agentSteps.runId, to: r.agentRuns.id, optional: false }),

@@ -9,6 +9,7 @@ import { ProjectStudioShell } from "./components/studio-shell";
 import { TaskList } from "./components/task-list";
 import { ProjectSettings } from "./components/project-settings";
 import { ActivityList } from "./components/activity-list";
+import { ProjectCanvas } from "./components/project-canvas";
 import { useProjectStudioData } from "./studio-data";
 import { taskStatusSchema, type ProjectTab, type TaskFilter } from "./types";
 import {
@@ -87,7 +88,9 @@ export function ProjectPage({
         className="my-[30px] flex gap-6 overflow-x-auto border-b border-border max-[520px]:gap-5"
         aria-label={t("projects")}
       >
-        {(["overview", "tasks", "pi", "activity", "settings"] as const).map((item) => (
+        {(
+          ["overview", "brief", "canvas", "tasks", "feedback", "activity", "settings"] as const
+        ).map((item) => (
           <Link
             key={item}
             to="/projects/$projectId"
@@ -198,6 +201,13 @@ export function ProjectPage({
             }}
           />
         </>
+      ) : null}
+      {tab === "canvas" ? <ProjectCanvas projectId={projectId} /> : null}
+      {tab === "brief" || tab === "feedback" ? (
+        <section className="grid gap-4">
+          <PageHeader title={t(tab)} description={project.description || t("notSet")} />
+          <EmptyState title={t("comingSoon")} description={t("sectionPreviewDetail")} />
+        </section>
       ) : null}
       {tab === "pi" ? (
         <section>

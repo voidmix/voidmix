@@ -33,6 +33,46 @@ export const piSessionViewSchema = z.object({
   steps: z.array(runStepSchema),
   taskId: z.string().nullable(),
 });
+export interface StudioAsset {
+  id: string;
+  workspaceId: string;
+  path: string;
+  status: "active" | "deleted";
+  headVersionId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface StudioAssetVersion {
+  id: string;
+  assetId: string;
+  workspaceId: string;
+  blobHash: string;
+  byteSize: number;
+  contentType: string | null;
+  createdBy: string;
+  createdAt: Date;
+  parentVersionId?: string | null;
+}
+export interface StudioAssetReference {
+  id: string;
+  projectId: string;
+  assetId: string;
+  versionId: string | null;
+  workspaceId: string;
+  label: string | null;
+  createdAt: Date;
+}
+export interface ProjectAssetView {
+  reference: StudioAssetReference;
+  asset: StudioAsset;
+  versions: StudioAssetVersion[];
+}
+export interface LibrarySearchView {
+  assets: StudioAsset[];
+  versions: StudioAssetVersion[];
+  projects: ProjectView[];
+  nextCursor: string | null;
+}
 export const studioSnapshotSchema = z.object({
   version: z.literal(1),
   projects: z.array(projectViewSchema),
@@ -40,12 +80,55 @@ export const studioSnapshotSchema = z.object({
   activity: z.array(activityViewSchema),
   sessions: z.array(piSessionViewSchema),
 });
+const previewProjectStageSchema = z.enum(["draft", "in_progress", "review", "delivered"]);
+const previewProjectSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1).max(120),
+  description: z.string().max(2000),
+  stage: previewProjectStageSchema,
+  archived: z.boolean(),
+  legacyStatus: z.enum(["active", "paused", "completed", "archived"]).nullable().default(null),
+  stageWasDefaulted: z.boolean().default(false),
+  cover: z.string().nullable().default(null),
+  thumbnail: z.string().nullable().default(null),
+  deadline: z.coerce.date().nullable().default(null),
+  milestone: z.string().default(""),
+  updatedAt: z.coerce.date(),
+});
+export const studioPreviewDataSchema = z.object({
+  projects: z.array(previewProjectSchema),
+  tasks: z.array(taskViewSchema),
+  activity: z.array(activityViewSchema),
+  sessions: z.array(piSessionViewSchema),
+  assets: z.array(z.unknown()).default([]),
+  reviews: z.array(z.unknown()).default([]),
+  projectMembers: z.array(z.unknown()).default([]),
+});
+export const studioPreviewEnvelopeSchema = z.object({
+  version: z.literal(2),
+  migratedFrom: z.literal(1).or(z.null()),
+  data: studioPreviewDataSchema,
+});
 export type ProjectView = z.infer<typeof projectViewSchema>;
 export type TaskView = z.infer<typeof taskViewSchema>;
 export type ActivityView = z.infer<typeof activityViewSchema>;
 export type PiSessionView = z.infer<typeof piSessionViewSchema>;
-export type StudioSnapshot = z.infer<typeof studioSnapshotSchema>;
-export type ProjectTab = "overview" | "tasks" | "pi" | "activity" | "settings";
+export type StudioSnapshot = z.infer<typeof studioSnapshotSchema> & {
+  assets?: StudioAsset[];
+  versions?: StudioAssetVersion[];
+  assetReferences?: StudioAssetReference[];
+};
+export type StudioPreviewData = z.infer<typeof studioPreviewDataSchema>;
+export type StudioPreviewEnvelope = z.infer<typeof studioPreviewEnvelopeSchema>;
+export type ProjectTab =
+  | "overview"
+  | "brief"
+  | "canvas"
+  | "tasks"
+  | "feedback"
+  | "activity"
+  | "settings"
+  | "pi";
 export type TaskFilter = "all" | TaskView["status"];
 export interface HomeViewModel {
   projects: Array<ProjectView & { blocked: number; complete: number; total: number }>;
@@ -57,7 +140,16 @@ export function projectSearch(search: Record<string, unknown>): {
   tab: ProjectTab;
   filter: TaskFilter;
 } {
-  const tabs: string[] = ["overview", "tasks", "pi", "activity", "settings"];
+  const tabs: string[] = [
+    "overview",
+    "brief",
+    "canvas",
+    "tasks",
+    "feedback",
+    "activity",
+    "settings",
+    "pi",
+  ];
   const filters: string[] = ["all", "todo", "in_progress", "blocked", "done"];
   return {
     tab:

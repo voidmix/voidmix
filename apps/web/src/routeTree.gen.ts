@@ -12,20 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as authRouteRouteImport } from './routes/(auth)/route'
-import { Route as LibraryRouteImport } from './routes/library'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as appadminRouteRouteImport } from './routes/(app)/(admin)/route'
+import { Route as appLibraryRouteImport } from './routes/(app)/library'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
-import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
-import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
 import { Route as appadminAdminRouteImport } from './routes/(app)/(admin)/admin'
 import { Route as appChatChatIdRouteImport } from './routes/(app)/chat.$chatId'
+import { Route as appProjectsIndexRouteImport } from './routes/(app)/projects.index'
+import { Route as appProjectsProjectIdRouteImport } from './routes/(app)/projects.$projectId'
 import { Route as appadminAdminSettingsRouteImport } from './routes/(app)/(admin)/admin/settings'
-import { Route as ProjectsProjectIdPiSessionIdRouteImport } from './routes/projects.$projectId_.pi.$sessionId'
 import { Route as appadminAdminSettingsAuthRouteImport } from './routes/(app)/(admin)/admin/settings/auth'
+import { Route as appProjectsProjectIdPiSessionIdRouteImport } from './routes/(app)/projects.$projectId_.pi.$sessionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,11 +40,6 @@ const authRouteRoute = authRouteRouteImport.update({
   id: '/(auth)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LibraryRoute = LibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
   id: '/manifest.webmanifest',
   path: '/manifest.webmanifest',
@@ -52,6 +47,11 @@ const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
 } as any)
 const appadminRouteRoute = appadminRouteRouteImport.update({
   id: '/(admin)',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appLibraryRoute = appLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
   getParentRoute: () => appRouteRoute,
 } as any)
 const authLoginRoute = authLoginRouteImport.update({
@@ -74,16 +74,6 @@ const authVerifyEmailRoute = authVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => authRouteRoute,
 } as any)
-const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
-  id: '/projects/$projectId',
-  path: '/projects/$projectId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const appadminAdminRoute = appadminAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -94,139 +84,145 @@ const appChatChatIdRoute = appChatChatIdRouteImport.update({
   path: '/chat/$chatId',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appProjectsIndexRoute = appProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appProjectsProjectIdRoute = appProjectsProjectIdRouteImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appadminAdminSettingsRoute = appadminAdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => appadminAdminRoute,
 } as any)
-const ProjectsProjectIdPiSessionIdRoute =
-  ProjectsProjectIdPiSessionIdRouteImport.update({
-    id: '/projects/$projectId_/pi/$sessionId',
-    path: '/projects/$projectId/pi/$sessionId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const appadminAdminSettingsAuthRoute =
   appadminAdminSettingsAuthRouteImport.update({
     id: '/auth',
     path: '/auth',
     getParentRoute: () => appadminAdminSettingsRoute,
   } as any)
+const appProjectsProjectIdPiSessionIdRoute =
+  appProjectsProjectIdPiSessionIdRouteImport.update({
+    id: '/projects/$projectId_/pi/$sessionId',
+    path: '/projects/$projectId/pi/$sessionId',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/library': typeof LibraryRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/library': typeof appLibraryRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
-  '/projects/$projectId': typeof ProjectsProjectIdRoute
-  '/projects/': typeof ProjectsIndexRoute
   '/admin': typeof appadminAdminRouteWithChildren
   '/chat/$chatId': typeof appChatChatIdRoute
+  '/projects/$projectId': typeof appProjectsProjectIdRoute
+  '/projects/': typeof appProjectsIndexRoute
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
-  '/projects/$projectId/pi/$sessionId': typeof ProjectsProjectIdPiSessionIdRoute
   '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
+  '/projects/$projectId/pi/$sessionId': typeof appProjectsProjectIdPiSessionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/library': typeof LibraryRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/library': typeof appLibraryRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/verify-email': typeof authVerifyEmailRoute
-  '/projects/$projectId': typeof ProjectsProjectIdRoute
-  '/projects': typeof ProjectsIndexRoute
   '/admin': typeof appadminAdminRouteWithChildren
   '/chat/$chatId': typeof appChatChatIdRoute
+  '/projects/$projectId': typeof appProjectsProjectIdRoute
+  '/projects': typeof appProjectsIndexRoute
   '/admin/settings': typeof appadminAdminSettingsRouteWithChildren
-  '/projects/$projectId/pi/$sessionId': typeof ProjectsProjectIdPiSessionIdRoute
   '/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
+  '/projects/$projectId/pi/$sessionId': typeof appProjectsProjectIdPiSessionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
   '/(auth)': typeof authRouteRouteWithChildren
-  '/library': typeof LibraryRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/(app)/(admin)': typeof appadminRouteRouteWithChildren
+  '/(app)/library': typeof appLibraryRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
-  '/projects/$projectId': typeof ProjectsProjectIdRoute
-  '/projects/': typeof ProjectsIndexRoute
   '/(app)/(admin)/admin': typeof appadminAdminRouteWithChildren
   '/(app)/chat/$chatId': typeof appChatChatIdRoute
+  '/(app)/projects/$projectId': typeof appProjectsProjectIdRoute
+  '/(app)/projects/': typeof appProjectsIndexRoute
   '/(app)/(admin)/admin/settings': typeof appadminAdminSettingsRouteWithChildren
-  '/projects/$projectId_/pi/$sessionId': typeof ProjectsProjectIdPiSessionIdRoute
   '/(app)/(admin)/admin/settings/auth': typeof appadminAdminSettingsAuthRoute
+  '/(app)/projects/$projectId_/pi/$sessionId': typeof appProjectsProjectIdPiSessionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/library'
     | '/manifest.webmanifest'
+    | '/library'
     | '/login'
     | '/reset-password'
     | '/signup'
     | '/verify-email'
-    | '/projects/$projectId'
-    | '/projects/'
     | '/admin'
     | '/chat/$chatId'
+    | '/projects/$projectId'
+    | '/projects/'
     | '/admin/settings'
-    | '/projects/$projectId/pi/$sessionId'
     | '/admin/settings/auth'
+    | '/projects/$projectId/pi/$sessionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/library'
     | '/manifest.webmanifest'
+    | '/library'
     | '/login'
     | '/reset-password'
     | '/signup'
     | '/verify-email'
-    | '/projects/$projectId'
-    | '/projects'
     | '/admin'
     | '/chat/$chatId'
+    | '/projects/$projectId'
+    | '/projects'
     | '/admin/settings'
-    | '/projects/$projectId/pi/$sessionId'
     | '/admin/settings/auth'
+    | '/projects/$projectId/pi/$sessionId'
   id:
     | '__root__'
     | '/'
     | '/(app)'
     | '/(auth)'
-    | '/library'
     | '/manifest.webmanifest'
     | '/(app)/(admin)'
+    | '/(app)/library'
     | '/(auth)/login'
     | '/(auth)/reset-password'
     | '/(auth)/signup'
     | '/(auth)/verify-email'
-    | '/projects/$projectId'
-    | '/projects/'
     | '/(app)/(admin)/admin'
     | '/(app)/chat/$chatId'
+    | '/(app)/projects/$projectId'
+    | '/(app)/projects/'
     | '/(app)/(admin)/admin/settings'
-    | '/projects/$projectId_/pi/$sessionId'
     | '/(app)/(admin)/admin/settings/auth'
+    | '/(app)/projects/$projectId_/pi/$sessionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
   authRouteRoute: typeof authRouteRouteWithChildren
-  LibraryRoute: typeof LibraryRoute
   ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
-  ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
-  ProjectsIndexRoute: typeof ProjectsIndexRoute
-  ProjectsProjectIdPiSessionIdRoute: typeof ProjectsProjectIdPiSessionIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,13 +248,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/library': {
-      id: '/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof LibraryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/manifest.webmanifest': {
       id: '/manifest.webmanifest'
       path: '/manifest.webmanifest'
@@ -271,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof appadminRouteRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/library': {
+      id: '/(app)/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof appLibraryRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(auth)/login': {
@@ -301,20 +297,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authVerifyEmailRouteImport
       parentRoute: typeof authRouteRoute
     }
-    '/projects/': {
-      id: '/projects/'
-      path: '/projects'
-      fullPath: '/projects/'
-      preLoaderRoute: typeof ProjectsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects/$projectId': {
-      id: '/projects/$projectId'
-      path: '/projects/$projectId'
-      fullPath: '/projects/$projectId'
-      preLoaderRoute: typeof ProjectsProjectIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(app)/(admin)/admin': {
       id: '/(app)/(admin)/admin'
       path: '/admin'
@@ -329,6 +311,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appChatChatIdRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/projects/': {
+      id: '/(app)/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof appProjectsIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/projects/$projectId': {
+      id: '/(app)/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof appProjectsProjectIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/(admin)/admin/settings': {
       id: '/(app)/(admin)/admin/settings'
       path: '/settings'
@@ -336,19 +332,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appadminAdminSettingsRouteImport
       parentRoute: typeof appadminAdminRoute
     }
-    '/projects/$projectId_/pi/$sessionId': {
-      id: '/projects/$projectId_/pi/$sessionId'
-      path: '/projects/$projectId/pi/$sessionId'
-      fullPath: '/projects/$projectId/pi/$sessionId'
-      preLoaderRoute: typeof ProjectsProjectIdPiSessionIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(app)/(admin)/admin/settings/auth': {
       id: '/(app)/(admin)/admin/settings/auth'
       path: '/auth'
       fullPath: '/admin/settings/auth'
       preLoaderRoute: typeof appadminAdminSettingsAuthRouteImport
       parentRoute: typeof appadminAdminSettingsRoute
+    }
+    '/(app)/projects/$projectId_/pi/$sessionId': {
+      id: '/(app)/projects/$projectId_/pi/$sessionId'
+      path: '/projects/$projectId/pi/$sessionId'
+      fullPath: '/projects/$projectId/pi/$sessionId'
+      preLoaderRoute: typeof appProjectsProjectIdPiSessionIdRouteImport
+      parentRoute: typeof appRouteRoute
     }
   }
 }
@@ -392,12 +388,20 @@ const appadminRouteRouteWithChildren = appadminRouteRoute._addFileChildren(
 
 interface appRouteRouteChildren {
   appadminRouteRoute: typeof appadminRouteRouteWithChildren
+  appLibraryRoute: typeof appLibraryRoute
   appChatChatIdRoute: typeof appChatChatIdRoute
+  appProjectsProjectIdRoute: typeof appProjectsProjectIdRoute
+  appProjectsIndexRoute: typeof appProjectsIndexRoute
+  appProjectsProjectIdPiSessionIdRoute: typeof appProjectsProjectIdPiSessionIdRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appadminRouteRoute: appadminRouteRouteWithChildren,
+  appLibraryRoute: appLibraryRoute,
   appChatChatIdRoute: appChatChatIdRoute,
+  appProjectsProjectIdRoute: appProjectsProjectIdRoute,
+  appProjectsIndexRoute: appProjectsIndexRoute,
+  appProjectsProjectIdPiSessionIdRoute: appProjectsProjectIdPiSessionIdRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
@@ -426,11 +430,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
   authRouteRoute: authRouteRouteWithChildren,
-  LibraryRoute: LibraryRoute,
   ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
-  ProjectsProjectIdRoute: ProjectsProjectIdRoute,
-  ProjectsIndexRoute: ProjectsIndexRoute,
-  ProjectsProjectIdPiSessionIdRoute: ProjectsProjectIdPiSessionIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -7,19 +7,35 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { useSession } from "../../lib/auth-client";
+import { createProjectStudioRemoteAdapter } from "./remote-adapter";
 import { createProjectStudioPreviewAdapter, type ProjectStudioDataSource } from "./preview-adapter";
 
-const preview = createProjectStudioPreviewAdapter();
-const ProjectStudioContext = createContext<ProjectStudioDataSource>(preview);
+const fallbackPreview = createProjectStudioPreviewAdapter();
+const ProjectStudioContext = createContext<ProjectStudioDataSource>(fallbackPreview);
 
 export function ProjectStudioDataProvider({
   source,
   children,
 }: {
-  source: ProjectStudioDataSource;
+  source?: ProjectStudioDataSource;
   children: ReactNode;
 }) {
-  return <ProjectStudioContext value={source}>{children}</ProjectStudioContext>;
+  const session = useSession();
+  const [preview] = useState(() => createProjectStudioPreviewAdapter());
+  const [remote, setRemote] = useState<ProjectStudioDataSource | null>(null);
+  const authenticatedUserId = session.data?.user?.id;
+
+  useEffect(() => {
+    if (source || !authenticatedUserId) {
+      setRemote(null);
+      return;
+    }
+    setRemote(createProjectStudioRemoteAdapter({}));
+  }, [source, authenticatedUserId]);
+
+  const activeSource = source ?? remote ?? preview;
+  return <ProjectStudioContext value={activeSource}>{children}</ProjectStudioContext>;
 }
 
 export function useProjectStudioData() {

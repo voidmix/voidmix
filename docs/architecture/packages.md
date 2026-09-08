@@ -60,7 +60,11 @@ public barrel is organized into bounded contexts:
   public Auth capability derivation.
 - `workspace` owns membership lookup and actor-plus-workspace read/write
   access (`owner`/`editor` write, `viewer` read).
-- `projects` owns the existing project/task port and application facade.
+- `projects` owns the project/task port and application facade, including
+  Project Studio stage/archive lifecycle rules, progress calculation, and
+  compatibility mapping for the legacy status values. The first runtime
+  service persists Projects and Tasks; Review, Blob, Activity, and durable Pi
+  repositories remain separate follow-up seams.
 - `assets` owns canonical paths, immutable versions, heads, idempotency, and
   sync conflict rules. Version insertion and head movement use an atomic
   repository command.
@@ -157,6 +161,11 @@ The database adapter package.
   provide the Agent aggregate's atomic commands. Run rows serialize leases and
   step sequence allocation, and expected-state predicates reject stale
   transitions without overwriting other fields.
+- `PostgresProjectRepository` and `InMemoryProjectRepository` persist the
+  Project Studio Project/Task slice, including Workspace tenancy, stage/archive
+  fields, deadlines, covers, thumbnails, and deterministic ordering. The
+  generated migration is additive; run `bun run db:migrate` against a configured
+  PostgreSQL database before using the live slice.
 - `system_settings` stores typed ordinary configuration keys and
   `system_secrets` stores write-only secret values. Both record the updater and
   timestamp.

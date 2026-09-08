@@ -48,10 +48,16 @@ const mutationProcedureNames = new Set([
   "update",
   "sendTest",
   "commitVersion",
+  "complete",
   "resolveConflict",
   "transition",
   "acquireLease",
   "heartbeat",
+  "archive",
+  "restore",
+  "resolve",
+  "cancel",
+  "retry",
 ]);
 
 export function createApiApp(options: CreateApiAppOptions) {

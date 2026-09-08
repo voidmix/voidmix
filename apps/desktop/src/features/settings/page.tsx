@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { useTranslations } from "@voidmix/i18n/client";
@@ -74,6 +75,12 @@ export function SettingsPage() {
           </div>
         </section>
       ))}
+      <section className="settings-section">
+        <h2>{t("devices")}</h2>
+        <Link className="secondary-button settings-device-link" to="/devices">
+          {t("manageDevices")}
+        </Link>
+      </section>
     </div>
   );
 }

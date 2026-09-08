@@ -1,3 +1,5 @@
+export { InMemoryBlobStorageRepository } from "./blob-memory.js";
+export { FileSystemBlobStorageRepository } from "./blob-filesystem.js";
 export {
   InMemoryAgentCommandRepository,
   InMemoryAgentLeaseRepository,
@@ -7,11 +9,21 @@ export {
   InMemoryAssetRepository,
   createInMemoryAssetRepositories,
   InMemoryAssetVersionRepository,
+  InMemoryProjectRepository,
   InMemorySyncConflictRepository,
   InMemorySystemSettingsRepository,
   InMemoryUserRepository,
   InMemoryWorkspaceMembershipRepository,
 } from "./memory.js";
+export {
+  InMemoryActivityRepository,
+  InMemoryAssetReferenceRepository,
+  InMemoryFeedbackRepository,
+  InMemoryReviewRepository,
+  InMemoryPiSessionRepository,
+  InMemoryProjectMemberRepository,
+  createInMemoryProjectStudioRepositories,
+} from "./project-studio-memory.js";
 export {
   connectDatabase,
   createPostgresAssetRepositories,
@@ -22,6 +34,13 @@ export {
   PostgresAgentStepRepository,
   PostgresAssetRepository,
   PostgresAssetVersionRepository,
+  PostgresAssetReferenceRepository,
+  PostgresProjectRepository,
+  PostgresReviewRepository,
+  PostgresFeedbackRepository,
+  PostgresActivityRepository,
+  PostgresPiSessionRepository,
+  PostgresProjectMemberRepository,
   PostgresSyncConflictRepository,
   PostgresSystemSettingsRepository,
   PostgresUserRepository,
@@ -38,6 +57,7 @@ export {
   agentStepStatusEnum,
   assetStatusEnum,
   assetVersions,
+  assetReferences,
   assets,
   authAccounts,
   authSessions,
@@ -51,5 +71,17 @@ export {
   workspaceMembershipRoleEnum,
   workspaceMembershipStatusEnum,
   workspaceMemberships,
+  projectStageEnum,
+  projectTaskStatusEnum,
+  projects,
+  projectTasks,
+  reviewStatusEnum,
+  feedbackStatusEnum,
+  activityTypeEnum,
+  reviews,
+  feedback,
+  activities,
+  piSessions,
+  projectMembers,
   users,
 } from "./schema.js";

@@ -21,6 +21,8 @@ export interface WorkspaceMembershipRepository {
     userId: string;
     workspaceId: string;
   }): Promise<WorkspaceMembership | null>;
+  /** Returns every membership for an account, ordered by the adapter. */
+  listByUser?(userId: string): Promise<WorkspaceMembership[]>;
 }
 
 export type WorkspaceAccess = "read" | "write";

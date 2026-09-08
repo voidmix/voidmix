@@ -21,6 +21,9 @@ import type {
   MailRuntimeConfiguration,
   MailSettings,
   MailSettingsFallback,
+  Project,
+  ProjectRepository,
+  ProjectTask,
   SystemSettingsRepository,
   UpdateSetting,
   UpdateAuthSettingsInput,
@@ -32,8 +35,41 @@ import type {
   UserStatus,
   WorkspaceMembership,
   WorkspaceMembershipRepository,
+  AssetReference,
+  AssetReferenceRepository,
+  Activity,
+  ActivityListQuery,
+  ActivityRepository,
+  CreateActivityInput,
+  CreateFeedbackInput,
+  CreateReviewInput,
+  CursorPage,
+  CursorPageQuery,
+  Feedback,
+  FeedbackListQuery,
+  FeedbackRepository,
+  Review,
+  ReviewListQuery,
+  ReviewRepository,
+  ResolveReviewInput,
+  UpdateFeedbackInput,
+  UpdateReviewInput,
+  PiSession,
+  PiSessionRepository,
+  ProjectMember,
+  ProjectMemberRepository,
 } from "@voidmix/core";
-import { createDefaultAuthSettings, isTerminalRunStatus } from "@voidmix/core";
+import {
+  createDefaultAuthSettings,
+  defaultClock,
+  defaultIdGenerator,
+  isTerminalRunStatus,
+  projectLifecycle,
+  projectStageFromStatus,
+  projectStatusFromLifecycle,
+  assertFeedbackStatusTransition,
+  assertReviewStatusTransition,
+} from "@voidmix/core";
 import { and, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
@@ -47,11 +83,19 @@ import {
   assets,
   auditEvents,
   relations,
+  projectTasks,
+  projects,
   syncConflicts,
   systemSecrets,
   systemSettings,
   users,
   workspaceMemberships,
+  assetReferences,
+  activities,
+  feedback,
+  reviews,
+  piSessions,
+  projectMembers,
 } from "./schema.js";
 
 const mailSettingKeys = [
@@ -208,6 +252,517 @@ export class PostgresWorkspaceMembershipRepository implements WorkspaceMembershi
       )
       .limit(1);
     return row ?? null;
+  }
+
+  async listByUser(userId: string): Promise<WorkspaceMembership[]> {
+    return this.db
+      .select()
+      .from(workspaceMemberships)
+      .where(eq(workspaceMemberships.userId, userId))
+      .orderBy(workspaceMemberships.workspaceId)
+      .then((rows) => rows);
+  }
+}
+
+export class PostgresProjectRepository implements ProjectRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: {
+      workspaceId?: string;
+      now?: () => Date;
+      id?: () => string;
+    } = {},
+  ) {}
+
+  async list(ownerId: string): Promise<Project[]> {
+    const rows = await this.db
+      .select()
+      .from(projects)
+      .where(eq(projects.ownerId, ownerId))
+      .orderBy(desc(projects.updatedAt), desc(projects.id));
+    return rows.map(toProject);
+  }
+
+  async listByWorkspace(workspaceId: string): Promise<Project[]> {
+    const rows = await this.db
+      .select()
+      .from(projects)
+      .where(eq(projects.workspaceId, workspaceId))
+      .orderBy(desc(projects.updatedAt), desc(projects.id));
+    return rows.map(toProject);
+  }
+
+  async getById(id: string): Promise<Project | null> {
+    const [row] = await this.db.select().from(projects).where(eq(projects.id, id)).limit(1);
+    return row ? toProject(row) : null;
+  }
+
+  async create(input: {
+    ownerId: string;
+    name: string;
+    description?: string;
+    workspaceId?: string;
+    deadline?: Date | null;
+    cover?: string | null;
+    thumbnail?: string | null;
+  }): Promise<Project> {
+    const now = this.now();
+    const [row] = await this.db
+      .insert(projects)
+      .values({
+        id: this.id(),
+        workspaceId: await this.resolveWorkspaceId(input.ownerId, input.workspaceId),
+        ownerId: input.ownerId,
+        title: input.name,
+        description: input.description ?? null,
+        stage: "draft",
+        archived: false,
+        archivedAt: null,
+        previousStage: null,
+        deadline: input.deadline ?? null,
+        cover: input.cover ?? null,
+        thumbnail: input.thumbnail ?? null,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+    if (!row) throw new Error("Failed to create project");
+    return toProject(row);
+  }
+
+  async update(input: Parameters<ProjectRepository["update"]>[0]): Promise<Project> {
+    const [existingRow] = await this.db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, input.id))
+      .limit(1);
+    if (!existingRow) throw new Error(`Cannot update missing project ${input.id}`);
+
+    const existing = toProject(existingRow);
+    const current = projectLifecycle(existing);
+    const now = this.now();
+    let stage = input.status ? projectStageFromStatus(input.status) : current.stage;
+    let archived = input.status ? input.status === "archived" : current.archived;
+    let archivedAt = archived ? (current.archivedAt ?? now) : null;
+    let previousStage = archived ? (current.previousStage ?? stage) : null;
+    if (input.stage !== undefined) stage = input.stage;
+    if (input.archived !== undefined) {
+      archived = input.archived;
+      archivedAt = archived ? (current.archivedAt ?? now) : null;
+      previousStage = archived ? stage : null;
+    }
+    if (input.archivedAt !== undefined) archivedAt = input.archivedAt;
+    if (input.previousStage !== undefined) previousStage = input.previousStage;
+
+    const [row] = await this.db
+      .update(projects)
+      .set({
+        ...(input.name !== undefined ? { title: input.name } : {}),
+        ...(input.description !== undefined ? { description: input.description } : {}),
+        ...(input.deadline !== undefined ? { deadline: input.deadline } : {}),
+        ...(input.cover !== undefined ? { cover: input.cover } : {}),
+        ...(input.thumbnail !== undefined ? { thumbnail: input.thumbnail } : {}),
+        stage,
+        archived,
+        archivedAt,
+        previousStage,
+        updatedAt: now,
+      })
+      .where(eq(projects.id, input.id))
+      .returning();
+    if (!row) throw new Error(`Cannot update missing project ${input.id}`);
+    return toProject(row);
+  }
+
+  async listTasks(projectId: string): Promise<ProjectTask[]> {
+    const rows = await this.db
+      .select()
+      .from(projectTasks)
+      .where(eq(projectTasks.projectId, projectId))
+      .orderBy(desc(projectTasks.updatedAt), desc(projectTasks.id));
+    return rows.map(toProjectTask);
+  }
+
+  async createTask(input: {
+    projectId: string;
+    actorId: string;
+    title: string;
+  }): Promise<ProjectTask> {
+    const now = this.now();
+    const [row] = await this.db
+      .insert(projectTasks)
+      .values({
+        id: this.id(),
+        projectId: input.projectId,
+        title: input.title,
+        status: "todo",
+        createdBy: input.actorId,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+    if (!row) throw new Error("Failed to create project task");
+    return toProjectTask(row);
+  }
+
+  async updateTask(input: Parameters<ProjectRepository["updateTask"]>[0]): Promise<ProjectTask> {
+    const [row] = await this.db
+      .update(projectTasks)
+      .set({
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.title !== undefined ? { title: input.title } : {}),
+        updatedAt: this.now(),
+      })
+      .where(eq(projectTasks.id, input.taskId))
+      .returning();
+    if (!row) throw new Error(`Cannot update missing project task ${input.taskId}`);
+    return toProjectTask(row);
+  }
+
+  private now(): Date {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+
+  private id(): string {
+    return (this.options.id ?? defaultIdGenerator.next)();
+  }
+
+  private async resolveWorkspaceId(
+    ownerId: string,
+    requestedWorkspaceId?: string,
+  ): Promise<string> {
+    if (requestedWorkspaceId) return requestedWorkspaceId;
+    if (this.options.workspaceId) return this.options.workspaceId;
+    const [membership] = await this.db
+      .select({ workspaceId: workspaceMemberships.workspaceId })
+      .from(workspaceMemberships)
+      .where(
+        and(
+          eq(workspaceMemberships.userId, ownerId),
+          eq(workspaceMemberships.status, "active"),
+          inArray(workspaceMemberships.role, ["owner", "editor"]),
+        ),
+      )
+      .orderBy(workspaceMemberships.createdAt, workspaceMemberships.id)
+      .limit(1);
+    if (!membership) throw new Error(`No writable workspace found for owner ${ownerId}`);
+    return membership.workspaceId;
+  }
+}
+
+function studioPage<T>(items: T[], limit: number, cursor?: string): CursorPage<T> {
+  const offset = parseCursor(cursor);
+  const page = items.slice(offset, offset + limit);
+  return {
+    items: page,
+    nextCursor: offset + page.length < items.length ? String(offset + page.length) : null,
+  };
+}
+
+export class PostgresReviewRepository implements ReviewRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {}
+  async list(query: ReviewListQuery): Promise<CursorPage<Review>> {
+    const rows = await this.db
+      .select()
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.projectId, query.projectId),
+          ...(query.status ? [eq(reviews.status, query.status)] : []),
+        ),
+      )
+      .orderBy(desc(reviews.updatedAt), desc(reviews.id));
+    return studioPage(rows, query.limit, query.cursor);
+  }
+  async getById(id: string): Promise<Review | null> {
+    const [row] = await this.db.select().from(reviews).where(eq(reviews.id, id)).limit(1);
+    return row ?? null;
+  }
+  async create(input: CreateReviewInput): Promise<Review> {
+    const now = this.now();
+    const [row] = await this.db
+      .insert(reviews)
+      .values({
+        id: this.id(),
+        ...input,
+        status: "draft",
+        createdAt: now,
+        updatedAt: now,
+        resolvedAt: null,
+        resolvedBy: null,
+      })
+      .returning();
+    if (!row) throw new Error("Failed to create review");
+    return row;
+  }
+  async update(input: UpdateReviewInput): Promise<Review> {
+    const current = await this.getById(input.id);
+    if (!current) throw new Error(`Cannot update missing review ${input.id}`);
+    if (input.status) assertReviewStatusTransition(current.status, input.status);
+    const now = this.now();
+    const closed = input.status === "closed" && current.status !== "closed";
+    const [row] = await this.db
+      .update(reviews)
+      .set({
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.title !== undefined ? { title: input.title } : {}),
+        ...(input.targetVersionId !== undefined ? { targetVersionId: input.targetVersionId } : {}),
+        ...(closed ? { resolvedAt: now, resolvedBy: input.actorId ?? null } : {}),
+        updatedAt: now,
+      })
+      .where(eq(reviews.id, input.id))
+      .returning();
+    if (!row) throw new Error(`Cannot update missing review ${input.id}`);
+    return row;
+  }
+  async resolve(input: ResolveReviewInput): Promise<Review> {
+    return this.update({ id: input.id, status: "closed", actorId: input.actorId });
+  }
+  private now() {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+  private id() {
+    return (this.options.id ?? defaultIdGenerator.next)();
+  }
+}
+
+export class PostgresFeedbackRepository implements FeedbackRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {}
+  async list(query: FeedbackListQuery): Promise<CursorPage<Feedback>> {
+    const rows = await this.db
+      .select()
+      .from(feedback)
+      .where(
+        and(
+          eq(feedback.reviewId, query.reviewId),
+          ...(query.status ? [eq(feedback.status, query.status)] : []),
+        ),
+      )
+      .orderBy(desc(feedback.createdAt), desc(feedback.id));
+    return studioPage(rows, query.limit, query.cursor);
+  }
+  async getById(id: string): Promise<Feedback | null> {
+    const [row] = await this.db.select().from(feedback).where(eq(feedback.id, id)).limit(1);
+    return row ?? null;
+  }
+  async create(input: CreateFeedbackInput): Promise<Feedback> {
+    const now = this.now();
+    const [row] = await this.db
+      .insert(feedback)
+      .values({
+        id: this.id(),
+        ...input,
+        status: "open",
+        createdAt: now,
+        updatedAt: now,
+        resolvedAt: null,
+        resolvedBy: null,
+      })
+      .returning();
+    if (!row) throw new Error("Failed to create feedback");
+    return row;
+  }
+  async update(input: UpdateFeedbackInput): Promise<Feedback> {
+    const current = await this.getById(input.id);
+    if (!current) throw new Error(`Cannot update missing feedback ${input.id}`);
+    if (input.status) assertFeedbackStatusTransition(current.status, input.status);
+    const now = this.now();
+    const resolved = input.status === "resolved" && current.status !== "resolved";
+    const [row] = await this.db
+      .update(feedback)
+      .set({
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.body !== undefined ? { body: input.body } : {}),
+        ...(resolved ? { resolvedAt: now, resolvedBy: input.actorId ?? null } : {}),
+        updatedAt: now,
+      })
+      .where(eq(feedback.id, input.id))
+      .returning();
+    if (!row) throw new Error(`Cannot update missing feedback ${input.id}`);
+    return row;
+  }
+  private now() {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+  private id() {
+    return (this.options.id ?? defaultIdGenerator.next)();
+  }
+}
+
+export class PostgresActivityRepository implements ActivityRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {}
+  async create(input: CreateActivityInput): Promise<Activity> {
+    const [row] = await this.db
+      .insert(activities)
+      .values({ ...input, id: this.id(), occurredAt: input.occurredAt ?? this.now() })
+      .returning();
+    if (!row) throw new Error("Failed to create activity");
+    return row;
+  }
+  async list(query: ActivityListQuery): Promise<CursorPage<Activity>> {
+    const conditions = [];
+    if (query.accountId) conditions.push(eq(activities.accountId, query.accountId));
+    if (query.projectId) conditions.push(eq(activities.projectId, query.projectId));
+    const rows = await this.db
+      .select()
+      .from(activities)
+      .where(conditions.length ? and(...conditions) : undefined)
+      .orderBy(desc(activities.occurredAt), desc(activities.id));
+    return studioPage(rows, query.limit, query.cursor);
+  }
+  async listByProject(projectId: string, query: CursorPageQuery) {
+    return this.list({ ...query, projectId });
+  }
+  async listByAccount(accountId: string, query: CursorPageQuery) {
+    return this.list({ ...query, accountId });
+  }
+  private now() {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+  private id() {
+    return (this.options.id ?? defaultIdGenerator.next)();
+  }
+}
+
+export class PostgresPiSessionRepository implements PiSessionRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {}
+
+  async getById(id: string): Promise<PiSession | null> {
+    const [row] = await this.db.select().from(piSessions).where(eq(piSessions.id, id)).limit(1);
+    return row ?? null;
+  }
+
+  async list(query: {
+    projectId: string;
+    limit: number;
+    cursor?: string;
+  }): Promise<{ items: PiSession[]; nextCursor: string | null }> {
+    const offset = query.cursor ? Number.parseInt(query.cursor, 10) || 0 : 0;
+    const rows = await this.db
+      .select()
+      .from(piSessions)
+      .where(eq(piSessions.projectId, query.projectId))
+      .orderBy(desc(piSessions.updatedAt), desc(piSessions.id))
+      .limit(query.limit + 1)
+      .offset(offset);
+    const hasNext = rows.length > query.limit;
+    return {
+      items: rows.slice(0, query.limit),
+      nextCursor: hasNext ? String(offset + query.limit) : null,
+    };
+  }
+
+  async create(
+    input: Omit<PiSession, "id" | "createdAt" | "updatedAt" | "completedAt">,
+  ): Promise<PiSession> {
+    const now = this.now();
+    const [row] = await this.db
+      .insert(piSessions)
+      .values({
+        ...input,
+        id: this.id(),
+        context: input.context,
+        createdAt: now,
+        updatedAt: now,
+        completedAt: null,
+      })
+      .returning();
+    if (!row) throw new Error("Failed to create Pi session");
+    return row;
+  }
+
+  async update(input: Parameters<PiSessionRepository["update"]>[0]): Promise<PiSession> {
+    const [row] = await this.db
+      .update(piSessions)
+      .set({
+        ...(input.agentRunId !== undefined ? { agentRunId: input.agentRunId } : {}),
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.completedAt !== undefined ? { completedAt: input.completedAt } : {}),
+        updatedAt: this.now(),
+      })
+      .where(eq(piSessions.id, input.id))
+      .returning();
+    if (!row) throw new Error(`Cannot update missing Pi session ${input.id}`);
+    return row;
+  }
+
+  private now(): Date {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+  private id(): string {
+    return (this.options.id ?? defaultIdGenerator.next)();
+  }
+}
+
+export class PostgresProjectMemberRepository implements ProjectMemberRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {}
+  async listByProject(projectId: string): Promise<ProjectMember[]> {
+    return this.db.select().from(projectMembers).where(eq(projectMembers.projectId, projectId));
+  }
+  async getByProjectAndUser(input: {
+    projectId: string;
+    userId: string;
+  }): Promise<ProjectMember | null> {
+    const [row] = await this.db
+      .select()
+      .from(projectMembers)
+      .where(
+        and(eq(projectMembers.projectId, input.projectId), eq(projectMembers.userId, input.userId)),
+      )
+      .limit(1);
+    return row ?? null;
+  }
+  async upsert(
+    input: Omit<ProjectMember, "id" | "createdAt" | "updatedAt">,
+  ): Promise<ProjectMember> {
+    const now = this.now();
+    const [row] = await this.db
+      .insert(projectMembers)
+      .values({ ...input, id: this.id(), createdAt: now, updatedAt: now })
+      .onConflictDoUpdate({
+        target: [projectMembers.projectId, projectMembers.userId],
+        set: {
+          workspaceId: input.workspaceId,
+          role: input.role,
+          status: input.status,
+          updatedAt: now,
+        },
+      })
+      .returning();
+    if (!row) throw new Error("Failed to upsert project member");
+    return row;
+  }
+  async remove(input: { projectId: string; userId: string }): Promise<ProjectMember> {
+    const [row] = await this.db
+      .update(projectMembers)
+      .set({ status: "removed", updatedAt: this.now() })
+      .where(
+        and(eq(projectMembers.projectId, input.projectId), eq(projectMembers.userId, input.userId)),
+      )
+      .returning();
+    if (!row) throw new Error(`Cannot remove missing project member ${input.userId}`);
+    return row;
+  }
+  private now(): Date {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+  private id(): string {
+    return (this.options.id ?? defaultIdGenerator.next)();
   }
 }
 
@@ -480,6 +1035,33 @@ export class PostgresAssetRepository implements AssetRepository {
       .returning();
     return row ? { status: "created" as const, asset: row } : { status: "path_conflict" as const };
   }
+  async listByWorkspace(input: {
+    workspaceId: string;
+    query?: string;
+    limit: number;
+    cursor?: string;
+  }) {
+    const condition = input.query
+      ? and(eq(assets.workspaceId, input.workspaceId), ilike(assets.path, `%${input.query}%`))
+      : eq(assets.workspaceId, input.workspaceId);
+    const offset = parseCursor(input.cursor);
+    const rows = await this.db
+      .select()
+      .from(assets)
+      .where(condition)
+      .orderBy(desc(assets.updatedAt), desc(assets.id))
+      .limit(input.limit)
+      .offset(offset);
+    const count = await this.db
+      .select({ value: sql<number>`count(*)::int` })
+      .from(assets)
+      .where(condition);
+    return {
+      items: rows,
+      nextCursor:
+        offset + rows.length < (count[0]?.value ?? 0) ? String(offset + rows.length) : null,
+    };
+  }
 }
 
 export class PostgresAssetVersionRepository implements AssetVersionRepository {
@@ -509,6 +1091,62 @@ export class PostgresAssetVersionRepository implements AssetVersionRepository {
       )
       .limit(1);
     return row ?? null;
+  }
+  async listByAsset(input: { assetId: string; limit: number; cursor?: string }) {
+    const offset = parseCursor(input.cursor);
+    const rows = await this.db
+      .select()
+      .from(assetVersions)
+      .where(eq(assetVersions.assetId, input.assetId))
+      .orderBy(desc(assetVersions.createdAt), desc(assetVersions.id))
+      .limit(input.limit)
+      .offset(offset);
+    const count = await this.db
+      .select({ value: sql<number>`count(*)::int` })
+      .from(assetVersions)
+      .where(eq(assetVersions.assetId, input.assetId));
+    return {
+      items: rows,
+      nextCursor:
+        offset + rows.length < (count[0]?.value ?? 0) ? String(offset + rows.length) : null,
+    };
+  }
+}
+
+export class PostgresAssetReferenceRepository implements AssetReferenceRepository {
+  constructor(private readonly db: PostgresJsDatabase) {}
+  async listByProject(input: { projectId: string; limit: number; cursor?: string }) {
+    const offset = parseCursor(input.cursor);
+    const rows = await this.db
+      .select()
+      .from(assetReferences)
+      .where(eq(assetReferences.projectId, input.projectId))
+      .orderBy(desc(assetReferences.createdAt), desc(assetReferences.id))
+      .limit(input.limit)
+      .offset(offset);
+    const count = await this.db
+      .select({ value: sql<number>`count(*)::int` })
+      .from(assetReferences)
+      .where(eq(assetReferences.projectId, input.projectId));
+    return {
+      items: rows,
+      nextCursor:
+        offset + rows.length < (count[0]?.value ?? 0) ? String(offset + rows.length) : null,
+    };
+  }
+  async create(
+    input: Omit<AssetReference, "id" | "createdAt"> & { id?: string; createdAt?: Date },
+  ) {
+    const [row] = await this.db
+      .insert(assetReferences)
+      .values({
+        ...input,
+        id: input.id ?? defaultIdGenerator.next(),
+        createdAt: input.createdAt ?? defaultClock.now(),
+      })
+      .returning();
+    if (!row) throw new Error("Failed to create asset reference");
+    return row;
   }
 }
 
@@ -1040,5 +1678,39 @@ function toAuditInsert(event: AuditEvent): typeof auditEvents.$inferInsert {
     targetId: event.targetId,
     occurredAt: event.occurredAt,
     metadata: event.metadata,
+  };
+}
+
+function toProject(row: typeof projects.$inferSelect): Project {
+  const lifecycle = {
+    stage: row.stage,
+    archived: row.archived,
+    archivedAt: row.archivedAt ? new Date(row.archivedAt) : null,
+    previousStage: row.previousStage,
+  };
+  return {
+    id: row.id,
+    name: row.title,
+    description: row.description ?? "",
+    status: projectStatusFromLifecycle(lifecycle),
+    ownerId: row.ownerId,
+    workspaceId: row.workspaceId,
+    deadline: row.deadline ? new Date(row.deadline) : null,
+    cover: row.cover,
+    thumbnail: row.thumbnail,
+    ...lifecycle,
+    createdAt: new Date(row.createdAt),
+    updatedAt: new Date(row.updatedAt),
+  };
+}
+
+function toProjectTask(row: typeof projectTasks.$inferSelect): ProjectTask {
+  return {
+    id: row.id,
+    projectId: row.projectId,
+    title: row.title,
+    status: row.status,
+    createdBy: row.createdBy,
+    updatedAt: new Date(row.updatedAt),
   };
 }

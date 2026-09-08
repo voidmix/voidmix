@@ -2,6 +2,8 @@ import {
   createAgentAdministration,
   createAssetAdministration,
   type AuditEvent,
+  type Project,
+  type ProjectTask,
   type User,
 } from "@voidmix/core";
 import { describe, expect, it } from "vite-plus/test";
@@ -9,6 +11,7 @@ import { describe, expect, it } from "vite-plus/test";
 import {
   createInMemoryAgentRepositories,
   createInMemoryAssetRepositories,
+  InMemoryProjectRepository,
   InMemorySystemSettingsRepository,
   InMemoryUserRepository,
   InMemoryWorkspaceMembershipRepository,
@@ -32,6 +35,132 @@ const users: User[] = [
     createdAt: new Date("2026-01-02T00:00:00.000Z"),
   },
 ];
+
+describe("InMemoryProjectRepository", () => {
+  const timestamp = new Date("2026-09-09T01:00:00.000Z");
+  const projects: Project[] = [
+    {
+      id: "project-a",
+      name: "First",
+      description: "First project",
+      status: "active",
+      ownerId: "owner-1",
+      stage: "in_progress",
+      archived: false,
+      archivedAt: null,
+      previousStage: null,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+    {
+      id: "project-b",
+      name: "Second",
+      description: "Second project",
+      status: "active",
+      ownerId: "owner-1",
+      stage: "review",
+      archived: false,
+      archivedAt: null,
+      previousStage: null,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+    {
+      id: "project-c",
+      name: "Other owner",
+      description: "Hidden",
+      status: "active",
+      ownerId: "owner-2",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+  ];
+  const tasks: ProjectTask[] = [
+    {
+      id: "task-a",
+      projectId: "project-b",
+      title: "First task",
+      status: "todo",
+      createdBy: "owner-1",
+      updatedAt: timestamp,
+    },
+    {
+      id: "task-b",
+      projectId: "project-b",
+      title: "Second task",
+      status: "in_progress",
+      createdBy: "owner-1",
+      updatedAt: timestamp,
+    },
+  ];
+
+  it("filters, sorts, and clones projects and tasks", async () => {
+    const repository = new InMemoryProjectRepository(projects, tasks);
+    projects[1]!.name = "Mutated seed";
+    tasks[1]!.title = "Mutated seed task";
+
+    const listedProjects = await repository.list("owner-1");
+    const listedTasks = await repository.listTasks("project-b");
+    expect(listedProjects.map((project) => project.id)).toEqual(["project-b", "project-a"]);
+    expect(listedTasks.map((task) => task.id)).toEqual(["task-b", "task-a"]);
+    expect(listedProjects[0]?.name).toBe("Second");
+    expect(listedTasks[0]?.title).toBe("Second task");
+
+    listedProjects[0]!.name = "Mutated read";
+    listedProjects[0]!.updatedAt.setUTCFullYear(2000);
+    listedTasks[0]!.updatedAt.setUTCFullYear(2000);
+    expect(await repository.getById("project-b")).toMatchObject({
+      name: "Second",
+      updatedAt: timestamp,
+    });
+    expect((await repository.listTasks("project-b"))[0]?.updatedAt).toEqual(timestamp);
+  });
+
+  it("creates and updates canonical project lifecycle and task fields", async () => {
+    let id = 0;
+    const now = new Date("2026-09-09T02:00:00.000Z");
+    const repository = new InMemoryProjectRepository([], [], {
+      now: () => now,
+      id: () => `generated-${++id}`,
+    });
+    const project = await repository.create({ ownerId: "owner-1", name: "New project" });
+    expect(project).toMatchObject({
+      id: "generated-1",
+      description: "",
+      status: "active",
+      stage: "draft",
+      archived: false,
+    });
+
+    const archivedAt = new Date("2026-09-09T03:00:00.000Z");
+    const archived = await repository.update({
+      id: project.id,
+      actorId: "owner-1",
+      name: "Renamed",
+      stage: "review",
+      archived: true,
+      archivedAt,
+      previousStage: "review",
+    });
+    expect(archived).toMatchObject({
+      name: "Renamed",
+      status: "archived",
+      stage: "review",
+      archived: true,
+      archivedAt,
+      previousStage: "review",
+    });
+
+    const task = await repository.createTask({
+      projectId: project.id,
+      actorId: "owner-1",
+      title: "Prepare review",
+    });
+    await expect(
+      repository.updateTask({ taskId: task.id, actorId: "owner-1", status: "done" }),
+    ).resolves.toMatchObject({ status: "done", updatedAt: now });
+  });
+});
 
 describe("InMemoryUserRepository", () => {
   it("supports search and cursor pagination", async () => {

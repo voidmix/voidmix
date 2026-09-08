@@ -70,6 +70,28 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("Clean Signal workspace", () => {
+  it("exposes the seven formal project sections and keeps Pi out of primary navigation", async () => {
+    render(
+      <ProjectStudioDataProvider source={createProjectStudioPreviewAdapter()}>
+        <ProjectPage projectId="northstar" tab="overview" filter="all" />
+      </ProjectStudioDataProvider>,
+    );
+
+    const navigation = await screen.findByRole("navigation", { name: "Projects" });
+    for (const section of [
+      "Overview",
+      "Draft a brief",
+      "Canvas",
+      /^Tasks/,
+      "Summarize feedback",
+      "Recent activity",
+      "Settings",
+    ]) {
+      expect(within(navigation).getByRole("link", { name: section })).toBeVisible();
+    }
+    expect(within(navigation).queryByRole("link", { name: "Pi" })).not.toBeInTheDocument();
+  });
+
   it("shows one command entry, three templates and real project destinations", async () => {
     render(
       <ProjectStudioDataProvider source={createProjectStudioPreviewAdapter()}>

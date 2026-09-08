@@ -53,11 +53,11 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
     setConfirm(false);
     const current = new AbortController();
     controller.current = current;
-    void runPreview(
-      source,
-      { ...session, prompt: draft.trim() || session.prompt },
-      current.signal,
-    ).finally(() => {
+    const input = { ...session, prompt: draft.trim() || session.prompt };
+    const run = source.startSession
+      ? source.startSession(input).then(() => undefined)
+      : runPreview(source, input, current.signal);
+    void run.finally(() => {
       if (controller.current === current) controller.current = null;
     });
     setTimeout(() => document.querySelector<HTMLElement>("[data-pi-stop]")?.focus(), 0);

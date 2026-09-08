@@ -140,7 +140,7 @@ export function ProjectStudioShell({
           "fixed inset-y-0 left-0 z-[35] flex flex-col overflow-y-auto border-r border-border bg-muted px-3.5 pt-[26px] pb-[22px] transition-[width] duration-150 motion-reduce:transition-none max-[800px]:hidden",
           collapsed ? "w-18" : "w-56 max-[1100px]:w-50",
         )}
-        aria-label={commonT("primaryNavigation")}
+        aria-label={t("workspace")}
       >
         <Link
           to="/"
@@ -176,6 +176,20 @@ export function ProjectStudioShell({
           <span className={cn("text-xs text-muted-foreground", collapsed && "hidden")}>
             {t("preview")}
           </span>
+          <div className="mt-4 border-t border-border pt-3">
+            {session.data?.user ? (
+              <UserDropdown
+                user={session.data.user}
+                compact={collapsed}
+                onSignOut={async () => {
+                  await signOut();
+                  await navigate({ to: "/" });
+                }}
+              />
+            ) : (
+              <LoginButton compact={collapsed} />
+            )}
+          </div>
         </div>
       </aside>
       <div

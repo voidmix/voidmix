@@ -8,6 +8,14 @@ import {
   PostgresSystemSettingsRepository,
   PostgresUserRepository,
   PostgresWorkspaceMembershipRepository,
+  PostgresProjectRepository,
+  PostgresReviewRepository,
+  PostgresFeedbackRepository,
+  PostgresActivityRepository,
+  PostgresPiSessionRepository,
+  PostgresAssetReferenceRepository,
+  PostgresProjectMemberRepository,
+  FileSystemBlobStorageRepository,
 } from "@voidmix/db";
 import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
 import type { AuthSettings, MailSettingsFallback } from "@voidmix/core";
@@ -44,7 +52,7 @@ export async function createApiRuntime({
   let cacheConnection: RedisCacheConnection | undefined;
 
   try {
-    if (environment.REDIS_URL) {
+    if (environment.REDIS_URL && environment.NODE_ENV !== "test") {
       cacheConnection = await createRedisCache({
         url: environment.REDIS_URL,
         prefix: environment.CACHE_PREFIX,
@@ -125,6 +133,18 @@ export async function createApiRuntime({
         leases: new PostgresAgentLeaseRepository(connection.db),
         commands: new PostgresAgentCommandRepository(connection.db),
       },
+      projects: new PostgresProjectRepository(connection.db),
+      projectStudioRepositories: {
+        reviews: new PostgresReviewRepository(connection.db),
+        feedback: new PostgresFeedbackRepository(connection.db),
+        activity: new PostgresActivityRepository(connection.db),
+        piSessions: new PostgresPiSessionRepository(connection.db),
+        assetReferences: new PostgresAssetReferenceRepository(connection.db),
+        members: new PostgresProjectMemberRepository(connection.db),
+      },
+      ...(environment.BLOB_STORAGE_DIR
+        ? { blobStorage: new FileSystemBlobStorageRepository(environment.BLOB_STORAGE_DIR) }
+        : {}),
     });
     let closePromise: Promise<void> | undefined;
 

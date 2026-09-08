@@ -21,6 +21,9 @@ import type {
   MailRuntimeConfiguration,
   MailSettings,
   MailSettingsFallback,
+  Project,
+  ProjectRepository,
+  ProjectTask,
   SystemSettingsRepository,
   UpdateSetting,
   UpdateAuthSettingsInput,
@@ -33,7 +36,15 @@ import type {
   WorkspaceMembership,
   WorkspaceMembershipRepository,
 } from "@voidmix/core";
-import { createDefaultAuthSettings, isTerminalRunStatus } from "@voidmix/core";
+import {
+  createDefaultAuthSettings,
+  defaultClock,
+  defaultIdGenerator,
+  isTerminalRunStatus,
+  projectLifecycle,
+  projectStageFromStatus,
+  projectStatusFromLifecycle,
+} from "@voidmix/core";
 
 type StoredConfigurationValue = {
   value: string;
@@ -149,6 +160,13 @@ export class InMemoryWorkspaceMembershipRepository implements WorkspaceMembershi
         candidate.userId === input.userId && candidate.workspaceId === input.workspaceId,
     );
     return membership ? cloneMembership(membership) : null;
+  }
+
+  async listByUser(userId: string): Promise<WorkspaceMembership[]> {
+    return [...this.memberships.values()]
+      .filter((membership) => membership.userId === userId)
+      .sort((left, right) => left.workspaceId.localeCompare(right.workspaceId))
+      .map(cloneMembership);
   }
 }
 
@@ -337,6 +355,17 @@ const cloneMembership = (membership: WorkspaceMembership): WorkspaceMembership =
   createdAt: cloneDate(membership.createdAt),
   updatedAt: cloneDate(membership.updatedAt),
 });
+const cloneProject = (project: Project): Project => ({
+  ...project,
+  createdAt: cloneDate(project.createdAt),
+  updatedAt: cloneDate(project.updatedAt),
+  ...(project.deadline instanceof Date ? { deadline: cloneDate(project.deadline) } : {}),
+  ...(project.archivedAt instanceof Date ? { archivedAt: cloneDate(project.archivedAt) } : {}),
+});
+const cloneProjectTask = (task: ProjectTask): ProjectTask => ({
+  ...task,
+  updatedAt: cloneDate(task.updatedAt),
+});
 const cloneAsset = (asset: Asset): Asset => ({
   ...asset,
   createdAt: cloneDate(asset.createdAt),
@@ -368,6 +397,171 @@ const cloneLease = (lease: AgentLease): AgentLease => ({
   expiresAt: cloneDate(lease.expiresAt),
 });
 
+export class InMemoryProjectRepository implements ProjectRepository {
+  readonly projects = new Map<string, Project>();
+  readonly tasks = new Map<string, ProjectTask>();
+
+  constructor(
+    projectSeed: readonly Project[] = [],
+    taskSeed: readonly ProjectTask[] = [],
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {
+    for (const project of projectSeed) this.projects.set(project.id, cloneProject(project));
+    for (const task of taskSeed) this.tasks.set(task.id, cloneProjectTask(task));
+  }
+
+  async list(ownerId: string): Promise<Project[]> {
+    return [...this.projects.values()]
+      .filter((project) => project.ownerId === ownerId)
+      .sort(
+        (left, right) =>
+          right.updatedAt.getTime() - left.updatedAt.getTime() || right.id.localeCompare(left.id),
+      )
+      .map(cloneProject);
+  }
+
+  async listByWorkspace(workspaceId: string): Promise<Project[]> {
+    return [...this.projects.values()]
+      .filter((project) => project.workspaceId === workspaceId)
+      .sort(
+        (left, right) =>
+          right.updatedAt.getTime() - left.updatedAt.getTime() || right.id.localeCompare(left.id),
+      )
+      .map(cloneProject);
+  }
+
+  async getById(id: string): Promise<Project | null> {
+    const project = this.projects.get(id);
+    return project ? cloneProject(project) : null;
+  }
+
+  async create(input: {
+    ownerId: string;
+    name: string;
+    description?: string;
+    workspaceId?: string;
+    deadline?: Date | null;
+    cover?: string | null;
+    thumbnail?: string | null;
+  }): Promise<Project> {
+    const now = this.now();
+    const project: Project = {
+      id: this.id(),
+      name: input.name,
+      description: input.description ?? "",
+      status: "active",
+      ownerId: input.ownerId,
+      ...(input.workspaceId !== undefined ? { workspaceId: input.workspaceId } : {}),
+      ...(input.deadline !== undefined ? { deadline: input.deadline } : {}),
+      ...(input.cover !== undefined ? { cover: input.cover } : {}),
+      ...(input.thumbnail !== undefined ? { thumbnail: input.thumbnail } : {}),
+      stage: "draft",
+      archived: false,
+      archivedAt: null,
+      previousStage: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.projects.set(project.id, cloneProject(project));
+    return cloneProject(project);
+  }
+
+  async update(input: Parameters<ProjectRepository["update"]>[0]): Promise<Project> {
+    const existing = this.projects.get(input.id);
+    if (!existing) throw new Error(`Cannot update missing project ${input.id}`);
+    const updated = updateProject(existing, input, this.now());
+    this.projects.set(updated.id, cloneProject(updated));
+    return cloneProject(updated);
+  }
+
+  async listTasks(projectId: string): Promise<ProjectTask[]> {
+    return [...this.tasks.values()]
+      .filter((task) => task.projectId === projectId)
+      .sort(
+        (left, right) =>
+          right.updatedAt.getTime() - left.updatedAt.getTime() || right.id.localeCompare(left.id),
+      )
+      .map(cloneProjectTask);
+  }
+
+  async createTask(input: {
+    projectId: string;
+    actorId: string;
+    title: string;
+  }): Promise<ProjectTask> {
+    if (!this.projects.has(input.projectId)) {
+      throw new Error(`Cannot create a task for missing project ${input.projectId}`);
+    }
+    const task: ProjectTask = {
+      id: this.id(),
+      projectId: input.projectId,
+      title: input.title,
+      status: "todo",
+      createdBy: input.actorId,
+      updatedAt: this.now(),
+    };
+    this.tasks.set(task.id, cloneProjectTask(task));
+    return cloneProjectTask(task);
+  }
+
+  async updateTask(input: Parameters<ProjectRepository["updateTask"]>[0]): Promise<ProjectTask> {
+    const existing = this.tasks.get(input.taskId);
+    if (!existing) throw new Error(`Cannot update missing project task ${input.taskId}`);
+    const updated = {
+      ...existing,
+      ...(input.title !== undefined ? { title: input.title } : {}),
+      ...(input.status !== undefined ? { status: input.status } : {}),
+      updatedAt: this.now(),
+    };
+    this.tasks.set(updated.id, cloneProjectTask(updated));
+    return cloneProjectTask(updated);
+  }
+
+  private now(): Date {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+
+  private id(): string {
+    return (this.options.id ?? defaultIdGenerator.next)();
+  }
+}
+
+function updateProject(
+  existing: Project,
+  input: Parameters<ProjectRepository["update"]>[0],
+  updatedAt: Date,
+): Project {
+  const current = projectLifecycle(existing);
+  let stage = input.status ? projectStageFromStatus(input.status) : current.stage;
+  let archived = input.status ? input.status === "archived" : current.archived;
+  let archivedAt = archived ? (current.archivedAt ?? updatedAt) : null;
+  let previousStage = archived ? (current.previousStage ?? stage) : null;
+
+  if (input.stage !== undefined) stage = input.stage;
+  if (input.archived !== undefined) {
+    archived = input.archived;
+    archivedAt = archived ? (current.archivedAt ?? updatedAt) : null;
+    previousStage = archived ? stage : null;
+  }
+  if (input.archivedAt !== undefined) archivedAt = input.archivedAt;
+  if (input.previousStage !== undefined) previousStage = input.previousStage;
+
+  return {
+    ...existing,
+    ...(input.name !== undefined ? { name: input.name } : {}),
+    ...(input.description !== undefined ? { description: input.description ?? "" } : {}),
+    ...(input.deadline !== undefined ? { deadline: input.deadline } : {}),
+    ...(input.cover !== undefined ? { cover: input.cover } : {}),
+    ...(input.thumbnail !== undefined ? { thumbnail: input.thumbnail } : {}),
+    stage,
+    archived,
+    archivedAt,
+    previousStage,
+    status: projectStatusFromLifecycle({ stage, archived, archivedAt, previousStage }),
+    updatedAt,
+  };
+}
+
 export class InMemoryAssetRepository implements AssetRepository {
   readonly assets = new Map<string, Asset>();
 
@@ -396,6 +590,28 @@ export class InMemoryAssetRepository implements AssetRepository {
     this.assets.set(asset.id, stored);
     return { status: "created" as const, asset: cloneAsset(stored) };
   }
+
+  async listByWorkspace(input: {
+    workspaceId: string;
+    query?: string;
+    limit: number;
+    cursor?: string;
+  }) {
+    const query = input.query?.toLowerCase();
+    const rows = [...this.assets.values()]
+      .filter(
+        (asset) =>
+          asset.workspaceId === input.workspaceId &&
+          (!query || asset.path.toLowerCase().includes(query)),
+      )
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime() || b.id.localeCompare(a.id));
+    const offset = Number.parseInt(input.cursor ?? "0", 10) || 0;
+    const items = rows.slice(offset, offset + input.limit).map(cloneAsset);
+    return {
+      items,
+      nextCursor: offset + items.length < rows.length ? String(offset + items.length) : null,
+    };
+  }
 }
 
 export class InMemoryAssetVersionRepository implements AssetVersionRepository {
@@ -419,6 +635,18 @@ export class InMemoryAssetVersionRepository implements AssetVersionRepository {
         candidate.assetId === input.assetId && candidate.idempotencyKey === input.idempotencyKey,
     );
     return version ? cloneAssetVersion(version) : null;
+  }
+
+  async listByAsset(input: { assetId: string; limit: number; cursor?: string }) {
+    const rows = [...this.versions.values()]
+      .filter((version) => version.assetId === input.assetId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime() || b.id.localeCompare(a.id));
+    const offset = Number.parseInt(input.cursor ?? "0", 10) || 0;
+    const items = rows.slice(offset, offset + input.limit).map(cloneAssetVersion);
+    return {
+      items,
+      nextCursor: offset + items.length < rows.length ? String(offset + items.length) : null,
+    };
   }
 }
 

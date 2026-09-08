@@ -24,6 +24,7 @@ export const apiRuntimeEnv = {
     AUTH_SECRET: z.string().trim().min(32).default("voidmix-development-secret-change-me"),
     AUTH_URL: z.url(),
     AUTH_DOMAIN: z.string().trim().min(1).optional(),
+    BLOB_STORAGE_DIR: z.string().trim().min(1).optional(),
   },
 } as const satisfies Preset;
 
@@ -39,6 +40,7 @@ export interface ApiRuntimeEnvironment {
   AUTH_SECRET: string;
   AUTH_URL: string;
   AUTH_DOMAIN?: string | undefined;
+  BLOB_STORAGE_DIR?: string | undefined;
   RESEND_API_KEY?: string | undefined;
   MAIL_FROM?: string | undefined;
   MAIL_FROM_NAME?: string | undefined;

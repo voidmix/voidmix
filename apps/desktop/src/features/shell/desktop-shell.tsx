@@ -1,4 +1,13 @@
-import { Bell, Cloud, Command, Gear, Laptop, MagnifyingGlass, Pulse } from "@phosphor-icons/react";
+import {
+  Bell,
+  Command,
+  FolderSimple,
+  Gear,
+  House,
+  MagnifyingGlass,
+  Pulse,
+  Stack,
+} from "@phosphor-icons/react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { useLocale, useSetLocale, useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -43,9 +52,10 @@ export function DesktopShell() {
   const locale = useLocale();
   const setLocale = useSetLocale();
   const navigation = [
-    { to: "/", label: t("overview"), icon: Cloud },
+    { to: "/", label: t("home"), icon: House },
+    { to: "/projects", label: t("projects"), icon: FolderSimple },
+    { to: "/library", label: t("library"), icon: Stack },
     { to: "/activity", label: t("activity"), icon: Pulse },
-    { to: "/devices", label: t("devices"), icon: Laptop },
     { to: "/settings", label: t("settings"), icon: Gear },
   ] as const;
   const [runtime, setRuntime] = useState<DesktopRuntime>({

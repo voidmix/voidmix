@@ -6,6 +6,9 @@
     "control": "Control",
     "notifications": "Notifications",
     "overview": "Overview",
+    "home": "Home",
+    "projects": "Projects",
+    "library": "Library",
     "activity": "Activity",
     "devices": "Devices",
     "settings": "Settings",
@@ -105,7 +108,36 @@
     "transferSummaries": "Transfer summaries",
     "transferSummariesDescription": "Notify me when a large upload or download completes.",
     "workspaceChanges": "Workspace changes",
-    "workspaceChangesDescription": "Show desktop notices for device and access changes."
+    "workspaceChangesDescription": "Show desktop notices for device and access changes.",
+    "devices": "Devices",
+    "manageDevices": "Manage registered devices"
+  },
+  "projects": {
+    "title": "Projects",
+    "description": "Move active ideas from brief to delivery.",
+    "newProject": "New project",
+    "projectList": "Project list",
+    "openProject": "Open {title}",
+    "backToProjects": "Back to projects",
+    "missing": "Project not found",
+    "summary": "Project summary",
+    "progress": "Progress",
+    "deadline": "Deadline",
+    "tasks": "Tasks",
+    "draft": "Draft",
+    "in_progress": "In progress",
+    "review": "Review"
+  },
+  "library": {
+    "title": "Library",
+    "description": "Keep briefs, media, and versions close to the work.",
+    "addAsset": "Add asset",
+    "search": "Search library",
+    "searchPlaceholder": "Search assets and briefs",
+    "assetList": "Library assets",
+    "video": "Video",
+    "brief": "Brief",
+    "audio": "Audio"
   },
   "errors": {
     "userNotFound": "The requested user could not be found.",
