@@ -44,16 +44,23 @@ for (const viewport of [
       await page.goto("/", { waitUntil: "commit" });
       const loading = page.getByRole("status", { name: "Loading your workspace…" });
       const command = page.getByRole("textbox", { name: "Ask Voidmix" });
+      const title = page.getByRole("heading", { name: "What will you move forward?" });
       const footer = page.getByRole("contentinfo");
-      await expect(loading).toBeVisible();
-      await expect(command).toHaveCount(0);
+      await expect(loading).toHaveCount(0);
+      await expect(title).toBeVisible();
+      await expect(command).toBeVisible();
+      await expect(command).toBeEnabled();
+      await expect(page.getByRole("combobox", { name: "Project context" })).toBeEnabled();
+      await expect(page.getByRole("button", { name: "Continue with Pi" })).toBeDisabled();
       await page.evaluate("document.fonts.ready");
+      const commandBounds = await command.boundingBox();
       const loadingBounds = await footer.boundingBox();
       expect(loadingBounds).not.toBeNull();
 
       releaseScripts();
       await expect(loading).toHaveCount(0);
-      await expect(command).toBeVisible();
+      await expect(command).toBeEnabled();
+      expect(await command.boundingBox()).toEqual(commandBounds);
       const readyBounds = await footer.boundingBox();
       expect(readyBounds).not.toBeNull();
       expect(Math.abs(readyBounds!.y - loadingBounds!.y)).toBeLessThan(1);

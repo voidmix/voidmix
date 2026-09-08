@@ -1,8 +1,8 @@
-import type { WorkspaceDataSource } from "../projects/preview-adapter";
+import type { ProjectStudioDataSource } from "../projects/preview-adapter";
 import type { PiSessionView } from "../projects/types";
 
 export async function runPreview(
-  source: WorkspaceDataSource,
+  source: ProjectStudioDataSource,
   input: PiSessionView,
   signal: AbortSignal,
   delayMs = 650,

@@ -16,7 +16,7 @@ compatibility components remain unchanged; the root route uses `CleanHome`.
 ## Data and honesty
 
 The project and Pi contracts/handlers are not yet implemented in the server.
-These routes therefore use `WorkspaceDataSource` with a preview implementation,
+These routes therefore use `ProjectStudioDataSource` with a preview implementation,
 not an API probe that silently substitutes successful fake data. All screens
 identify preview mode. No provider key, model request, external mutation or
 server-side authorization is implied by a successful preview interaction.

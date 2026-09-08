@@ -209,6 +209,25 @@ describe("API", () => {
     expect((await client.health({})).status).toBe("ok");
   });
 
+  it("serves the authenticated account profile without exposing admin state", async () => {
+    const { client } = setup("user", "user-1");
+    await expect(client.account.profile.get({})).resolves.toEqual({
+      id: "user-1",
+      email: "user@example.com",
+      displayName: "User",
+    });
+  });
+
+  it("rejects the account profile when there is no session", async () => {
+    const app = createTestApiApp({ resolveSession: async () => null });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(client.account.profile.get({})).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+  });
+
   it("generates compact request ids when the client does not provide one", async () => {
     const app = createTestApiApp();
     const response = await app.request("/health");

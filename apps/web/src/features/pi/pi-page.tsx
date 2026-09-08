@@ -12,15 +12,15 @@ import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useEffect, useRef, useState } from "react";
-import { WorkspaceShell } from "../projects/components/workspace-shell";
-import { useWorkspaceData } from "../projects/workspace-data";
-import { workspaceLabelClass } from "../projects/workspace-styles";
+import { ProjectStudioShell } from "../projects/components/studio-shell";
+import { useProjectStudioData } from "../projects/studio-data";
+import { studioLabelClass } from "../projects/studio-styles";
 import { RunTimeline } from "./run-timeline";
 import { runPreview } from "./preview-runner";
 
 export function PiPage({ projectId, sessionId }: { projectId: string; sessionId: string }) {
   const t = useTranslations("workspaceUi");
-  const { source, snapshot } = useWorkspaceData();
+  const { source, snapshot } = useProjectStudioData();
   const session = snapshot.sessions.find(
     (item) => item.id === sessionId && item.projectId === projectId,
   );
@@ -37,13 +37,13 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
   );
   if (!project || !session)
     return (
-      <WorkspaceShell>
+      <ProjectStudioShell>
         <EmptyState
           title={t("missingSession")}
           description={t("missingSessionDetail")}
           action={<Link to="/projects">{t("back")}</Link>}
         />
-      </WorkspaceShell>
+      </ProjectStudioShell>
     );
   const task = snapshot.tasks.find(
     (item) => item.id === session.taskId && item.projectId === projectId,
@@ -67,7 +67,7 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
     queueMicrotask(() => confirmInvoker.current?.isConnected && confirmInvoker.current.focus());
   }
   return (
-    <WorkspaceShell title={`${project.name} / Pi`} projectSearch={{ tab: "pi", filter: "all" }}>
+    <ProjectStudioShell title={`${project.name} / Pi`} projectSearch={{ tab: "pi", filter: "all" }}>
       <Link
         to="/projects/$projectId"
         params={{ projectId }}
@@ -98,7 +98,7 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
       </section>
       {session.prompt ? (
         <div className="max-w-[700px] py-[18px]">
-          <span className={workspaceLabelClass}>{t("goal")}</span>
+          <span className={studioLabelClass}>{t("goal")}</span>
           <p className="mt-2 whitespace-pre-wrap text-sm leading-7 [overflow-wrap:anywhere]">
             {session.prompt}
           </p>
@@ -196,6 +196,6 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
           </div>
         </DialogContent>
       </Dialog>
-    </WorkspaceShell>
+    </ProjectStudioShell>
   );
 }

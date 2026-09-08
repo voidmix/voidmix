@@ -19,7 +19,13 @@
     "browserPreview": "Browser preview",
     "trayMessage": "Tray controls are available in the desktop build.",
     "hideToTray": "Hide VoidMix to the system tray",
-    "searchWorkspace": "Search projects"
+    "searchProjects": "Search projects",
+    "account": "Account",
+    "personalStudio": "Personal studio",
+    "accountLoading": "Loading account…",
+    "previewAccount": "Preview account",
+    "signedOut": "Not signed in",
+    "accountUnavailable": "Account unavailable"
   },
   "overview": {
     "title": "Your studio is in motion",

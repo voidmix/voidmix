@@ -138,7 +138,7 @@ button:disabled {
   min-height: 30px;
 }
 
-.workspace-switcher,
+.account-control,
 .runtime-status {
   display: flex;
   align-items: center;
@@ -147,7 +147,7 @@ button:disabled {
   padding: 11px 10px;
   border-top: 1px solid var(--line);
 }
-.workspace-switcher > span:nth-child(2),
+.account-control > span:nth-child(2),
 .runtime-status > span:nth-child(2) {
   display: flex;
   min-width: 0;
@@ -155,7 +155,7 @@ button:disabled {
   flex-direction: column;
   gap: 2px;
 }
-.workspace-switcher strong,
+.account-control strong,
 .runtime-status strong {
   overflow: hidden;
   color: var(--ink);
@@ -164,17 +164,17 @@ button:disabled {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.workspace-switcher small,
+.account-control small,
 .runtime-status small {
   color: var(--muted);
   font-size: 10px;
 }
-.workspace-switcher [data-slot="avatar"] {
+.account-control [data-slot="avatar"] {
   border-radius: 8px;
   background: var(--secondary);
   color: var(--secondary-foreground);
 }
-.workspace-switcher > svg {
+.account-control > svg {
   color: var(--muted);
 }
 .runtime-status {

@@ -11,19 +11,15 @@ import {
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { useState } from "react";
-import { WorkspaceShell } from "./components/workspace-shell";
+import { ProjectStudioShell } from "./components/studio-shell";
 import { ProjectCard } from "./components/project-card";
-import { useWorkspaceData } from "./workspace-data";
-import {
-  workspaceFieldClass,
-  workspaceInputClass,
-  workspaceProjectGridClass,
-} from "./workspace-styles";
+import { useProjectStudioData } from "./studio-data";
+import { studioFieldClass, studioInputClass, studioProjectGridClass } from "./studio-styles";
 
 export function ProjectsPage() {
   const t = useTranslations("workspaceUi");
   const navigate = useNavigate();
-  const { source, snapshot } = useWorkspaceData();
+  const { source, snapshot } = useProjectStudioData();
   const [query, setQuery] = useState("");
   const [archived, setArchived] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -34,7 +30,7 @@ export function ProjectsPage() {
       project.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
   );
   return (
-    <WorkspaceShell title={t("projects")}>
+    <ProjectStudioShell title={t("projects")}>
       <PageHeader
         title={t("projects")}
         description={t("projectDescription")}
@@ -47,7 +43,7 @@ export function ProjectsPage() {
       />
       <div className="my-[30px] flex items-center gap-4 max-[520px]:flex-col max-[520px]:items-start">
         <input
-          className={`${workspaceInputClass} max-w-80`}
+          className={`${studioInputClass} max-w-80`}
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -64,7 +60,7 @@ export function ProjectsPage() {
         </label>
       </div>
       {projects.length ? (
-        <div className={workspaceProjectGridClass}>
+        <div className={studioProjectGridClass}>
           {projects.map((project) => {
             const tasks = snapshot.tasks.filter((task) => task.projectId === project.id);
             return (
@@ -110,10 +106,10 @@ export function ProjectsPage() {
               });
             }}
           >
-            <label className={workspaceFieldClass}>
+            <label className={studioFieldClass}>
               {t("name")}
               <input
-                className={workspaceInputClass}
+                className={studioInputClass}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 maxLength={120}
@@ -132,6 +128,6 @@ export function ProjectsPage() {
           </form>
         </DialogContent>
       </Dialog>
-    </WorkspaceShell>
+    </ProjectStudioShell>
   );
 }

@@ -24,15 +24,11 @@ import { signOut, useSession } from "../../../lib/auth-client";
 import { LoginButton } from "../../home/components/login-button";
 import { UserDropdown } from "../../home/components/user-dropdown";
 import type { ProjectTab, TaskFilter } from "../types";
-import { useWorkspaceData } from "../workspace-data";
-import {
-  workspaceInputClass,
-  workspaceLabelClass,
-  workspaceSearchRowClass,
-} from "../workspace-styles";
-import { toggleWorkspaceShell, useWorkspaceShellCollapsed } from "../workspace-shell-store";
+import { useProjectStudioData } from "../studio-data";
+import { studioInputClass, studioLabelClass, studioSearchRowClass } from "../studio-styles";
+import { toggleProjectStudioShell, useProjectStudioShellCollapsed } from "../studio-shell-store";
 
-export function WorkspaceShell({
+export function ProjectStudioShell({
   children,
   current = "projects",
   projectSearch,
@@ -44,10 +40,11 @@ export function WorkspaceShell({
   title?: string;
 }) {
   const t = useTranslations("workspaceUi");
-  const { snapshot, state, retry } = useWorkspaceData();
+  const commonT = useTranslations("common");
+  const { snapshot, state, retry } = useProjectStudioData();
   const session = useSession();
   const navigate = useNavigate();
-  const collapsed = useWorkspaceShellCollapsed();
+  const collapsed = useProjectStudioShellCollapsed();
   const [panel, setPanel] = useState<"search" | "notifications" | "menu" | null>(null);
   const [query, setQuery] = useState("");
   const mainRef = useRef<HTMLElement>(null);
@@ -143,7 +140,7 @@ export function WorkspaceShell({
           "fixed inset-y-0 left-0 z-[35] flex flex-col overflow-y-auto border-r border-border bg-muted px-3.5 pt-[26px] pb-[22px] transition-[width] duration-150 motion-reduce:transition-none max-[800px]:hidden",
           collapsed ? "w-18" : "w-56 max-[1100px]:w-50",
         )}
-        aria-label="Primary navigation"
+        aria-label={commonT("primaryNavigation")}
       >
         <Link
           to="/"
@@ -152,7 +149,7 @@ export function WorkspaceShell({
         >
           <Logo className={collapsed ? "[&>span]:hidden" : undefined} />
         </Link>
-        <nav className="mt-8 grid gap-1" aria-label="Primary navigation">
+        <nav className="mt-8 grid gap-1" aria-label={commonT("primaryNavigation")}>
           {renderNav(collapsed)}
         </nav>
         <div className={cn("mt-9", collapsed && "hidden")}>
@@ -192,7 +189,7 @@ export function WorkspaceShell({
             className="max-[800px]:hidden"
             size="icon"
             variant="ghost"
-            onClick={toggleWorkspaceShell}
+            onClick={toggleProjectStudioShell}
             aria-label={t(collapsed ? "expand" : "collapse")}
             aria-expanded={!collapsed}
           >
@@ -326,7 +323,7 @@ export function WorkspaceShell({
             <>
               {panel === "search" ? (
                 <input
-                  className={workspaceInputClass}
+                  className={studioInputClass}
                   aria-label={t("search")}
                   placeholder={t("searchHint")}
                   value={query}
@@ -336,7 +333,7 @@ export function WorkspaceShell({
               ) : null}
               {panel === "search" ? (
                 <>
-                  <h3 className={workspaceLabelClass}>{t("projects")}</h3>
+                  <h3 className={studioLabelClass}>{t("projects")}</h3>
                   {projects.map((project) => (
                     <Link
                       onClick={() => close(false)}
@@ -344,14 +341,14 @@ export function WorkspaceShell({
                       to="/projects/$projectId"
                       params={{ projectId: project.id }}
                       search={{ tab: "overview", filter: "all" }}
-                      className={workspaceSearchRowClass}
+                      className={studioSearchRowClass}
                     >
                       {project.name}
                     </Link>
                   ))}
                 </>
               ) : null}
-              <h3 className={workspaceLabelClass}>{t("tasks")}</h3>
+              <h3 className={studioLabelClass}>{t("tasks")}</h3>
               {tasks.map((task) => (
                 <Link
                   onClick={() => close(false)}
@@ -359,32 +356,32 @@ export function WorkspaceShell({
                   to="/projects/$projectId"
                   params={{ projectId: task.projectId }}
                   search={{ tab: "tasks", filter: "all" }}
-                  className={workspaceSearchRowClass}
+                  className={studioSearchRowClass}
                 >
                   {task.title}
                 </Link>
               ))}
               {panel === "search" ? (
                 <>
-                  <h3 className={workspaceLabelClass}>{t("sessionSearch")}</h3>
+                  <h3 className={studioLabelClass}>{t("sessionSearch")}</h3>
                   {sessions.map((item) => (
                     <Link
                       onClick={() => close(false)}
                       key={item.id}
                       to="/projects/$projectId/pi/$sessionId"
                       params={{ projectId: item.projectId, sessionId: item.id }}
-                      className={workspaceSearchRowClass}
+                      className={studioSearchRowClass}
                     >
                       {item.prompt}
                     </Link>
                   ))}
-                  <h3 className={workspaceLabelClass}>{t("pageSearch")}</h3>
+                  <h3 className={studioLabelClass}>{t("pageSearch")}</h3>
                   {pages.map((page) => (
                     <Link
                       key={page.to}
                       to={page.to}
                       onClick={() => close(false)}
-                      className={workspaceSearchRowClass}
+                      className={studioSearchRowClass}
                     >
                       {page.label}
                     </Link>

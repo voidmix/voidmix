@@ -91,13 +91,14 @@ improvement.
 
 ## Home layout stability
 
-The preview shell keeps page content in the same grid cell as its loading
-skeleton. Content retains its intrinsic dimensions but stays invisible, inert,
-and hidden from assistive technology until tab-local data has been restored.
-This reserves the home page's height during SSR and hydration, so the footer
-does not jump from the first viewport to the bottom of the loaded page.
+The preview shell renders its seed snapshot during SSR while the client restores
+tab-local data. If a retry is in progress, page content stays in the same grid
+cell as the loading skeleton, retaining its intrinsic dimensions while hidden,
+inert, and excluded from assistive technology. This keeps the first meaningful
+content visible immediately and prevents the footer from jumping during a
+client-side retry.
 
 Run the browser regression with
 `bun run --cwd e2e e2e --project web --grep 'keeps the home footer'`.
-It delays JavaScript to measure the server-rendered loading state, then checks
+It delays JavaScript to measure the server-rendered seed content, then checks
 the footer's position after hydration at widths of 390, 768, and 1280 pixels.

@@ -1,20 +1,11 @@
-import {
-  Bell,
-  Cloud,
-  Command,
-  DotsThree,
-  Gear,
-  Laptop,
-  MagnifyingGlass,
-  Pulse,
-} from "@phosphor-icons/react";
+import { Bell, Cloud, Command, Gear, Laptop, MagnifyingGlass, Pulse } from "@phosphor-icons/react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { useLocale, useSetLocale, useTranslations } from "@voidmix/i18n/client";
-import { Avatar } from "@voidmix/ui/avatar";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
+import { AccountControl } from "./account-control";
 
 function WindowActions() {
   const t = useTranslations("common");
@@ -91,14 +82,7 @@ export function DesktopShell() {
         </nav>
 
         <div className="sidebar-spacer" />
-        <div className="workspace-switcher account-switcher">
-          <Avatar name="Zack" size="small" />
-          <span>
-            <strong>Zack</strong>
-            <small>Personal studio</small>
-          </span>
-          <DotsThree size={16} aria-hidden="true" weight="regular" />
-        </div>
+        <AccountControl />
         <div className="runtime-status">
           <span className={runtime.trayEnabled ? "runtime-dot ready" : "runtime-dot"} />
           <span>
@@ -114,7 +98,7 @@ export function DesktopShell() {
         <header className="titlebar" data-tauri-drag-region>
           <Button className="search-trigger" variant="outline">
             <MagnifyingGlass size={15} weight="regular" />
-            <span>{t("searchWorkspace").replace("workspace", "projects")}</span>
+            <span>{t("searchProjects")}</span>
             <kbd>
               <Command size={11} />K
             </kbd>

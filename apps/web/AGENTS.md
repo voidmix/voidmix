@@ -52,7 +52,7 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - `/`, `/projects`, `/projects/$projectId`, and the project Pi route share the
   Clean Signal preview shell. These public routes contain only explicitly
   labelled sample data; they are not authorization gates for live project APIs.
-- `features/projects/workspace-data.tsx` owns data-source injection. Views use
+- `features/projects/studio-data.tsx` owns data-source injection. Views use
   its snapshot and operations rather than accessing sessionStorage or Pi SDKs.
   Preview writes are tab-local; a live adapter must use `@voidmix/client`, never
   `@voidmix/ai` or server imports. See [workspace preview](../../docs/development/workspace-preview.md).

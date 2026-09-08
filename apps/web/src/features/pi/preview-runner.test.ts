@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
-import { createPreviewAdapter } from "../projects/preview-adapter";
+import { createProjectStudioPreviewAdapter } from "../projects/preview-adapter";
 import { runPreview } from "./preview-runner";
 
 beforeEach(() => {
@@ -11,7 +11,7 @@ afterEach(() => vi.useRealTimers());
 
 describe("preview run lifecycle", () => {
   it("shows ordered steps and produces a project-scoped task", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     const session = source.createSession("northstar", "Write the brief");
     const promise = runPreview(source, session, new AbortController().signal, 10);
     expect(source.getSnapshot().sessions[0]?.status).toBe("running");
@@ -33,7 +33,7 @@ describe("preview run lifecycle", () => {
     });
   });
   it("cancels without producing a task", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     const count = source.getSnapshot().tasks.length;
     const session = source.createSession("northstar", "Cancel me");
     const controller = new AbortController();
@@ -47,7 +47,7 @@ describe("preview run lifecycle", () => {
     expect(source.getSnapshot().tasks).toHaveLength(count);
   });
   it("exposes failure and permits retry without duplicate tasks", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     const session = source.createSession("northstar", "Retry me");
     const create = vi.spyOn(source, "createTask").mockImplementationOnce(() => {
       throw new Error("Unavailable");

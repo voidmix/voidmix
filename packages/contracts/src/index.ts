@@ -4,6 +4,12 @@ import { z } from "zod";
 export const roleSchema = z.enum(["user", "admin", "owner"]);
 export const userStatusSchema = z.enum(["active", "suspended"]);
 
+export const accountProfileSchema = z.object({
+  id: z.string().min(1),
+  email: z.email(),
+  displayName: z.string().min(1),
+});
+
 export const userSchema = z.object({
   id: z.string().min(1),
   email: z.email(),
@@ -271,6 +277,7 @@ const getAuthSettings = oc.input(z.object({})).output(authSettingsSchema);
 const updateAuthSettings = oc.input(updateAuthSettingsSchema).output(authSettingsSchema);
 
 const getPublicAuthCapabilities = oc.input(z.object({})).output(publicAuthCapabilitiesSchema);
+const getAccountProfile = oc.input(z.object({})).output(accountProfileSchema);
 
 const createAsset = oc
   .input(z.object({ workspaceId: z.string().trim().min(1), path: z.string().min(1).max(1024) }))
@@ -323,6 +330,9 @@ const transitionAgentStep = oc
 
 export const apiContract = {
   health,
+  account: {
+    profile: { get: getAccountProfile },
+  },
   public: {
     auth: {
       capabilities: {
@@ -375,6 +385,7 @@ export const apiContract = {
 };
 
 export type ApiContract = typeof apiContract;
+export type AccountProfileDto = z.infer<typeof accountProfileSchema>;
 export type UserDto = z.infer<typeof userSchema>;
 export type UserPageDto = z.infer<typeof userPageSchema>;
 export type AuditEventDto = z.infer<typeof auditEventSchema>;

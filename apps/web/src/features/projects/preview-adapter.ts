@@ -1,14 +1,14 @@
 import {
-  workspaceSnapshotSchema,
+  studioSnapshotSchema,
   type HomeViewModel,
   type PiSessionView,
   type ProjectView,
   type TaskView,
-  type WorkspaceSnapshot,
+  type StudioSnapshot,
 } from "./types";
 
 const storageKey = "voidmix.workspace.preview.v1";
-const seed: WorkspaceSnapshot = {
+const seed: StudioSnapshot = {
   version: 1,
   projects: [
     {
@@ -90,8 +90,8 @@ const seed: WorkspaceSnapshot = {
   sessions: [],
 };
 
-export interface WorkspaceDataSource {
-  getSnapshot(this: void): WorkspaceSnapshot;
+export interface ProjectStudioDataSource {
+  getSnapshot(this: void): StudioSnapshot;
   subscribe(this: void, listener: () => void): () => void;
   hydrate(): void | Promise<void>;
   getHome(): HomeViewModel;
@@ -104,12 +104,14 @@ export interface WorkspaceDataSource {
   updateSession(session: PiSessionView): void;
 }
 
-export function createPreviewAdapter(initial: WorkspaceSnapshot = seed): WorkspaceDataSource {
+export function createProjectStudioPreviewAdapter(
+  initial: StudioSnapshot = seed,
+): ProjectStudioDataSource {
   let snapshot = structuredClone(initial);
   let hydrated = false;
   const listeners = new Set<() => void>();
   const id = () => crypto.randomUUID();
-  function publish(next: WorkspaceSnapshot) {
+  function publish(next: StudioSnapshot) {
     snapshot = next;
     try {
       sessionStorage.setItem(storageKey, JSON.stringify(next));
@@ -121,7 +123,7 @@ export function createPreviewAdapter(initial: WorkspaceSnapshot = seed): Workspa
   function activity(
     projectId: string,
     title: string,
-    action: WorkspaceSnapshot["activity"][number]["action"],
+    action: StudioSnapshot["activity"][number]["action"],
   ) {
     return [{ id: id(), projectId, title, action, at: new Date() }, ...snapshot.activity].slice(
       0,
@@ -146,7 +148,7 @@ export function createPreviewAdapter(initial: WorkspaceSnapshot = seed): Workspa
       try {
         const raw = sessionStorage.getItem(storageKey);
         if (!raw) return;
-        const parsed = workspaceSnapshotSchema.safeParse(JSON.parse(raw));
+        const parsed = studioSnapshotSchema.safeParse(JSON.parse(raw));
         if (parsed.success)
           publish({
             ...parsed.data,
@@ -256,7 +258,7 @@ export function createPreviewAdapter(initial: WorkspaceSnapshot = seed): Workspa
   };
 }
 
-export function homeView(snapshot: WorkspaceSnapshot): HomeViewModel {
+export function homeView(snapshot: StudioSnapshot): HomeViewModel {
   return {
     projects: snapshot.projects
       .filter((project) => project.status !== "archived")

@@ -19,7 +19,13 @@
     "browserPreview": "浏览器预览",
     "trayMessage": "系统托盘控制仅在桌面版本中可用。",
     "hideToTray": "将 VoidMix 隐藏到系统托盘",
-    "searchWorkspace": "搜索项目"
+    "searchProjects": "搜索项目",
+    "account": "账号",
+    "personalStudio": "个人工作室",
+    "accountLoading": "正在加载账号…",
+    "previewAccount": "预览账号",
+    "signedOut": "尚未登录",
+    "accountUnavailable": "无法加载账号"
   },
   "overview": {
     "title": "你的工作室正在运转",

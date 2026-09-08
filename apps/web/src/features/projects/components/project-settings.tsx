@@ -8,7 +8,7 @@ import {
 } from "@voidmix/ui/components/ui/dialog";
 import { useState } from "react";
 import { projectViewSchema, type ProjectView } from "../types";
-import { workspaceFieldClass, workspaceInputClass } from "../workspace-styles";
+import { studioFieldClass, studioInputClass } from "../studio-styles";
 
 export function ProjectSettings({
   project,
@@ -29,39 +29,39 @@ export function ProjectSettings({
           if (draft.name.trim()) onSave({ ...draft, name: draft.name.trim() });
         }}
       >
-        <label className={workspaceFieldClass}>
+        <label className={studioFieldClass}>
           {t("name")}
           <input
-            className={workspaceInputClass}
+            className={studioInputClass}
             value={draft.name}
             onChange={(event) => setDraft({ ...draft, name: event.target.value })}
             maxLength={120}
             required
           />
         </label>
-        <label className={workspaceFieldClass}>
+        <label className={studioFieldClass}>
           {t("description")}
           <textarea
-            className={workspaceInputClass}
+            className={studioInputClass}
             rows={4}
             value={draft.description}
             onChange={(event) => setDraft({ ...draft, description: event.target.value })}
             maxLength={2000}
           />
         </label>
-        <label className={workspaceFieldClass}>
+        <label className={studioFieldClass}>
           {t("milestone")}
           <input
-            className={workspaceInputClass}
+            className={studioInputClass}
             value={draft.milestone}
             onChange={(event) => setDraft({ ...draft, milestone: event.target.value })}
             maxLength={200}
           />
         </label>
-        <label className={workspaceFieldClass}>
+        <label className={studioFieldClass}>
           {t("status")}
           <select
-            className={workspaceInputClass}
+            className={studioInputClass}
             value={draft.status}
             onChange={(event) =>
               setDraft({

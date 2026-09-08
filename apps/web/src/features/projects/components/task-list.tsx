@@ -4,7 +4,7 @@ import { EmptyState } from "@voidmix/ui/empty-state";
 import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useState } from "react";
 import { taskStatusSchema, type TaskView } from "../types";
-import { workspaceFieldClass, workspaceInputClass } from "../workspace-styles";
+import { studioFieldClass, studioInputClass } from "../studio-styles";
 
 export function TaskList({
   tasks,
@@ -30,7 +30,7 @@ export function TaskList({
         }}
       >
         <input
-          className={`${workspaceInputClass} min-w-0 flex-1`}
+          className={`${studioInputClass} min-w-0 flex-1`}
           aria-label={t("taskTitle")}
           placeholder={t("taskTitle")}
           maxLength={300}
@@ -108,30 +108,30 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
             setEditing(false);
           }}
         >
-          <label className={workspaceFieldClass}>
+          <label className={studioFieldClass}>
             {t("taskTitle")}
             <input
-              className={workspaceInputClass}
+              className={studioInputClass}
               value={draft.title}
               maxLength={300}
               required
               onChange={(event) => setDraft({ ...draft, title: event.target.value })}
             />
           </label>
-          <label className={workspaceFieldClass}>
+          <label className={studioFieldClass}>
             {t("owner")}
             <input
-              className={workspaceInputClass}
+              className={studioInputClass}
               value={draft.owner}
               maxLength={80}
               required
               onChange={(event) => setDraft({ ...draft, owner: event.target.value })}
             />
           </label>
-          <label className={workspaceFieldClass}>
+          <label className={studioFieldClass}>
             {t("status")}
             <select
-              className={workspaceInputClass}
+              className={studioInputClass}
               value={draft.status}
               onChange={(event) =>
                 setDraft({ ...draft, status: taskStatusSchema.parse(event.target.value) })
@@ -144,10 +144,10 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
               ))}
             </select>
           </label>
-          <label className={workspaceFieldClass}>
+          <label className={studioFieldClass}>
             {t("priority")}
             <select
-              className={workspaceInputClass}
+              className={studioInputClass}
               value={draft.priority}
               onChange={(event) =>
                 setDraft({ ...draft, priority: event.target.value === "high" ? "high" : "normal" })

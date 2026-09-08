@@ -74,6 +74,15 @@ export function createApiRouter(options: CreateApiRouterOptions) {
       status: "ok" as const,
       timestamp: options.now?.() ?? new Date(),
     })),
+    account: {
+      profile: {
+        get: os.account.profile.get.use(requireAuthenticated).handler(({ context }) => {
+          const { id, email, displayName } = context.principal.user;
+          context.log?.set({ user: { id }, permissionResult: "granted" });
+          return { id, email, displayName };
+        }),
+      },
+    },
     public: {
       auth: {
         capabilities: {

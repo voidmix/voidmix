@@ -1,0 +1,28 @@
+import { createApiClient, type ApiClient } from "@voidmix/client";
+import { env } from "../env";
+
+export type AccountProfile = Awaited<ReturnType<ApiClient["account"]["profile"]["get"]>>;
+export type AccountState =
+  | { status: "loading" | "preview" | "signed_out" | "unavailable" }
+  | { status: "signed_in"; profile: AccountProfile };
+
+export async function loadAccount(apiUrl = env.VITE_API_URL): Promise<AccountState> {
+  if (!apiUrl) return { status: "preview" };
+  try {
+    const client = createApiClient({
+      baseUrl: apiUrl,
+      fetch: (input, init) => globalThis.fetch(input, { ...init, credentials: "include" }),
+    });
+    return { status: "signed_in", profile: await client.account.profile.get({}) };
+  } catch (error) {
+    return {
+      status:
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "UNAUTHORIZED"
+          ? "signed_out"
+          : "unavailable",
+    };
+  }
+}

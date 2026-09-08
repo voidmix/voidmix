@@ -5,19 +5,19 @@ import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useState } from "react";
-import { WorkspaceShell } from "./components/workspace-shell";
+import { ProjectStudioShell } from "./components/studio-shell";
 import { TaskList } from "./components/task-list";
 import { ProjectSettings } from "./components/project-settings";
 import { ActivityList } from "./components/activity-list";
-import { useWorkspaceData } from "./workspace-data";
+import { useProjectStudioData } from "./studio-data";
 import { taskStatusSchema, type ProjectTab, type TaskFilter } from "./types";
 import {
-  workspaceContextSelectClass,
-  workspaceFieldClass,
-  workspaceInputClass,
-  workspaceLabelClass,
-  workspaceSearchRowClass,
-} from "./workspace-styles";
+  studioContextSelectClass,
+  studioFieldClass,
+  studioInputClass,
+  studioLabelClass,
+  studioSearchRowClass,
+} from "./studio-styles";
 
 export function ProjectPage({
   projectId,
@@ -29,19 +29,19 @@ export function ProjectPage({
   filter: TaskFilter;
 }) {
   const t = useTranslations("workspaceUi");
-  const { source, snapshot } = useWorkspaceData();
+  const { source, snapshot } = useProjectStudioData();
   const navigate = useNavigate();
   const [undo, setUndo] = useState<(() => void) | null>(null);
   const project = snapshot.projects.find((item) => item.id === projectId);
   if (!project)
     return (
-      <WorkspaceShell>
+      <ProjectStudioShell>
         <EmptyState
           title={t("missing")}
           description={t("missingDetail")}
           action={<Link to="/projects">{t("back")}</Link>}
         />
-      </WorkspaceShell>
+      </ProjectStudioShell>
     );
   const tasks = snapshot.tasks.filter((task) => task.projectId === projectId);
   const sessions = snapshot.sessions.filter((session) => session.projectId === projectId);
@@ -53,14 +53,14 @@ export function ProjectPage({
     });
   }
   return (
-    <WorkspaceShell title={project.name} projectSearch={{ tab, filter }}>
+    <ProjectStudioShell title={project.name} projectSearch={{ tab, filter }}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link to="/projects" className="text-xs text-muted-foreground">
           ← {t("back")}
         </Link>
         <select
           aria-label={t("chooseProject")}
-          className={`${workspaceContextSelectClass} max-w-full`}
+          className={`${studioContextSelectClass} max-w-full`}
           value={projectId}
           onChange={(event) => {
             setUndo(null);
@@ -123,11 +123,11 @@ export function ProjectPage({
         <div className="grid gap-8">
           <div className="grid grid-cols-[1.5fr_1fr] gap-9 max-[520px]:grid-cols-1">
             <section>
-              <h2 className={workspaceLabelClass}>{t("goal")}</h2>
+              <h2 className={studioLabelClass}>{t("goal")}</h2>
               <p className="mt-3 text-sm leading-7">{project.description || t("notSet")}</p>
             </section>
             <section>
-              <h2 className={workspaceLabelClass}>{t("milestone")}</h2>
+              <h2 className={studioLabelClass}>{t("milestone")}</h2>
               <p className="mt-3 text-sm">{project.milestone || t("notSet")}</p>
               <p className="mt-3 text-xs text-muted-foreground">
                 {t("taskCount", {
@@ -145,7 +145,7 @@ export function ProjectPage({
                 .map((task) => (
                   <Link
                     key={task.id}
-                    className={workspaceSearchRowClass}
+                    className={studioSearchRowClass}
                     to="/projects/$projectId"
                     params={{ projectId }}
                     search={{ tab: "tasks", filter: "blocked" }}
@@ -165,10 +165,10 @@ export function ProjectPage({
       ) : null}
       {tab === "tasks" ? (
         <>
-          <label className={`${workspaceFieldClass} mb-5 w-fit`}>
+          <label className={`${studioFieldClass} mb-5 w-fit`}>
             {t("status")}
             <select
-              className={`${workspaceInputClass} w-auto`}
+              className={`${studioInputClass} w-auto`}
               value={filter}
               onChange={(event) => {
                 void navigate({
@@ -213,7 +213,7 @@ export function ProjectPage({
                   <Link
                     to="/projects/$projectId/pi/$sessionId"
                     params={{ projectId, sessionId: session.id }}
-                    className={workspaceSearchRowClass}
+                    className={studioSearchRowClass}
                   >
                     <span className="min-w-0 flex-1 truncate">
                       {session.prompt || t("session")}
@@ -241,6 +241,6 @@ export function ProjectPage({
           }}
         />
       ) : null}
-    </WorkspaceShell>
+    </ProjectStudioShell>
   );
 }

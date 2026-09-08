@@ -8,17 +8,14 @@ import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useState } from "react";
 import { ProjectCard } from "../projects/components/project-card";
 import { ActivityList } from "../projects/components/activity-list";
-import { WorkspaceShell } from "../projects/components/workspace-shell";
-import { useWorkspaceData } from "../projects/workspace-data";
-import {
-  workspaceContextSelectClass,
-  workspaceProjectGridClass,
-} from "../projects/workspace-styles";
+import { ProjectStudioShell } from "../projects/components/studio-shell";
+import { useProjectStudioData } from "../projects/studio-data";
+import { studioContextSelectClass, studioProjectGridClass } from "../projects/studio-styles";
 
 export function CleanHome() {
   const t = useTranslations("workspaceUi");
   const navigate = useNavigate();
-  const { source, snapshot } = useWorkspaceData();
+  const { source, snapshot } = useProjectStudioData();
   const home = source.getHome();
   const [draft, setDraft] = useState("");
   const [selected, setSelected] = useState("");
@@ -34,7 +31,7 @@ export function CleanHome() {
     });
   }
   return (
-    <WorkspaceShell current="home">
+    <ProjectStudioShell current="home">
       <section
         className="mx-auto mt-[26px] mb-[54px] max-w-[740px] max-[800px]:mt-[18px] max-[520px]:mb-9"
         aria-labelledby="signal-home-title"
@@ -63,7 +60,7 @@ export function CleanHome() {
                 aria-label={t("chooseProject")}
                 value={projectId ?? ""}
                 onChange={(event) => setSelected(event.target.value)}
-                className={workspaceContextSelectClass}
+                className={studioContextSelectClass}
               >
                 {home.projects.map((project) => (
                   <option key={project.id} value={project.id}>
@@ -155,7 +152,7 @@ export function CleanHome() {
           </Link>
         </div>
         {home.projects.length ? (
-          <div className={workspaceProjectGridClass}>
+          <div className={studioProjectGridClass}>
             {home.projects.slice(0, 3).map((project) => (
               <ProjectCard project={project} key={project.id} />
             ))}
@@ -175,6 +172,6 @@ export function CleanHome() {
         </summary>
         <ActivityList items={home.activity} />
       </details>
-    </WorkspaceShell>
+    </ProjectStudioShell>
   );
 }

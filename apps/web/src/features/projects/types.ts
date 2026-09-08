@@ -33,7 +33,7 @@ export const piSessionViewSchema = z.object({
   steps: z.array(runStepSchema),
   taskId: z.string().nullable(),
 });
-export const workspaceSnapshotSchema = z.object({
+export const studioSnapshotSchema = z.object({
   version: z.literal(1),
   projects: z.array(projectViewSchema),
   tasks: z.array(taskViewSchema),
@@ -44,7 +44,7 @@ export type ProjectView = z.infer<typeof projectViewSchema>;
 export type TaskView = z.infer<typeof taskViewSchema>;
 export type ActivityView = z.infer<typeof activityViewSchema>;
 export type PiSessionView = z.infer<typeof piSessionViewSchema>;
-export type WorkspaceSnapshot = z.infer<typeof workspaceSnapshotSchema>;
+export type StudioSnapshot = z.infer<typeof studioSnapshotSchema>;
 export type ProjectTab = "overview" | "tasks" | "pi" | "activity" | "settings";
 export type TaskFilter = "all" | TaskView["status"];
 export interface HomeViewModel {

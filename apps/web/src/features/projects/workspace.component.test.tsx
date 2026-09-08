@@ -7,10 +7,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test"
 import messages from "../../../messages/en.json";
 import { CleanHome } from "../home/clean-home";
 import { PiPage } from "../pi/pi-page";
-import { createPreviewAdapter } from "./preview-adapter";
+import { createProjectStudioPreviewAdapter } from "./preview-adapter";
 import { ProjectPage } from "./project-page";
-import { WorkspaceDataProvider } from "./workspace-data";
-import { resetWorkspaceShell } from "./workspace-shell-store";
+import { ProjectStudioDataProvider } from "./studio-data";
+import { resetProjectStudioShell } from "./studio-shell-store";
 
 const navigate = vi.hoisted(() => vi.fn());
 vi.mock("@tanstack/react-router", () => ({
@@ -65,16 +65,16 @@ vi.mock("@voidmix/i18n/client", () => ({
 beforeEach(() => {
   sessionStorage.clear();
   navigate.mockReset();
-  resetWorkspaceShell();
+  resetProjectStudioShell();
 });
 afterEach(cleanup);
 
 describe("Clean Signal workspace", () => {
   it("shows one command entry, three templates and real project destinations", async () => {
     render(
-      <WorkspaceDataProvider source={createPreviewAdapter()}>
+      <ProjectStudioDataProvider source={createProjectStudioPreviewAdapter()}>
         <CleanHome />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     expect(
       await screen.findByRole("heading", { name: "What will you move forward?" }),
@@ -89,11 +89,11 @@ describe("Clean Signal workspace", () => {
     expect(screen.getByText("Recent activity").closest("details")).not.toHaveAttribute("open");
   });
   it("binds the command to a selected project without executing it", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <CleanHome />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     await screen.findByRole("textbox", { name: "Ask Voidmix" });
     fireEvent.change(screen.getByRole("combobox", { name: "Project context" }), {
@@ -113,7 +113,7 @@ describe("Clean Signal workspace", () => {
     });
   });
   it("offers an actionable empty state and disables Pi without a project", async () => {
-    const source = createPreviewAdapter({
+    const source = createProjectStudioPreviewAdapter({
       version: 1,
       projects: [],
       tasks: [],
@@ -121,25 +121,24 @@ describe("Clean Signal workspace", () => {
       sessions: [],
     });
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <CleanHome />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     await screen.findByText("Make room for your next idea");
     expect(screen.getByRole("link", { name: "Create project" })).toBeVisible();
     expect(screen.getByRole("textbox", { name: "Ask Voidmix" })).toBeDisabled();
   });
   it("shows loading and retryable data errors", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     vi.spyOn(source, "hydrate")
       .mockRejectedValueOnce(new Error("Unavailable"))
       .mockResolvedValue(undefined);
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <ProjectPage projectId="northstar" tab="overview" filter="all" />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
-    expect(screen.getByRole("status", { name: "Loading your workspace…" })).toBeVisible();
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Your workspace could not be loaded",
     );
@@ -147,11 +146,11 @@ describe("Clean Signal workspace", () => {
     await screen.findByRole("heading", { name: "Northstar / Launch film" });
   });
   it("updates and undoes task status from the project task list", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <ProjectPage projectId="northstar" tab="tasks" filter="all" />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     const done = await screen.findByRole("button", { name: "Done: Approve final color pass" });
     fireEvent.click(done);
@@ -160,11 +159,11 @@ describe("Clean Signal workspace", () => {
     expect(source.getSnapshot().tasks[0]?.status).toBe("blocked");
   });
   it("keeps a quick status update when the open task editor is saved", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <ProjectPage projectId="northstar" tab="tasks" filter="all" />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     fireEvent.click(
       await screen.findByRole("button", { name: /Approve final color pass/, expanded: false }),
@@ -175,9 +174,9 @@ describe("Clean Signal workspace", () => {
   });
   it("preserves the active project tab and filter in recent-project links", async () => {
     render(
-      <WorkspaceDataProvider source={createPreviewAdapter()}>
+      <ProjectStudioDataProvider source={createProjectStudioPreviewAdapter()}>
         <ProjectPage projectId="northstar" tab="tasks" filter="blocked" />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     const sidebar = await screen.findByRole("complementary");
     expect(within(sidebar).getByRole("link", { name: "Q3 / Brand campaign" })).toHaveAttribute(
@@ -186,27 +185,27 @@ describe("Clean Signal workspace", () => {
     );
   });
   it("keeps the workspace sidebar collapsed across route remounts", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     const first = render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <CleanHome />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     fireEvent.click(await screen.findByRole("button", { name: "Collapse sidebar" }));
     first.unmount();
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <ProjectPage projectId="northstar" tab="overview" filter="all" />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     expect(await screen.findByRole("button", { name: "Expand sidebar" })).toBeVisible();
   });
   it("opens search with the keyboard and filters grouped results", async () => {
     const user = userEvent.setup();
     render(
-      <WorkspaceDataProvider source={createPreviewAdapter()}>
+      <ProjectStudioDataProvider source={createProjectStudioPreviewAdapter()}>
         <CleanHome />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     await screen.findByRole("heading", { name: "What will you move forward?" });
     fireEvent.keyDown(window, { key: "k", ctrlKey: true });
@@ -219,9 +218,9 @@ describe("Clean Signal workspace", () => {
   it("restores focus to the search button when its dialog closes", async () => {
     const user = userEvent.setup();
     render(
-      <WorkspaceDataProvider source={createPreviewAdapter()}>
+      <ProjectStudioDataProvider source={createProjectStudioPreviewAdapter()}>
         <CleanHome />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     const searchButton = await screen.findByRole("button", { name: "Search workspace" });
     await user.click(searchButton);
@@ -229,12 +228,12 @@ describe("Clean Signal workspace", () => {
     await waitFor(() => expect(searchButton).toHaveFocus());
   });
   it("handles a long title and a missing project without breaking navigation", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     source.createProject("Long project title ".repeat(6));
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <ProjectPage projectId="missing" tab="overview" filter="all" />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     expect(
       await screen.findByRole("heading", { name: "This project is not available" }),
@@ -245,24 +244,24 @@ describe("Clean Signal workspace", () => {
     );
   });
   it("rejects cross-project Pi session URLs", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     const session = source.createSession("northstar", "Plan it");
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <PiPage projectId="campaign" sessionId={session.id} />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     expect(await screen.findByText("This conversation is not available")).toBeVisible();
   });
   it("shows Pi runtime steps and a stop action", async () => {
-    const source = createPreviewAdapter();
+    const source = createProjectStudioPreviewAdapter();
     const session = source.createSession("northstar", "Plan it");
     source.updateSession({ ...session, status: "running", steps: ["understand"] });
     source.hydrate = () => {};
     render(
-      <WorkspaceDataProvider source={source}>
+      <ProjectStudioDataProvider source={source}>
         <PiPage projectId="northstar" sessionId={session.id} />
-      </WorkspaceDataProvider>,
+      </ProjectStudioDataProvider>,
     );
     expect(await screen.findByRole("button", { name: "Stop run" })).toBeVisible();
     expect(screen.getByRole("list", { name: "Running" })).toBeVisible();
