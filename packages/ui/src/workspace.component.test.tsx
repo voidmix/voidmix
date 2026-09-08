@@ -69,6 +69,8 @@ describe("workspace primitives", () => {
     );
     expect(screen.getByText("Blocked")).toBeVisible();
     expect(screen.getByRole("button", { name: "Create project" })).toBeVisible();
+    expect(screen.getByText("Blocked")).toHaveClass("text-foreground");
+    expect(screen.getByText("Blocked").firstElementChild).toHaveClass("text-destructive");
   });
   it("renders a labelled section with optional description and action", () => {
     render(
