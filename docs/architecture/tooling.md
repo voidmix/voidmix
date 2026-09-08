@@ -22,7 +22,7 @@ The root `package.json` centralizes versions with Bun catalogs:
 | ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `catalog:`         | Shared runtime and contracts        | React, TanStack Router/Start, oRPC, Better Auth, `use-intl`, UUID, Zod, Evlog                                                               |
 | `catalog:backend`  | Server and data tooling             | Hono, Nitro, Drizzle, PostgreSQL, Redis, Nanoid                                                                                             |
-| `catalog:frontend` | UI, email, and native surfaces      | Base UI, Phosphor Icons, Tailwind CSS, CVA, `clsx`, `tailwind-merge`, Tauri, Resend                                                         |
+| `catalog:frontend` | UI, email, and native surfaces      | Base UI, Phosphor Icons, Tailwind CSS, CVA, `cn`, Tauri, Resend                                                                             |
 | `catalog:tooling`  | Build, test, and repository tooling | Vite+, Vite alias, TypeScript, Storybook, `esbuild`, `jiti`, React types/plugin, Oxc transform, Citty, Dotenvx, Vitest coverage, Playwright |
 
 Vitest itself is absent from the catalogs because Vite+ bundles the runner;

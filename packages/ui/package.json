@@ -34,8 +34,7 @@
     "@base-ui/react": "catalog:frontend",
     "@phosphor-icons/react": "catalog:frontend",
     "class-variance-authority": "catalog:frontend",
-    "clsx": "catalog:frontend",
-    "tailwind-merge": "catalog:frontend"
+    "cn": "catalog:frontend"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "catalog:tooling",
