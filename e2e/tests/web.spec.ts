@@ -22,3 +22,45 @@ test("keeps the desktop workspace navbar pinned while scrolling", async ({ page 
 
   await expect.poll(async () => (await navbar.boundingBox())?.y ?? -1).toBe(0);
 });
+
+for (const viewport of [
+  { width: 390, height: 844 },
+  { width: 768, height: 1024 },
+  { width: 1280, height: 800 },
+]) {
+  test(`keeps the home footer stable during hydration at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+
+    let releaseScripts = () => {};
+    const scriptsReady = new Promise<void>((resolve) => {
+      releaseScripts = resolve;
+    });
+    await page.route("**/*", async (route) => {
+      if (route.request().resourceType() === "script") await scriptsReady;
+      await route.continue();
+    });
+
+    try {
+      await page.goto("/", { waitUntil: "commit" });
+      const loading = page.getByRole("status", { name: "Loading your workspace…" });
+      const command = page.getByRole("textbox", { name: "Ask Voidmix" });
+      const footer = page.getByRole("contentinfo");
+      await expect(loading).toBeVisible();
+      await expect(command).toHaveCount(0);
+      await page.evaluate("document.fonts.ready");
+      const loadingBounds = await footer.boundingBox();
+      expect(loadingBounds).not.toBeNull();
+
+      releaseScripts();
+      await expect(loading).toHaveCount(0);
+      await expect(command).toBeVisible();
+      const readyBounds = await footer.boundingBox();
+      expect(readyBounds).not.toBeNull();
+      expect(Math.abs(readyBounds!.y - loadingBounds!.y)).toBeLessThan(1);
+      expect(readyBounds!.height).toBe(loadingBounds!.height);
+    } finally {
+      releaseScripts();
+      await page.unrouteAll({ behavior: "wait" });
+    }
+  });
+}

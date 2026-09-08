@@ -88,3 +88,16 @@ Do not add manual chunk names or change the React Compiler merely to silence the
 large-chunk warning. A useful split changes the route's initial preload closure;
 moving bytes between filenames without changing that closure is not an
 improvement.
+
+## Home layout stability
+
+The preview shell keeps page content in the same grid cell as its loading
+skeleton. Content retains its intrinsic dimensions but stays invisible, inert,
+and hidden from assistive technology until tab-local data has been restored.
+This reserves the home page's height during SSR and hydration, so the footer
+does not jump from the first viewport to the bottom of the loaded page.
+
+Run the browser regression with
+`bun run --cwd e2e e2e --project web --grep 'keeps the home footer'`.
+It delays JavaScript to measure the server-rendered loading state, then checks
+the footer's position after hydration at widths of 390, 768, and 1280 pixels.

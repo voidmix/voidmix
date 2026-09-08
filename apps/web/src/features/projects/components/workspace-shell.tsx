@@ -252,13 +252,7 @@ export function WorkspaceShell({
           tabIndex={-1}
           className="mx-auto w-full max-w-[1060px] flex-1 px-[clamp(20px,4vw,56px)] pt-[42px] pb-15 outline-none max-[800px]:px-6 max-[800px]:pt-8 max-[800px]:pb-12 max-[520px]:px-5"
         >
-          {state === "loading" ? (
-            <div role="status" aria-label={t("loading")} className="grid gap-6 py-12">
-              <div className="h-9 w-1/2 rounded-md bg-muted" />
-              <div className="h-32 rounded-lg bg-muted" />
-              <p className="text-sm text-muted-foreground">{t("loading")}</p>
-            </div>
-          ) : state === "error" ? (
+          {state === "error" ? (
             <div role="alert" className="grid gap-4 py-12">
               <h1 className="text-xl font-medium">{t("loadError")}</h1>
               <p className="text-sm text-muted-foreground">{t("loadErrorDetail")}</p>
@@ -267,7 +261,30 @@ export function WorkspaceShell({
               </Button>
             </div>
           ) : (
-            children
+            <div className="grid">
+              {/* Keep the page's intrinsic size while restoring tab-local data. */}
+              <div
+                className={cn(
+                  "col-start-1 row-start-1 min-w-0",
+                  state === "loading" && "invisible",
+                )}
+                inert={state === "loading"}
+                aria-hidden={state === "loading"}
+              >
+                {children}
+              </div>
+              {state === "loading" ? (
+                <div
+                  role="status"
+                  aria-label={t("loading")}
+                  className="col-start-1 row-start-1 grid self-start gap-6 py-12"
+                >
+                  <div className="h-9 w-1/2 rounded-md bg-muted" />
+                  <div className="h-32 rounded-lg bg-muted" />
+                  <p className="text-sm text-muted-foreground">{t("loading")}</p>
+                </div>
+              ) : null}
+            </div>
           )}
         </main>
         <footer className="flex flex-wrap justify-between gap-2.5 px-7 py-[18px] text-[11px] text-muted-foreground max-[520px]:px-5">
