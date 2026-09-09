@@ -1,6 +1,7 @@
 import { Navigate, Outlet, createFileRoute, redirect, useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { useTranslations } from "../../i18n/client";
 import { normalizeAuthRedirect } from "../../features/auth/route-search";
 import { createProjectStudioRemoteAdapter } from "../../features/projects/remote-adapter";
 import { ProjectStudioDataProvider } from "../../features/projects/studio-data";
@@ -21,13 +22,14 @@ export const Route = createFileRoute("/(app)")({
 });
 
 function AuthenticatedAppLayout() {
+  const t = useTranslations("workspaceUi");
   const session = useSession();
   const location = useLocation();
   const [source] = useState(() => createProjectStudioRemoteAdapter({}));
   if (session.isPending) {
     return (
       <div className="flex min-h-svh items-center justify-center bg-background px-4 text-sm text-muted-foreground">
-        Loading session…
+        {t("loadingSession")}
       </div>
     );
   }

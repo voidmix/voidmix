@@ -11,7 +11,10 @@ project-bound conversation. Invalid project/session URLs show recovery links.
 Web owns `ProjectCard`, `TaskList`, `ActivityList`, and `RunTimeline`. Shared UI
 owns only `PageHeader`, `EmptyState`, `StatusBadge`, and `CommandInput`, each
 with an explicit package subpath. The existing chat route and its local-chat
-compatibility components remain unchanged; the root route uses `CleanHome`.
+compatibility components keep their route and storage responsibilities while
+message records use locale-neutral metadata: user text stays verbatim, and
+deterministic preview responses persist a catalog key with an English fallback.
+The root route uses `CleanHome`.
 
 ## Data and honesty
 

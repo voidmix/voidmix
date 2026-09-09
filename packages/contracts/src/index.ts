@@ -1,6 +1,19 @@
 import { error, oc } from "@orpc/contract";
 import { z } from "zod";
 
+export const apiErrorCodeSchema = z.string().trim().min(1).max(120);
+export const apiErrorValuesSchema = z.record(
+  z.string().min(1).max(80),
+  z.union([z.string(), z.number(), z.boolean(), z.null()]),
+);
+export const apiErrorEnvelopeSchema = z.object({
+  code: apiErrorCodeSchema,
+  values: apiErrorValuesSchema.optional(),
+});
+export const apiErrorDataSchema = z.object({ error: apiErrorEnvelopeSchema });
+export type ApiErrorCode = z.infer<typeof apiErrorCodeSchema>;
+export type ApiErrorData = z.infer<typeof apiErrorDataSchema>;
+
 export const roleSchema = z.enum(["user", "admin", "owner"]);
 export const userStatusSchema = z.enum(["active", "suspended"]);
 
@@ -437,7 +450,10 @@ export const studioSnapshotSchema = z.object({
 
 const MailNotConfiguredError = error("MAIL_NOT_CONFIGURED", {
   message: "Mail configuration is not ready.",
-  data: z.object({ missing: z.array(z.enum(["RESEND_API_KEY", "MAIL_FROM"])) }),
+  data: z.object({
+    error: apiErrorEnvelopeSchema,
+    missing: z.array(z.enum(["RESEND_API_KEY", "MAIL_FROM"])),
+  }),
 });
 
 const health = oc.input(z.object({})).output(

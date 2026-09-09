@@ -51,6 +51,8 @@ function renderLoginButton() {
   );
 }
 
+const lazyDialogQueryOptions = { timeout: 5000 };
+
 describe("home sidebar login button", () => {
   it("opens the login dialog and stays on the current page after success", async () => {
     const user = userEvent.setup();
@@ -58,9 +60,15 @@ describe("home sidebar login button", () => {
 
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
-    expect(await screen.findByRole("dialog")).toBeVisible();
-    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
-    await user.type(screen.getByLabelText("Password"), "password123");
+    expect(await screen.findByRole("dialog", {}, lazyDialogQueryOptions)).toBeVisible();
+    await user.type(
+      await screen.findByRole("textbox", { name: "Email" }, lazyDialogQueryOptions),
+      "owner@example.com",
+    );
+    await user.type(
+      await waitFor(() => screen.getByLabelText("Password"), lazyDialogQueryOptions),
+      "password123",
+    );
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
@@ -80,8 +88,14 @@ describe("home sidebar login button", () => {
     renderLoginButton();
 
     await user.click(screen.getByRole("button", { name: "Sign in" }));
-    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
-    await user.type(screen.getByLabelText("Password"), "incorrect-password");
+    await user.type(
+      await screen.findByRole("textbox", { name: "Email" }, lazyDialogQueryOptions),
+      "owner@example.com",
+    );
+    await user.type(
+      await waitFor(() => screen.getByLabelText("Password"), lazyDialogQueryOptions),
+      "incorrect-password",
+    );
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -95,7 +109,7 @@ describe("home sidebar login button", () => {
     renderLoginButton();
 
     await user.click(screen.getByRole("button", { name: "Sign in" }));
-    await screen.findByRole("dialog");
+    await screen.findByRole("dialog", {}, lazyDialogQueryOptions);
     await user.keyboard("{Escape}");
 
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

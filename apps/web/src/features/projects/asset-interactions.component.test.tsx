@@ -19,10 +19,17 @@ vi.mock("./components/studio-shell", () => ({
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children }: { children: ReactNode }) => <a>{children}</a>,
 }));
-vi.mock("@voidmix/i18n/client", () => ({
+vi.mock("../../i18n/client", () => ({
   useLocale: () => "en",
   useTranslations: (namespace: keyof typeof messages) => (key: string) =>
     (messages[namespace] as Record<string, string>)[key] ?? key,
+  toCoreTranslator: (translator: unknown) => translator,
+  useFormatter: () => ({
+    dateTime: (value: Date | number) => String(value),
+    list: (value: Iterable<string>) => [...value].join(", "),
+    number: (value: bigint | number) => String(value),
+    relativeTime: (value: number, unit: string) => `${value} ${unit}`,
+  }),
 }));
 afterEach(() => {
   cleanup();
@@ -43,7 +50,7 @@ describe("asset interactions", () => {
     expect(screen.getByRole("button", { name: "Save changes" })).toBeDisabled();
     await user.upload(input, file);
     await user.click(screen.getByRole("button", { name: "Save changes" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("offline");
+    expect(await screen.findByRole("alert")).toHaveTextContent(messages.errors.uploadError);
     expect(input.files?.[0]).toBe(file);
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Save changes" }));

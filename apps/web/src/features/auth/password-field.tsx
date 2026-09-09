@@ -7,6 +7,7 @@ import {
   InputGroupInput,
 } from "@voidmix/ui/components/ui/input-group";
 import { useState, type ComponentProps, type ReactNode } from "react";
+import { useTranslations } from "../../i18n/client";
 
 interface PasswordFieldProps extends Omit<ComponentProps<typeof InputGroupInput>, "id" | "type"> {
   action?: ReactNode;
@@ -16,6 +17,7 @@ interface PasswordFieldProps extends Omit<ComponentProps<typeof InputGroupInput>
 
 export function PasswordField({ action, id, label, ...props }: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
+  const t = useTranslations("auth");
 
   return (
     <Field>
@@ -27,7 +29,7 @@ export function PasswordField({ action, id, label, ...props }: PasswordFieldProp
         <InputGroupInput id={id} type={visible ? "text" : "password"} {...props} />
         <InputGroupAddon align="inline-end">
           <Button
-            aria-label={visible ? "Hide password" : "Show password"}
+            aria-label={visible ? t("hidePassword") : t("showPassword")}
             className="size-7 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
             onClick={() => setVisible((current) => !current)}
             size="icon-sm"

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { LocalizedWebError } from "../../../i18n/error-message";
+
 import {
   adminMailSettingsClient,
   type AdminMailSettingsClient,
@@ -32,7 +34,7 @@ export function useMailSettings(client: AdminMailSettingsClient = adminMailSetti
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<unknown | null>(null);
 
   const applySettings = useCallback((next: MailSettings) => {
     setSettings(next);
@@ -52,7 +54,7 @@ export function useMailSettings(client: AdminMailSettingsClient = adminMailSetti
     try {
       applySettings(await client.get());
     } catch (nextError) {
-      setError(errorMessage(nextError));
+      setError(nextError ?? new LocalizedWebError("SETTINGS_REQUEST_FAILED"));
     }
     setIsLoading(false);
   }, [applySettings, client]);
@@ -130,7 +132,7 @@ export function useMailSettings(client: AdminMailSettingsClient = adminMailSetti
       setIsSaving(false);
       return updated;
     } catch (nextError) {
-      setError(errorMessage(nextError));
+      setError(nextError ?? new LocalizedWebError("SETTINGS_REQUEST_FAILED"));
       setIsSaving(false);
       throw nextError;
     }
@@ -144,7 +146,7 @@ export function useMailSettings(client: AdminMailSettingsClient = adminMailSetti
       setIsTesting(false);
       return result;
     } catch (nextError) {
-      setError(errorMessage(nextError));
+      setError(nextError ?? new LocalizedWebError("SETTINGS_REQUEST_FAILED"));
       setIsTesting(false);
       throw nextError;
     }
@@ -178,18 +180,4 @@ function isEffectiveMailValue<Key extends OrdinaryField>(
   if (key === "from") return String(value).trim() === (settings.from ?? "");
   if (key === "fromName") return String(value).trim() === settings.fromName;
   return String(value).trim() === (settings.templatesBaseUrl ?? "");
-}
-
-function errorMessage(error: unknown): string {
-  if (error instanceof Error && error.message.trim()) return error.message;
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "message" in error &&
-    typeof error.message === "string" &&
-    error.message.trim()
-  ) {
-    return error.message;
-  }
-  return "The mail settings request failed.";
 }

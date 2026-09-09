@@ -1,4 +1,5 @@
 import type { SUPPORTED_LOCALES } from "./constants.js";
+import type { formats } from "./formats.js";
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -8,7 +9,15 @@ export type MessageTree = {
 
 export type MessagesByLocale = Record<Locale, MessageTree>;
 
-export type TranslationValues = Record<string, string | number | Date>;
+/** Values accepted by ICU messages arriving from a trusted API error envelope. */
+export type TranslationValue = string | number | boolean | Date | null;
+
+export type TranslationValues = Record<string, TranslationValue>;
+
+export type IntlRuntimeOptions = {
+  timeZone?: string;
+  formats?: typeof formats;
+};
 
 export type MessageCatalog = MessageTree;
 

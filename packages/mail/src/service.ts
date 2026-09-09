@@ -1,6 +1,11 @@
 import { getMailEnv, type MailEnvironment } from "./env.js";
 import type { Locale } from "@voidmix/i18n/types";
-import { passwordResetEmail, verificationEmail, welcomeEmail } from "./templates/index.js";
+import {
+  passwordResetEmail,
+  testEmail,
+  verificationEmail,
+  welcomeEmail,
+} from "./templates/index.js";
 import { createLoggerTransport, createResendTransport } from "./transports/index.js";
 import type {
   MailAddress,
@@ -107,11 +112,10 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
       );
     },
     async sendTest(input) {
-      await deliver("test", address(input.email, input.name), async () => ({
-        subject: "Voidmix mail configuration test",
-        html: "<p>Your Voidmix mail configuration is working.</p>",
-        text: "Your Voidmix mail configuration is working.",
-      }));
+      await deliver("test", address(input.email, input.name), async () => {
+        const locale = input.locale ?? defaultLocale;
+        return testEmail(locale);
+      });
     },
   };
 }

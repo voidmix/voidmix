@@ -2,7 +2,14 @@ import { apiUsersAdapter } from "./api-adapter";
 import { createFallbackUsersAdapter } from "./fallback-adapter";
 import { createPreviewUsersAdapter } from "./preview-adapter";
 
-export type { AdminUser, AdminUsersClient, UserListInput, UserRole, UserStatus } from "./types";
+export type {
+  AdminUser,
+  AdminUsersClient,
+  AdminUsersError,
+  UserListInput,
+  UserRole,
+  UserStatus,
+} from "./types";
 
 const previewUsersAdapter = createPreviewUsersAdapter();
 

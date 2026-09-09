@@ -1,6 +1,7 @@
 import { createApiClient, type ApiClient } from "@voidmix/client";
 
 import { homeView, type ProjectStudioDataSource } from "./preview-adapter";
+import { LocalizedWebError } from "../../i18n/error-message";
 import type {
   ActivityView,
   LibrarySearchView,
@@ -19,6 +20,7 @@ type ProjectDetailDto = Awaited<ReturnType<ApiClient["projects"]["get"]>>;
 type ProjectTaskDto = Awaited<ReturnType<ApiClient["projects"]["tasks"]["list"]>>["items"][number];
 type ActivityDto = Awaited<ReturnType<ApiClient["activity"]["list"]>>["items"][number];
 type PiSessionDto = StudioSnapshotDto["activeSessions"][number];
+type TaskOwnerContext = Pick<StudioSnapshotDto["account"], "id" | "displayName">;
 type LibraryAssetDto = Awaited<ReturnType<ApiClient["library"]["search"]>>["assets"][number];
 type LibraryVersionDto = Awaited<ReturnType<ApiClient["library"]["search"]>>["versions"][number];
 type AssetReferenceDto = Awaited<
@@ -72,13 +74,15 @@ function toProjectView(project: ProjectSummaryDto): ProjectView {
   };
 }
 
-function toTaskView(task: ProjectTaskDto): TaskView {
+function toTaskView(task: ProjectTaskDto, account?: TaskOwnerContext): TaskView {
   return {
     id: task.id,
     projectId: task.projectId,
     title: task.title,
     status: task.status,
-    owner: "You",
+    ...(account?.id === task.createdBy
+      ? { owner: account.displayName, ownerKey: "you" as const }
+      : { owner: task.createdBy }),
     priority: "normal",
   };
 }
@@ -141,7 +145,9 @@ async function snapshotFromDto(
   return {
     version: 1,
     projects: snapshot.projects.map(toProjectView),
-    tasks: details.flatMap((project) => project.tasks.map(toTaskView)),
+    tasks: details.flatMap((project) =>
+      project.tasks.map((task) => toTaskView(task, snapshot.account)),
+    ),
     activity: snapshot.recentActivity
       .map(toActivityView)
       .filter((activity): activity is ActivityView => activity !== null),
@@ -167,6 +173,7 @@ export function createProjectStudioRemoteAdapter(
   let persistenceWarning = false;
   let hydrated = false;
   let defaultWorkspaceId = options.workspaceId;
+  let account: TaskOwnerContext | undefined;
   const projectWorkspaceIds = new Map<string, string>();
   const uploads = new WeakMap<File, Map<string, AssetUploadAttempt>>();
   const remoteSessionIds = new Set<string>();
@@ -197,7 +204,7 @@ export function createProjectStudioRemoteAdapter(
       client.library.versions.list({ assetId, limit: 100 }),
     ]);
     if (asset.workspaceId !== projectWorkspaceIds.get(projectId))
-      throw new Error("This file cannot be added to the selected project.");
+      throw new LocalizedWebError("ASSET_NOT_ALLOWED");
     const existing = page.items.find((reference) => reference.assetId === assetId);
     const reference =
       existing ??
@@ -224,16 +231,38 @@ export function createProjectStudioRemoteAdapter(
     return value;
   };
 
-  const reconcileProject = (value: ProjectDetailDto) => {
+  const reconcileProject = (value: ProjectDetailDto, optimisticId?: string) => {
     const nextProject = toProjectView(value);
+    const targetId = optimisticId ?? nextProject.id;
+    const hasTarget = snapshot.projects.some((item) => item.id === targetId);
+    const hasRemote = snapshot.projects.some((item) => item.id === nextProject.id);
+    const projects = hasTarget
+      ? snapshot.projects.map((item) => (item.id === targetId ? nextProject : item))
+      : optimisticId && !hasRemote
+        ? [...snapshot.projects, nextProject]
+        : snapshot.projects;
+    projectWorkspaceIds.set(nextProject.id, value.workspaceId);
     publish({
       ...snapshot,
-      projects: snapshot.projects.map((item) => (item.id === nextProject.id ? nextProject : item)),
+      projects,
       tasks: [
         ...snapshot.tasks.filter((item) => item.projectId !== nextProject.id),
-        ...value.tasks.map(toTaskView),
+        ...value.tasks.map((task) => toTaskView(task, account)),
       ],
     });
+  };
+
+  const reconcileTask = (value: ProjectTaskDto, optimisticId?: string) => {
+    const nextTask = toTaskView(value, account);
+    const targetId = optimisticId ?? nextTask.id;
+    const hasTarget = snapshot.tasks.some((item) => item.id === targetId);
+    const hasRemote = snapshot.tasks.some((item) => item.id === nextTask.id);
+    const tasks = hasTarget
+      ? snapshot.tasks.map((item) => (item.id === targetId ? nextTask : item))
+      : optimisticId && !hasRemote
+        ? [...snapshot.tasks, nextTask]
+        : snapshot.tasks;
+    publish({ ...snapshot, tasks });
   };
 
   return {
@@ -249,6 +278,7 @@ export function createProjectStudioRemoteAdapter(
         defaultWorkspaceId ??= remote.account.workspaceIds[0];
         const next = await snapshotFromDto(client, remote);
         snapshot = next;
+        account = remote.account;
         remote.projects.forEach((project) =>
           projectWorkspaceIds.set(project.id, project.workspaceId),
         );
@@ -293,7 +323,7 @@ export function createProjectStudioRemoteAdapter(
     },
     createProject(name) {
       const workspaceId = defaultWorkspaceId;
-      if (!workspaceId) throw new Error("No writable Workspace is available for this account.");
+      if (!workspaceId) throw new LocalizedWebError("PROJECT_WORKSPACE_UNAVAILABLE");
       const value: ProjectView = {
         id: id(),
         name: name.trim().slice(0, 120),
@@ -302,7 +332,7 @@ export function createProjectStudioRemoteAdapter(
         milestone: "",
         updatedAt: new Date(),
       };
-      if (!value.name) throw new Error("A name is required");
+      if (!value.name) throw new LocalizedWebError("PROJECT_NAME_REQUIRED");
       publish({ ...snapshot, projects: [...snapshot.projects, value] });
       void client.projects
         .create({
@@ -312,10 +342,7 @@ export function createProjectStudioRemoteAdapter(
           deadline: null,
           idempotencyKey: id(),
         })
-        .then((created) => {
-          projectWorkspaceIds.set(created.id, created.workspaceId);
-          reconcileProject(created);
-        })
+        .then((created) => reconcileProject(created, value.id))
         .catch(() => {
           publish({
             ...snapshot,
@@ -327,7 +354,7 @@ export function createProjectStudioRemoteAdapter(
     },
     updateProject(value) {
       const previous = project(value.id);
-      if (!previous) throw new Error("Project not found");
+      if (!previous) throw new LocalizedWebError("PROJECT_NOT_FOUND");
       publish({
         ...snapshot,
         projects: snapshot.projects.map((item) => (item.id === value.id ? value : item)),
@@ -349,26 +376,20 @@ export function createProjectStudioRemoteAdapter(
         });
     },
     createTask(projectId, title) {
-      if (!project(projectId)) throw new Error("Project not found");
+      if (!project(projectId)) throw new LocalizedWebError("PROJECT_NOT_FOUND");
       const value: TaskView = {
         id: id(),
         projectId,
         title: title.trim().slice(0, 300),
         status: "todo",
-        owner: "You",
+        ...(account ? { owner: account.displayName, ownerKey: "you" as const } : { owner: "" }),
         priority: "normal",
       };
-      if (!value.title) throw new Error("A title is required");
+      if (!value.title) throw new LocalizedWebError("TASK_TITLE_REQUIRED");
       publish({ ...snapshot, tasks: [...snapshot.tasks, value] });
       void client.projects.tasks
         .create({ projectId, title: value.title, idempotencyKey: id() })
-        .then((remote) => {
-          const next = toTaskView(remote);
-          publish({
-            ...snapshot,
-            tasks: snapshot.tasks.map((item) => (item.id === value.id ? next : item)),
-          });
-        })
+        .then((remote) => reconcileTask(remote, value.id))
         .catch(() => {
           publish({ ...snapshot, tasks: snapshot.tasks.filter((item) => item.id !== value.id) });
           fail();
@@ -377,7 +398,7 @@ export function createProjectStudioRemoteAdapter(
     },
     updateTask(value) {
       const previous = snapshot.tasks.find((item) => item.id === value.id);
-      if (!previous) throw new Error("Task not found");
+      if (!previous) throw new LocalizedWebError("TASK_NOT_FOUND");
       publish({
         ...snapshot,
         tasks: snapshot.tasks.map((item) => (item.id === value.id ? value : item)),
@@ -385,7 +406,7 @@ export function createProjectStudioRemoteAdapter(
       void client.projects.tasks
         .update({ taskId: value.id, title: value.title, status: value.status })
         .then((remote) => {
-          const next = toTaskView(remote);
+          const next = toTaskView(remote, account);
           publish({
             ...snapshot,
             tasks: snapshot.tasks.map((item) => (item.id === value.id ? next : item)),
@@ -401,9 +422,10 @@ export function createProjectStudioRemoteAdapter(
     },
     async uploadAsset(projectId, file) {
       const workspaceId = projectWorkspaceIds.get(projectId);
-      if (!workspaceId) throw new Error("Project workspace is not available.");
+      if (!workspaceId) throw new LocalizedWebError("PROJECT_WORKSPACE_UNAVAILABLE");
       // Leave room for base64 and RPC metadata inside the current 1 MiB request limit.
-      if (file.size > 512 * 1024) throw new Error("Choose a file no larger than 512 KB.");
+      if (file.size > 512 * 1024)
+        throw new LocalizedWebError("ASSET_TOO_LARGE", { maxBytes: 512 * 1024 });
       const attempts = uploads.get(file) ?? new Map<string, AssetUploadAttempt>();
       uploads.set(file, attempts);
       let attempt = attempts.get(projectId);
@@ -466,7 +488,7 @@ export function createProjectStudioRemoteAdapter(
     },
     attachAsset,
     removeTask() {
-      throw new Error("Project task deletion is not available in the live contract yet.");
+      throw new LocalizedWebError("TASK_DELETE_UNAVAILABLE");
     },
     createSession(projectId, prompt) {
       const session: PiSessionView = {
@@ -482,7 +504,7 @@ export function createProjectStudioRemoteAdapter(
     },
     async startSession(session) {
       const prompt = session.prompt.trim();
-      if (!prompt) throw new Error("A prompt is required");
+      if (!prompt) throw new LocalizedWebError("PROMPT_REQUIRED");
       try {
         const remote = await client.pi.sessions.create({
           projectId: session.projectId,

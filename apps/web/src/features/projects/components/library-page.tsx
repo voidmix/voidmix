@@ -1,6 +1,6 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { Input } from "@voidmix/ui/components/ui/input";
@@ -12,6 +12,7 @@ import { AssetGrid } from "./asset-grid";
 import { AssetUploadForm } from "./asset-upload-form";
 import { useProjectStudioData } from "../studio-data";
 import { studioFieldClass, studioInputClass } from "../studio-styles";
+import { displayProjectName } from "../preview-copy";
 
 export function LibraryPage() {
   const t = useTranslations("workspaceUi");
@@ -63,6 +64,11 @@ export function LibraryPage() {
   const briefs = filterLibraryBriefs(
     getLibraryBriefs(remote ? { ...snapshot, projects: remote.projects } : snapshot),
     query,
+    (brief) => [
+      ...(brief.titleKey ? [t(brief.titleKey)] : []),
+      ...(brief.descriptionKey ? [t(brief.descriptionKey)] : []),
+      ...(brief.milestoneKey ? [t(brief.milestoneKey)] : []),
+    ],
   );
 
   return (
@@ -99,7 +105,7 @@ export function LibraryPage() {
             >
               {snapshot.projects.map((project) => (
                 <option key={project.id} value={project.id}>
-                  {project.name}
+                  {displayProjectName(project, t)}
                 </option>
               ))}
             </select>
@@ -157,9 +163,12 @@ export function LibraryPage() {
                     search={{ tab: "overview", filter: "all" }}
                     className="min-w-0 rounded-xl border border-border p-4 focus-visible:outline-2 focus-visible:outline-ring"
                   >
-                    <h3 className="truncate text-sm font-medium">{brief.title}</h3>
+                    <h3 className="truncate text-sm font-medium">
+                      {brief.titleKey ? t(brief.titleKey) : brief.title}
+                    </h3>
                     <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
-                      {brief.description || t("libraryBrief")}
+                      {(brief.descriptionKey ? t(brief.descriptionKey) : brief.description) ||
+                        t("libraryBrief")}
                     </p>
                   </Link>
                 ))}

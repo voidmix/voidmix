@@ -1,8 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { useSession } from "../../../lib/auth-client";
 import { useCallback, useEffect, useState } from "react";
 import { createLocalChatSession } from "../../chat/local-chat-store";
+import { createPreviewResponse } from "../../chat/fixtures";
 import type { ChatMessage } from "../../chat/types";
 import { HomeNavbar } from "./home-navbar";
 import { HomeSidebar } from "./sidebar";
@@ -27,14 +28,14 @@ function readSection(): WorkspaceSectionId {
   const value = window.location.hash.slice(1) as WorkspaceSectionId;
   return sectionIds.has(value) ? value : "overview";
 }
-function createInitialMessages(prompt: string, t: (key: string) => string): readonly ChatMessage[] {
+function createInitialMessages(prompt: string): readonly ChatMessage[] {
+  const createdAt = new Date().toISOString();
   return [
-    { id: "user-0", role: "user", content: prompt, timestamp: t("now") },
+    { id: "user-0", role: "user", content: prompt, timestamp: { createdAt, kind: "now" } },
     {
+      ...createPreviewResponse(prompt, undefined, createdAt),
       id: "assistant-0",
-      role: "assistant",
-      content: t("previewResponse"),
-      timestamp: t("preview"),
+      timestamp: { createdAt, kind: "preview" },
     },
   ];
 }
@@ -67,7 +68,7 @@ export function WorkspaceLauncher() {
   }, []);
   function startChat(prompt: string) {
     if (session.isPending) return;
-    const chatId = createLocalChatSession(createInitialMessages(prompt, t));
+    const chatId = createLocalChatSession(createInitialMessages(prompt));
     const destination = `/chat/${chatId}`;
     if (!session.data) {
       void navigate({ to: "/login", search: { redirect: destination } });
@@ -84,6 +85,7 @@ export function WorkspaceLauncher() {
       priority: 0,
       status: "pending",
       owner: "You",
+      ownerKey: "you",
       timestamp: 0,
       action: "open",
       relatedSection: "inbox",

@@ -1,7 +1,11 @@
+export type SyncJobNameKey = "campaignExports" | "productResearch" | "designSystem";
+
 export interface SyncJob {
   id: string;
   name: string;
-  detail: string;
+  /** Present only for deterministic demo rows; remote names remain verbatim. */
+  nameKey?: SyncJobNameKey;
+  detail: { kind: "files" | "objects"; count: number; sizeBytes?: number };
   kind: "upload" | "download" | "index";
   status: "active" | "queued" | "complete";
   progress: number;
@@ -13,13 +17,13 @@ export interface CloudDevice {
   platform: string;
   kind: "desktop" | "laptop" | "phone";
   online: boolean;
-  lastSeen: string;
-  synced: string;
+  lastSeen: Date;
+  syncedBytes: number;
 }
 
 export interface CloudSnapshot {
-  lastChecked: string;
-  lastBackup: string;
+  lastChecked: Date;
+  lastBackup: Date;
   pendingItems: number;
   fileCount: number;
   newThisWeek: number;

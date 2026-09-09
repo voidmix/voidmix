@@ -1,6 +1,6 @@
 import { Plus } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   Dialog,
@@ -15,6 +15,11 @@ import { ProjectStudioShell } from "./components/studio-shell";
 import { ProjectCard } from "./components/project-card";
 import { useProjectStudioData } from "./studio-data";
 import { studioFieldClass, studioInputClass, studioProjectGridClass } from "./studio-styles";
+import {
+  displayProjectDescription,
+  displayProjectMilestone,
+  displayProjectName,
+} from "./preview-copy";
 
 export function ProjectsPage() {
   const t = useTranslations("workspaceUi");
@@ -24,10 +29,18 @@ export function ProjectsPage() {
   const [archived, setArchived] = useState(false);
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
+  const normalizedQuery = query.trim().toLocaleLowerCase();
   const projects = snapshot.projects.filter(
     (project) =>
       (archived || project.status !== "archived") &&
-      project.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+      [
+        project.name,
+        project.description,
+        project.milestone,
+        displayProjectName(project, t),
+        displayProjectDescription(project, t),
+        displayProjectMilestone(project, t),
+      ].some((value) => value.toLocaleLowerCase().includes(normalizedQuery)),
   );
   return (
     <ProjectStudioShell title={t("projects")}>

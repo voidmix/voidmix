@@ -9,7 +9,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useState } from "react";
 import { navigation, type WorkspaceSectionId } from "../data";
@@ -32,6 +32,7 @@ export function MobileNavigation({
   variant?: "launcher" | "workspace";
 }) {
   const t = useTranslations("home");
+  const commonT = useTranslations("common");
   const navigate = useNavigate();
   const session = useSession();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -50,7 +51,7 @@ export function MobileNavigation({
   return (
     <>
       <header className="home-mobile-navigation sticky top-0 z-30 grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/95 px-4 py-2 supports-backdrop-filter:backdrop-blur-sm">
-        <a aria-label="Voidmix home" className="inline-flex text-foreground" href="/">
+        <a aria-label={commonT("brand")} className="inline-flex text-foreground" href="/">
           <Logo className="text-base" />
         </a>
         <button className="min-w-0 text-left">

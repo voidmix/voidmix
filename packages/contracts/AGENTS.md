@@ -18,6 +18,10 @@ and no barrel to update.
 
 - Own the request and response shape of every procedure, and the DTO types that
   consumers import.
+- API failures use the open transport code plus `data.error.code` and optional
+  primitive `values` (`string`, `number`, `boolean`, or `null`). Keep that
+  envelope stable so Web and Desktop can translate codes without consuming
+  server diagnostic messages.
 - The `workspace.assets` and `workspace.agents` trees describe immutable asset
   versions, sync conflicts, Agent runs/steps, and leases. Keep their output
   dates as native `Date` values and preserve the input fields needed for

@@ -1,4 +1,5 @@
 import { CircleNotch, EnvelopeSimple, FloppyDisk, PaperPlaneTilt } from "@phosphor-icons/react";
+import { useTranslations } from "../../../i18n/client";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import { Input } from "@voidmix/ui/components/ui/input";
 import { toast } from "@voidmix/ui/toast";
 import type { FormEvent } from "react";
 
+import { translateWebError } from "../../../i18n/error-message";
 import {
   ConfigurationBadge,
   SettingFieldHeading,
@@ -35,6 +37,8 @@ import { SettingsNavigation } from "./navigation";
 import { useMailSettings } from "./use-mail-settings";
 
 export function MailSettings() {
+  const t = useTranslations("admin");
+  const errorT = useTranslations("errors");
   const state = useMailSettings();
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
@@ -42,14 +46,14 @@ export function MailSettings() {
     try {
       await state.save();
       toast.add({
-        title: "Mail settings saved",
-        description: "Only changed database overrides were updated.",
+        title: t("mailSettingsSaved"),
+        description: t("changedOverridesUpdated"),
         type: "success",
       });
     } catch {
       toast.add({
-        title: "Could not save mail settings",
-        description: "Review the fields and try again.",
+        title: t("mailSettingsSaveFailed"),
+        description: t("reviewFieldsAndRetry"),
         type: "error",
         priority: "high",
       });
@@ -60,14 +64,14 @@ export function MailSettings() {
     try {
       const result = await state.sendTest();
       toast.add({
-        title: "Test email sent",
-        description: `The message was sent to ${result.recipient}.`,
+        title: t("testEmailSent"),
+        description: t("testEmailSentTo", { recipient: result.recipient }),
         type: "success",
       });
     } catch {
       toast.add({
-        title: "Test email failed",
-        description: "Mail must be enabled and fully configured before testing.",
+        title: t("testEmailFailed"),
+        description: t("testEmailFailedDescription"),
         type: "error",
         priority: "high",
       });
@@ -76,32 +80,27 @@ export function MailSettings() {
 
   function handleResetSecret() {
     const fallback = state.settings?.resendApiKey.inheritedConfigured
-      ? "The environment key will become active."
-      : "No inherited key is configured, so mail may become incomplete.";
-    if (window.confirm(`Remove the database Resend key override? ${fallback}`)) {
+      ? t("environmentKeyWillActivate")
+      : t("noInheritedKeyWarning");
+    if (window.confirm(`${t("removeResendOverrideConfirm")} ${fallback}`)) {
       state.resetSecret();
     }
   }
 
   return (
     <>
-      <SettingsPageHeader
-        description="Manage database overrides while keeping environment and default fallbacks visible."
-        title="Mail delivery"
-      />
+      <SettingsPageHeader description={t("mailSettingsDescription")} title={t("mailDelivery")} />
 
       <SettingsNavigation current="mail" />
 
       {state.isLoading ? (
-        <SettingsLoading label="mail settings" />
+        <SettingsLoading label={t("mailSettings")} />
       ) : state.settings ? (
         <form className="grid gap-5" onSubmit={(event) => void handleSave(event)}>
           <Card>
             <CardHeader>
-              <CardTitle>Delivery status</CardTitle>
-              <CardDescription>
-                Reset removes a database override and restores its inherited value.
-              </CardDescription>
+              <CardTitle>{t("deliveryStatus")}</CardTitle>
+              <CardDescription>{t("deliveryStatusDescription")}</CardDescription>
               <CardAction>
                 <ConfigurationBadge state={state.settings.configurationState} />
               </CardAction>
@@ -109,27 +108,30 @@ export function MailSettings() {
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 <Badge variant={state.settings.resendApiKey.configured ? "secondary" : "outline"}>
-                  Resend key {state.settings.resendApiKey.configured ? "configured" : "missing"}
+                  {t("resendKeyStatus", {
+                    status: state.settings.resendApiKey.configured ? t("configured") : t("missing"),
+                  })}
                 </Badge>
                 <SourceBadge source={state.settings.resendApiKey.source} />
                 {state.settings.missing.map((field) => (
                   <Badge key={field} variant="destructive">
-                    Missing {field}
+                    {t("missingField", { field })}
                   </Badge>
                 ))}
               </div>
               <Field orientation="horizontal">
                 <div className="flex flex-col gap-1">
                   <SettingFieldHeading
-                    label="Mail delivery"
+                    label={t("mailDelivery")}
                     source={state.settings.sources.enabled}
-                    resetLabel="Restore inherited state"
+                    resetLabel={t("restoreInheritedState")}
                     onReset={() => state.resetField("enabled")}
                   />
                   <FieldDescription>
-                    Disabled mail stays unavailable even when credentials are configured. Reset uses{" "}
-                    {formatValue(state.settings.inherited.enabled.value)} from{" "}
-                    {sourceLabel(state.settings.inherited.enabled.source).toLowerCase()}.
+                    {t("mailEnabledDescription", {
+                      value: formatValue(state.settings.inherited.enabled.value, t),
+                      source: sourceLabel(state.settings.inherited.enabled.source, t).toLowerCase(),
+                    })}
                   </FieldDescription>
                 </div>
                 <Button
@@ -139,7 +141,7 @@ export function MailSettings() {
                   onClick={() => state.updateForm("enabled", !state.form.enabled)}
                 >
                   <EnvelopeSimple data-icon="inline-start" aria-hidden="true" />
-                  {state.form.enabled ? "Enabled" : "Disabled"}
+                  {state.form.enabled ? t("enabled") : t("disabled")}
                 </Button>
               </Field>
             </CardContent>
@@ -147,19 +149,17 @@ export function MailSettings() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Sender and templates</CardTitle>
-              <CardDescription>
-                Clearing an input schedules a reset instead of storing an empty override.
-              </CardDescription>
+              <CardTitle>{t("senderAndTemplates")}</CardTitle>
+              <CardDescription>{t("senderAndTemplatesDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <FieldGroup>
                 <Field>
                   <SettingFieldHeading
                     htmlFor="mail-from"
-                    label="Sender address"
+                    label={t("senderAddress")}
                     source={state.settings.sources.from}
-                    resetLabel="Restore inherited address"
+                    resetLabel={t("restoreInheritedAddress")}
                     onReset={() => state.resetField("from")}
                   />
                   <Input
@@ -171,17 +171,18 @@ export function MailSettings() {
                     onChange={(event) => state.updateForm("from", event.target.value)}
                   />
                   <FieldDescription>
-                    Used as MAIL_FROM. Reset restores{" "}
-                    {formatValue(state.settings.inherited.from.value)} from{" "}
-                    {sourceLabel(state.settings.inherited.from.source).toLowerCase()}.
+                    {t("senderAddressDescription", {
+                      value: formatValue(state.settings.inherited.from.value, t),
+                      source: sourceLabel(state.settings.inherited.from.source, t).toLowerCase(),
+                    })}
                   </FieldDescription>
                 </Field>
                 <Field>
                   <SettingFieldHeading
                     htmlFor="mail-from-name"
-                    label="Sender display name"
+                    label={t("senderDisplayName")}
                     source={state.settings.sources.fromName}
-                    resetLabel="Restore inherited name"
+                    resetLabel={t("restoreInheritedName")}
                     onReset={() => state.resetField("fromName")}
                   />
                   <Input
@@ -190,16 +191,21 @@ export function MailSettings() {
                     onChange={(event) => state.updateForm("fromName", event.target.value)}
                   />
                   <FieldDescription>
-                    Reset restores {formatValue(state.settings.inherited.fromName.value)} from{" "}
-                    {sourceLabel(state.settings.inherited.fromName.source).toLowerCase()}.
+                    {t("senderDisplayNameDescription", {
+                      value: formatValue(state.settings.inherited.fromName.value, t),
+                      source: sourceLabel(
+                        state.settings.inherited.fromName.source,
+                        t,
+                      ).toLowerCase(),
+                    })}
                   </FieldDescription>
                 </Field>
                 <Field>
                   <SettingFieldHeading
                     htmlFor="mail-templates-url"
-                    label="Templates base URL"
+                    label={t("templatesBaseUrl")}
                     source={state.settings.sources.templatesBaseUrl}
-                    resetLabel="Restore inherited URL"
+                    resetLabel={t("restoreInheritedUrl")}
                     onReset={() => state.resetField("templatesBaseUrl")}
                   />
                   <Input
@@ -210,9 +216,13 @@ export function MailSettings() {
                     onChange={(event) => state.updateForm("templatesBaseUrl", event.target.value)}
                   />
                   <FieldDescription>
-                    Optional base URL. Reset restores{" "}
-                    {formatValue(state.settings.inherited.templatesBaseUrl.value)} from{" "}
-                    {sourceLabel(state.settings.inherited.templatesBaseUrl.source).toLowerCase()}.
+                    {t("templatesBaseUrlDescription", {
+                      value: formatValue(state.settings.inherited.templatesBaseUrl.value, t),
+                      source: sourceLabel(
+                        state.settings.inherited.templatesBaseUrl.source,
+                        t,
+                      ).toLowerCase(),
+                    })}
                   </FieldDescription>
                 </Field>
               </FieldGroup>
@@ -221,16 +231,14 @@ export function MailSettings() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Resend credential</CardTitle>
-              <CardDescription>
-                The key remains write-only. Its original value never returns from the API.
-              </CardDescription>
+              <CardTitle>{t("resendCredential")}</CardTitle>
+              <CardDescription>{t("resendCredentialDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <FieldGroup>
                 <Field>
                   <div className="flex flex-wrap items-center gap-2">
-                    <FieldLabel htmlFor="resend-api-key">Replacement API key</FieldLabel>
+                    <FieldLabel htmlFor="resend-api-key">{t("replacementApiKey")}</FieldLabel>
                     <SourceBadge source={state.settings.resendApiKey.source} />
                   </div>
                   <Input
@@ -238,26 +246,23 @@ export function MailSettings() {
                     id="resend-api-key"
                     placeholder={
                       state.settings.resendApiKey.configured
-                        ? "Leave blank to keep the configured key"
-                        : "Enter a Resend API key"
+                        ? t("keepConfiguredKeyPlaceholder")
+                        : t("enterResendKeyPlaceholder")
                     }
                     type="password"
                     value={state.form.resendApiKey}
                     onChange={(event) => state.updateSecret(event.target.value)}
                   />
-                  <FieldDescription>
-                    Blank input preserves the current database state. A new value replaces the
-                    database key.
-                  </FieldDescription>
+                  <FieldDescription>{t("replacementApiKeyDescription")}</FieldDescription>
                 </Field>
                 {state.settings.resendApiKey.source === "database" ? (
                   <Field orientation="horizontal">
                     <div>
-                      <FieldLabel>Remove database override</FieldLabel>
+                      <FieldLabel>{t("removeDatabaseOverride")}</FieldLabel>
                       <FieldDescription>
                         {state.settings.resendApiKey.inheritedConfigured
-                          ? "An environment key will become active after saving."
-                          : "No environment key is available after removal."}
+                          ? t("environmentKeyAfterSave")
+                          : t("noEnvironmentKeyAfterRemoval")}
                       </FieldDescription>
                     </div>
                     <Button
@@ -267,12 +272,14 @@ export function MailSettings() {
                       onClick={handleResetSecret}
                     >
                       {state.changes.resendApiKey?.action === "reset"
-                        ? "Will restore on save"
-                        : "Remove override"}
+                        ? t("willRestoreOnSave")
+                        : t("removeOverride")}
                     </Button>
                   </Field>
                 ) : null}
-                <FieldError>{state.error}</FieldError>
+                <FieldError>
+                  {state.error ? translateWebError(state.error, errorT, "unknown") : null}
+                </FieldError>
               </FieldGroup>
             </CardContent>
             <CardFooter className="flex flex-wrap justify-between gap-2">
@@ -296,7 +303,7 @@ export function MailSettings() {
                 ) : (
                   <PaperPlaneTilt data-icon="inline-start" aria-hidden="true" />
                 )}
-                Send test email
+                {t("sendTestEmail")}
               </Button>
               <Button
                 disabled={!state.hasChanges || state.isSaving || state.isTesting}
@@ -311,17 +318,17 @@ export function MailSettings() {
                 ) : (
                   <FloppyDisk data-icon="inline-start" aria-hidden="true" />
                 )}
-                Save settings
+                {t("saveSettings")}
               </Button>
             </CardFooter>
           </Card>
         </form>
       ) : (
         <SettingsUnavailable
-          error={state.error}
-          fallback="The API did not return mail settings."
+          error={state.error ? translateWebError(state.error, errorT, "unknown") : null}
+          fallback={t("mailSettingsFallback")}
           onRetry={() => void state.reload()}
-          title="Mail settings unavailable"
+          title={t("mailSettingsUnavailable")}
         />
       )}
     </>

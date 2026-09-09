@@ -17,6 +17,7 @@ import {
   type WorkspaceMembershipRepository,
   type ProjectStudioRepositories,
 } from "@voidmix/core";
+import type { Locale } from "@voidmix/i18n/types";
 import type {
   ActivityDto,
   AssetReferenceDto,
@@ -260,7 +261,12 @@ export function createApiModules(options: CreateApiModulesOptions): ApiModules {
       mail: createMailSettingsAdministration({
         settings: options.settings,
         fallback: options.mailFallback,
-        sendTest: (recipient) => options.mailer.sendTest(recipient),
+        sendTest: (input) =>
+          options.mailer.sendTest({
+            email: input.email,
+            name: input.name,
+            ...(input.locale ? { locale: input.locale as Locale } : {}),
+          }),
         ...(options.now ? { now: options.now } : {}),
         ...(options.id ? { id: options.id } : {}),
       }),

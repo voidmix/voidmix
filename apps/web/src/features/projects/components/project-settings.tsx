@@ -1,4 +1,4 @@
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   Dialog,
@@ -9,6 +9,12 @@ import {
 import { useState } from "react";
 import { projectViewSchema, type ProjectView } from "../types";
 import { studioFieldClass, studioInputClass } from "../studio-styles";
+import {
+  displayProjectDescription,
+  displayProjectMilestone,
+  displayProjectName,
+  withoutChangedProjectPreviewCopy,
+} from "../preview-copy";
 
 export function ProjectSettings({
   project,
@@ -19,22 +25,39 @@ export function ProjectSettings({
 }) {
   const t = useTranslations("workspaceUi");
   const [draft, setDraft] = useState(project);
+  const [dirty, setDirty] = useState({ name: false, description: false, milestone: false });
   const [confirm, setConfirm] = useState(false);
+
+  function saveDraft() {
+    const next: ProjectView = {
+      ...project,
+      ...(dirty.name ? { name: draft.name.trim() } : {}),
+      ...(dirty.description ? { description: draft.description } : {}),
+      ...(dirty.milestone ? { milestone: draft.milestone } : {}),
+      status: draft.status,
+    };
+    if (!next.name.trim()) return;
+    onSave(withoutChangedProjectPreviewCopy(project, next));
+  }
+
   return (
     <div className="grid max-w-xl gap-9">
       <form
         className="grid gap-5"
         onSubmit={(event) => {
           event.preventDefault();
-          if (draft.name.trim()) onSave({ ...draft, name: draft.name.trim() });
+          saveDraft();
         }}
       >
         <label className={studioFieldClass}>
           {t("name")}
           <input
             className={studioInputClass}
-            value={draft.name}
-            onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+            value={dirty.name ? draft.name : displayProjectName(project, t)}
+            onChange={(event) => {
+              setDirty((value) => ({ ...value, name: true }));
+              setDraft({ ...draft, name: event.target.value });
+            }}
             maxLength={120}
             required
           />
@@ -44,8 +67,11 @@ export function ProjectSettings({
           <textarea
             className={studioInputClass}
             rows={4}
-            value={draft.description}
-            onChange={(event) => setDraft({ ...draft, description: event.target.value })}
+            value={dirty.description ? draft.description : displayProjectDescription(project, t)}
+            onChange={(event) => {
+              setDirty((value) => ({ ...value, description: true }));
+              setDraft({ ...draft, description: event.target.value });
+            }}
             maxLength={2000}
           />
         </label>
@@ -53,8 +79,11 @@ export function ProjectSettings({
           {t("milestone")}
           <input
             className={studioInputClass}
-            value={draft.milestone}
-            onChange={(event) => setDraft({ ...draft, milestone: event.target.value })}
+            value={dirty.milestone ? draft.milestone : displayProjectMilestone(project, t)}
+            onChange={(event) => {
+              setDirty((value) => ({ ...value, milestone: true }));
+              setDraft({ ...draft, milestone: event.target.value });
+            }}
             maxLength={200}
           />
         </label>
@@ -70,7 +99,7 @@ export function ProjectSettings({
               })
             }
           >
-            {["active", "paused", "completed"].map((status) => (
+            {(["active", "paused", "completed"] as const).map((status) => (
               <option key={status} value={status}>
                 {t(status)}
               </option>

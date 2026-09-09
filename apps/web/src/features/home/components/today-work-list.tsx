@@ -1,5 +1,5 @@
 import { ArrowRight, CaretDown, CaretUp, CheckCircle, CircleNotch } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useState } from "react";
@@ -85,7 +85,8 @@ function TodayWorkRow({
       <button className="min-w-0 text-left" onClick={onOpen}>
         <strong className="block truncate text-sm hover:underline">{t(item.titleKey)}</strong>
         <span className="mt-1 block truncate text-xs text-muted-foreground">
-          {item.owner} · {t("minutesAgo", { count: item.timestamp })}
+          {item.ownerKey ? t(item.ownerKey) : item.owner} ·{" "}
+          {t("minutesAgo", { count: item.timestamp })}
         </span>
       </button>
       <div className="flex items-center gap-2">

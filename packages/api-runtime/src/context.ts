@@ -1,4 +1,5 @@
 import type { Session } from "@voidmix/auth";
+import type { Locale } from "@voidmix/i18n/types";
 
 export interface ApiRequestAuthContext {
   session: Session | null;
@@ -7,6 +8,8 @@ export interface ApiRequestAuthContext {
 
 export interface ApiRequestContext {
   requestId: string;
+  /** Explicit request preference; absent means the mailer keeps its configured default. */
+  locale?: Locale;
   auth: ApiRequestAuthContext;
 }
 

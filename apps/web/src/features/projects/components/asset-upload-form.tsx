@@ -1,8 +1,9 @@
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
 import { useId, useRef, useState, type FormEvent } from "react";
+import { translateWebError } from "../../../i18n/error-message";
 import type { ProjectStudioDataSource } from "../preview-adapter";
 
 export function AssetUploadForm({
@@ -16,6 +17,7 @@ export function AssetUploadForm({
 }) {
   const t = useTranslations("workspaceUi");
   const homeT = useTranslations("home");
+  const errorT = useTranslations("errors");
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -37,7 +39,7 @@ export function AssetUploadForm({
       setSaved(true);
       onUploaded?.();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : t("uploadError"));
+      setError(translateWebError(reason, errorT, "uploadError"));
     } finally {
       setBusy(false);
     }

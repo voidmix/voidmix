@@ -1,4 +1,4 @@
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { cn } from "@voidmix/ui/lib/utils";
 import type { PiSessionView } from "../projects/types";
 

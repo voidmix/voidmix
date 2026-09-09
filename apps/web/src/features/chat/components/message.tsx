@@ -1,5 +1,5 @@
 import { Sparkle } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useFormatter, useTranslations } from "../../../i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { cn } from "@voidmix/ui/lib/utils";
 
@@ -11,7 +11,17 @@ interface MessageProps {
 
 export function ChatMessageRow({ message }: MessageProps) {
   const t = useTranslations("home");
+  const formatter = useFormatter();
   const isUser = message.role === "user";
+  const content =
+    !isUser && message.contentKey ? t(message.contentKey, message.contentValues) : message.content;
+  const timestamp =
+    message.timestamp.kind === "date"
+      ? formatter.dateTime(new Date(message.timestamp.createdAt), {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      : t(message.timestamp.kind, message.timestamp.values);
 
   return (
     <article
@@ -31,8 +41,8 @@ export function ChatMessageRow({ message }: MessageProps) {
       </div>
       <div className={cn("min-w-0", isUser && "col-start-1 row-start-1 flex flex-col items-end")}>
         <div className="flex min-h-[1.4rem] items-center gap-1.5">
-          <strong className="text-[0.76rem]">{isUser ? t("you") : "Voidmix"}</strong>
-          <span className="text-[0.68rem] text-muted-foreground">{message.timestamp}</span>
+          <strong className="text-[0.76rem]">{isUser ? t("you") : t("assistantName")}</strong>
+          <span className="text-[0.68rem] text-muted-foreground">{timestamp}</span>
         </div>
         <p
           className={cn(
@@ -41,7 +51,7 @@ export function ChatMessageRow({ message }: MessageProps) {
               "rounded-[0.75rem_0.25rem_0.75rem_0.75rem] bg-muted px-3 py-2 text-foreground",
           )}
         >
-          {message.content}
+          {content}
         </p>
       </div>
     </article>

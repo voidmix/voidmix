@@ -12,7 +12,10 @@ import {
   type StudioAssetReference,
   type TaskView,
   type StudioSnapshot,
+  type ActivityView,
 } from "./types";
+import { LocalizedWebError } from "../../i18n/error-message";
+import { withoutChangedProjectPreviewCopy, withoutChangedTaskPreviewCopy } from "./preview-copy";
 
 export const previewStorageKey = "voidmix.project-studio.preview.v2";
 export const legacyPreviewStorageKey = "voidmix.workspace.preview.v1";
@@ -22,25 +25,34 @@ const seed: StudioSnapshot = {
     {
       id: "northstar",
       name: "Northstar / Launch film",
+      titleKey: "previewNorthstarLaunchFilmTitle",
       description: "A clear story for the next chapter.",
+      descriptionKey: "previewNorthstarLaunchFilmDescription",
       status: "active",
       milestone: "Final review",
+      milestoneKey: "previewFinalReviewMilestone",
       updatedAt: new Date("2026-09-06T08:00:00Z"),
     },
     {
       id: "campaign",
       name: "Q3 / Brand campaign",
+      titleKey: "previewBrandCampaignTitle",
       description: "Make the next campaign feel unmistakably ours.",
+      descriptionKey: "previewBrandCampaignDescription",
       status: "active",
       milestone: "Creative brief",
+      milestoneKey: "previewCreativeBriefMilestone",
       updatedAt: new Date("2026-09-05T12:00:00Z"),
     },
     {
       id: "sound",
       name: "Northstar / Sound design",
+      titleKey: "previewSoundDesignTitle",
       description: "A sonic identity for the launch.",
+      descriptionKey: "previewSoundDesignDescription",
       status: "active",
       milestone: "Mix review",
+      milestoneKey: "previewMixReviewMilestone",
       updatedAt: new Date("2026-09-04T10:00:00Z"),
     },
   ],
@@ -49,6 +61,7 @@ const seed: StudioSnapshot = {
       id: "color",
       projectId: "northstar",
       title: "Approve final color pass",
+      titleKey: "previewApproveFinalColorPass",
       status: "blocked",
       owner: "Samira",
       priority: "high",
@@ -57,6 +70,7 @@ const seed: StudioSnapshot = {
       id: "feedback",
       projectId: "northstar",
       title: "Consolidate the final feedback",
+      titleKey: "previewConsolidateFinalFeedback",
       status: "todo",
       owner: "Leo",
       priority: "high",
@@ -65,6 +79,7 @@ const seed: StudioSnapshot = {
       id: "brief",
       projectId: "campaign",
       title: "Prepare the campaign brief",
+      titleKey: "previewPrepareCampaignBrief",
       status: "todo",
       owner: "Mina",
       priority: "normal",
@@ -73,6 +88,7 @@ const seed: StudioSnapshot = {
       id: "mix",
       projectId: "sound",
       title: "Review the first sound mix",
+      titleKey: "previewReviewFirstSoundMix",
       status: "in_progress",
       owner: "Leo",
       priority: "normal",
@@ -81,6 +97,7 @@ const seed: StudioSnapshot = {
       id: "lock",
       projectId: "northstar",
       title: "Confirm picture lock",
+      titleKey: "previewConfirmPictureLock",
       status: "done",
       owner: "Samira",
       priority: "normal",
@@ -91,6 +108,7 @@ const seed: StudioSnapshot = {
       id: "lock-event",
       projectId: "northstar",
       title: "Confirm picture lock",
+      titleKey: "previewConfirmPictureLock",
       action: "completed",
       at: new Date("2026-09-06T07:00:00Z"),
     },
@@ -132,7 +150,9 @@ function projectToPreviewData(project: ProjectView) {
   return {
     id: project.id,
     title: project.name,
+    ...(project.titleKey ? { titleKey: project.titleKey } : {}),
     description: project.description,
+    ...(project.descriptionKey ? { descriptionKey: project.descriptionKey } : {}),
     stage,
     archived: project.status === "archived",
     legacyStatus: project.status,
@@ -141,6 +161,7 @@ function projectToPreviewData(project: ProjectView) {
     thumbnail: null,
     deadline: null,
     milestone: project.milestone,
+    ...(project.milestoneKey ? { milestoneKey: project.milestoneKey } : {}),
     updatedAt: project.updatedAt,
   };
 }
@@ -163,7 +184,9 @@ function previewDataToSnapshot(data: StudioPreviewData): StudioSnapshot {
     projects: data.projects.map((project) => ({
       id: project.id,
       name: project.title,
+      ...(project.titleKey ? { titleKey: project.titleKey } : {}),
       description: project.description,
+      ...(project.descriptionKey ? { descriptionKey: project.descriptionKey } : {}),
       status: project.archived
         ? "archived"
         : project.stage === "delivered"
@@ -172,6 +195,7 @@ function previewDataToSnapshot(data: StudioPreviewData): StudioSnapshot {
             ? "paused"
             : "active",
       milestone: project.milestone,
+      ...(project.milestoneKey ? { milestoneKey: project.milestoneKey } : {}),
       updatedAt: project.updatedAt,
     })),
     tasks: data.tasks,
@@ -234,15 +258,16 @@ export function createProjectStudioPreviewAdapter(
     projectId: string,
     title: string,
     action: StudioSnapshot["activity"][number]["action"],
+    titleKey?: ActivityView["titleKey"],
   ) {
-    return [{ id: id(), projectId, title, action, at: new Date() }, ...snapshot.activity].slice(
-      0,
-      100,
-    );
+    return [
+      { id: id(), projectId, title, ...(titleKey ? { titleKey } : {}), action, at: new Date() },
+      ...snapshot.activity,
+    ].slice(0, 100);
   }
   function requireProject(projectId: string) {
     if (!snapshot.projects.some((project) => project.id === projectId))
-      throw new Error("Project not found");
+      throw new LocalizedWebError("PROJECT_NOT_FOUND");
   }
   return {
     getSnapshot: () => snapshot,
@@ -316,7 +341,7 @@ export function createProjectStudioPreviewAdapter(
         milestone: "",
         updatedAt: new Date(),
       };
-      if (!project.name) throw new Error("A name is required");
+      if (!project.name) throw new LocalizedWebError("PROJECT_NAME_REQUIRED");
       publish({
         ...snapshot,
         projects: [...snapshot.projects, project],
@@ -325,14 +350,23 @@ export function createProjectStudioPreviewAdapter(
       return project;
     },
     updateProject(project) {
+      const previous = snapshot.projects.find((item) => item.id === project.id);
       requireProject(project.id);
-      if (!project.name.trim()) throw new Error("A name is required");
+      const editableProject = previous
+        ? withoutChangedProjectPreviewCopy(previous, project)
+        : project;
+      if (!editableProject.name.trim()) throw new LocalizedWebError("PROJECT_NAME_REQUIRED");
       publish({
         ...snapshot,
         projects: snapshot.projects.map((item) =>
-          item.id === project.id ? { ...project, updatedAt: new Date() } : item,
+          item.id === editableProject.id ? { ...editableProject, updatedAt: new Date() } : item,
         ),
-        activity: activity(project.id, project.name, "updated"),
+        activity: activity(
+          editableProject.id,
+          editableProject.name,
+          "updated",
+          editableProject.titleKey,
+        ),
       });
     },
     createTask(projectId, title) {
@@ -341,11 +375,12 @@ export function createProjectStudioPreviewAdapter(
         id: id(),
         projectId,
         title: title.trim().slice(0, 300),
+        ownerKey: "you",
         status: "todo",
         owner: "You",
         priority: "normal",
       };
-      if (!task.title) throw new Error("A title is required");
+      if (!task.title) throw new LocalizedWebError("TASK_TITLE_REQUIRED");
       publish({
         ...snapshot,
         tasks: [...snapshot.tasks, task],
@@ -354,12 +389,20 @@ export function createProjectStudioPreviewAdapter(
       return task;
     },
     updateTask(task) {
-      if (!snapshot.tasks.some((item) => item.id === task.id && item.projectId === task.projectId))
-        throw new Error("Task not found");
+      const previous = snapshot.tasks.find(
+        (item) => item.id === task.id && item.projectId === task.projectId,
+      );
+      if (!previous) throw new LocalizedWebError("TASK_NOT_FOUND");
+      const editableTask = withoutChangedTaskPreviewCopy(previous, task);
       publish({
         ...snapshot,
-        tasks: snapshot.tasks.map((item) => (item.id === task.id ? task : item)),
-        activity: activity(task.projectId, task.title, "updated"),
+        tasks: snapshot.tasks.map((item) => (item.id === editableTask.id ? editableTask : item)),
+        activity: activity(
+          editableTask.projectId,
+          editableTask.title,
+          "updated",
+          editableTask.titleKey,
+        ),
       });
     },
     removeTask(taskId) {
@@ -368,7 +411,7 @@ export function createProjectStudioPreviewAdapter(
         publish({
           ...snapshot,
           tasks: snapshot.tasks.filter((item) => item.id !== taskId),
-          activity: activity(task.projectId, task.title, "restored"),
+          activity: activity(task.projectId, task.title, "restored", task.titleKey),
         });
     },
     createSession(projectId, prompt) {
@@ -388,7 +431,7 @@ export function createProjectStudioPreviewAdapter(
       const previous = snapshot.sessions.find(
         (item) => item.id === session.id && item.projectId === session.projectId,
       );
-      if (!previous) throw new Error("Session not found");
+      if (!previous) throw new LocalizedWebError("SESSION_NOT_FOUND");
       const changed = previous.status !== session.status;
       const status = session.status;
       const terminal = status === "completed" || status === "cancelled" || status === "failed";

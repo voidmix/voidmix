@@ -1,11 +1,13 @@
 import { DeviceMobile, Laptop, Monitor, Sparkle, X } from "@phosphor-icons/react";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
-import { useTranslations } from "@voidmix/i18n/client";
-import { demoCloudSnapshot } from "../../lib/cloud";
+import { useDesktopTranslations, useFormatter } from "../../i18n/client";
+import { formatCloudTime } from "../../i18n/time";
+import { demoCloudSnapshot, formatBytes } from "../../lib/cloud";
 
 export function DevicesPage() {
-  const t = useTranslations("devices");
+  const t = useDesktopTranslations("devices");
+  const formatter = useFormatter();
   const devices = demoCloudSnapshot.devices;
   return (
     <div className="page">
@@ -39,11 +41,11 @@ export function DevicesPage() {
               </div>
               <div className="device-meta">
                 <span>{t("lastSeen")}</span>
-                <strong>{device.lastSeen}</strong>
+                <strong>{formatCloudTime(formatter, device.lastSeen)}</strong>
               </div>
               <div className="device-meta">
                 <span>{t("synced")}</span>
-                <strong>{device.synced}</strong>
+                <strong>{formatBytes(device.syncedBytes, formatter)}</strong>
               </div>
               <Button
                 className="icon-button"

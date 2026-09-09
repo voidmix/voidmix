@@ -7,6 +7,9 @@ import {
   Stack,
 } from "@phosphor-icons/react";
 import { cn } from "@voidmix/ui/lib/utils";
+import type { WebNamespaceKey } from "../../i18n/client";
+
+export type HomeMessageKey = WebNamespaceKey<"home">;
 
 export const navigation = [
   { id: "overview", label: "Overview", messageKey: "navOverview", icon: House, current: true },
@@ -82,16 +85,16 @@ export const workspacePlaceholders = [
   },
 ] as const satisfies ReadonlyArray<{
   id: Exclude<WorkspaceSectionId, "overview">;
-  descriptionKey: string;
-  previewKey: string;
-  stateKey: string;
+  descriptionKey: HomeMessageKey;
+  previewKey: HomeMessageKey;
+  stateKey: HomeMessageKey;
 }>;
 
 export const recentThreads = [
-  "Final cut / v18",
-  "Launch film delivery",
-  "Q3 campaign brief",
-] as const;
+  { id: "final-cut-v18", messageKey: "featuredTitle" },
+  { id: "launch-film-delivery", messageKey: "recentLaunchFilmDelivery" },
+  { id: "q3-campaign-brief", messageKey: "recentCampaignBrief" },
+] as const satisfies ReadonlyArray<{ id: string; messageKey: HomeMessageKey }>;
 
 export const featuredActivity = {
   title: "Final cut / v18",
@@ -191,11 +194,12 @@ export function activityStateClassName(tone: ActivityTone): string {
 // A single fixture feeds the queue, timeline, badges, and project context.
 export interface SignalItem {
   id: string;
-  titleKey: string;
-  detailKey: string;
+  titleKey: HomeMessageKey;
+  detailKey: HomeMessageKey;
   priority: number;
   status: "pending" | "blocked" | "working" | "complete";
   owner: string;
+  ownerKey?: HomeMessageKey;
   timestamp: number;
   action: "review" | "decide" | "open";
   relatedSection: "inbox" | "reviews" | "decisions" | "projects";

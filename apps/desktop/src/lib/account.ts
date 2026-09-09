@@ -1,5 +1,6 @@
 import { createApiClient, type ApiClient } from "@voidmix/client";
 import { env } from "../env";
+import { getDesktopLocaleHeaders } from "../i18n/client";
 
 export type AccountProfile = Awaited<ReturnType<ApiClient["account"]["profile"]["get"]>>;
 export type AccountState =
@@ -11,6 +12,7 @@ export async function loadAccount(apiUrl = env.VITE_API_URL): Promise<AccountSta
   try {
     const client = createApiClient({
       baseUrl: apiUrl,
+      headers: getDesktopLocaleHeaders,
       fetch: (input, init) => globalThis.fetch(input, { ...init, credentials: "include" }),
     });
     return { status: "signed_in", profile: await client.account.profile.get({}) };

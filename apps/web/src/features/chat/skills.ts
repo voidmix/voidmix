@@ -1,6 +1,8 @@
+import type { HomeMessageKey } from "../home/data";
+
 export interface ChatSkill {
   readonly description: string;
-  readonly descriptionKey?: string;
+  readonly descriptionKey?: HomeMessageKey;
   readonly name: string;
 }
 

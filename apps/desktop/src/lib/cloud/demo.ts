@@ -1,10 +1,13 @@
 import type { CloudSnapshot } from "./types";
 
 const gibibyte = 1024 ** 3;
+const minute = 60 * 1000;
+const hour = 60 * minute;
+const demoNow = new Date();
 
 export const demoCloudSnapshot: CloudSnapshot = {
-  lastChecked: "just now",
-  lastBackup: "8 min ago",
+  lastChecked: demoNow,
+  lastBackup: new Date(demoNow.valueOf() - 8 * minute),
   pendingItems: 2,
   fileCount: 12_846,
   newThisWeek: 184,
@@ -19,7 +22,8 @@ export const demoCloudSnapshot: CloudSnapshot = {
     {
       id: "job_1",
       name: "Campaign exports",
-      detail: "18 files · 1.8 GB",
+      nameKey: "campaignExports",
+      detail: { kind: "files", count: 18, sizeBytes: 1.8 * gibibyte },
       kind: "upload",
       status: "active",
       progress: 72,
@@ -27,7 +31,8 @@ export const demoCloudSnapshot: CloudSnapshot = {
     {
       id: "job_2",
       name: "Product research",
-      detail: "4 files · 680 MB",
+      nameKey: "productResearch",
+      detail: { kind: "files", count: 4, sizeBytes: 680 * 1024 ** 2 },
       kind: "download",
       status: "active",
       progress: 38,
@@ -35,7 +40,8 @@ export const demoCloudSnapshot: CloudSnapshot = {
     {
       id: "job_3",
       name: "Design system",
-      detail: "328 objects indexed",
+      nameKey: "designSystem",
+      detail: { kind: "objects", count: 328 },
       kind: "index",
       status: "complete",
       progress: 100,
@@ -48,8 +54,8 @@ export const demoCloudSnapshot: CloudSnapshot = {
       platform: "macOS 16.0",
       kind: "desktop",
       online: true,
-      lastSeen: "Now",
-      synced: "48.2 GB",
+      lastSeen: demoNow,
+      syncedBytes: 48.2 * gibibyte,
     },
     {
       id: "dev_2",
@@ -57,17 +63,17 @@ export const demoCloudSnapshot: CloudSnapshot = {
       platform: "Windows 12",
       kind: "laptop",
       online: true,
-      lastSeen: "Now",
-      synced: "31.7 GB",
+      lastSeen: demoNow,
+      syncedBytes: 31.7 * gibibyte,
     },
     {
       id: "dev_3",
-      name: "Alex’s iPhone",
+      name: "Alex's iPhone",
       platform: "iOS 20",
       kind: "phone",
       online: false,
-      lastSeen: "2 hr ago",
-      synced: "1.5 GB",
+      lastSeen: new Date(demoNow.valueOf() - 2 * hour),
+      syncedBytes: 1.5 * gibibyte,
     },
   ],
 };

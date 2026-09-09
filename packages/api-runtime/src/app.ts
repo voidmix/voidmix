@@ -1,4 +1,4 @@
-import { COMMON_ERROR_STATUS_MAP } from "@orpc/server";
+import { COMMON_ERROR_STATUS_MAP, ORPCError, RPCSerializer } from "@orpc/server";
 import { BodyLimitPlugin, RPCHandler } from "@orpc/server/fetch";
 import {
   BatchHandlerPlugin,
@@ -12,6 +12,7 @@ import {
 import { createLoggerConfig, toMiddlewareOptions, type EvlogConfig } from "@voidmix/logger";
 import { evlog as honoEvlog, type EvlogVariables } from "@voidmix/logger/hono";
 import { withEvlog } from "@voidmix/logger/orpc";
+import { resolveRequestLocaleHint } from "@voidmix/i18n/server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
@@ -35,6 +36,7 @@ export interface CreateApiAppOptions {
 type ApiEnv = {
   Variables: EvlogVariables["Variables"] & {
     requestId: string;
+    locale?: import("@voidmix/i18n/types").Locale;
     auth: ApiRequestAuthContext;
   };
 };
@@ -59,6 +61,21 @@ const mutationProcedureNames = new Set([
   "cancel",
   "retry",
 ]);
+
+const rpcSerializer = new RPCSerializer();
+
+function isRpcPath(path: string): boolean {
+  return path === "/rpc" || path.startsWith("/rpc/");
+}
+
+function rpcErrorResponse(
+  code: string,
+  status: 404 | 500,
+  data: Record<string, unknown> = { error: { code } },
+): Response {
+  const error = new ORPCError(code, { data });
+  return Response.json(rpcSerializer.serialize(error.toJSON()), { status });
+}
 
 export function createApiApp(options: CreateApiAppOptions) {
   const router = createApiRouter({
@@ -117,7 +134,7 @@ export function createApiApp(options: CreateApiAppOptions) {
     "/rpc/*",
     cors({
       origin: (origin) => (origins.has(origin) ? origin : null),
-      allowHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
+      allowHeaders: ["Content-Type", "Authorization", "X-Request-ID", "Accept-Language"],
       allowMethods: ["GET", "POST", "OPTIONS"],
       credentials: true,
     }),
@@ -126,7 +143,7 @@ export function createApiApp(options: CreateApiAppOptions) {
     "/api/auth/*",
     cors({
       origin: (origin) => (origins.has(origin) ? origin : null),
-      allowHeaders: ["Content-Type", "Authorization"],
+      allowHeaders: ["Content-Type", "Authorization", "Accept-Language"],
       allowMethods: ["GET", "POST", "OPTIONS"],
       credentials: true,
     }),
@@ -146,10 +163,12 @@ export function createApiApp(options: CreateApiAppOptions) {
   app.use("/rpc/*", async (context, next) => {
     const requestId = context.get("requestId");
     const request = context.req.raw;
+    const locale = resolveRequestLocaleHint(request.headers);
     const { matched, response } = await handler.handle(request, {
       prefix: "/rpc",
       context: {
         requestId,
+        ...(locale ? { locale } : {}),
         auth: context.get("auth"),
       },
     });
@@ -157,11 +176,31 @@ export function createApiApp(options: CreateApiAppOptions) {
     if (matched) return context.newResponse(response.body, response);
     await next();
   });
-  app.notFound((context) => context.json({ error: "NOT_FOUND" }, 404));
+  app.notFound((context) =>
+    isRpcPath(context.req.path)
+      ? rpcErrorResponse("NOT_FOUND", 404)
+      : context.json(
+          {
+            code: "NOT_FOUND",
+            data: { error: { code: "NOT_FOUND" } },
+          },
+          404,
+        ),
+  );
   app.onError((error, context) => {
     context.get("log")?.error(error);
+    if (isRpcPath(context.req.path)) {
+      return rpcErrorResponse("INTERNAL_SERVER_ERROR", 500, {
+        error: { code: "INTERNAL_SERVER_ERROR" },
+        requestId: context.get("requestId"),
+      });
+    }
     return context.json(
-      { error: "INTERNAL_SERVER_ERROR", requestId: context.get("requestId") },
+      {
+        code: "INTERNAL_SERVER_ERROR",
+        data: { error: { code: "INTERNAL_SERVER_ERROR" } },
+        requestId: context.get("requestId"),
+      },
       500,
     );
   });

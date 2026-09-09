@@ -83,6 +83,7 @@
     "doctor": "vmx doctor",
     "policy": "vmx policy",
     "policy:fix": "vmx policy --fix",
+    "i18n:check": "vmx i18n",
     "skills:update": "vmx skills update",
     "clean": "vmx clean",
     "clean:all": "vmx clean --dependencies",

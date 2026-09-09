@@ -1,5 +1,5 @@
 import { Plus, Sparkle } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { cn } from "@voidmix/ui/lib/utils";
 import {

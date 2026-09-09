@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 
+import { useTranslations } from "../../../i18n/client";
 import type { ChatSkill } from "../skills";
 
 interface SkillMenuProps {
@@ -21,6 +22,7 @@ export function SkillMenu({
   skills,
 }: SkillMenuProps) {
   const listRef = useRef<HTMLUListElement>(null);
+  const t = useTranslations("home");
 
   // scrollIntoView does not exist in jsdom, and every layout number there is 0,
   // so this arithmetic is an inert no-op under test.
@@ -39,7 +41,7 @@ export function SkillMenu({
 
   return (
     <ul
-      aria-label="Skills"
+      aria-label={t("skills")}
       className="absolute inset-x-0 bottom-full z-20 mb-2 max-h-56 overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 animate-in fade-in-0 zoom-in-95"
       id={listboxId}
       ref={listRef}

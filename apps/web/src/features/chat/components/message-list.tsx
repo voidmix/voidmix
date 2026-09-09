@@ -1,5 +1,5 @@
 import type { ChatMessage } from "../types";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { ChatMessageRow } from "./message";
 
 interface MessageListProps {

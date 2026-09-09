@@ -1,5 +1,5 @@
 import { Pulse } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { cn } from "@voidmix/ui/lib/utils";
 
 import { activityIndicatorClassName, activityItems, activityStateClassName } from "../data";

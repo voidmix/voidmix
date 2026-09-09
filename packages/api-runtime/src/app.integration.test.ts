@@ -193,11 +193,14 @@ function setup(
     auditEvents: repository.auditEvents,
   });
   const sentRecipients: string[] = [];
+  const sentMailInputs: Array<Parameters<Mailer["sendTest"]>[0]> = [];
   const mailer: Mailer = {
     sendVerification: async () => {},
     sendPasswordReset: async () => {},
     sendWelcome: async () => {},
-    sendTest: async ({ email }) => {
+    sendTest: async (input) => {
+      sentMailInputs.push(input);
+      const { email } = input;
       sentRecipients.push(email);
     },
   };
@@ -232,6 +235,7 @@ function setup(
     repository,
     settings,
     sentRecipients,
+    sentMailInputs,
     app,
     client,
     get rpcRequests() {
@@ -244,6 +248,67 @@ function setup(
 }
 
 describe("API", () => {
+  it("returns the stable error envelope for unmatched routes", async () => {
+    const app = createTestApiApp();
+    const response = await app.request("/missing-route");
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({
+      code: "NOT_FOUND",
+      data: { error: { code: "NOT_FOUND" } },
+    });
+  });
+
+  it("returns an oRPC-compatible stable error for unmatched procedures", async () => {
+    const app = createTestApiApp();
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    }) as unknown as { missingProcedure(input: object): Promise<unknown> };
+
+    await expect(client.missingProcedure({})).rejects.toMatchObject({
+      code: "NOT_FOUND",
+      data: { error: { code: "NOT_FOUND" } },
+    });
+  });
+
+  it("returns an oRPC-compatible stable error for host failures", async () => {
+    const app = createTestApiApp({
+      resolveSession: async () => {
+        throw new Error("private diagnostic");
+      },
+    });
+    const client = createApiClient({
+      baseUrl: "http://voidmix.test",
+      fetch: async (input, init) => app.fetch(new Request(input, init)),
+    });
+
+    await expect(client.health({})).rejects.toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+      data: {
+        error: { code: "INTERNAL_SERVER_ERROR" },
+        requestId: expect.any(String),
+      },
+    });
+  });
+
+  it("returns the stable error envelope for unhandled host errors", async () => {
+    const app = createTestApiApp({
+      authHandler: async () => {
+        throw new Error("private diagnostic");
+      },
+    });
+    const response = await app.request("/api/auth/get-session");
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body).toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+      data: { error: { code: "INTERNAL_SERVER_ERROR" } },
+    });
+    expect(body).not.toHaveProperty("message");
+  });
+
   it("mounts the injected auth handler with credentialed CORS", async () => {
     const app = createTestApiApp({
       authHandler: async () => new Response("auth-ok"),
@@ -257,6 +322,21 @@ describe("API", () => {
     expect(await response.text()).toBe("auth-ok");
     expect(response.headers.get("access-control-allow-credentials")).toBe("true");
     expect(response.headers.get("access-control-allow-origin")).toBe("http://admin.voidmix.test");
+  });
+
+  it("allows Accept-Language on cross-origin auth requests", async () => {
+    const app = createTestApiApp({ allowedOrigins: ["http://admin.voidmix.test"] });
+    const response = await app.request("/api/auth/get-session", {
+      method: "OPTIONS",
+      headers: {
+        Origin: "http://admin.voidmix.test",
+        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "Accept-Language",
+      },
+    });
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("access-control-allow-headers")).toContain("Accept-Language");
   });
 
   it("does not advertise test actor headers through production CORS", async () => {
@@ -902,6 +982,19 @@ describe("API", () => {
       metadata: { recipient: result.recipient, result: "sent" },
     });
     expect(JSON.stringify(repository.auditEvents)).not.toContain("database-key");
+  });
+
+  it("preserves the mailer's configured default when the request has no locale hint", async () => {
+    const { client, sentMailInputs } = setup("owner", "owner-1");
+
+    await client.admin.settings.mail.sendTest({});
+
+    expect(sentMailInputs).toEqual([
+      {
+        email: "owner@example.com",
+        name: "Owner",
+      },
+    ]);
   });
 
   it("serves only derived auth capabilities without a session", async () => {

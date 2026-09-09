@@ -1,26 +1,59 @@
 import { z } from "zod";
 
 export const taskStatusSchema = z.enum(["todo", "in_progress", "blocked", "done"]);
+
+// Preview records carry stable message keys alongside their English fallback
+// values. Live and user-created records omit these fields and render verbatim.
+export const previewProjectTitleKeySchema = z.enum([
+  "previewNorthstarLaunchFilmTitle",
+  "previewBrandCampaignTitle",
+  "previewSoundDesignTitle",
+]);
+export const previewProjectDescriptionKeySchema = z.enum([
+  "previewNorthstarLaunchFilmDescription",
+  "previewBrandCampaignDescription",
+  "previewSoundDesignDescription",
+]);
+export const previewProjectMilestoneKeySchema = z.enum([
+  "previewFinalReviewMilestone",
+  "previewCreativeBriefMilestone",
+  "previewMixReviewMilestone",
+]);
+export const previewTaskTitleKeySchema = z.enum([
+  "previewApproveFinalColorPass",
+  "previewConsolidateFinalFeedback",
+  "previewPrepareCampaignBrief",
+  "previewReviewFirstSoundMix",
+  "previewConfirmPictureLock",
+]);
+export const previewOwnerKeySchema = z.enum(["you"]);
+
 export const projectViewSchema = z.object({
   id: z.string(),
   name: z.string().min(1).max(120),
+  titleKey: previewProjectTitleKeySchema.optional(),
   description: z.string().max(2000),
+  descriptionKey: previewProjectDescriptionKeySchema.optional(),
   status: z.enum(["active", "paused", "completed", "archived"]),
   milestone: z.string(),
+  milestoneKey: previewProjectMilestoneKeySchema.optional(),
   updatedAt: z.coerce.date(),
 });
 export const taskViewSchema = z.object({
   id: z.string(),
   projectId: z.string(),
   title: z.string().min(1).max(300),
+  titleKey: previewTaskTitleKeySchema.optional(),
   status: taskStatusSchema,
   owner: z.string(),
+  ownerKey: previewOwnerKeySchema.optional(),
   priority: z.enum(["normal", "high"]),
 });
 export const activityViewSchema = z.object({
   id: z.string(),
   projectId: z.string(),
   title: z.string(),
+  titleKey: previewProjectTitleKeySchema.or(previewTaskTitleKeySchema).optional(),
   action: z.enum(["created", "updated", "completed", "cancelled", "failed", "restored"]),
   at: z.coerce.date(),
 });
@@ -84,7 +117,9 @@ const previewProjectStageSchema = z.enum(["draft", "in_progress", "review", "del
 const previewProjectSchema = z.object({
   id: z.string(),
   title: z.string().min(1).max(120),
+  titleKey: previewProjectTitleKeySchema.optional(),
   description: z.string().max(2000),
+  descriptionKey: previewProjectDescriptionKeySchema.optional(),
   stage: previewProjectStageSchema,
   archived: z.boolean(),
   legacyStatus: z.enum(["active", "paused", "completed", "archived"]).nullable().default(null),
@@ -93,6 +128,7 @@ const previewProjectSchema = z.object({
   thumbnail: z.string().nullable().default(null),
   deadline: z.coerce.date().nullable().default(null),
   milestone: z.string().default(""),
+  milestoneKey: previewProjectMilestoneKeySchema.optional(),
   updatedAt: z.coerce.date(),
 });
 export const studioPreviewDataSchema = z.object({

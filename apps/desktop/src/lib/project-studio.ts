@@ -1,5 +1,6 @@
 import { createApiClient, type ApiClient } from "@voidmix/client";
 import { env } from "../env";
+import { getDesktopLocaleHeaders } from "../i18n/client";
 
 export type StudioProject = Awaited<ReturnType<ApiClient["projects"]["list"]>>["items"][number];
 export type StudioDetail = Awaited<ReturnType<ApiClient["projects"]["get"]>>;
@@ -9,61 +10,98 @@ export type StudioLoad<T> =
   | { status: "loaded"; data: T }
   | { status: "unavailable"; data: null };
 
-export const previewProjects = [
+export type PreviewProjectTitleKey =
+  | "northstarLaunchFilmTitle"
+  | "brandCampaignTitle"
+  | "soundDesignTitle";
+
+export type PreviewProjectDescriptionKey =
+  | "northstarLaunchFilmDescription"
+  | "brandCampaignDescription"
+  | "soundDesignDescription";
+
+export type PreviewProject = {
+  id: string;
+  titleKey: PreviewProjectTitleKey;
+  descriptionKey: PreviewProjectDescriptionKey;
+  stage: "draft" | "in_progress" | "review" | "delivered";
+  progress: number;
+  deadline: Date;
+  taskCount: number;
+  taskTotal: number;
+};
+
+export type PreviewAssetProjectKey = PreviewProjectTitleKey;
+
+export type PreviewAsset = {
+  id: string;
+  name: string;
+  projectTitleKey: PreviewAssetProjectKey;
+  sizeBytes: number;
+  type: "video" | "brief" | "audio";
+};
+
+export const previewProjects: readonly PreviewProject[] = [
   {
     id: "northstar",
-    title: "Northstar / Launch film",
-    description: "A clear story for the next chapter.",
+    titleKey: "northstarLaunchFilmTitle",
+    descriptionKey: "northstarLaunchFilmDescription",
     stage: "review",
     progress: 0.72,
     deadline: new Date("2026-09-18"),
-    tasks: "8 of 11 tasks",
+    taskCount: 8,
+    taskTotal: 11,
   },
   {
     id: "campaign",
-    title: "Q3 / Brand campaign",
-    description: "Make the next campaign feel unmistakably ours.",
+    titleKey: "brandCampaignTitle",
+    descriptionKey: "brandCampaignDescription",
     stage: "in_progress",
     progress: 0.38,
     deadline: new Date("2026-09-26"),
-    tasks: "3 of 9 tasks",
+    taskCount: 3,
+    taskTotal: 9,
   },
   {
     id: "sound",
-    title: "Northstar / Sound design",
-    description: "A sonic identity for the launch.",
+    titleKey: "soundDesignTitle",
+    descriptionKey: "soundDesignDescription",
     stage: "draft",
     progress: 0.12,
     deadline: new Date("2026-10-02"),
-    tasks: "1 of 8 tasks",
+    taskCount: 1,
+    taskTotal: 8,
   },
 ] as const;
-export const previewAssets = [
+
+export const previewAssets: readonly PreviewAsset[] = [
   {
     id: "launch-film",
     name: "launch-film-v07.mov",
-    detail: "Northstar / Launch film · 1.8 GB",
+    projectTitleKey: "northstarLaunchFilmTitle",
+    sizeBytes: 1.8 * 1024 ** 3,
     type: "video",
   },
   {
     id: "campaign-brief",
     name: "campaign-brief.pdf",
-    detail: "Q3 / Brand campaign · 2.4 MB",
+    projectTitleKey: "brandCampaignTitle",
+    sizeBytes: 2.4 * 1024 ** 2,
     type: "brief",
   },
   {
     id: "sound-mix",
     name: "sound-mix-01.wav",
-    detail: "Northstar / Sound design · 184 MB",
+    projectTitleKey: "soundDesignTitle",
+    sizeBytes: 184 * 1024 ** 2,
     type: "audio",
   },
 ] as const;
-export type PreviewProject = (typeof previewProjects)[number];
-export type PreviewAsset = (typeof previewAssets)[number];
 
 function getClient(): ApiClient {
   return createApiClient({
     ...(env.VITE_API_URL ? { baseUrl: env.VITE_API_URL } : {}),
+    headers: getDesktopLocaleHeaders,
     fetch: (input, init) => globalThis.fetch(input, { ...init, credentials: "include" }),
   });
 }

@@ -68,7 +68,14 @@
     "activeDevices": "Active devices",
     "registeredCount": "{count} registered",
     "lastBackup": "Last backup",
-    "encryptedSnapshot": "Encrypted snapshot"
+    "encryptedSnapshot": "Encrypted snapshot",
+    "jobFiles": "{count, plural, one {# file} other {# files}}",
+    "jobFilesWithSize": "{count, plural, one {# file} other {# files}} · {size}",
+    "jobObjects": "{count, plural, one {# object} other {# objects}}",
+    "jobObjectsWithSize": "{count, plural, one {# object} other {# objects}} · {size}",
+    "percentComplete": "{percent}% complete",
+    "deviceOnline": "online",
+    "deviceOffline": "offline"
   },
   "activity": {
     "title": "Activity",
@@ -81,7 +88,20 @@
     "backups": "Backups",
     "recent": "Recent activity",
     "today": "Today",
-    "moreOptions": "More options for {title}"
+    "moreOptions": "More options for {title}",
+    "campaignExports": "Campaign exports",
+    "campaignExportsDetail": "Uploaded {count} files from {device}",
+    "brandArchive": "Brand archive",
+    "brandArchiveDetail": "Created encrypted backup snapshot",
+    "productResearch": "Product research",
+    "productResearchDetail": "Downloaded {count} files to {device}",
+    "designSystem": "Design system",
+    "designSystemDetail": "Indexed {count} changed objects",
+    "teamPhotos": "Team photos",
+    "teamPhotosDetail": "Uploaded from {device}",
+    "yesterday": "Yesterday",
+    "minutesAgo": "{count, plural, one {# min ago} other {# min ago}}",
+    "hourAgo": "{count, plural, one {# hr ago} other {# hr ago}}"
   },
   "devices": {
     "title": "Devices",
@@ -126,7 +146,26 @@
     "tasks": "Tasks",
     "draft": "Draft",
     "in_progress": "In progress",
-    "review": "Review"
+    "review": "Review",
+    "delivered": "Delivered",
+    "loading": "Loading project…",
+    "previewData": "Preview data",
+    "cloudData": "Cloud data",
+    "unavailable": "Project data unavailable",
+    "unavailableDescription": "Project data is unavailable. Check the API connection and try again.",
+    "noDeadline": "No deadline",
+    "noProgress": "No progress",
+    "noTasks": "No tasks",
+    "notAvailable": "Not available",
+    "taskCount": "{count, plural, one {# task} other {# tasks}}",
+    "taskProgress": "{completed} of {total} tasks",
+    "northstarLaunchFilmTitle": "Northstar / Launch film",
+    "northstarLaunchFilmDescription": "A clear story for the next chapter.",
+    "brandCampaignTitle": "Q3 / Brand campaign",
+    "brandCampaignDescription": "Make the next campaign feel unmistakably ours.",
+    "soundDesignTitle": "Northstar / Sound design",
+    "soundDesignDescription": "A sonic identity for the launch.",
+    "percentComplete": "{percent}% complete"
   },
   "library": {
     "title": "Library",
@@ -137,7 +176,16 @@
     "assetList": "Library assets",
     "video": "Video",
     "brief": "Brief",
-    "audio": "Audio"
+    "audio": "Audio",
+    "loading": "Loading library…",
+    "previewData": "Preview data",
+    "cloudData": "Cloud data",
+    "unavailable": "Library data unavailable",
+    "unavailableDescription": "Library data is unavailable. Check the API connection and try again.",
+    "asset": "Asset",
+    "fileDetail": "{assetId} · {size}",
+    "fileDetailUnavailable": "{assetId} · Size unavailable",
+    "previewFileDetail": "{project} · {size}"
   },
   "errors": {
     "userNotFound": "The requested user could not be found.",

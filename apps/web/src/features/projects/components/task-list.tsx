@@ -1,10 +1,11 @@
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useState } from "react";
 import { taskStatusSchema, type TaskView } from "../types";
 import { studioFieldClass, studioInputClass } from "../studio-styles";
+import { displayTaskOwner, displayTaskTitle, withoutChangedTaskPreviewCopy } from "../preview-copy";
 
 export function TaskList({
   tasks,
@@ -60,12 +61,34 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
   const t = useTranslations("workspaceUi");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(task);
+  const [dirty, setDirty] = useState({ title: false, owner: false });
+
+  function openEditor() {
+    setDraft(task);
+    setDirty({ title: false, owner: false });
+    setEditing((value) => !value);
+  }
+
+  function saveDraft() {
+    const next: TaskView = {
+      ...task,
+      ...(dirty.title ? { title: draft.title.trim() } : {}),
+      ...(dirty.owner ? { owner: draft.owner.trim() } : {}),
+      status: draft.status,
+      priority: draft.priority,
+    };
+    if (!next.title || !next.owner) return;
+    onUpdate(withoutChangedTaskPreviewCopy(task, next));
+    setEditing(false);
+  }
+
   return (
     <div className="py-4">
       <div className="flex flex-wrap items-center gap-3">
         <button
+          type="button"
           className="grid size-8 shrink-0 place-items-center rounded-full border border-border transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
-          aria-label={`${task.status === "done" ? t("restore") : t("done")}: ${task.title}`}
+          aria-label={`${task.status === "done" ? t("restore") : t("done")}: ${displayTaskTitle(task, t)}`}
           onClick={() => {
             const status = task.status === "done" ? "todo" : "done";
             setDraft((current) => ({ ...current, status }));
@@ -75,20 +98,18 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
           {task.status === "done" ? "✓" : "○"}
         </button>
         <button
+          type="button"
           className="min-w-0 flex-1 text-left"
-          onClick={() => {
-            setDraft(task);
-            setEditing(!editing);
-          }}
+          onClick={openEditor}
           aria-expanded={editing}
         >
           <span
             className={`block truncate text-sm font-medium ${task.status === "done" ? "text-muted-foreground line-through" : ""}`}
           >
-            {task.title}
+            {displayTaskTitle(task, t)}
           </span>
           <span className="mt-1 block text-xs text-muted-foreground">
-            {task.owner} · {t(task.priority)}
+            {displayTaskOwner(task, t)} · {t(task.priority)}
           </span>
         </button>
         <StatusBadge
@@ -103,29 +124,33 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
           className="mt-3.5 grid grid-cols-2 gap-4 rounded-lg bg-muted p-5 max-[520px]:grid-cols-1"
           onSubmit={(event) => {
             event.preventDefault();
-            if (!draft.title.trim()) return;
-            onUpdate({ ...task, ...draft, title: draft.title.trim() });
-            setEditing(false);
+            saveDraft();
           }}
         >
           <label className={studioFieldClass}>
             {t("taskTitle")}
             <input
               className={studioInputClass}
-              value={draft.title}
+              value={dirty.title ? draft.title : displayTaskTitle(task, t)}
               maxLength={300}
               required
-              onChange={(event) => setDraft({ ...draft, title: event.target.value })}
+              onChange={(event) => {
+                setDirty((value) => ({ ...value, title: true }));
+                setDraft({ ...draft, title: event.target.value });
+              }}
             />
           </label>
           <label className={studioFieldClass}>
             {t("owner")}
             <input
               className={studioInputClass}
-              value={draft.owner}
+              value={dirty.owner ? draft.owner : displayTaskOwner(task, t)}
               maxLength={80}
               required
-              onChange={(event) => setDraft({ ...draft, owner: event.target.value })}
+              onChange={(event) => {
+                setDirty((value) => ({ ...value, owner: true }));
+                setDraft({ ...draft, owner: event.target.value });
+              }}
             />
           </label>
           <label className={studioFieldClass}>
@@ -161,7 +186,7 @@ function TaskRow({ task, onUpdate }: { task: TaskView; onUpdate: (task: TaskView
             <Button type="submit" disabled={!draft.title.trim()}>
               {t("save")}
             </Button>
-            <Button variant="ghost" onClick={() => setEditing(false)}>
+            <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
               {t("cancel")}
             </Button>
           </div>

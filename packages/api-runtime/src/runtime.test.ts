@@ -21,6 +21,7 @@ describe("mail-protected Better Auth operations", () => {
     expect(response.status).toBe(503);
     expect(await response.json()).toEqual({
       code: "MAIL_NOT_CONFIGURED",
+      data: { error: { code: "MAIL_NOT_CONFIGURED" } },
     });
     expect(handler).not.toHaveBeenCalled();
   });

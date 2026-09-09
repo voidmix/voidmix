@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ResetPassword } from "../../features/auth/reset-password";
 import { validateAuthSearch } from "../../features/auth/route-search";
+import { localizedRouteHead } from "../../i18n/route-meta";
 
 export const Route = createFileRoute("/(auth)/reset-password")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -9,12 +10,8 @@ export const Route = createFileRoute("/(auth)/reset-password")({
     return { ...authSearch, ...(token ? { token } : {}) };
   },
   component: ResetPasswordRoute,
-  head: () => ({
-    meta: [
-      { title: "Reset password | Voidmix" },
-      { name: "description", content: "Reset your Voidmix account password securely." },
-    ],
-  }),
+  head: ({ matches }) =>
+    localizedRouteHead(matches, "resetPasswordTitle", "resetPasswordDescription"),
 });
 
 function ResetPasswordRoute() {

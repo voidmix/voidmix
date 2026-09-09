@@ -30,22 +30,22 @@ describe("auth feedback", () => {
     ).toBe("errors.passwordResetDisabled");
   });
 
-  it("falls through to prose for a code it does not recognize", () => {
+  it("uses the fallback for a code it does not recognize", () => {
     expect(
       getAuthErrorMessage(
         { code: "SOMETHING_NEW", message: "Invalid email or password" },
         "Fallback",
         translateError,
       ),
-    ).toBe("Invalid email or password");
+    ).toBe("Fallback");
   });
 
-  it("uses an authentication error message when one is available", () => {
+  it("does not expose an authentication error message when no code is available", () => {
     expect(
       getAuthErrorMessage({ message: "Invalid email or password" }, "Fallback", translateError),
-    ).toBe("Invalid email or password");
+    ).toBe("Fallback");
     expect(getAuthErrorMessage(new Error("Request failed"), "Fallback", translateError)).toBe(
-      "Request failed",
+      "Fallback",
     );
   });
 

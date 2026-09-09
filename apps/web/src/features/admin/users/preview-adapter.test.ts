@@ -11,8 +11,8 @@ describe("preview users adapter", () => {
         email: "ada@example.com",
         role: "user",
         status: "active",
-        lastActive: "now",
-        joinedAt: "Jan 01, 2026",
+        lastActive: { kind: "relative", value: 0, unit: "second" },
+        joinedAt: new Date("2026-01-01T00:00:00.000Z"),
       },
       {
         id: "2",
@@ -20,8 +20,8 @@ describe("preview users adapter", () => {
         email: "grace@example.com",
         role: "admin",
         status: "suspended",
-        lastActive: "yesterday",
-        joinedAt: "Jan 02, 2026",
+        lastActive: { kind: "relative", value: -1, unit: "day" },
+        joinedAt: new Date("2026-01-02T00:00:00.000Z"),
       },
     ]);
 
@@ -42,8 +42,8 @@ describe("preview users adapter", () => {
         email: "ada@example.com",
         role: "user",
         status: "active",
-        lastActive: "now",
-        joinedAt: "Jan 01, 2026",
+        lastActive: { kind: "relative", value: 0, unit: "second" },
+        joinedAt: new Date("2026-01-01T00:00:00.000Z"),
       },
     ]);
 
@@ -53,8 +53,8 @@ describe("preview users adapter", () => {
       status: "suspended",
     });
     await expect(adapter.listUsers({ status: "suspended" })).resolves.toHaveLength(1);
-    await expect(adapter.updateUserStatus({ userId: "missing", status: "active" })).rejects.toThrow(
-      "User not found",
-    );
+    await expect(
+      adapter.updateUserStatus({ userId: "missing", status: "active" }),
+    ).rejects.toMatchObject({ code: "USER_NOT_FOUND" });
   });
 });

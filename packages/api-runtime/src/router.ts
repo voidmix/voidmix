@@ -46,7 +46,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
     const session = context.auth.session;
     if (!session) {
       context.log?.set({ user: null, permissionResult: "denied" });
-      throw new ORPCError("UNAUTHORIZED");
+      throw createApiError("UNAUTHORIZED");
     }
     return next({
       context: {
@@ -63,7 +63,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
         permission: { name: permission },
         permissionResult: granted ? "granted" : "denied",
       });
-      if (!granted) throw new ORPCError("FORBIDDEN");
+      if (!granted) throw createApiError("FORBIDDEN");
       return next({
         context: {
           principal: { session, user: session.user },
@@ -328,7 +328,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
                 taskId: input.taskId,
               }),
             );
-            if (!task) throw new ORPCError("NOT_FOUND", { message: "Project task not found." });
+            if (!task) throw createApiError("NOT_FOUND", "PROJECT_TASK_NOT_FOUND");
             await requireStudioProject(studio, options.modules, context, task.projectId, "write");
             return callStudio(() =>
               studio.updateProjectTask({
@@ -382,7 +382,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
                 assetId: input.assetId,
               }),
             );
-            if (!workspaceId) throw new ORPCError("NOT_FOUND", { message: "Asset not found." });
+            if (!workspaceId) throw createApiError("NOT_FOUND", "ASSET_NOT_FOUND");
             await assertWorkspaceAccess(options.modules, context, workspaceId, "read");
             const page = await callStudio(() =>
               studio.listAssetVersions({
@@ -512,8 +512,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
                 feedbackId: input.feedbackId,
               }),
             );
-            if (!feedback)
-              throw new ORPCError("NOT_FOUND", { message: "Review feedback not found." });
+            if (!feedback) throw createApiError("NOT_FOUND", "FEEDBACK_NOT_FOUND");
             await requireStudioProject(
               studio,
               options.modules,
@@ -655,7 +654,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
           .use(requirePermission("admin.users.read"))
           .handler(async ({ input }) => {
             const user = await options.modules.users.get(input.userId);
-            if (!user) throw new ORPCError("NOT_FOUND", { message: "User not found." });
+            if (!user) throw createApiError("NOT_FOUND", "USER_NOT_FOUND");
             return user;
           }),
         updateStatus: os.admin.users.updateStatus
@@ -787,6 +786,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
                 const result = await options.modules.settings.mail.sendTest({
                   actorId: session.user.id,
                   recipient: { email: session.user.email, name: session.user.displayName },
+                  ...(context.locale ? { locale: context.locale } : {}),
                 });
                 context.log?.set({ outcome: "success" });
                 return result;
@@ -817,7 +817,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
             const assets = requireAssets(options.modules);
             try {
               const asset = await assets.get(input.assetId);
-              if (!asset) throw new ORPCError("NOT_FOUND", { message: "Asset not found." });
+              if (!asset) throw createApiError("NOT_FOUND", "ASSET_NOT_FOUND");
               await assertWorkspaceAccess(options.modules, context, asset.workspaceId, "read");
               return asset;
             } catch (error) {
@@ -854,7 +854,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
             const assets = requireAssets(options.modules);
             try {
               const conflict = await assets.getConflict(input.conflictId);
-              if (!conflict) throw new ORPCError("NOT_FOUND", { message: "Conflict not found." });
+              if (!conflict) throw createApiError("NOT_FOUND", "ASSET_CONFLICT_NOT_FOUND");
               await assertWorkspaceAccess(options.modules, context, conflict.workspaceId, "write");
               return await assets.resolveConflict({
                 conflictId: input.conflictId,
@@ -899,7 +899,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
             .handler(async ({ context, input }) => {
               await assertWorkspaceAccess(options.modules, context, input.workspaceId, "read");
               const result = await requireBlob(options.modules).getDownload(input);
-              if (!result) throw new ORPCError("NOT_FOUND", { message: "Blob not found." });
+              if (!result) throw createApiError("NOT_FOUND", "BLOB_NOT_FOUND");
               const chunks: number[] = [];
               for await (const chunk of result.body) chunks.push(...chunk);
               return {
@@ -933,7 +933,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
               const agents = requireAgents(options.modules);
               try {
                 const run = await agents.getRun(input.runId);
-                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                if (!run) throw createApiError("NOT_FOUND", "AGENT_RUN_NOT_FOUND");
                 await assertWorkspaceAccess(options.modules, context, run.workspaceId, "read");
                 return run;
               } catch (error) {
@@ -946,7 +946,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
               const agents = requireAgents(options.modules);
               try {
                 const run = await agents.getRun(input.runId);
-                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                if (!run) throw createApiError("NOT_FOUND", "AGENT_RUN_NOT_FOUND");
                 await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
                 return await agents.transitionRun(input);
               } catch (error) {
@@ -959,7 +959,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
               const agents = requireAgents(options.modules);
               try {
                 const run = await agents.getRun(input.runId);
-                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                if (!run) throw createApiError("NOT_FOUND", "AGENT_RUN_NOT_FOUND");
                 await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
                 return await agents.acquireLease(input);
               } catch (error) {
@@ -972,7 +972,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
               const agents = requireAgents(options.modules);
               try {
                 const run = await agents.getRun(input.runId);
-                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                if (!run) throw createApiError("NOT_FOUND", "AGENT_RUN_NOT_FOUND");
                 await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
                 return await agents.heartbeat(input);
               } catch (error) {
@@ -987,7 +987,7 @@ export function createApiRouter(options: CreateApiRouterOptions) {
               const agents = requireAgents(options.modules);
               try {
                 const run = await agents.getRun(input.runId);
-                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                if (!run) throw createApiError("NOT_FOUND", "AGENT_RUN_NOT_FOUND");
                 await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
                 return await agents.createStep(input);
               } catch (error) {
@@ -1000,9 +1000,9 @@ export function createApiRouter(options: CreateApiRouterOptions) {
               const agents = requireAgents(options.modules);
               try {
                 const step = await agents.getStep(input.stepId);
-                if (!step) throw new ORPCError("NOT_FOUND", { message: "Agent step not found." });
+                if (!step) throw createApiError("NOT_FOUND", "AGENT_STEP_NOT_FOUND");
                 const run = await agents.getRun(step.runId);
-                if (!run) throw new ORPCError("NOT_FOUND", { message: "Agent run not found." });
+                if (!run) throw createApiError("NOT_FOUND", "AGENT_RUN_NOT_FOUND");
                 await assertWorkspaceAccess(options.modules, context, run.workspaceId, "write");
                 return await agents.transitionStep({
                   stepId: input.stepId,
@@ -1020,20 +1020,18 @@ export function createApiRouter(options: CreateApiRouterOptions) {
 }
 
 function requireAssets(modules: ApiModules) {
-  if (!modules.assets)
-    throw new ORPCError("INTERNAL_SERVER_ERROR", { message: "Assets module is not configured." });
+  if (!modules.assets) throw createApiError("INTERNAL_SERVER_ERROR", "ASSETS_NOT_CONFIGURED");
   return modules.assets;
 }
 
 function requireBlob(modules: ApiModules) {
   if (!modules.blobStorage)
-    throw new ORPCError("INTERNAL_SERVER_ERROR", { message: "Blob storage is not configured." });
+    throw createApiError("INTERNAL_SERVER_ERROR", "BLOB_STORAGE_NOT_CONFIGURED");
   return modules.blobStorage;
 }
 
 function requireAgents(modules: ApiModules) {
-  if (!modules.agents)
-    throw new ORPCError("INTERNAL_SERVER_ERROR", { message: "Agents module is not configured." });
+  if (!modules.agents) throw createApiError("INTERNAL_SERVER_ERROR", "AGENTS_NOT_CONFIGURED");
   return modules.agents;
 }
 
@@ -1041,9 +1039,7 @@ type StudioModule = NonNullable<ApiModules["studio"]>;
 
 function requireStudioModule(modules: ApiModules): StudioModule {
   if (!modules.studio) {
-    throw new ORPCError("INTERNAL_SERVER_ERROR", {
-      message: "Project Studio module is not configured.",
-    });
+    throw createApiError("INTERNAL_SERVER_ERROR", "PROJECT_STUDIO_NOT_CONFIGURED");
   }
   return modules.studio;
 }
@@ -1064,7 +1060,7 @@ function assertWorkspaceAccessConfigured(modules: ApiModules, context: ApiContex
     permissionResult: "denied",
     reason: "workspace_access_not_configured",
   });
-  throw new ORPCError("FORBIDDEN", { message: "Workspace access is not configured." });
+  throw createApiError("FORBIDDEN", "WORKSPACE_ACCESS_NOT_CONFIGURED");
 }
 
 async function assertWorkspaceCollectionAccess(
@@ -1087,11 +1083,11 @@ async function requireStudioProject(
   access: "read" | "write",
 ) {
   const session = context.auth.session;
-  if (!session) throw new ORPCError("UNAUTHORIZED");
+  if (!session) throw createApiError("UNAUTHORIZED");
   const project = await callStudio(() =>
     studio.getProject({ actorId: session.user.id, projectId }),
   );
-  if (!project) throw new ORPCError("NOT_FOUND", { message: "Project not found." });
+  if (!project) throw createApiError("NOT_FOUND", "PROJECT_NOT_FOUND");
   await assertWorkspaceAccess(modules, context, project.workspaceId, access);
   return project;
 }
@@ -1104,9 +1100,9 @@ async function requireStudioReview(
   access: "read" | "write",
 ) {
   const session = context.auth.session;
-  if (!session) throw new ORPCError("UNAUTHORIZED");
+  if (!session) throw createApiError("UNAUTHORIZED");
   const review = await callStudio(() => studio.getReview({ actorId: session.user.id, reviewId }));
-  if (!review) throw new ORPCError("NOT_FOUND", { message: "Review not found." });
+  if (!review) throw createApiError("NOT_FOUND", "REVIEW_NOT_FOUND");
   await assertWorkspaceAccess(modules, context, review.workspaceId, access);
   return review;
 }
@@ -1119,11 +1115,11 @@ async function requireStudioPiSession(
   access: "read" | "write",
 ) {
   const session = context.auth.session;
-  if (!session) throw new ORPCError("UNAUTHORIZED");
+  if (!session) throw createApiError("UNAUTHORIZED");
   const piSession = await callStudio(() =>
     studio.getPiSession({ actorId: session.user.id, sessionId }),
   );
-  if (!piSession) throw new ORPCError("NOT_FOUND", { message: "Pi session not found." });
+  if (!piSession) throw createApiError("NOT_FOUND", "PI_SESSION_NOT_FOUND");
   await assertWorkspaceAccess(modules, context, piSession.workspaceId, access);
   return piSession;
 }
@@ -1135,10 +1131,10 @@ async function assertWorkspaceAccess(
   access: "read" | "write",
 ): Promise<void> {
   const session = context.auth.session;
-  if (!session) throw new ORPCError("UNAUTHORIZED");
+  if (!session) throw createApiError("UNAUTHORIZED");
   assertWorkspaceAccessConfigured(modules, context);
   const workspaceAccess = modules.workspaceAccess;
-  if (!workspaceAccess) throw new ORPCError("FORBIDDEN");
+  if (!workspaceAccess) throw createApiError("FORBIDDEN", "WORKSPACE_ACCESS_NOT_CONFIGURED");
   try {
     if (access === "read") {
       await workspaceAccess.assertRead({ actorId: session.user.id, workspaceId });
@@ -1157,20 +1153,17 @@ function assertPermission(context: ApiContext, permission: Permission): Session 
     permission: { name: permission },
     permissionResult: session && hasPermission(session, permission) ? "granted" : "denied",
   });
-  if (!session) throw new ORPCError("UNAUTHORIZED");
-  if (!hasPermission(session, permission)) throw new ORPCError("FORBIDDEN");
+  if (!session) throw createApiError("UNAUTHORIZED");
+  if (!hasPermission(session, permission)) throw createApiError("FORBIDDEN");
   return session;
 }
 
 function mapDomainError(error: unknown): ORPCError<string, unknown> {
   if (error instanceof ORPCError) return error;
-  if (error instanceof WorkspaceAccessError) {
-    return new ORPCError("FORBIDDEN", { message: error.message, cause: error });
-  }
+  if (error instanceof WorkspaceAccessError) return toApiError("FORBIDDEN", error);
   if (error instanceof MailUnavailableError) {
     return new ORPCError("MAIL_NOT_CONFIGURED", {
-      message: error.message,
-      data: { missing: error.missing },
+      data: { error: { code: "MAIL_NOT_CONFIGURED" }, missing: error.missing },
       cause: error,
     });
   }
@@ -1182,7 +1175,7 @@ function mapDomainError(error: unknown): ORPCError<string, unknown> {
       case "AGENT_RUN_NOT_FOUND":
       case "AGENT_STEP_NOT_FOUND":
       case "AGENT_LEASE_NOT_FOUND":
-        return new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+        return toApiError("NOT_FOUND", error);
       case "ASSET_PATH_CONFLICT":
       case "ASSET_HEAD_CONFLICT":
       case "ASSET_PARENT_CONFLICT":
@@ -1195,7 +1188,7 @@ function mapDomainError(error: unknown): ORPCError<string, unknown> {
       case "AGENT_LEASE_HELD":
       case "AGENT_LEASE_EXPIRED":
       case "AGENT_LEASE_OWNER":
-        return new ORPCError("CONFLICT", { message: error.message, cause: error });
+        return toApiError("CONFLICT", error);
       case "ASSET_PATH_INVALID":
       case "ASSET_INVALID_VERSION":
       case "BLOB_TOO_LARGE":
@@ -1204,56 +1197,85 @@ function mapDomainError(error: unknown): ORPCError<string, unknown> {
       case "BLOB_UPLOAD_EXPIRED":
       case "AGENT_TOOL_NOT_ALLOWED":
       case "AGENT_INVALID_INPUT":
-        return new ORPCError("BAD_REQUEST", { message: error.message, cause: error });
+        return toApiError("BAD_REQUEST", error);
       case "BLOB_NOT_FOUND":
-        return new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+        return toApiError("NOT_FOUND", error);
     }
-    return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
+    return toInternalError(error);
   }
   if (error instanceof ProjectDomainError) {
     switch (error.code) {
       case "PROJECT_NOT_FOUND":
-        return new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+        return toApiError("NOT_FOUND", error);
       case "PROJECT_INVALID_STAGE_TRANSITION":
       case "PROJECT_INVALID_LIFECYCLE_UPDATE":
-        return new ORPCError("CONFLICT", { message: error.message, cause: error });
+        return toApiError("CONFLICT", error);
     }
-    return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
+    return toInternalError(error);
   }
   if (error instanceof ProjectStudioDomainError) {
     switch (error.code) {
       case "REVIEW_NOT_FOUND":
       case "FEEDBACK_NOT_FOUND":
       case "PI_SESSION_NOT_FOUND":
-        return new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+        return toApiError("NOT_FOUND", error);
       case "REVIEW_INVALID_STATUS_TRANSITION":
       case "FEEDBACK_INVALID_STATUS_TRANSITION":
-        return new ORPCError("CONFLICT", { message: error.message, cause: error });
+        return toApiError("CONFLICT", error);
       case "PROJECT_MEMBER_NOT_FOUND":
-        return new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+        return toApiError("NOT_FOUND", error);
     }
-    return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
+    return toInternalError(error);
   }
   if (!(error instanceof DomainError)) {
-    return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
+    return toInternalError(error);
   }
 
   switch (error.code) {
     case "USER_NOT_FOUND":
-      return new ORPCError("NOT_FOUND", { message: error.message, cause: error });
+      return toApiError("NOT_FOUND", error);
     case "SELF_SUSPENSION":
     case "LAST_ADMIN":
-      return new ORPCError("CONFLICT", { message: error.message, cause: error });
+      return toApiError("CONFLICT", error);
     case "EMAIL_ALREADY_EXISTS":
-      return new ORPCError("CONFLICT", { message: error.message, cause: error });
+      return toApiError("CONFLICT", error);
     case "BAD_REQUEST":
-      return new ORPCError("BAD_REQUEST", { message: error.message, cause: error });
+      return toApiError("BAD_REQUEST", error);
     case "MAIL_NOT_CONFIGURED":
       return new ORPCError("MAIL_NOT_CONFIGURED", {
-        message: error.message,
-        data: { missing: [] },
+        data: { error: { code: error.code }, missing: [] },
         cause: error,
       });
   }
-  return new ORPCError("INTERNAL_SERVER_ERROR", { cause: error });
+  return toInternalError(error);
+}
+
+type ApiErrorValues = Record<string, string | number | boolean | null>;
+
+function createApiError(
+  transportCode: string,
+  detailCode = transportCode,
+  values?: ApiErrorValues,
+): ORPCError<string, unknown> {
+  return new ORPCError(transportCode, {
+    data: {
+      error: {
+        code: detailCode,
+        ...(values ? { values } : {}),
+      },
+    },
+  });
+}
+
+function toApiError(
+  transportCode: string,
+  error: { code: string; values?: ApiErrorValues | undefined },
+) {
+  const mapped = createApiError(transportCode, error.code, error.values);
+  return new ORPCError(mapped.code, { data: mapped.data, cause: error });
+}
+
+function toInternalError(cause: unknown) {
+  const mapped = createApiError("INTERNAL_SERVER_ERROR");
+  return new ORPCError(mapped.code, { data: mapped.data, cause });
 }

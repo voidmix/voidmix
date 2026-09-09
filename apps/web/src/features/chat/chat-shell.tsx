@@ -1,5 +1,5 @@
 import { ChatCircleDots } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@voidmix/ui/components/ui/card";
 import { useEffect, useState } from "react";
@@ -30,13 +30,19 @@ export function ChatShell({
 
   function handleSubmit(prompt: string) {
     onStarted?.();
+    const createdAt = new Date().toISOString();
     setMessages((current) => [
       ...current,
-      { id: `user-${current.length}`, role: "user", content: prompt, timestamp: t("now") },
       {
-        ...createPreviewResponse(prompt, t("previewResponse")),
+        id: `user-${current.length}`,
+        role: "user",
+        content: prompt,
+        timestamp: { createdAt, kind: "now" },
+      },
+      {
+        ...createPreviewResponse(prompt, undefined, createdAt),
         id: `assistant-${current.length}`,
-        timestamp: t("preview"),
+        timestamp: { createdAt, kind: "preview" },
       },
     ]);
   }

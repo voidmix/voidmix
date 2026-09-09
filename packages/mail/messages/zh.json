@@ -30,5 +30,9 @@
     "button": "打开 Voidmix",
     "body": "你的账号已准备就绪，现在可以登录并开始与团队协作。",
     "textIntro": "欢迎使用 Voidmix。你的账号已准备就绪。"
+  },
+  "test": {
+    "subject": "Voidmix 邮件配置测试",
+    "body": "你的 Voidmix 邮件配置正常工作。"
   }
 }

@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { StrictMode } from "react";
 
 import {
   AsyncI18nProvider,
@@ -7,6 +8,7 @@ import {
   createBrowserLocaleStorage,
   createLocalStorageLocaleStorage,
   useLocale,
+  useFormatter,
   useSetLocale,
   useTranslations,
 } from "./client.js";
@@ -46,13 +48,28 @@ function AsyncProbe() {
   );
 }
 
+function AsyncFormatterProbe() {
+  const formatter = useFormatter();
+  return (
+    <output data-testid="async-formatted-date">
+      {formatter.dateTime(new Date("2026-01-01T01:00:00.000Z"), {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })}
+    </output>
+  );
+}
+
 describe("I18nProvider", () => {
   it("renders a complete static catalog without suspending and switches locale", async () => {
     const write = vi.fn();
     render(
-      <I18nProvider locale="en" messages={messages} storage={{ read: () => "en", write }}>
-        <Probe />
-      </I18nProvider>,
+      <StrictMode>
+        <I18nProvider locale="en" messages={messages} storage={{ read: () => "en", write }}>
+          <Probe />
+        </I18nProvider>
+      </StrictMode>,
     );
 
     expect(screen.getByTestId("locale").textContent).toBe("en");
@@ -65,6 +82,38 @@ describe("I18nProvider", () => {
     expect((await screen.findByTestId("locale")).textContent).toBe("zh");
     expect(screen.getByTestId("message").textContent).toBe("你好，Ada");
     expect(write).toHaveBeenCalledWith("zh");
+  });
+
+  it("remains interactive after StrictMode effect replay", async () => {
+    render(
+      <StrictMode>
+        <I18nProvider locale="en" messages={messages}>
+          <Probe />
+        </I18nProvider>
+      </StrictMode>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "切换" }));
+    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
+  });
+
+  it("adopts a new locale when the provider props change", async () => {
+    const { rerender } = render(
+      <I18nProvider locale="en" messages={messages}>
+        <Probe />
+      </I18nProvider>,
+    );
+
+    rerender(
+      <I18nProvider locale="zh" messages={messages}>
+        <Probe />
+      </I18nProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("locale").textContent).toBe("zh");
+      expect(screen.getByTestId("message").textContent).toBe("你好，Ada");
+    });
   });
 
   it("keeps the locale and storage update when the side-effect callback fails", async () => {
@@ -92,17 +141,73 @@ describe("I18nProvider", () => {
     expect(onLocaleChange).toHaveBeenCalledWith("zh");
   });
 
+  it("keeps an in-memory switch when locale persistence is a no-op", async () => {
+    const onLocaleChange = vi.fn();
+    render(
+      <I18nProvider
+        locale="en"
+        messages={messages}
+        onLocaleChange={onLocaleChange}
+        storage={{ read: () => "en", write: () => {} }}
+      >
+        <Probe />
+      </I18nProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "切换" }));
+
+    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
+    expect(onLocaleChange).toHaveBeenCalledWith("zh");
+  });
+
+  it("keeps an in-memory switch when locale persistence throws", async () => {
+    const onLocaleChange = vi.fn();
+    render(
+      <I18nProvider
+        locale="en"
+        messages={messages}
+        onLocaleChange={onLocaleChange}
+        storage={{
+          read: () => "en",
+          write: () => {
+            throw new Error("storage unavailable");
+          },
+        }}
+      >
+        <Probe />
+      </I18nProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "切换" }));
+
+    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
+    expect(onLocaleChange).toHaveBeenCalledWith("zh");
+  });
+
   it("uses the shared cookie and localStorage locale adapters", () => {
-    document.cookie = "voidmix_locale=zh";
+    document.cookie = "locale=zh";
     const browserStorage = createBrowserLocaleStorage();
     expect(browserStorage.read()).toBe("zh");
     browserStorage.write("en");
     expect(document.cookie).toContain("locale=en");
-    expect(document.cookie).not.toContain("voidmix_locale=");
 
     const localStorage = createLocalStorageLocaleStorage();
     localStorage.write("zh");
     expect(localStorage.read()).toBe("zh");
+  });
+
+  it("keeps locale switching available under React StrictMode", async () => {
+    const { StrictMode } = await import("react");
+    render(
+      <StrictMode>
+        <I18nProvider locale="en" messages={messages}>
+          <Probe />
+        </I18nProvider>
+      </StrictMode>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "切换" }));
+    expect((await screen.findByTestId("locale")).textContent).toBe("zh");
   });
 });
 
@@ -119,6 +224,23 @@ describe("AsyncI18nProvider", () => {
     expect(screen.getByTestId("async-locale").textContent).toBe("en");
     expect(screen.getByTestId("async-message").textContent).toBe("Hello Ada");
     expect(loadCatalog).not.toHaveBeenCalled();
+  });
+
+  it("passes formatter options through the async provider context", () => {
+    const loadCatalog = vi.fn(async (locale: keyof typeof messages) => messages[locale]);
+
+    render(
+      <AsyncI18nProvider
+        locale="en"
+        messages={messages.en}
+        loadCatalog={loadCatalog}
+        timeZone="America/Los_Angeles"
+      >
+        <AsyncFormatterProbe />
+      </AsyncI18nProvider>,
+    );
+
+    expect(screen.getByTestId("async-formatted-date").textContent).toContain("12/31/2025");
   });
 
   it("adopts a new locale and catalog when the provider props change", async () => {

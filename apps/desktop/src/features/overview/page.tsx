@@ -15,7 +15,9 @@ import {
   WifiHigh,
 } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useDesktopTranslations, useFormatter } from "../../i18n/client";
+import { formatCloudTime } from "../../i18n/time";
+import { formatJobDetail } from "./job-detail";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { SectionHeading } from "@voidmix/ui/section-heading";
@@ -31,7 +33,7 @@ import {
 } from "../../lib/cloud";
 
 function SyncState({ paused, pending }: { paused: boolean; pending: number }) {
-  const t = useTranslations("overview");
+  const t = useDesktopTranslations("overview");
   return (
     <span className={paused ? "sync-state paused" : "sync-state"}>
       <span className="sync-indicator" />
@@ -45,26 +47,27 @@ function SyncState({ paused, pending }: { paused: boolean; pending: number }) {
 }
 
 function MetricRow({ snapshot }: { snapshot: CloudSnapshot }) {
-  const t = useTranslations("overview");
+  const t = useDesktopTranslations("overview");
+  const formatter = useFormatter();
   const metrics = [
     {
       label: t("cloudStorage"),
-      value: formatBytes(snapshot.storage.used),
-      detail: t("ofTotal", { total: formatBytes(snapshot.storage.total) }),
+      value: formatBytes(snapshot.storage.used, formatter),
+      detail: t("ofTotal", { total: formatBytes(snapshot.storage.total, formatter) }),
     },
     {
       label: t("filesIndexed"),
-      value: snapshot.fileCount.toLocaleString(),
+      value: formatter.number(snapshot.fileCount),
       detail: t("newThisWeek", { count: snapshot.newThisWeek }),
     },
     {
       label: t("activeDevices"),
-      value: String(snapshot.devices.filter((device) => device.online).length),
+      value: formatter.number(snapshot.devices.filter((device) => device.online).length),
       detail: t("registeredCount", { count: snapshot.devices.length }),
     },
     {
       label: t("lastBackup"),
-      value: snapshot.lastBackup,
+      value: formatCloudTime(formatter, snapshot.lastBackup),
       detail: t("encryptedSnapshot"),
     },
   ];
@@ -89,7 +92,9 @@ function JobIcon({ job }: { job: SyncJob }) {
 }
 
 function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
-  const t = useTranslations("overview");
+  const t = useDesktopTranslations("overview");
+  const activityT = useDesktopTranslations("activity");
+  const formatter = useFormatter();
   return (
     <section className="work-panel queue-panel" aria-labelledby="queue-title">
       <SectionHeading
@@ -110,14 +115,19 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
               {job.status === "complete" ? <Check size={16} /> : <JobIcon job={job} />}
             </span>
             <div className="job-copy">
-              <strong>{job.name}</strong>
-              <span>{job.detail}</span>
+              <strong>{job.nameKey ? activityT(job.nameKey) : job.name}</strong>
+              <span>{formatJobDetail(job.detail, t, formatter)}</span>
             </div>
-            <div className="job-progress" aria-label={`${job.progress}% complete`}>
+            <div
+              className="job-progress"
+              aria-label={t("percentComplete", { percent: job.progress })}
+            >
               <span style={{ width: `${job.progress}%` }} />
             </div>
             <span className={cn("job-status", job.status)}>
-              {job.status === "complete" ? t("done") : `${job.progress}%`}
+              {job.status === "complete"
+                ? t("done")
+                : t("percentComplete", { percent: job.progress })}
             </span>
           </div>
         ))}
@@ -127,7 +137,8 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
 }
 
 function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
-  const t = useTranslations("overview");
+  const t = useDesktopTranslations("overview");
+  const formatter = useFormatter();
   const usedPercent = Math.round((snapshot.storage.used / snapshot.storage.total) * 100);
   const categories = [
     { label: t("projectFiles"), value: snapshot.storage.projects, tone: "primary" },
@@ -161,8 +172,8 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
           <span>{usedPercent}%</span>
         </div>
         <div>
-          <strong>{formatBytes(snapshot.storage.used)}</strong>
-          <span>{t("usedOf", { total: formatBytes(snapshot.storage.total) })}</span>
+          <strong>{formatBytes(snapshot.storage.used, formatter)}</strong>
+          <span>{t("usedOf", { total: formatBytes(snapshot.storage.total, formatter) })}</span>
         </div>
       </div>
       <div className="storage-breakdown">
@@ -170,7 +181,7 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
           <div key={category.label}>
             <span className={cn("storage-swatch", category.tone)} />
             <span>{category.label}</span>
-            <strong>{formatBytes(category.value)}</strong>
+            <strong>{formatBytes(category.value, formatter)}</strong>
           </div>
         ))}
       </div>
@@ -182,7 +193,7 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
 }
 
 function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
-  const t = useTranslations("overview");
+  const t = useDesktopTranslations("overview");
   return (
     <section className="device-strip" aria-labelledby="device-title">
       <div>
@@ -198,7 +209,10 @@ function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
       </div>
       <div className="device-avatars" aria-label={t("connectedDevices")}>
         {snapshot.devices.map((device) => (
-          <span key={device.id} title={`${device.name}: ${device.online ? "online" : "offline"}`}>
+          <span
+            key={device.id}
+            title={`${device.name}: ${device.online ? t("deviceOnline") : t("deviceOffline")}`}
+          >
             {device.kind === "phone" ? (
               <DeviceMobile size={15} />
             ) : device.kind === "desktop" ? (
@@ -217,7 +231,8 @@ function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
 }
 
 export function OverviewPage() {
-  const t = useTranslations("overview");
+  const t = useDesktopTranslations("overview");
+  const formatter = useFormatter();
   const [snapshot, setSnapshot] = useState<CloudSnapshot>(demoCloudSnapshot);
   const [source, setSource] = useState<"cloud" | "connected" | "demo">("demo");
   const [loading, setLoading] = useState(false);
@@ -282,7 +297,9 @@ export function OverviewPage() {
           <SyncState paused={paused} pending={snapshot.pendingItems} />
           <p>{paused ? t("pausedDescription") : t("syncedDescription")}</p>
         </div>
-        <span className="sync-time">{t("checked", { time: snapshot.lastChecked })}</span>
+        <span className="sync-time">
+          {t("checked", { time: formatCloudTime(formatter, snapshot.lastChecked) })}
+        </span>
       </section>
 
       <MetricRow snapshot={snapshot} />

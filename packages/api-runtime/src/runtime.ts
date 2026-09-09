@@ -212,15 +212,17 @@ export function createMailProtectedAuthHandler(options: {
 
       const mailSettings = await options.getMailSettings();
       if (mailSettings.configurationState !== "ready") {
-        return Response.json({ code: "MAIL_NOT_CONFIGURED" }, { status: 503 });
+        return authPolicyResponse("MAIL_NOT_CONFIGURED", 503);
       }
     }
     return options.handler(request);
   };
 }
 
-function authPolicyResponse(code: string, status: 400 | 403): Response {
-  return Response.json({ code }, { status });
+function authPolicyResponse(code: string, status: 400 | 403 | 503): Response {
+  // Keep the top-level code for Better Auth's error handling while exposing the
+  // same stable envelope consumed by the application clients.
+  return Response.json({ code, data: { error: { code } } }, { status });
 }
 
 async function readEmailDomain(request: Request): Promise<string | null> {

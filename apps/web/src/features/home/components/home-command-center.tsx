@@ -1,5 +1,5 @@
 import { ArrowUpRight, Sparkle } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useEffect, useState } from "react";
 import { Composer } from "../../chat/components/composer";

@@ -12,6 +12,7 @@ export const rootCommand = defineCommand({
     deps: () => import("./deps/command.js").then(({ depsCommand }) => depsCommand),
     skills: () => import("./skills/command.js").then(({ skillsCommand }) => skillsCommand),
     policy: () => import("./policy/command.js").then(({ policyCommand }) => policyCommand),
+    i18n: () => import("./i18n/command.js").then(({ i18nCommand }) => i18nCommand),
     clean: () => import("./commands/clean.js").then(({ cleanCommand }) => cleanCommand),
     db: () => import("./database/command.js").then(({ databaseCommand }) => databaseCommand),
     admin: () => import("./admin/command.js").then(({ adminCommand }) => adminCommand),

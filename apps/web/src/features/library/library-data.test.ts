@@ -41,4 +41,14 @@ describe("library data", () => {
     expect(filterLibraryBriefs(briefs, "final review")).toHaveLength(1);
     expect(filterLibraryBriefs(briefs, "missing")).toHaveLength(0);
   });
+
+  it("searches localized display values supplied by the owning view", () => {
+    const briefs = getLibraryBriefs(snapshot);
+
+    expect(
+      filterLibraryBriefs(briefs, "localized", (brief) =>
+        brief.id === "brief:film" ? ["Localized project title"] : [],
+      ),
+    ).toHaveLength(1);
+  });
 });

@@ -24,7 +24,9 @@ keeps the current locale and catalog visible while a target catalog loads,
 caches each locale's Promise so concurrent requests share one load, commits the
 locale and catalog atomically after success, ignores stale switch results, and
 clears a rejected Promise so a later switch can retry. Storage and the optional
-document synchronization callback run only after a successful current request.
+document synchronization callback run only after a successful current request;
+storage and callback failures are isolated so an otherwise valid in-memory
+switch still commits. Effect cleanup is replay-safe under React StrictMode.
 
 Catalogs remain JSON files. No namespace splitting, generated loader, package,
 cache-header, or deployment change is part of this decision. Recovery pages keep

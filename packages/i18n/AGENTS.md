@@ -21,7 +21,9 @@ Shared locale negotiation, React runtime helpers, Intl formatting, and the
   formatters, and the `use-intl` integration.
 - Locale changes update in-memory state and persistence before the optional
   document synchronization callback; callback failures do not roll back locale.
-- Formatter helpers default to UTC and cache by locale plus timezone.
+- Formatter helpers default to UTC and cache by locale, timezone, and effective
+  format definitions. Provider-level timezone and format overrides flow through
+  both `use-intl` and the standalone formatter.
 - Applications and Mail own their `messages/` JSON catalogs.
 - `I18nProvider` remains the synchronous compatibility provider for Desktop,
   Mail, and tests. `AsyncI18nProvider` supports an application-owned catalog
@@ -31,6 +33,9 @@ Shared locale negotiation, React runtime helpers, Intl formatting, and the
   loader contract but never imports application catalog files.
 - Catalog parity tests must compare recursive keys, node types, and ICU argument
   names for both supported locales.
+- Error helpers read the stable `data.error` envelope (with an optional
+  primitive `values` record) and discard untrusted object values before calling
+  a translator. They never expose server diagnostic prose.
 
 ## Constraints
 
@@ -46,4 +51,5 @@ Shared locale negotiation, React runtime helpers, Intl formatting, and the
 ```bash
 bun run --cwd packages/i18n check
 bun run --cwd packages/i18n test
+bun run i18n:check
 ```

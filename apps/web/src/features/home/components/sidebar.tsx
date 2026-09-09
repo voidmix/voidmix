@@ -1,5 +1,5 @@
 import { Gear, Plus, UsersThree } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
@@ -39,6 +39,7 @@ export function HomeSidebar({
   collapsed?: boolean;
 }) {
   const t = useTranslations("home");
+  const authT = useTranslations("auth");
   const navigate = useNavigate();
   const session = useSession();
   const isLauncher = variant === "launcher";
@@ -63,7 +64,7 @@ export function HomeSidebar({
         id="workspace-sidebar"
       >
         <a
-          aria-label="Voidmix home"
+          aria-label={authT("homeLabel")}
           className={`inline-flex w-fit px-1.5 text-foreground ${collapsed ? "mx-auto size-10 -translate-y-1 justify-center px-0" : ""}`}
           href="/"
         >
@@ -138,10 +139,10 @@ export function HomeSidebar({
               <a
                 className="flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-[0.72rem] text-muted-foreground hover:bg-card hover:text-foreground"
                 href="#thread"
-                key={thread}
+                key={thread.id}
               >
                 <span className="size-1.5 shrink-0 rounded-full bg-input" />
-                {thread}
+                {t(thread.messageKey)}
               </a>
             ))}
           </div>

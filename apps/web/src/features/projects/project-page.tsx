@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
@@ -19,6 +19,12 @@ import {
   studioLabelClass,
   studioSearchRowClass,
 } from "./studio-styles";
+import {
+  displayProjectDescription,
+  displayProjectMilestone,
+  displayProjectName,
+  displayTaskTitle,
+} from "./preview-copy";
 
 export function ProjectPage({
   projectId,
@@ -45,6 +51,8 @@ export function ProjectPage({
       </ProjectStudioShell>
     );
   const tasks = snapshot.tasks.filter((task) => task.projectId === projectId);
+  const projectName = displayProjectName(project, t);
+  const projectDescription = displayProjectDescription(project, t);
   const sessions = snapshot.sessions.filter((session) => session.projectId === projectId);
   function startSession() {
     const session = source.createSession(projectId, "");
@@ -54,7 +62,7 @@ export function ProjectPage({
     });
   }
   return (
-    <ProjectStudioShell title={project.name} projectSearch={{ tab, filter }}>
+    <ProjectStudioShell title={projectName} projectSearch={{ tab, filter }}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link to="/projects" className="text-xs text-muted-foreground">
           ← {t("back")}
@@ -74,14 +82,14 @@ export function ProjectPage({
         >
           {snapshot.projects.map((item) => (
             <option key={item.id} value={item.id}>
-              {item.name}
+              {displayProjectName(item, t)}
             </option>
           ))}
         </select>
       </div>
       <PageHeader
-        title={project.name}
-        description={project.description || t("projectDescription")}
+        title={projectName}
+        description={projectDescription || t("projectDescription")}
         action={<StatusBadge label={t(project.status)} tone="active" />}
       />
       <nav
@@ -127,11 +135,11 @@ export function ProjectPage({
           <div className="grid grid-cols-[1.5fr_1fr] gap-9 max-[520px]:grid-cols-1">
             <section>
               <h2 className={studioLabelClass}>{t("goal")}</h2>
-              <p className="mt-3 text-sm leading-7">{project.description || t("notSet")}</p>
+              <p className="mt-3 text-sm leading-7">{projectDescription || t("notSet")}</p>
             </section>
             <section>
               <h2 className={studioLabelClass}>{t("milestone")}</h2>
-              <p className="mt-3 text-sm">{project.milestone || t("notSet")}</p>
+              <p className="mt-3 text-sm">{displayProjectMilestone(project, t) || t("notSet")}</p>
               <p className="mt-3 text-xs text-muted-foreground">
                 {t("taskCount", {
                   complete: tasks.filter((task) => task.status === "done").length,
@@ -154,7 +162,7 @@ export function ProjectPage({
                     search={{ tab: "tasks", filter: "blocked" }}
                   >
                     <StatusBadge label={t("blocked")} tone="blocked" />
-                    {task.title}
+                    {displayTaskTitle(task, t)}
                   </Link>
                 ))
             ) : (
@@ -181,7 +189,7 @@ export function ProjectPage({
                 });
               }}
             >
-              {["all", ...taskStatusSchema.options].map((item) => (
+              {(["all", ...taskStatusSchema.options] as const).map((item) => (
                 <option key={item} value={item}>
                   {t(item)}
                 </option>
@@ -205,7 +213,7 @@ export function ProjectPage({
       {tab === "canvas" ? <ProjectCanvas projectId={projectId} /> : null}
       {tab === "brief" || tab === "feedback" ? (
         <section className="grid gap-4">
-          <PageHeader title={t(tab)} description={project.description || t("notSet")} />
+          <PageHeader title={t(tab)} description={projectDescription || t("notSet")} />
           <EmptyState title={t("comingSoon")} description={t("sectionPreviewDetail")} />
         </section>
       ) : null}

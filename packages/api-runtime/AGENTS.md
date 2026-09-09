@@ -19,6 +19,11 @@ depending on Nitro or an application.
   resolution, workspace-membership access checks, CORS, Better Auth
   composition, dynamic mail/auth policy resolution, and production repository
   wiring.
+- Resolve an optional request locale hint from the locale Cookie and
+  `Accept-Language` header for every RPC context. CORS for both `/rpc/*` and
+  `/api/auth/*` must allow `Accept-Language`; forward the hint to locale-aware
+  mail callbacks and typed settings test mail when one is present, preserving
+  the mailer's configured default otherwise.
 - Own no domain rule, wire schema, deployment listener, or Nitro lifecycle.
 
 ## Constraints
@@ -40,6 +45,11 @@ depending on Nitro or an application.
   Auth settings for every relevant request. Preserve the stable
   `REGISTRATION_DISABLED`, `EMAIL_DOMAIN_NOT_ALLOWED`,
   `EMAIL_VERIFICATION_DISABLED`, and `PASSWORD_RESET_DISABLED` responses.
+- Map domain and mail failures to a stable transport code with
+  `data.error.code` and optional primitive `values`; keep raw Error messages and
+  operational diagnostics out of responses. Better Auth mail-policy responses
+  retain the top-level code required by its handler and use the same nested
+  envelope.
 - `admin.settings.auth.get` requires Auth settings read permission;
   `admin.settings.auth.update` requires the separate Owner-only write
   permission. UI role checks never replace these handler guards.

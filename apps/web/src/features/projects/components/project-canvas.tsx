@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { useProjectStudioData } from "../studio-data";
 import { AssetGrid } from "./asset-grid";
 import { AssetUploadForm } from "./asset-upload-form";

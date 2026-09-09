@@ -1,12 +1,13 @@
 import { ArrowUpRight, FolderSimple } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
-import { useLocale, useTranslations } from "@voidmix/i18n/client";
+import { useFormatter, useTranslations } from "../../../i18n/client";
 import { StatusBadge } from "@voidmix/ui/status-badge";
 import type { HomeViewModel } from "../types";
+import { displayProjectMilestone, displayProjectName } from "../preview-copy";
 
 export function ProjectCard({ project }: { project: HomeViewModel["projects"][number] }) {
   const t = useTranslations("workspaceUi");
-  const locale = useLocale();
+  const formatter = useFormatter();
   return (
     <Link
       to="/projects/$projectId"
@@ -18,9 +19,9 @@ export function ProjectCard({ project }: { project: HomeViewModel["projects"][nu
         <FolderSimple aria-hidden="true" className="size-5 text-muted-foreground" />
         <ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground" />
       </div>
-      <h3 className="mt-5 truncate text-sm font-semibold">{project.name}</h3>
+      <h3 className="mt-5 truncate text-sm font-semibold">{displayProjectName(project, t)}</h3>
       <p className="mt-2 truncate text-xs text-muted-foreground">
-        {project.milestone || t("notSet")}
+        {displayProjectMilestone(project, t) || t("notSet")}
       </p>
       <div
         className="my-5 h-1 overflow-hidden rounded-full bg-muted"
@@ -41,7 +42,7 @@ export function ProjectCard({ project }: { project: HomeViewModel["projects"][nu
         />
         <span className="text-xs text-muted-foreground">
           {t("updated", {
-            date: project.updatedAt.toLocaleDateString(locale, { month: "short", day: "numeric" }),
+            date: formatter.dateTime(project.updatedAt, { month: "short", day: "numeric" }),
           })}
         </span>
       </div>

@@ -1,4 +1,4 @@
-import { translateErrorCode, type ErrorCodeMap, type Translator } from "@voidmix/i18n";
+import { readErrorDetails, type ErrorCodeMap, type Translator } from "@voidmix/i18n";
 
 const ERROR_KEYS = {
   USER_NOT_FOUND: "userNotFound",
@@ -7,5 +7,10 @@ const ERROR_KEYS = {
 const ERROR_KEY_MAP: ErrorCodeMap = ERROR_KEYS;
 
 export function translateApiError(error: unknown, t: Translator): string {
-  return translateErrorCode(error, t, ERROR_KEY_MAP);
+  const details = readErrorDetails(error);
+  const key =
+    details && Object.prototype.hasOwnProperty.call(ERROR_KEY_MAP, details.code)
+      ? ERROR_KEY_MAP[details.code]
+      : "unknown";
+  return t(key ?? "unknown", details?.values);
 }

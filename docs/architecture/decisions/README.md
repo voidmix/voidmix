@@ -35,3 +35,7 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 - [ADR-0006: Optional Redis cache and Better Auth secondary storage](./0006-redis-cache-and-auth-secondary-storage.md)
 - [ADR-0007: Web locale catalogs load by locale](./0007-web-locale-catalog-loading.md)
 - [ADR-0008: Keep domain contexts in one core package until stable consumers exist](./0008-domain-contexts-stay-in-core.md)
+
+The supported renderer and Mail locales are `en` and `zh`. Catalog parity and
+source-boundary checks run with `bun run i18n:check` and are the first gate of
+`bun run verify`.

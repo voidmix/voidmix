@@ -1,15 +1,18 @@
 import { CheckCircle, FileText, FolderSimple, Pulse } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 
-import { operators, signals } from "../data";
+import { operators, signals, type HomeMessageKey } from "../data";
 import type { DemoOverlayState } from "./demo-overlay";
 
 export function ProjectContext({
   onOpenOverlay,
   label = "currentProjectContext",
-}: { onOpenOverlay?: (state: Exclude<DemoOverlayState, null>) => void; label?: string } = {}) {
+}: {
+  onOpenOverlay?: (state: Exclude<DemoOverlayState, null>) => void;
+  label?: HomeMessageKey;
+} = {}) {
   const t = useTranslations("home");
 
   return (

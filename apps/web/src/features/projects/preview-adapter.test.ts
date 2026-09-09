@@ -1,11 +1,23 @@
 /** @vitest-environment jsdom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { createTranslator } from "@voidmix/i18n";
+import enMessages from "../../../messages/en.json";
+import zhMessages from "../../../messages/zh.json";
 import {
   createProjectStudioPreviewAdapter,
   legacyPreviewStorageKey,
   previewStorageKey,
   homeView,
 } from "./preview-adapter";
+import {
+  displayActivityTitle,
+  displayProjectDescription,
+  displayProjectMilestone,
+  displayProjectName,
+  displayTaskOwner,
+  displayTaskTitle,
+} from "./preview-copy";
+import type { StudioSnapshot } from "./types";
 import { projectSearch } from "./types";
 
 beforeEach(() => sessionStorage.clear());
@@ -38,7 +50,267 @@ function legacySnapshot(status: "active" | "paused" | "completed" | "archived" =
   };
 }
 
+function metadataSnapshot(): StudioSnapshot {
+  return {
+    version: 1,
+    projects: [
+      {
+        id: "metadata-project",
+        name: "Northstar / Launch film",
+        titleKey: "previewNorthstarLaunchFilmTitle",
+        description: "A clear story for the next chapter.",
+        descriptionKey: "previewNorthstarLaunchFilmDescription",
+        status: "active",
+        milestone: "Final review",
+        milestoneKey: "previewFinalReviewMilestone",
+        updatedAt: new Date("2026-09-06T08:00:00Z"),
+      },
+    ],
+    tasks: [
+      {
+        id: "metadata-task",
+        projectId: "metadata-project",
+        title: "Approve final color pass",
+        titleKey: "previewApproveFinalColorPass",
+        status: "todo",
+        owner: "You",
+        ownerKey: "you",
+        priority: "high",
+      },
+    ],
+    activity: [
+      {
+        id: "metadata-activity",
+        projectId: "metadata-project",
+        title: "Approve final color pass",
+        titleKey: "previewApproveFinalColorPass",
+        action: "created",
+        at: new Date("2026-09-06T07:00:00Z"),
+      },
+    ],
+    sessions: [],
+  };
+}
+
+const englishWorkspace = createTranslator({
+  locale: "en",
+  messages: enMessages,
+  namespace: "workspaceUi",
+});
+const chineseWorkspace = createTranslator({
+  locale: "zh",
+  messages: zhMessages,
+  namespace: "workspaceUi",
+});
+
 describe("workspace preview facade", () => {
+  it("renders seeded preview metadata through the active en and zh catalogs", () => {
+    const source = createProjectStudioPreviewAdapter();
+    const project = source.getSnapshot().projects[0]!;
+    const task = source.getSnapshot().tasks[0]!;
+
+    expect({
+      name: displayProjectName(project, englishWorkspace),
+      description: displayProjectDescription(project, englishWorkspace),
+      milestone: displayProjectMilestone(project, englishWorkspace),
+      taskTitle: displayTaskTitle(task, englishWorkspace),
+    }).toEqual({
+      name: enMessages.workspaceUi.previewNorthstarLaunchFilmTitle,
+      description: enMessages.workspaceUi.previewNorthstarLaunchFilmDescription,
+      milestone: enMessages.workspaceUi.previewFinalReviewMilestone,
+      taskTitle: enMessages.workspaceUi.previewApproveFinalColorPass,
+    });
+    expect({
+      name: displayProjectName(project, chineseWorkspace),
+      description: displayProjectDescription(project, chineseWorkspace),
+      milestone: displayProjectMilestone(project, chineseWorkspace),
+      taskTitle: displayTaskTitle(task, chineseWorkspace),
+    }).toEqual({
+      name: zhMessages.workspaceUi.previewNorthstarLaunchFilmTitle,
+      description: zhMessages.workspaceUi.previewNorthstarLaunchFilmDescription,
+      milestone: zhMessages.workspaceUi.previewFinalReviewMilestone,
+      taskTitle: zhMessages.workspaceUi.previewApproveFinalColorPass,
+    });
+    expect(displayProjectName(project, englishWorkspace)).not.toBe(
+      displayProjectName(project, chineseWorkspace),
+    );
+  });
+
+  it("round-trips project, task, activity and owner metadata in the v2 envelope", async () => {
+    const source = createProjectStudioPreviewAdapter(metadataSnapshot());
+    await source.hydrate();
+
+    const persisted = JSON.parse(sessionStorage.getItem(previewStorageKey)!);
+    expect(persisted.data.projects[0]).toMatchObject({
+      titleKey: "previewNorthstarLaunchFilmTitle",
+      descriptionKey: "previewNorthstarLaunchFilmDescription",
+      milestoneKey: "previewFinalReviewMilestone",
+    });
+    expect(persisted.data.tasks[0]).toMatchObject({
+      titleKey: "previewApproveFinalColorPass",
+      ownerKey: "you",
+    });
+    expect(persisted.data.activity[0]).toMatchObject({
+      titleKey: "previewApproveFinalColorPass",
+    });
+
+    const restored = createProjectStudioPreviewAdapter();
+    await restored.hydrate();
+    expect(restored.getSnapshot().projects[0]).toMatchObject({
+      titleKey: "previewNorthstarLaunchFilmTitle",
+      descriptionKey: "previewNorthstarLaunchFilmDescription",
+      milestoneKey: "previewFinalReviewMilestone",
+    });
+    expect(restored.getSnapshot().tasks[0]).toMatchObject({
+      titleKey: "previewApproveFinalColorPass",
+      ownerKey: "you",
+    });
+    expect(restored.getSnapshot().activity[0]).toMatchObject({
+      titleKey: "previewApproveFinalColorPass",
+    });
+  });
+
+  it("removes only the metadata key belonging to an edited project field", () => {
+    const nameSource = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const nameBefore = nameSource.getSnapshot().projects[0]!;
+    nameSource.updateProject({ ...nameBefore, name: "A new project name" });
+    expect(nameSource.getSnapshot().projects[0]).toMatchObject({
+      name: "A new project name",
+      description: nameBefore.description,
+      descriptionKey: nameBefore.descriptionKey,
+      milestoneKey: nameBefore.milestoneKey,
+    });
+    expect(nameSource.getSnapshot().projects[0]).not.toHaveProperty("titleKey");
+
+    const descriptionSource = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const descriptionBefore = descriptionSource.getSnapshot().projects[0]!;
+    descriptionSource.updateProject({ ...descriptionBefore, description: "A new description" });
+    expect(descriptionSource.getSnapshot().projects[0]).toMatchObject({
+      name: descriptionBefore.name,
+      titleKey: descriptionBefore.titleKey,
+      description: "A new description",
+      milestoneKey: descriptionBefore.milestoneKey,
+    });
+    expect(descriptionSource.getSnapshot().projects[0]).not.toHaveProperty("descriptionKey");
+
+    const milestoneSource = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const milestoneBefore = milestoneSource.getSnapshot().projects[0]!;
+    milestoneSource.updateProject({ ...milestoneBefore, milestone: "Delivery review" });
+    expect(milestoneSource.getSnapshot().projects[0]).toMatchObject({
+      name: milestoneBefore.name,
+      titleKey: milestoneBefore.titleKey,
+      descriptionKey: milestoneBefore.descriptionKey,
+      milestone: "Delivery review",
+    });
+    expect(milestoneSource.getSnapshot().projects[0]).not.toHaveProperty("milestoneKey");
+  });
+
+  it("removes only the metadata key belonging to an edited task field", () => {
+    const titleSource = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const titleBefore = titleSource.getSnapshot().tasks[0]!;
+    titleSource.updateTask({ ...titleBefore, title: "A new task title" });
+    expect(titleSource.getSnapshot().tasks[0]).toMatchObject({
+      title: "A new task title",
+      owner: titleBefore.owner,
+      ownerKey: titleBefore.ownerKey,
+    });
+    expect(titleSource.getSnapshot().tasks[0]).not.toHaveProperty("titleKey");
+
+    const ownerSource = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const ownerBefore = ownerSource.getSnapshot().tasks[0]!;
+    ownerSource.updateTask({ ...ownerBefore, owner: "Samira" });
+    expect(ownerSource.getSnapshot().tasks[0]).toMatchObject({
+      title: ownerBefore.title,
+      titleKey: ownerBefore.titleKey,
+      owner: "Samira",
+    });
+    expect(ownerSource.getSnapshot().tasks[0]).not.toHaveProperty("ownerKey");
+  });
+
+  it("keeps raw fallback values and metadata for fields left untouched in a localized edit", () => {
+    const source = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const projectBefore = source.getSnapshot().projects[0]!;
+    const taskBefore = source.getSnapshot().tasks[0]!;
+    const translatedDescription = displayProjectDescription(projectBefore, chineseWorkspace);
+    const translatedOwner = displayTaskOwner(taskBefore, chineseWorkspace);
+
+    expect(translatedDescription).not.toBe(projectBefore.description);
+    expect(translatedOwner).not.toBe(taskBefore.owner);
+    source.updateProject({ ...projectBefore, name: "Edited name" });
+    source.updateTask({ ...taskBefore, title: "Edited title" });
+
+    expect(source.getSnapshot().projects[0]).toMatchObject({
+      description: projectBefore.description,
+      descriptionKey: projectBefore.descriptionKey,
+    });
+    expect(source.getSnapshot().projects[0]?.description).not.toBe(translatedDescription);
+    expect(source.getSnapshot().tasks[0]).toMatchObject({
+      owner: taskBefore.owner,
+      ownerKey: taskBefore.ownerKey,
+    });
+    expect(source.getSnapshot().tasks[0]?.owner).not.toBe(translatedOwner);
+  });
+
+  it("keeps activity title keys when a seeded task changes status or is removed", () => {
+    const source = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const task = source.getSnapshot().tasks[0]!;
+
+    source.updateTask({ ...task, status: "done" });
+    const updated = source.getSnapshot().activity[0]!;
+    expect(updated).toMatchObject({
+      title: task.title,
+      titleKey: task.titleKey,
+      action: "updated",
+    });
+    expect(displayActivityTitle(updated, chineseWorkspace)).toBe(
+      zhMessages.workspaceUi.previewApproveFinalColorPass,
+    );
+
+    source.removeTask(task.id);
+    const restored = source.getSnapshot().activity[0]!;
+    expect(restored).toMatchObject({
+      title: task.title,
+      titleKey: task.titleKey,
+      action: "restored",
+    });
+    expect(displayActivityTitle(restored, chineseWorkspace)).toBe(
+      zhMessages.workspaceUi.previewApproveFinalColorPass,
+    );
+  });
+
+  it("retains preview metadata when undo restores the previous project and task", () => {
+    const source = createProjectStudioPreviewAdapter(metadataSnapshot());
+    const projectBefore = source.getSnapshot().projects[0]!;
+    const taskBefore = source.getSnapshot().tasks[0]!;
+
+    source.updateProject({ ...projectBefore, name: "Edited name" });
+    source.updateProject(projectBefore);
+    source.updateTask({ ...taskBefore, title: "Edited title" });
+    source.updateTask(taskBefore);
+
+    expect(source.getSnapshot().projects[0]).toMatchObject({
+      name: projectBefore.name,
+      titleKey: projectBefore.titleKey,
+      descriptionKey: projectBefore.descriptionKey,
+      milestoneKey: projectBefore.milestoneKey,
+    });
+    expect(source.getSnapshot().tasks[0]).toMatchObject({
+      title: taskBefore.title,
+      titleKey: taskBefore.titleKey,
+      ownerKey: taskBefore.ownerKey,
+    });
+    const persisted = JSON.parse(sessionStorage.getItem(previewStorageKey)!);
+    expect(persisted.data.projects[0]).toMatchObject({
+      titleKey: projectBefore.titleKey,
+      descriptionKey: projectBefore.descriptionKey,
+      milestoneKey: projectBefore.milestoneKey,
+    });
+    expect(persisted.data.tasks[0]).toMatchObject({
+      titleKey: taskBefore.titleKey,
+      ownerKey: taskBefore.ownerKey,
+    });
+  });
+
   it("returns bounded home summaries instead of entire task histories", () => {
     const source = createProjectStudioPreviewAdapter();
     for (let count = 0; count < 9; count++) source.createTask("northstar", `Task ${count}`);
@@ -180,7 +452,9 @@ describe("workspace preview facade", () => {
   it("does not mutate tasks across projects", () => {
     const source = createProjectStudioPreviewAdapter();
     const task = source.getSnapshot().tasks[0]!;
-    expect(() => source.updateTask({ ...task, projectId: "campaign" })).toThrow("Task not found");
+    expect(() => source.updateTask({ ...task, projectId: "campaign" })).toThrow(
+      expect.objectContaining({ code: "TASK_NOT_FOUND" }),
+    );
   });
   it("supports undoing a task update and removing a newly created task", () => {
     const source = createProjectStudioPreviewAdapter();

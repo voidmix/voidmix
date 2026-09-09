@@ -1,13 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { MailSettings } from "../../../../features/admin/settings/mail-settings";
+import { localizedRouteHead } from "../../../../i18n/route-meta";
 
 export const Route = createFileRoute("/(app)/(admin)/admin/settings")({
   component: MailSettings,
-  head: () => ({
-    meta: [
-      { title: "Mail settings | Voidmix Control" },
-      { name: "description", content: "Configure Voidmix system mail delivery." },
-    ],
-  }),
+  head: ({ matches }) =>
+    localizedRouteHead(matches, "mailSettingsTitle", "mailSettingsDescription"),
 });

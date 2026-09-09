@@ -8,13 +8,14 @@ import { useState, type FormEvent } from "react";
 import { authClient } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 import { createPasswordResetCallbackUrl, normalizeAuthRedirect } from "./route-search";
 
 export function ResetPassword({ token, redirectTo }: { token?: string; redirectTo?: string }) {
+  const t = useTranslations("auth");
   const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
   const next = normalizeAuthRedirect(redirectTo);
@@ -41,9 +42,9 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
         setError(
           notifyAuthFailure({
             translateError,
-            title: "Password reset failed",
+            title: t("passwordResetFailed"),
             error: result.error,
-            fallback: "Unable to reset your password. Try again.",
+            fallback: t("passwordResetFallback"),
           }),
         );
       } else {
@@ -53,9 +54,9 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
       setError(
         notifyAuthFailure({
           translateError,
-          title: "Password reset failed",
+          title: t("passwordResetFailed"),
           error: cause,
-          fallback: "Unable to reset your password. Try again.",
+          fallback: t("passwordResetFallback"),
         }),
       );
     }
@@ -65,20 +66,20 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
   if (!token && !capabilities.passwordResetRequestAvailable) {
     return (
       <AuthCard
-        description="Password reset email requests are not available with the current system and mail configuration."
+        description={t("passwordResetUnavailableDescription")}
         footer={
           <Link
             className="font-medium text-foreground hover:underline"
             to="/login"
             {...(next ? { search: { redirect: next } } : {})}
           >
-            Back to sign in
+            {t("backToSignIn")}
           </Link>
         }
-        title="Password reset unavailable"
+        title={t("passwordResetUnavailable")}
       >
         <p className="text-sm leading-6 text-muted-foreground">
-          Existing reset links can still be used. Contact an administrator if you need access.
+          {t("passwordResetUnavailableBody")}
         </p>
       </AuthCard>
     );
@@ -87,12 +88,8 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
   if (sent) {
     return (
       <AuthCard
-        description={
-          token
-            ? "Your password has been updated. You can now use it to sign in."
-            : "We sent a reset link if an account exists for that email address."
-        }
-        title={token ? "Password updated" : "Check your email"}
+        description={token ? t("passwordUpdatedDescription") : t("resetLinkSentDescription")}
+        title={token ? t("passwordUpdated") : t("checkEmail")}
       >
         <div className="space-y-5">
           <CheckCircle aria-hidden="true" className="size-9 text-primary" />
@@ -102,7 +99,7 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
             render={<Link to="/login" {...(next ? { search: { redirect: next } } : {})} />}
             size="lg"
           >
-            Back to sign in
+            {t("backToSignIn")}
           </Button>
         </div>
       </AuthCard>
@@ -111,21 +108,17 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
 
   return (
     <AuthCard
-      description={
-        token
-          ? "Choose a new password with at least eight characters."
-          : "Enter your email and we will send you a password reset link."
-      }
+      description={token ? t("chooseNewPassword") : t("sendResetDescription")}
       footer={
         <Link
           className="font-medium text-foreground hover:underline"
           to="/login"
           {...(next ? { search: { redirect: next } } : {})}
         >
-          Back to sign in
+          {t("backToSignIn")}
         </Link>
       }
-      title={token ? "Set a new password" : "Reset your password"}
+      title={token ? t("setNewPassword") : t("resetYourPassword")}
     >
       <form aria-busy={pending} onSubmit={submit}>
         <FieldGroup className="gap-4">
@@ -135,7 +128,7 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
               autoComplete="new-password"
               disabled={pending}
               id="new-password"
-              label="New password"
+              label={t("newPassword")}
               minLength={8}
               onChange={(event) => setPassword(event.target.value)}
               required
@@ -143,7 +136,7 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
             />
           ) : (
             <Field>
-              <FieldLabel htmlFor="reset-email">Email</FieldLabel>
+              <FieldLabel htmlFor="reset-email">{t("email")}</FieldLabel>
               <Input
                 aria-describedby={error ? "reset-error" : undefined}
                 autoComplete="email"
@@ -161,11 +154,11 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
           <Button className="mt-1 w-full" disabled={pending} size="lg" type="submit">
             {pending
               ? token
-                ? "Updating password…"
-                : "Sending reset link…"
+                ? t("updatingPassword")
+                : t("sendingResetLink")
               : token
-                ? "Update password"
-                : "Send reset link"}
+                ? t("updatePassword")
+                : t("sendResetLink")}
           </Button>
         </FieldGroup>
       </form>

@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
 
@@ -75,7 +75,9 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
       <main className="flex min-h-dvh flex-col bg-background">
         <div className="mx-auto flex w-full max-w-xl flex-1 items-center justify-center px-5 py-16 text-center sm:px-8">
           <section aria-labelledby="missing-chat-title">
-            <span className="font-mono text-[0.68rem] text-muted-foreground">Voidmix / Chat</span>
+            <span className="font-mono text-[0.68rem] text-muted-foreground">
+              Voidmix / {t("conversation")}
+            </span>
             <h1 className="mt-2 text-2xl font-semibold tracking-[-0.025em]" id="missing-chat-title">
               {t("chatUnavailableTitle")}
             </h1>
@@ -122,7 +124,7 @@ export function ChatWorkspace({ chatId }: { chatId: string }) {
                 <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <span className="font-mono text-[0.68rem] text-muted-foreground">
-                      {t("northstarWorkspace")} / Chat
+                      {t("northstarWorkspace")} / {t("conversation")}
                     </span>
                     <h1
                       className="mt-1.5 text-balance text-[clamp(1.65rem,3vw,2.4rem)] font-bold tracking-[-0.035em]"

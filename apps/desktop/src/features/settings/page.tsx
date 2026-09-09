@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useDesktopTranslations } from "../../i18n/client";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useMemo, useState } from "react";
 
@@ -35,7 +35,7 @@ function SettingToggle({
 }
 
 export function SettingsPage() {
-  const t = useTranslations("settings");
+  const t = useDesktopTranslations("settings");
   const sections = useMemo(
     () => [
       {

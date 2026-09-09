@@ -24,6 +24,9 @@ deployment boundaries, and coding-agent guidance.
   containers, Railway, PostgreSQL, and Tauri distribution.
 - [Decision records](./architecture/decisions/README.md) — decisions that
   constrain future work, and the conditions for revisiting them.
+- [Internationalization decisions](./architecture/decisions/0004-use-intl-static-catalogs.md)
+  — the `@voidmix/i18n` facade, `en`/`zh` catalogs, Web loading, and recipient
+  locale behavior.
 
 ## Development
 

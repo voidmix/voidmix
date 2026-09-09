@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { LocalizedWebError } from "../../../i18n/error-message";
+
 import {
   adminAuthSettingsClient,
   type AdminAuthSettingsClient,
@@ -31,7 +33,7 @@ export function useAuthSettings(client: AdminAuthSettingsClient = adminAuthSetti
   const [changes, setChanges] = useState<UpdateAuthSettings>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<unknown | null>(null);
 
   const applySettings = useCallback((next: AuthSettings) => {
     setSettings(next);
@@ -45,7 +47,7 @@ export function useAuthSettings(client: AdminAuthSettingsClient = adminAuthSetti
     try {
       applySettings(await client.get());
     } catch (nextError) {
-      setError(errorMessage(nextError));
+      setError(nextError ?? new LocalizedWebError("SETTINGS_REQUEST_FAILED"));
     }
     setIsLoading(false);
   }, [applySettings, client]);
@@ -107,7 +109,7 @@ export function useAuthSettings(client: AdminAuthSettingsClient = adminAuthSetti
       setIsSaving(false);
       return updated;
     } catch (nextError) {
-      setError(errorMessage(nextError));
+      setError(nextError ?? new LocalizedWebError("SETTINGS_REQUEST_FAILED"));
       setIsSaving(false);
       throw nextError;
     }
@@ -161,18 +163,4 @@ function parseDomains(value: string): string[] {
     .split(/[\n,]+/)
     .map((domain) => domain.trim())
     .filter(Boolean);
-}
-
-function errorMessage(error: unknown): string {
-  if (error instanceof Error && error.message.trim()) return error.message;
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "message" in error &&
-    typeof error.message === "string" &&
-    error.message.trim()
-  ) {
-    return error.message;
-  }
-  return "The authentication settings request failed.";
 }

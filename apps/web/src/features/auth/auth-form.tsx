@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
@@ -10,6 +10,8 @@ import { useAuthCapabilities } from "./capabilities";
 import { notifyAuthFailure } from "./feedback";
 import { PasswordField } from "./password-field";
 import { createVerificationCallbackUrl, normalizeAuthRedirect } from "./route-search";
+
+const defaultAuthenticatedRoute = "/admin";
 
 export function AuthForm({
   mode,
@@ -86,7 +88,7 @@ export function AuthForm({
         ...(next ? { search: { redirect: next } } : {}),
       });
     } else {
-      await navigate({ to: next ?? "/admin" });
+      await navigate({ to: next ?? defaultAuthenticatedRoute });
     }
   }
 

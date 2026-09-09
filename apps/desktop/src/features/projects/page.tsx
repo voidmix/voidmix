@@ -1,7 +1,7 @@
 import { ArrowUpRight, CalendarBlank, CheckCircle, Plus } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { StatusBadge } from "@voidmix/ui/status-badge";
@@ -10,7 +10,8 @@ import { loadProjects, type PreviewProject, type StudioProject } from "../../lib
 type Project = StudioProject | PreviewProject;
 
 export function ProjectsPage() {
-  const t = useTranslations("projects");
+  const t = useDesktopTranslations("projects");
+  const formatter = useFormatter();
   const [result, setResult] = useState<{
     status: "loading" | "preview" | "loaded" | "unavailable";
     data: Project[];
@@ -35,22 +36,22 @@ export function ProjectsPage() {
       />
       <div className={`data-source ${result.status === "loaded" ? "cloud" : "demo"}`} role="status">
         {result.status === "loading"
-          ? "Loading projects…"
+          ? t("loading")
           : result.status === "preview"
-            ? "Preview data"
+            ? t("previewData")
             : result.status === "loaded"
-              ? "Cloud data"
-              : "Project data unavailable"}
+              ? t("cloudData")
+              : t("unavailable")}
       </div>
       {result.status === "unavailable" ? (
-        <p className="empty-copy">
-          Project data is unavailable. Check the API connection and try again.
-        </p>
+        <p className="empty-copy">{t("unavailableDescription")}</p>
       ) : (
         <div className="project-grid" aria-label={t("projectList")}>
           {result.data.map((project) => {
             const progress = "progress" in project ? (project.progress ?? 0) : 0;
-            const title = project.title;
+            const preview = "titleKey" in project;
+            const title = preview ? t(project.titleKey) : project.title;
+            const description = preview ? t(project.descriptionKey) : (project.description ?? "");
             return (
               <article className="project-card" key={project.id}>
                 <div className="project-card-topline">
@@ -68,18 +69,28 @@ export function ProjectsPage() {
                   </Link>
                 </div>
                 <h2>{title}</h2>
-                <p>{project.description ?? ""}</p>
-                <div className="project-progress" aria-label={`${Math.round(progress * 100)}%`}>
+                <p>{description}</p>
+                <div
+                  className="project-progress"
+                  aria-label={t("percentComplete", { percent: Math.round(progress * 100) })}
+                >
                   <span style={{ width: `${progress * 100}%` }} />
                 </div>
                 <div className="project-card-meta">
                   <span>
                     <CheckCircle size={14} />
-                    {"tasks" in project ? project.tasks : "—"}
+                    {preview
+                      ? t("taskProgress", {
+                          completed: project.taskCount,
+                          total: project.taskTotal,
+                        })
+                      : t("notAvailable")}
                   </span>
                   <span>
                     <CalendarBlank size={14} />
-                    {project.deadline ? project.deadline.toLocaleDateString() : "No deadline"}
+                    {project.deadline
+                      ? formatter.dateTime(project.deadline, "short")
+                      : t("noDeadline")}
                   </span>
                 </div>
               </article>

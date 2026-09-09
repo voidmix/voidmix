@@ -52,7 +52,7 @@ vi.mock("../../components/theme-switcher", () => ({
 vi.mock("../home/components/login-button", () => ({
   LoginButton: () => <button type="button">Sign in</button>,
 }));
-vi.mock("@voidmix/i18n/client", () => ({
+vi.mock("../../i18n/client", () => ({
   useLocale: () => "en",
   useTranslations: () => (key: string, values?: Record<string, unknown>) => {
     let message = (messages.workspaceUi as Record<string, string>)[key] ?? key;
@@ -60,6 +60,12 @@ vi.mock("@voidmix/i18n/client", () => ({
       message = message.replace(`{${name}}`, String(value));
     return message;
   },
+  useFormatter: () => ({
+    dateTime: (value: Date | number) => String(value),
+    list: (value: Iterable<string>) => [...value].join(", "),
+    number: (value: bigint | number) => String(value),
+    relativeTime: (value: number, unit: string) => `${value} ${unit}`,
+  }),
 }));
 
 beforeEach(() => {

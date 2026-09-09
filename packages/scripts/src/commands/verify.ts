@@ -4,6 +4,7 @@ import { runContextualAction } from "../runtime/action.js";
 import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
 
 interface VerifyDependencies extends RepositoryProcessDependencies {
+  verifyI18n: () => Promise<void>;
   verifyPolicy: () => Promise<void>;
   verifyRuntimes: (options: { captureOutput: boolean }) => Promise<void>;
 }
@@ -26,6 +27,8 @@ export async function runVerify(
   options: VerifyOptions = {},
 ): Promise<void> {
   const captureOutput = !(options.verbose ?? false);
+  dependencies.log("info", "verify.task.started", { task: "i18n" });
+  await dependencies.verifyI18n();
   // Repository policy runs first: it costs milliseconds and its failures are
   // structural, so there is no point building before it passes.
   dependencies.log("info", "verify.task.started", { task: "policy" });
@@ -73,18 +76,33 @@ export const verifyCommand = defineCommand({
   },
   async run({ args }) {
     await runContextualAction("verify", "process", async (context) => {
-      const [{ runCommand }, { verifyNitroRuntimes }, policyRuntime, policyChecks, policyReport] =
-        await Promise.all([
-          import("../runtime/process.js"),
-          import("../verify/nitro.js"),
-          import("../policy/runtime.js"),
-          import("../policy/checks.js"),
-          import("../policy/report.js"),
-        ]);
+      const [
+        { runCommand },
+        { verifyNitroRuntimes },
+        { createI18nDependencies, runI18nCheck },
+        i18nReport,
+        policyRuntime,
+        policyChecks,
+        policyReport,
+      ] = await Promise.all([
+        import("../runtime/process.js"),
+        import("../verify/nitro.js"),
+        import("../i18n/runtime.js"),
+        import("../i18n/report.js"),
+        import("../policy/runtime.js"),
+        import("../policy/checks.js"),
+        import("../policy/report.js"),
+      ]);
       const dependencies = { ...context, runCommand };
       await runVerify(
         {
           ...dependencies,
+          async verifyI18n() {
+            const report = await runI18nCheck(createI18nDependencies());
+            if (report.errors > 0) {
+              throw new Error(i18nReport.renderI18nReport(report));
+            }
+          },
           verifyRuntimes: (options) => verifyNitroRuntimes(dependencies, options),
           async verifyPolicy() {
             const report = await policyChecks.runPolicy(policyRuntime.createPolicyDependencies());

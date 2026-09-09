@@ -3,8 +3,10 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { I18nProvider } from "@voidmix/i18n/client";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
+import { messages } from "../../../../tests/fixtures/messages";
 import { UserDirectory } from "./directory";
 import { createPreviewUsersAdapter } from "./preview-adapter";
 import type { AdminUser, AdminUsersClient } from "./types";
@@ -16,8 +18,8 @@ const users: readonly AdminUser[] = [
     email: "owner@example.com",
     role: "owner",
     status: "active",
-    lastActive: "2 min ago",
-    joinedAt: "May 18, 2026",
+    lastActive: { kind: "relative", value: -2, unit: "minute" },
+    joinedAt: new Date("2026-05-18T00:00:00.000Z"),
   },
   {
     id: "member",
@@ -25,8 +27,8 @@ const users: readonly AdminUser[] = [
     email: "samira@example.com",
     role: "user",
     status: "active",
-    lastActive: "1 hr ago",
-    joinedAt: "Jun 21, 2026",
+    lastActive: { kind: "relative", value: -1, unit: "hour" },
+    joinedAt: new Date("2026-06-21T00:00:00.000Z"),
   },
   {
     id: "suspended",
@@ -34,15 +36,19 @@ const users: readonly AdminUser[] = [
     email: "rei@example.com",
     role: "user",
     status: "suspended",
-    lastActive: "9 days ago",
-    joinedAt: "Apr 07, 2026",
+    lastActive: { kind: "relative", value: -9, unit: "day" },
+    joinedAt: new Date("2026-04-07T00:00:00.000Z"),
   },
 ];
 
 afterEach(() => cleanup());
 
 function renderDirectory(client: AdminUsersClient = createPreviewUsersAdapter(users)) {
-  render(<UserDirectory client={client} />);
+  render(
+    <I18nProvider locale="en" messages={messages}>
+      <UserDirectory client={client} />
+    </I18nProvider>,
+  );
   return userEvent.setup();
 }
 

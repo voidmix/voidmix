@@ -8,6 +8,7 @@ import {
 } from "@voidmix/ui/components/ui/card";
 import { Logo } from "@voidmix/ui/logo";
 import type { ReactNode } from "react";
+import { useTranslations } from "../../i18n/client";
 
 interface AuthCardProps {
   children: ReactNode;
@@ -17,11 +18,12 @@ interface AuthCardProps {
 }
 
 export function AuthCard({ children, description, footer, title }: AuthCardProps) {
+  const t = useTranslations("auth");
   return (
     <Card className="w-full max-w-sm gap-0 py-0 [--card-spacing:--spacing(6)]">
       <CardHeader className="gap-5 pt-(--card-spacing) pb-5">
         <Link
-          aria-label="Voidmix home"
+          aria-label={t("homeLabel")}
           className="w-fit rounded-lg text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
           to="/"
         >

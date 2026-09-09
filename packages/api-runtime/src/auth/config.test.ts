@@ -2,7 +2,7 @@ import { createDefaultAuthSettings } from "@voidmix/core";
 import type { Mailer } from "@voidmix/mail/types";
 import { describe, expect, it, vi } from "vite-plus/test";
 
-import { sendWelcomeEmailIfEnabled } from "./config.js";
+import { recipientLocale, sendWelcomeEmailIfEnabled } from "./config.js";
 
 function mailer(sendWelcome: Mailer["sendWelcome"]): Mailer {
   return {
@@ -14,6 +14,31 @@ function mailer(sendWelcome: Mailer["sendWelcome"]): Mailer {
 }
 
 describe("welcome email policy", () => {
+  it("uses an explicit request locale without inventing a fallback", () => {
+    expect(
+      recipientLocale(
+        new Request("https://voidmix.test/api/auth", {
+          headers: { "accept-language": "zh-CN, en;q=0.8" },
+        }),
+      ),
+    ).toEqual({ locale: "zh" });
+    expect(recipientLocale(new Request("https://voidmix.test/api/auth"))).toEqual({});
+    expect(recipientLocale(undefined)).toEqual({});
+  });
+
+  it("gives the locale cookie precedence over Accept-Language", () => {
+    expect(
+      recipientLocale(
+        new Request("https://voidmix.test/api/auth", {
+          headers: {
+            cookie: "locale=en",
+            "accept-language": "zh-CN",
+          },
+        }),
+      ),
+    ).toEqual({ locale: "en" });
+  });
+
   it("skips welcome delivery when the dynamic setting is disabled", async () => {
     const sendWelcome = vi.fn(async () => {});
 

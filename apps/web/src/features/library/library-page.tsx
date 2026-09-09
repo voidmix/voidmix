@@ -1,6 +1,6 @@
 import { FileText, MagnifyingGlass } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { Input } from "@voidmix/ui/components/ui/input";
 import { useState } from "react";
@@ -12,7 +12,11 @@ export function LibraryPage() {
   const t = useTranslations("workspaceUi");
   const { snapshot } = useProjectStudioData();
   const [query, setQuery] = useState("");
-  const briefs = filterLibraryBriefs(getLibraryBriefs(snapshot), query);
+  const briefs = filterLibraryBriefs(getLibraryBriefs(snapshot), query, (brief) => [
+    ...(brief.titleKey ? [t(brief.titleKey)] : []),
+    ...(brief.descriptionKey ? [t(brief.descriptionKey)] : []),
+    ...(brief.milestoneKey ? [t(brief.milestoneKey)] : []),
+  ]);
 
   return (
     <ProjectStudioShell current="library" title={t("library")}>
@@ -52,12 +56,17 @@ export function LibraryPage() {
                 </span>
                 <span className="text-xs text-muted-foreground">{t("libraryBriefType")}</span>
               </div>
-              <h2 className="mt-5 truncate text-sm font-semibold">{brief.title}</h2>
+              <h2 className="mt-5 truncate text-sm font-semibold">
+                {brief.titleKey ? t(brief.titleKey) : brief.title}
+              </h2>
               <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                {brief.description || t("libraryBrief")}
+                {(brief.descriptionKey ? t(brief.descriptionKey) : brief.description) ||
+                  t("libraryBrief")}
               </p>
-              {brief.milestone ? (
-                <p className="mt-4 text-xs text-muted-foreground">{brief.milestone}</p>
+              {(brief.milestoneKey ? t(brief.milestoneKey) : brief.milestone) ? (
+                <p className="mt-4 text-xs text-muted-foreground">
+                  {brief.milestoneKey ? t(brief.milestoneKey) : brief.milestone}
+                </p>
               ) : null}
             </Link>
           ))}

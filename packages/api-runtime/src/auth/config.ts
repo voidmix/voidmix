@@ -2,7 +2,7 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import type { DatabaseConnection } from "@voidmix/db";
 import { authAccounts, authSessions, authVerifications, users } from "@voidmix/db/schema";
 import type { AuthSettings } from "@voidmix/core";
-import { resolveRequestLocale } from "@voidmix/i18n/server";
+import { resolveRequestLocaleHint } from "@voidmix/i18n/server";
 import type { Locale } from "@voidmix/i18n/types";
 import { logger } from "@voidmix/logger";
 import type { Mailer } from "@voidmix/mail/types";
@@ -18,9 +18,10 @@ import type { ApiRuntimeEnvironment } from "../env.js";
  * request the property is omitted rather than set to undefined, so the mailer
  * falls back to `MAIL_DEFAULT_LOCALE` (`exactOptionalPropertyTypes` is on).
  */
-function recipientLocale(request: Request | undefined): { locale?: Locale } {
+export function recipientLocale(request: Request | undefined): { locale?: Locale } {
   if (!request) return {};
-  return { locale: resolveRequestLocale(request.headers) };
+  const locale = resolveRequestLocaleHint(request.headers);
+  return locale ? { locale } : {};
 }
 
 export interface CreateApiAuthOptions {

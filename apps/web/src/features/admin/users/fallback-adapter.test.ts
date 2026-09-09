@@ -24,8 +24,8 @@ describe("fallback users adapter", () => {
           email: "preview@example.com",
           role: "user",
           status: "active",
-          lastActive: "now",
-          joinedAt: "Jan 01, 2026",
+          lastActive: { kind: "relative", value: 0, unit: "second" },
+          joinedAt: new Date("2026-01-01T00:00:00.000Z"),
         },
       ]),
     });
@@ -46,14 +46,16 @@ describe("fallback users adapter", () => {
     });
     const preview = makeClient({
       updateUserStatus: vi.fn(async () => {
-        throw new Error("User not found");
+        const error = new Error("USER_NOT_FOUND");
+        Object.assign(error, { code: "USER_NOT_FOUND" });
+        throw error;
       }),
     });
     const adapter = createFallbackUsersAdapter({ api, logger, preview });
 
     await expect(
       adapter.updateUserStatus({ userId: "missing", status: "suspended" }),
-    ).rejects.toThrow("User not found");
+    ).rejects.toMatchObject({ code: "USER_NOT_FOUND" });
     expect(logger.error).toHaveBeenCalledWith({
       event: "admin.users.update.failed",
       reason: "user_not_found",

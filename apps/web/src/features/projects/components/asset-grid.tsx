@@ -1,15 +1,17 @@
-import { useLocale, useTranslations } from "@voidmix/i18n/client";
+import { useFormatter, useTranslations } from "../../../i18n/client";
+import type { Formatter } from "@voidmix/i18n";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { useState } from "react";
+import { translateWebError } from "../../../i18n/error-message";
 import type { StudioAsset, StudioAssetReference, StudioAssetVersion } from "../types";
 
 type AttachAsset = (asset: StudioAsset, version?: StudioAssetVersion) => Promise<void>;
 
-function formatBytes(bytes: number) {
+function formatBytes(bytes: number, formatter: Formatter) {
   if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  if (bytes < 1024 * 1024) return `${formatter.number(Number((bytes / 1024).toFixed(1)))} KB`;
+  return `${formatter.number(Number((bytes / (1024 * 1024)).toFixed(1)))} MB`;
 }
 
 function AssetCard({
@@ -24,7 +26,8 @@ function AssetCard({
   onAttach?: AttachAsset;
 }) {
   const t = useTranslations("workspaceUi");
-  const locale = useLocale();
+  const errorT = useTranslations("errors");
+  const formatter = useFormatter();
   const currentVersion = versions.find(
     (version) => version.id === (reference?.versionId ?? asset.headVersionId),
   );
@@ -38,7 +41,7 @@ function AssetCard({
     try {
       await onAttach(asset, currentVersion);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : t("uploadError"));
+      setError(translateWebError(reason, errorT, "uploadError"));
     } finally {
       setBusy(false);
     }
@@ -50,8 +53,8 @@ function AssetCard({
         <div className="min-w-0">
           <h3 className="break-all text-sm font-medium">{asset.path}</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {versions.length} {t("versions")}
-            {currentVersion ? ` · ${formatBytes(currentVersion.byteSize)}` : ""}
+            {t("versionCount", { count: versions.length })}
+            {currentVersion ? ` · ${formatBytes(currentVersion.byteSize, formatter)}` : ""}
           </p>
         </div>
         {reference ? (
@@ -62,7 +65,7 @@ function AssetCard({
         <div className="flex flex-wrap justify-between gap-3 rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground">
           <span>{currentVersion.contentType ?? t("notSet")}</span>
           <time dateTime={currentVersion.createdAt.toISOString()}>
-            {currentVersion.createdAt.toLocaleDateString(locale)}
+            {formatter.dateTime(currentVersion.createdAt, "short")}
           </time>
         </div>
       ) : (
@@ -85,9 +88,11 @@ function AssetCard({
                     : `${t("version")} ${versions.length - index}`}
                 </span>
                 <time dateTime={version.createdAt.toISOString()}>
-                  {version.createdAt.toLocaleDateString(locale)}
+                  {formatter.dateTime(version.createdAt, "short")}
                 </time>
-                <span className="text-muted-foreground">{formatBytes(version.byteSize)}</span>
+                <span className="text-muted-foreground">
+                  {formatBytes(version.byteSize, formatter)}
+                </span>
               </li>
             ))}
           </ol>

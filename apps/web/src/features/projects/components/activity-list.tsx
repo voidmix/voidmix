@@ -1,9 +1,10 @@
-import { useLocale, useTranslations } from "@voidmix/i18n/client";
+import { useFormatter, useTranslations } from "../../../i18n/client";
 import type { ActivityView } from "../types";
+import { displayActivityTitle } from "../preview-copy";
 
 export function ActivityList({ items }: { items: ActivityView[] }) {
   const t = useTranslations("workspaceUi");
-  const locale = useLocale();
+  const formatter = useFormatter();
   if (!items.length) return <p className="py-6 text-sm text-muted-foreground">{t("noActivity")}</p>;
   return (
     <ol className="divide-y divide-border">
@@ -13,13 +14,13 @@ export function ActivityList({ items }: { items: ActivityView[] }) {
             ↳
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate">{item.title}</p>
+            <p className="truncate">{displayActivityTitle(item, t)}</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {t(item.action === "updated" ? "updatedAction" : item.action)}
             </p>
           </div>
           <time dateTime={item.at.toISOString()} className="shrink-0 text-xs text-muted-foreground">
-            {item.at.toLocaleDateString(locale, { month: "short", day: "numeric" })}
+            {formatter.dateTime(item.at, { month: "short", day: "numeric" })}
           </time>
         </li>
       ))}

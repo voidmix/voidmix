@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vite-plus/test";
 
 import { createProjectStudioRemoteAdapter } from "./remote-adapter";
 
-function apiStub() {
+function apiStub(taskCreatedBy = "user-1") {
   const session = {
     id: "session-1",
     projectId: "project-1",
@@ -75,6 +75,7 @@ function apiStub() {
       },
     },
     projects: {
+      create: vi.fn(),
       get: vi.fn().mockResolvedValue({
         id: "project-1",
         workspaceId: "workspace-1",
@@ -99,7 +100,7 @@ function apiStub() {
             projectId: "project-1",
             title: "Approve cut",
             status: "done",
-            createdBy: "user-1",
+            createdBy: taskCreatedBy,
             updatedAt: new Date("2026-09-01T00:00:00Z"),
           },
         ],
@@ -108,6 +109,9 @@ function apiStub() {
         reviews: [],
         sessions: [],
       }),
+      tasks: {
+        create: vi.fn(),
+      },
     },
   };
 }
@@ -130,7 +134,24 @@ describe("createProjectStudioRemoteAdapter", () => {
     expect(source.getSnapshot().tasks[0]).toMatchObject({
       id: "task-1",
       status: "done",
+      owner: "User",
+      ownerKey: "you",
     });
+  });
+
+  it("does not label another task creator as the current user", async () => {
+    const client = apiStub("collaborator-1");
+    const source = createProjectStudioRemoteAdapter({
+      client: client as never,
+      workspaceId: "workspace-1",
+    });
+
+    await source.hydrate();
+
+    expect(source.getSnapshot().tasks[0]).toMatchObject({
+      owner: "collaborator-1",
+    });
+    expect(source.getSnapshot().tasks[0]).not.toHaveProperty("ownerKey");
   });
 
   it("surfaces hydrate failures without replacing the live state with preview data", async () => {
@@ -161,6 +182,84 @@ describe("createProjectStudioRemoteAdapter", () => {
       context: {},
       idempotencyKey: expect.any(String),
     });
+  });
+
+  it("replaces an optimistic project with the server identity after creation", async () => {
+    const client = apiStub();
+    const created = {
+      id: "project-created",
+      workspaceId: "workspace-1",
+      ownerId: "user-1",
+      title: "Remote project",
+      description: "Created remotely",
+      cover: null,
+      thumbnail: null,
+      stage: "draft" as const,
+      archived: false,
+      archivedAt: null,
+      stageWasDefaulted: false,
+      progress: 0,
+      deadline: null,
+      lastActivityAt: null,
+      createdAt: new Date("2026-09-02T00:00:00Z"),
+      updatedAt: new Date("2026-09-02T00:00:00Z"),
+      brief: null,
+      tasks: [],
+      members: [],
+      assetReferences: [],
+      reviews: [],
+      sessions: [],
+    };
+    client.projects.create.mockResolvedValue(created);
+    const source = createProjectStudioRemoteAdapter({
+      client: client as never,
+      workspaceId: "workspace-1",
+    });
+    await source.hydrate();
+
+    const optimistic = source.createProject("Remote project");
+    expect(source.getSnapshot().projects.some((project) => project.id === optimistic.id)).toBe(
+      true,
+    );
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const projects = source.getSnapshot().projects;
+    expect(projects).toHaveLength(2);
+    expect(projects).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "project-created" })]),
+    );
+    expect(projects).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: optimistic.id })]),
+    );
+  });
+
+  it("replaces an optimistic task with the server identity after creation", async () => {
+    const client = apiStub();
+    client.projects.tasks.create.mockResolvedValue({
+      id: "task-created",
+      projectId: "project-1",
+      title: "Remote task",
+      status: "todo" as const,
+      createdBy: "user-1",
+      updatedAt: new Date("2026-09-02T00:00:00Z"),
+    });
+    const source = createProjectStudioRemoteAdapter({ client: client as never });
+    await source.hydrate();
+
+    const optimistic = source.createTask("project-1", "Remote task");
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const tasks = source.getSnapshot().tasks;
+    expect(tasks).toHaveLength(2);
+    expect(tasks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "task-created" })]),
+    );
+    expect(tasks).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: optimistic.id })]),
+    );
   });
 });
 
@@ -291,7 +390,7 @@ describe("remote asset uploads", () => {
     await source.hydrate();
     await expect(
       source.uploadAsset!("project-1", new File([new Uint8Array(512 * 1024 + 1)], "large.bin")),
-    ).rejects.toThrow("512 KB");
+    ).rejects.toMatchObject({ code: "ASSET_TOO_LARGE", values: { maxBytes: 512 * 1024 } });
     expect(client.workspace.assets.create).not.toHaveBeenCalled();
   });
 });

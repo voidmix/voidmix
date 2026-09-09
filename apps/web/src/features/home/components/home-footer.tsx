@@ -1,4 +1,4 @@
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Logo } from "@voidmix/ui/logo";
 
 export function HomeFooter({ sidebarCollapsed = false }: { sidebarCollapsed?: boolean }) {

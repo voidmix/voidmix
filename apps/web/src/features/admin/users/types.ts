@@ -1,5 +1,10 @@
 export type UserRole = "owner" | "admin" | "user";
 export type UserStatus = "active" | "suspended";
+export type AdminUsersError = "directoryLoadFailed";
+
+export type AdminLastActive =
+  | { kind: "connected" }
+  | { kind: "relative"; value: number; unit: "second" | "minute" | "hour" | "day" };
 
 export interface AdminUser {
   id: string;
@@ -7,8 +12,8 @@ export interface AdminUser {
   email: string;
   role: UserRole;
   status: UserStatus;
-  lastActive: string;
-  joinedAt: string;
+  lastActive: AdminLastActive;
+  joinedAt: Date | null;
 }
 
 export interface UserListInput {

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   Dialog,
@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { ProjectStudioShell } from "../projects/components/studio-shell";
 import { useProjectStudioData } from "../projects/studio-data";
 import { studioLabelClass } from "../projects/studio-styles";
+import { displayProjectName, displayTaskTitle } from "../projects/preview-copy";
 import { RunTimeline } from "./run-timeline";
 import { runPreview } from "./preview-runner";
 
@@ -45,6 +46,7 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
         />
       </ProjectStudioShell>
     );
+  const projectName = displayProjectName(project, t);
   const task = snapshot.tasks.find(
     (item) => item.id === session.taskId && item.projectId === projectId,
   );
@@ -67,18 +69,21 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
     queueMicrotask(() => confirmInvoker.current?.isConnected && confirmInvoker.current.focus());
   }
   return (
-    <ProjectStudioShell title={`${project.name} / Pi`} projectSearch={{ tab: "pi", filter: "all" }}>
+    <ProjectStudioShell
+      title={`${projectName} / ${t("pi")}`}
+      projectSearch={{ tab: "pi", filter: "all" }}
+    >
       <Link
         to="/projects/$projectId"
         params={{ projectId }}
         search={{ tab: "pi", filter: "all" }}
         className="mb-6 inline-block text-xs text-muted-foreground"
       >
-        ← {project.name}
+        ← {projectName}
       </Link>
       <PageHeader
-        title={`Pi / ${t("session")}`}
-        description={project.name}
+        title={`${t("pi")} / ${t("session")}`}
+        description={projectName}
         action={
           <StatusBadge
             label={t(session.status)}
@@ -130,7 +135,9 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
             <h2 className="text-sm font-medium">{t("runResult")}</h2>
             <StatusBadge label={t("completed")} tone="complete" />
           </div>
-          <p className="my-4 text-sm leading-7 [overflow-wrap:anywhere]">{task.title}</p>
+          <p className="my-4 text-sm leading-7 [overflow-wrap:anywhere]">
+            {displayTaskTitle(task, t)}
+          </p>
           <p className="mb-4 text-xs text-muted-foreground">{t("completeStep")}</p>
           <div className="flex flex-wrap items-center gap-4">
             <Link
@@ -170,7 +177,7 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
             submitLabel={t(session.status === "failed" ? "retry" : "run")}
             context={
               <span>
-                {project.name} · {t("preview")}
+                {projectName} · {t("preview")}
               </span>
             }
           />

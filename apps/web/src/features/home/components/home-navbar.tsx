@@ -1,6 +1,6 @@
 import { MagnifyingGlass, SidebarSimple } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 
@@ -20,6 +20,7 @@ export function HomeNavbar({
   onOpenOverlay?: (state: Exclude<DemoOverlayState, null>) => void;
 }) {
   const t = useTranslations("home");
+  const authT = useTranslations("auth");
 
   return (
     <header className="relative w-full border-b border-border bg-card">
@@ -44,7 +45,7 @@ export function HomeNavbar({
         ) : (
           <div className="flex min-w-0 items-center gap-3">
             <Link
-              aria-label="Voidmix home"
+              aria-label={authT("homeLabel")}
               className="inline-flex h-9 shrink-0 items-center rounded-lg px-1.5 text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 max-[380px]:[&_[data-slot=logo]>span]:sr-only"
               to="/"
             >

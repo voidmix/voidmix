@@ -9,15 +9,15 @@ import {
   Stack,
 } from "@phosphor-icons/react";
 import { Link, Outlet } from "@tanstack/react-router";
-import { useLocale, useSetLocale, useTranslations } from "@voidmix/i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
 import { AccountControl } from "./account-control";
+import { useDesktopTranslations, useLocale, useSetLocale } from "../../i18n/client";
 
 function WindowActions() {
-  const t = useTranslations("common");
+  const t = useDesktopTranslations("common");
   const [message, setMessage] = useState("");
 
   async function handleHide() {
@@ -48,7 +48,7 @@ function WindowActions() {
 }
 
 export function DesktopShell() {
-  const t = useTranslations("common");
+  const t = useDesktopTranslations("common");
   const locale = useLocale();
   const setLocale = useSetLocale();
   const navigation = [
@@ -119,7 +119,7 @@ export function DesktopShell() {
             onClick={() => void setLocale(locale === "en" ? "zh" : "en").catch(() => undefined)}
             title={t("language")}
           >
-            {locale === "en" ? "中文" : "EN"}
+            {t(locale === "en" ? "chinese" : "english")}
           </Button>
           <WindowActions />
         </header>

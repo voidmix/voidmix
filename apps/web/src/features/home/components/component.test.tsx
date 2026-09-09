@@ -106,6 +106,12 @@ vi.mock("@voidmix/i18n/client", () => ({
       workspaceSignal: "Workspace signal",
       you: "You",
     })[key] ?? key,
+  useFormatter: () => ({
+    dateTime: (value: Date | number) => String(value),
+    list: (value: Iterable<string>) => [...value].join(", "),
+    number: (value: bigint | number) => String(value),
+    relativeTime: (value: number, unit: string) => `${value} ${unit}`,
+  }),
 }));
 
 vi.mock("../../../components/language-switcher", () => ({
@@ -285,8 +291,18 @@ describe("workspace launcher", () => {
 
 describe("chat workspace", () => {
   const messages: readonly ChatMessage[] = [
-    { id: "user-0", role: "user", content: "What is blocked?", timestamp: "Now" },
-    { id: "assistant-0", role: "assistant", content: "The color pass.", timestamp: "Preview" },
+    {
+      id: "user-0",
+      role: "user",
+      content: "What is blocked?",
+      timestamp: { createdAt: "2026-09-06T08:00:00.000Z", kind: "now" },
+    },
+    {
+      id: "assistant-0",
+      role: "assistant",
+      content: "The color pass.",
+      timestamp: { createdAt: "2026-09-06T08:01:00.000Z", kind: "preview" },
+    },
   ];
 
   it("renders the full workbench from a local chat session", () => {

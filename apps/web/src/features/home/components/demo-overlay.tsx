@@ -1,5 +1,5 @@
 import { X, ArrowRight, Check, Gear, MagnifyingGlass, UsersThree } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useEffect, useRef } from "react";
 import { signals, type SignalItem } from "../data";
@@ -19,6 +19,7 @@ export function DemoOverlay({
   onComplete?: (item: SignalItem) => void;
 }) {
   const t = useTranslations("home");
+  const commonT = useTranslations("common");
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!state) return;
@@ -106,7 +107,7 @@ export function DemoOverlay({
         ) : state.kind === "workspace" ? (
           <div className="mt-6 grid gap-3">
             <div className="rounded-md border border-primary bg-primary/5 p-4">
-              <strong>Northstar Workspace</strong>
+              <strong>{t("northstarWorkspace")}</strong>
               <p className="mt-1 text-sm text-muted-foreground">{t("workspaceSummary")}</p>
             </div>
             <p className="text-sm text-muted-foreground">{t("sampleOnly")}</p>
@@ -118,11 +119,11 @@ export function DemoOverlay({
             <p className="text-muted-foreground">{t("settingsDescription")}</p>
             <div className="flex justify-between border-t border-border pt-3">
               <span>{t("preferencesLanguage")}</span>
-              <span className="text-muted-foreground">English</span>
+              <span className="text-muted-foreground">{commonT("english")}</span>
             </div>
             <div className="flex justify-between border-t border-border pt-3">
               <span>{t("preferencesTheme")}</span>
-              <span className="text-muted-foreground">System</span>
+              <span className="text-muted-foreground">{commonT("themeSystem")}</span>
             </div>
           </div>
         )}
@@ -170,7 +171,7 @@ function ItemPanel({
       <div className="mt-5 grid gap-2 border-y border-border py-4 text-xs">
         <div className="flex justify-between">
           <span>{t("ownerLabel")}</span>
-          <strong>{item.owner}</strong>
+          <strong>{item.ownerKey ? t(item.ownerKey) : item.owner}</strong>
         </div>
         <div className="flex justify-between">
           <span>{t("projectUpdated")}</span>

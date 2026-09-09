@@ -8,7 +8,7 @@ import {
 } from "@voidmix/ui/components/ui/dialog";
 import type { ReactElement } from "react";
 
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { AuthForm } from "../../auth/auth-form";
 
 export function LoginDialog({

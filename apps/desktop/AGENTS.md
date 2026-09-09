@@ -57,7 +57,9 @@ src-tauri/
   refreshes it during `dev` or `build` and owns the Register footer.
 - `routes/__root.tsx` owns the static HTML document, stylesheet link, locale
   bootstrap, and DesktopShell layout. The build-time shell starts in English;
-  hydration reads localStorage and `navigator.language` before normal use.
+  hydration reads localStorage and `navigator.language`, then applies the
+  preference through the shared provider. Storage or document-sync failures do
+  not make the renderer unusable.
 - Desktop Start has no runtime server. RSC stays disabled, and Desktop route
   modules must not add server functions or server routes. Backend behavior
   remains behind `@voidmix/client` and the configured cloud origin.
@@ -79,6 +81,14 @@ src-tauri/
   rather than silent.
 - `lib/cloud/source.ts` selects between the remote and demo adapters; pages must
   consume `loadCloudSnapshot()` and never implement transport or fallback logic.
+- Preview project and asset fixtures contain locale keys and native values
+  (`Date`, byte counts, stages, and task counts), never already translated
+  display strings. Translate preview labels at the component boundary while
+  preserving real filenames, cloud names, and other user content verbatim.
+- Remote cloud adapters validate dates, counts, byte units, and job/device
+  discriminants before data reaches a page. Keep display formatting locale-aware
+  at render time and reject malformed snapshots instead of showing guessed
+  values.
 - Primary navigation uses Home, Projects, Library, Activity, and Settings.
   Devices remains reachable from Settings and is not a primary destination.
   Project and Library pages use `src/lib/project-studio.ts` for the shared API
@@ -99,6 +109,7 @@ src-tauri/
 bun run --cwd apps/desktop build          # refreshes routeTree.gen.ts and SPA shell
 bun run --cwd apps/desktop check          # runs both typecheck passes
 bun run --cwd apps/desktop test
+bun run i18n:check
 bun run desktop:build
 
 cd apps/desktop/src-tauri                 # for any Rust change

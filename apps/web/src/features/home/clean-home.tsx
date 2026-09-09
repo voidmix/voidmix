@@ -1,6 +1,6 @@
 import { ArrowRight, ArrowUpRight, FileText, ListChecks, ChatCircle } from "@phosphor-icons/react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { CommandInput } from "@voidmix/ui/command-input";
 import { EmptyState } from "@voidmix/ui/empty-state";
@@ -11,6 +11,7 @@ import { ActivityList } from "../projects/components/activity-list";
 import { ProjectStudioShell } from "../projects/components/studio-shell";
 import { useProjectStudioData } from "../projects/studio-data";
 import { studioContextSelectClass, studioProjectGridClass } from "../projects/studio-styles";
+import { displayProjectName, displayTaskOwner, displayTaskTitle } from "../projects/preview-copy";
 
 export function CleanHome() {
   const t = useTranslations("workspaceUi");
@@ -64,7 +65,7 @@ export function CleanHome() {
               >
                 {home.projects.map((project) => (
                   <option key={project.id} value={project.id}>
-                    {project.name}
+                    {displayProjectName(project, t)}
                   </option>
                 ))}
               </select>
@@ -116,10 +117,15 @@ export function CleanHome() {
                     {task.status === "blocked" ? "!" : "○"}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{task.title}</p>
+                    <p className="truncate text-sm font-medium">{displayTaskTitle(task, t)}</p>
                     <p className="mt-1 truncate text-xs text-muted-foreground">
-                      {snapshot.projects.find((project) => project.id === task.projectId)?.name} ·{" "}
-                      {task.owner}
+                      {(() => {
+                        const project = snapshot.projects.find(
+                          (item) => item.id === task.projectId,
+                        );
+                        return project ? displayProjectName(project, t) : "";
+                      })()}{" "}
+                      · {displayTaskOwner(task, t)}
                     </p>
                   </div>
                   <StatusBadge

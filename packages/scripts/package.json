@@ -15,6 +15,7 @@
     "deps:update": "vmx deps update",
     "skills:update": "vmx skills update",
     "policy": "vmx policy",
+    "i18n:check": "vmx i18n",
     "clean": "vmx clean",
     "clean:all": "vmx clean --dependencies",
     "clean:bun-cache": "vmx clean --bun-cache",

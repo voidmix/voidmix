@@ -8,6 +8,7 @@ export function isLocale(value: string): value is Locale {
 export function normalizeLocale(value: string | null | undefined): Locale | undefined {
   if (!value) return undefined;
   const normalized = value.trim().replaceAll("_", "-");
+  if (!normalized) return undefined;
   const language = normalized.split("-")[0]?.toLowerCase();
   return language && isLocale(language) ? language : undefined;
 }

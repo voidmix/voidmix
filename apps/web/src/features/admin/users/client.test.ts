@@ -70,7 +70,7 @@ describe("admin users client fallback", () => {
 
     await expect(
       adminUsersClient.updateUserStatus({ userId: "missing", status: "suspended" }),
-    ).rejects.toThrow("User not found");
+    ).rejects.toMatchObject({ code: "USER_NOT_FOUND" });
     expect(mocks.error).toHaveBeenCalledWith({
       event: "admin.users.update.failed",
       reason: "user_not_found",

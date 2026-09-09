@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@voidmix/ui/components/ui/button";
+import { useFormatter, useTranslations } from "../../../i18n/client";
 
 import { adminUsersClient, type AdminUsersClient } from "./client";
 import { DirectoryToolbar } from "./directory-toolbar";
 import { MetricGrid } from "./metric-grid";
 import { useAdminUsers } from "./use-admin-users";
 import { UserTable } from "./user-table";
+import {
+  formatAdminJoinedAt,
+  formatAdminLastActive,
+  formatAdminRole,
+  formatAdminStatus,
+} from "./display";
 
 export function UserDirectory({ client = adminUsersClient }: { client?: AdminUsersClient } = {}) {
   const usersState = useAdminUsers(client);
+  const t = useTranslations("admin");
+  const formatter = useFormatter();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [pendingIds, setPendingIds] = useState<Set<string>>(() => new Set());
   const [notice, setNotice] = useState<string | null>(null);
@@ -40,9 +49,9 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
     try {
       const nextStatus = user.status === "suspended" ? "active" : "suspended";
       await usersState.toggleSuspension(user);
-      setNotice(`${user.name} is now ${nextStatus}.`);
+      setNotice(t("userStatusChanged", { name: user.name, status: nextStatus }));
     } catch {
-      setNotice(`Could not update ${user.name}. Try again.`);
+      setNotice(t("userUpdateFailed", { name: user.name }));
     } finally {
       setPendingIds((current) => {
         const next = new Set(current);
@@ -54,13 +63,13 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
 
   async function updateSelected(status: "active" | "suspended") {
     if (actionableUsers.length === 0) {
-      setNotice("The owner account cannot be changed.");
+      setNotice(t("ownerCannotChange"));
       return;
     }
 
     const targets = actionableUsers.filter((user) => user.status !== status);
     if (targets.length === 0) {
-      setNotice(`Selected users are already ${status}.`);
+      setNotice(t("selectedAlready", { status }));
       return;
     }
 
@@ -79,25 +88,25 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
     setSelectedIds(new Set());
     setNotice(
       failed === 0
-        ? `${succeeded} user${succeeded === 1 ? "" : "s"} updated to ${status}.`
-        : `${succeeded} updated, ${failed} could not be changed.`,
+        ? t("usersUpdated", { count: succeeded, status })
+        : t("usersPartiallyUpdated", { succeeded, failed }),
     );
   }
 
   function exportVisibleUsers() {
     if (usersState.users.length === 0) {
-      setNotice("There are no users in this view to export.");
+      setNotice(t("noUsersToExport"));
       return;
     }
 
-    const header = ["Name", "Email", "Role", "Status", "Last active", "Joined"];
+    const header = [t("user"), t("email"), t("role"), t("status"), t("lastActive"), t("joined")];
     const rows = usersState.users.map((user) => [
       user.name,
       user.email,
-      user.role,
-      user.status,
-      user.lastActive,
-      user.joinedAt,
+      formatAdminRole(user.role, t),
+      formatAdminStatus(user.status, t),
+      formatAdminLastActive(user.lastActive, t, formatter),
+      formatAdminJoinedAt(user.joinedAt, formatter, t("notAvailable")),
     ]);
     const csv = [header, ...rows]
       .map((row) => row.map((value) => `"${value.replaceAll('"', '""')}"`).join(","))
@@ -109,9 +118,7 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
     link.href = url;
     link.click();
     URL.revokeObjectURL(url);
-    setNotice(
-      `${usersState.users.length} user${usersState.users.length === 1 ? "" : "s"} exported.`,
-    );
+    setNotice(t("usersExported", { count: usersState.users.length }));
   }
 
   return (
@@ -131,9 +138,9 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
         {selectedIds.size > 0 ? (
           <div className="flex min-h-12 flex-wrap items-center gap-2 border-b bg-muted/30 px-4 py-2">
             <span className="mr-auto text-xs font-medium">
-              {selectedIds.size} selected
+              {t("selectedCount", { count: selectedIds.size })}
               {selectedUsers.some((user) => user.role === "owner") ? (
-                <span className="ml-2 text-muted-foreground">Owner stays protected</span>
+                <span className="ml-2 text-muted-foreground">{t("ownerProtected")}</span>
               ) : null}
             </span>
             <Button
@@ -142,7 +149,7 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
               size="sm"
               variant="outline"
             >
-              Suspend selected
+              {t("suspendSelected")}
             </Button>
             <Button
               disabled={pendingIds.size > 0 || actionableUsers.length === 0}
@@ -150,10 +157,10 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
               size="sm"
               variant="outline"
             >
-              Activate selected
+              {t("activateSelected")}
             </Button>
             <Button onClick={() => setSelectedIds(new Set())} size="sm" variant="ghost">
-              Clear
+              {t("clear")}
             </Button>
           </div>
         ) : null}
@@ -161,10 +168,10 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
         {usersState.error ? (
           <div className="flex items-center justify-between gap-3 border-b bg-muted/40 px-4 py-3 text-sm">
             <p className="m-0" role="alert">
-              {usersState.error}
+              {t(usersState.error)}
             </p>
             <Button onClick={usersState.retry} size="sm" variant="outline">
-              Retry
+              {t("retry")}
             </Button>
           </div>
         ) : null}
@@ -179,11 +186,8 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
           users={usersState.users}
         />
         <footer className="flex min-h-14 items-center justify-between gap-3 border-t px-4 font-mono text-[0.7rem] text-muted-foreground max-[480px]:items-start max-[480px]:py-3">
-          <span>
-            Showing {usersState.users.length} matching user
-            {usersState.users.length === 1 ? "" : "s"}
-          </span>
-          <span className="text-right">Results are limited to the current view</span>
+          <span>{t("showingUsers", { count: usersState.users.length })}</span>
+          <span className="text-right">{t("resultsLimited")}</span>
         </footer>
         {notice ? (
           <p aria-live="polite" className="m-0 border-t px-4 py-2 text-xs text-muted-foreground">

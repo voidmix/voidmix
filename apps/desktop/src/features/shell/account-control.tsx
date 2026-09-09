@@ -1,11 +1,11 @@
 import { UserCircle } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useDesktopTranslations } from "../../i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
 import { useEffect, useState } from "react";
 import { loadAccount, type AccountState } from "../../lib/account";
 
 export function AccountControl() {
-  const t = useTranslations("common");
+  const t = useDesktopTranslations("common");
   const [account, setAccount] = useState<AccountState>({ status: "loading" });
 
   useEffect(() => {

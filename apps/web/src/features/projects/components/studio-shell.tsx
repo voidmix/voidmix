@@ -7,7 +7,7 @@ import {
   SidebarSimple,
 } from "@phosphor-icons/react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   Dialog,
@@ -27,6 +27,7 @@ import type { ProjectTab, TaskFilter } from "../types";
 import { useProjectStudioData } from "../studio-data";
 import { studioInputClass, studioLabelClass, studioSearchRowClass } from "../studio-styles";
 import { toggleProjectStudioShell, useProjectStudioShellCollapsed } from "../studio-shell-store";
+import { displayProjectName, displayTaskTitle } from "../preview-copy";
 
 export function ProjectStudioShell({
   children,
@@ -75,9 +76,11 @@ export function ProjectStudioShell({
   }, []);
   const matches = (value: string) =>
     value.toLocaleLowerCase().includes(query.toLocaleLowerCase().trim());
-  const projects = snapshot.projects.filter((project) => matches(project.name));
+  const projects = snapshot.projects.filter((project) => matches(displayProjectName(project, t)));
   const tasks = snapshot.tasks
-    .filter((task) => (panel === "notifications" ? task.status === "blocked" : matches(task.title)))
+    .filter((task) =>
+      panel === "notifications" ? task.status === "blocked" : matches(displayTaskTitle(task, t)),
+    )
     .slice(0, 10);
   const sessions = snapshot.sessions.filter((item) => matches(item.prompt)).slice(-5);
   const pages = (
@@ -168,7 +171,7 @@ export function ProjectStudioShell({
                 <span aria-hidden="true" className="text-muted-foreground">
                   ⌑
                 </span>
-                <span className="truncate">{project.name}</span>
+                <span className="truncate">{displayProjectName(project, t)}</span>
               </Link>
             ))}
         </div>
@@ -357,7 +360,7 @@ export function ProjectStudioShell({
                       search={{ tab: "overview", filter: "all" }}
                       className={studioSearchRowClass}
                     >
-                      {project.name}
+                      {displayProjectName(project, t)}
                     </Link>
                   ))}
                 </>
@@ -372,7 +375,7 @@ export function ProjectStudioShell({
                   search={{ tab: "tasks", filter: "all" }}
                   className={studioSearchRowClass}
                 >
-                  {task.title}
+                  {displayTaskTitle(task, t)}
                 </Link>
               ))}
               {panel === "search" ? (

@@ -1,5 +1,5 @@
 import { Desktop, Moon, Sun } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../i18n/client";
 import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -28,9 +28,7 @@ export function ThemeMenuItems() {
         return (
           <DropdownMenuRadioItem key={option.value} value={option.value}>
             <Icon aria-hidden="true" />
-            {t(
-              `theme${option.value === "light" ? "Light" : option.value === "dark" ? "Dark" : "System"}`,
-            )}
+            {t(option.labelKey)}
           </DropdownMenuRadioItem>
         );
       })}

@@ -1,8 +1,4 @@
-import {
-  getLocaleCookie,
-  serializeLegacyLocaleCookieRemoval,
-  serializeLocaleCookie,
-} from "../cookie.js";
+import { getLocaleCookie, serializeLocaleCookie } from "../cookie.js";
 import { LOCALE_STORAGE_KEY } from "../constants.js";
 import { normalizeLocale } from "../normalize.js";
 import type { LocaleStorage } from "../types.js";
@@ -11,13 +7,20 @@ export function createBrowserLocaleStorage(): LocaleStorage {
   return {
     read() {
       if (typeof document === "undefined") return undefined;
-      return getLocaleCookie(document.cookie);
+      try {
+        return getLocaleCookie(document.cookie);
+      } catch {
+        return undefined;
+      }
     },
     write(locale) {
       if (typeof document === "undefined") return;
-      const secure = globalThis.location?.protocol === "https:";
-      document.cookie = serializeLocaleCookie(locale, { secure });
-      document.cookie = serializeLegacyLocaleCookieRemoval({ secure });
+      try {
+        const secure = globalThis.location?.protocol === "https:";
+        document.cookie = serializeLocaleCookie(locale, { secure });
+      } catch {
+        // Cookie access can be denied by browser privacy settings or a sandbox.
+      }
     },
   };
 }

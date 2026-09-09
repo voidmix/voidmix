@@ -1,9 +1,14 @@
 import { ArrowUpRight, Plus } from "@phosphor-icons/react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../../i18n/client";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { buttonVariants } from "@voidmix/ui/components/ui/button";
 
-import { navigation, workspacePlaceholders, type WorkspaceSectionId } from "../data";
+import {
+  navigation,
+  workspacePlaceholders,
+  type HomeMessageKey,
+  type WorkspaceSectionId,
+} from "../data";
 
 export function WorkspacePlaceholders({
   activeSection,
@@ -33,9 +38,9 @@ function WorkspacePlaceholder({
   launcher = false,
 }: {
   id: Exclude<WorkspaceSectionId, "overview">;
-  descriptionKey: string;
-  previewKey: string;
-  stateKey: string;
+  descriptionKey: HomeMessageKey;
+  previewKey: HomeMessageKey;
+  stateKey: HomeMessageKey;
   launcher?: boolean;
 }) {
   const t = useTranslations("home");
@@ -44,7 +49,8 @@ function WorkspacePlaceholder({
   if (!navigationItem) return null;
 
   const Icon = navigationItem.icon;
-  const resolvedPreviewKey = launcher && id === "projects" ? "projectsLauncherPreview" : previewKey;
+  const resolvedPreviewKey: HomeMessageKey =
+    launcher && id === "projects" ? "projectsLauncherPreview" : previewKey;
 
   return (
     <section

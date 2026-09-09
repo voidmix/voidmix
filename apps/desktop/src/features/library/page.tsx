@@ -1,12 +1,15 @@
 import { FileArrowUp, FileText, ImageSquare, MagnifyingGlass } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { loadLibrary, type PreviewAsset, type StudioLibrary } from "../../lib/project-studio";
+import { formatBytes } from "../../lib/cloud";
 
 export function LibraryPage() {
-  const t = useTranslations("library");
+  const t = useDesktopTranslations("library");
+  const projectT = useDesktopTranslations("projects");
+  const formatter = useFormatter();
   const [result, setResult] = useState<{
     status: "loading" | "preview" | "loaded" | "unavailable";
     data: StudioLibrary | readonly PreviewAsset[] | null;
@@ -15,13 +18,18 @@ export function LibraryPage() {
   useEffect(() => {
     void loadLibrary().then(setResult);
   }, []);
-  const assets = Array.isArray(result.data)
-    ? result.data.filter((asset) =>
-        `${asset.name} ${asset.detail}`.toLowerCase().includes(query.toLowerCase()),
+  const previewAssets = isPreviewAssets(result.data) ? result.data : null;
+  const loadedLibrary = result.data && !isPreviewAssets(result.data) ? result.data : null;
+  const assets = previewAssets
+    ? previewAssets.filter((asset) =>
+        `${asset.name} ${projectT(asset.projectTitleKey)}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
       )
-    : result.data && "assets" in result.data
-      ? result.data.assets
-      : [];
+    : (loadedLibrary?.assets.filter(
+        (asset) =>
+          asset.status === "active" && asset.path.toLowerCase().includes(query.toLowerCase()),
+      ) ?? []);
   return (
     <div className="page library-page">
       <PageHeader
@@ -47,23 +55,35 @@ export function LibraryPage() {
       </label>
       <div className={`data-source ${result.status === "loaded" ? "cloud" : "demo"}`} role="status">
         {result.status === "loading"
-          ? "Loading library…"
+          ? t("loading")
           : result.status === "preview"
-            ? "Preview data"
+            ? t("previewData")
             : result.status === "loaded"
-              ? "Cloud data"
-              : "Library data unavailable"}
+              ? t("cloudData")
+              : t("unavailable")}
       </div>
       {result.status === "unavailable" ? (
-        <p className="empty-copy">
-          Library data is unavailable. Check the API connection and try again.
-        </p>
+        <p className="empty-copy">{t("unavailableDescription")}</p>
       ) : (
         <section className="library-list" aria-label={t("assetList")}>
           {assets.map((asset) => {
-            const preview = "name" in asset;
-            const name = preview ? asset.name : asset.id;
-            const detail = preview ? asset.detail : `${asset.assetId} · ${asset.byteSize} bytes`;
+            const preview = isPreviewAsset(asset);
+            const name = preview ? asset.name : asset.path;
+            const currentVersion =
+              !preview && loadedLibrary
+                ? loadedLibrary.versions.find((version) => version.id === asset.headVersionId)
+                : undefined;
+            const detail = preview
+              ? t("previewFileDetail", {
+                  project: projectT(asset.projectTitleKey),
+                  size: formatBytes(asset.sizeBytes, formatter),
+                })
+              : currentVersion
+                ? t("fileDetail", {
+                    assetId: asset.id,
+                    size: formatBytes(currentVersion.byteSize, formatter),
+                  })
+                : t("fileDetailUnavailable", { assetId: asset.id });
             const type = preview ? asset.type : "file";
             return (
               <article className="library-row" key={asset.id}>
@@ -75,7 +95,7 @@ export function LibraryPage() {
                   <span>{detail}</span>
                 </div>
                 <span className="library-kind">
-                  {type === "brief" || type === "audio" || type === "video" ? t(type) : "Asset"}
+                  {type === "brief" || type === "audio" || type === "video" ? t(type) : t("asset")}
                 </span>
               </article>
             );
@@ -84,4 +104,16 @@ export function LibraryPage() {
       )}
     </div>
   );
+}
+
+function isPreviewAssets(
+  value: StudioLibrary | readonly PreviewAsset[] | null,
+): value is readonly PreviewAsset[] {
+  return Array.isArray(value);
+}
+
+function isPreviewAsset(
+  value: StudioLibrary["assets"][number] | PreviewAsset,
+): value is PreviewAsset {
+  return "name" in value;
 }
