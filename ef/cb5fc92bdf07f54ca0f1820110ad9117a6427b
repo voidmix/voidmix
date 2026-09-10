@@ -1,0 +1,25 @@
+packages/organization/src/server/index.ts
+  s_91db6c778ee124::t_2626428834ccfd 10
+packages/organization/src/rpc.ts
+  s_91db6c778ee124::t_a0d7212402e086 1
+packages/organization/package.json
+  s_91db6c778ee124::t_7758c1f1d2b3b9 10
+packages/organization/__tests__/router.test.ts
+  s_91db6c778ee124::t_0702c4f26f5fc8 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "efcb5fc92bdf07f54ca0f1820110ad9117a6427b",
+  "prompts": {},
+  "sessions": {
+    "s_91db6c778ee124": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a9f7bc7-cacb-4695-b3f7-3f8a707aa551",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

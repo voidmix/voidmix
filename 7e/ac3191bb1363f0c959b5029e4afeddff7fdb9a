@@ -1,0 +1,31 @@
+apps/web/messages/en.json
+  s_c39c5f4065a796::t_77ef784e98789e 83-84
+apps/web/messages/zh.json
+  s_c39c5f4065a796::t_43e3e2a3554734 83-84
+apps/web/src/features/chat/chat-shell.tsx
+  s_c39c5f4065a796::t_18179994c829b6 12,18
+apps/web/src/features/home/components/component.test.tsx
+  s_c39c5f4065a796::t_c294cb3eea4f6d 5,24-26,74-75,115,118-140
+apps/web/src/features/home/components/mobile-navigation.tsx
+  s_c39c5f4065a796::t_aadea5b582aaca 26-32,70-72,74-85,104,107,138
+apps/web/src/features/home/components/sidebar.tsx
+  s_c39c5f4065a796::t_cc80702da68860 17,20,99-115,118-137
+apps/web/src/features/home/components/workspace-layout.tsx
+  s_c39c5f4065a796::t_52d50df79fe898 2-3,31,33-34,46,53,56-63,65-74,76,79,82,84-86,88-106,109-110,113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "7eac3191bb1363f0c959b5029e4afeddff7fdb9a",
+  "prompts": {},
+  "sessions": {
+    "s_c39c5f4065a796": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05d22-87ae-7631-bfe0-93238149b194",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

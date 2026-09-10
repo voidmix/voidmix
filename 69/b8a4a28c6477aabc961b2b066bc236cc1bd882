@@ -1,0 +1,21 @@
+apps/web/Dockerfile
+  s_e83edb637e8c81::t_e065614f0207a1 40-46,48,51
+apps/admin/Dockerfile
+  s_e83edb637e8c81::t_fcf87838bc6fc5 40-46,48,51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "69b8a4a28c6477aabc961b2b066bc236cc1bd882",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

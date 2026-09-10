@@ -1,0 +1,21 @@
+bun.lock
+  s_4c374905db98d4::t_2851ddadbc3479 379,394,397,508,1024,1252,1414
+package.json
+  s_4c374905db98d4::t_eda0e3b1264818 35,40,55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "575569d2bd00231e302eaa0469b6ab79e64c9185",
+  "prompts": {},
+  "sessions": {
+    "s_4c374905db98d4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05ca3-abbe-7302-87bd-399d1d077d4a",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

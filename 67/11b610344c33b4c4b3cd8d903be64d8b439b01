@@ -1,0 +1,33 @@
+docs/architecture/decisions/0004-use-intl-static-catalogs.md
+  s_374685a980f535::t_f3fb82ab6adaa3 28-31
+packages/i18n/src/constants.ts
+  s_374685a980f535::t_f3fb82ab6adaa3 2-3,10
+packages/i18n/src/client.ts
+  s_374685a980f535::t_f3fb82ab6adaa3 12-16,52-54
+packages/i18n/src/cookie.ts
+  s_374685a980f535::t_f3fb82ab6adaa3 1-5,11-18,45-50,56
+  s_374685a980f535::t_9bff54a36830cb 51-55
+packages/i18n/src/index.test.ts
+  s_374685a980f535::t_f3fb82ab6adaa3 27,31-33
+  s_374685a980f535::t_2280b5e0d38662 34-35
+packages/i18n/src/client.test.tsx
+  s_374685a980f535::t_f3fb82ab6adaa3 83-84
+docs/architecture/applications.md
+  s_374685a980f535::t_f3fb82ab6adaa3 43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "6711b610344c33b4c4b3cd8d903be64d8b439b01",
+  "prompts": {},
+  "sessions": {
+    "s_374685a980f535": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03791-3b82-7542-9233-21f61af5cc7e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

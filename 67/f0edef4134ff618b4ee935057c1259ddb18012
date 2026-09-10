@@ -1,0 +1,81 @@
+packages/tooling/scripts/package.json
+  s_e83edb637e8c81::t_e0c700eda60d0a 10,12-15,23-24,29,31
+packages/tooling/scripts/src/operations/railway.ts
+  s_e83edb637e8c81::t_69e949bfce372f 4-5
+  s_e83edb637e8c81::t_edf7e1198f1e61 45
+packages/tooling/scripts/src/smoke-desktop-artifact.ts
+  s_e83edb637e8c81::t_fb169d5c283495 24,31
+  s_e83edb637e8c81::t_f2f11eefcae401 7-10
+pnpm-workspace.yaml
+  s_e83edb637e8c81::t_656cc471260004 103
+packages/tooling/scripts/src/skills.ts
+  s_e83edb637e8c81::t_4359794ebfaecb 49-51
+  s_e83edb637e8c81::t_a71f8de48938bc 8-10,25,29,33
+packages/tooling/scripts/src/release/production.ts
+  s_e83edb637e8c81::t_092a23937731f6 121,134,145-147,150,168
+  s_e83edb637e8c81::t_c0f82f3b7cf27b 1,8,12-16
+  s_e83edb637e8c81::t_4e461de6d32458 97-98
+  s_e83edb637e8c81::t_b0c38e33fb1f23 17
+packages/database/package.json
+  s_e83edb637e8c81::t_943423739e4076 26
+  s_e83edb637e8c81::t_0f775547150186 44
+packages/tooling/scripts/__tests__/hooks.test.ts
+  s_e83edb637e8c81::t_ac0e75cab89f28 75,77,83
+  s_e83edb637e8c81::t_b47b1894951b4c 58-60
+packages/tooling/scripts/src/cli.ts
+  s_e83edb637e8c81::t_2a01df7970f95a 102
+  s_e83edb637e8c81::t_9ae250d47f86fc 2-3
+  s_e83edb637e8c81::t_fbe5d400597ffe 1
+packages/tooling/scripts/src/release/railway.ts
+  s_e83edb637e8c81::t_dbd30dc01fe7e3 51-59,61-62
+  s_e83edb637e8c81::t_af8e44f5a462b1 77
+  s_e83edb637e8c81::t_ec1b58285a540e 1-2,4
+packages/tooling/scripts/src/operations/capacity.ts
+  s_e83edb637e8c81::t_5ac6c7fdf65f2f 1-2
+  s_e83edb637e8c81::t_cb21a0efffa15d 54
+packages/tooling/scripts/src/hooks/run.ts
+  s_e83edb637e8c81::t_9e1013001f74fe 54,57-64
+  s_e83edb637e8c81::t_9eaba6c2592c36 6-9,13-25
+  s_e83edb637e8c81::t_07b604692d1746 26
+packages/tooling/scripts/src/harness/doctor.ts
+  s_e83edb637e8c81::t_15b3e56b70a9b3 3,10-12,17,37-38,49-51,53-54,58-59,63,70,76
+packages/tooling/scripts/src/ci/affected.ts
+  s_e83edb637e8c81::t_6efd8b0b6d3dab 1-2
+  s_e83edb637e8c81::t_04d7e3102a1070 193-194
+  s_e83edb637e8c81::t_45ec80fa7c78fa 168-175,177-178
+  s_e83edb637e8c81::t_0ba95a54ac7085 43-49
+packages/tooling/scripts/src/hooks/guard-bash.ts
+  s_e83edb637e8c81::t_a91bbcd096249f 16,18-20,23
+packages/tooling/scripts/src/env.ts
+  s_e83edb637e8c81::t_48b32c0c9a3ebd 2,6
+  s_e83edb637e8c81::t_a2933b5b20be30 37-45
+packages/tooling/scripts/src/process.ts
+  s_e83edb637e8c81::t_7dd084a6265967 1-4
+packages/database/src/reset.ts
+  s_e83edb637e8c81::t_110e4b199eae9d 21,31,38
+  s_e83edb637e8c81::t_1f77f58a554933 1-2
+packages/cache/src/reset.ts
+  s_e83edb637e8c81::t_91dcbb222e830e 14,22
+  s_e83edb637e8c81::t_61e69e587e0c62 1-2
+packages/cache/package.json
+  s_e83edb637e8c81::t_5eb2df3a0c0e8d 25
+  s_e83edb637e8c81::t_7a2bfb1a1c7706 13
+pnpm-lock.yaml
+  s_e83edb637e8c81::t_90f792ecaaf7ea 249-251,305,308,317,326,386,417,429,432,435,469,472,512,515,524,561,576,591,594,597,619,622,625,628,640,646,652,664,733,755,770,782,785,788,840,889,911,936,964,997,1016,1031,1051-1053,1059,1075,1118,1156-1158,1164,1186,1217,1257,1260,1291,1300,1310,1350,1402,1433,1479,1525,1531,1544,1572,1587,1591-1593,1601-1603,1607-1609,1615,1640,1712,1745,1748,4682-4684,7679-7683,8951,8955,10123,10127,10129,10132,10134,10137,10148,10150-10151,10153,10159,10161,10165,10173,10177,10182,10184,10186-10187,10194,10196,10207,10210,10215,10284,10289,10328,10334,10410,10417,10446,10450,10454,10460,10533,10542,10546,10579,10586,10598,10602,10712,10722,10803-10804,10884,10887,10889,10893-10894,10901,10904,10910,10935,10941,10981,11002,11175,11195,11200,11697,11705,12385,12404,12616,12639,12650,12672,13211,13233,13360-13365,13430,13438,13495,13499-13500,13502,13508-13510,13512,13553,13555,13557,13560,13577,13582
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "67f0edef4134ff618b4ee935057c1259ddb18012",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

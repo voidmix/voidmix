@@ -1,0 +1,30 @@
+apps/web/src/routes/index.tsx
+  s_958590984c2116::t_8a868f3a920da2 197
+  s_958590984c2116::t_ac70eb7e35f6b0 161-162
+  s_958590984c2116::t_513f8e5826f190 166,170,183-184,187,193,196,198,200,205,211,219
+  s_958590984c2116::t_e8ec2bf829d610 4-16,50-53,206,217
+apps/web/e2e/home.spec.ts
+  s_958590984c2116::t_8a868f3a920da2 28,34,36,38,46
+  s_958590984c2116::t_513f8e5826f190 22,62,70
+  s_958590984c2116::t_07f9ed6ca56036 25
+apps/web/messages/en.json
+  s_958590984c2116::t_8a868f3a920da2 28-31,40-43
+apps/web/messages/zh.json
+  s_958590984c2116::t_8a868f3a920da2 28-31,40-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "630a97fc7379c3c409ff987841577734655c5c69",
+  "prompts": {},
+  "sessions": {
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

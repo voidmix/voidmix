@@ -1,0 +1,24 @@
+apps/admin/Dockerfile
+  s_4a3ad1ff241292::t_a1db462c4cc237 1-38
+apps/admin/railway.toml
+  s_4a3ad1ff241292::t_a1db462c4cc237 1-11
+README.md
+  s_4a3ad1ff241292::t_a1db462c4cc237 62,64,71-75,81-82,84,121
+  s_4a3ad1ff241292::t_a824e65a68f671 66-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.17",
+  "base_commit_sha": "bad98675c34c859e6cc0c1ecfed87c45f8f0518e",
+  "prompts": {},
+  "sessions": {
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

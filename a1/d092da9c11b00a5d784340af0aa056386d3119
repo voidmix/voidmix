@@ -1,0 +1,65 @@
+packages/credits/src/services/credits.ts
+  s_644e00651e10c2::t_dbee7620e178d6 2
+  s_644e00651e10c2::t_0b46a991eff8b5 1,4-9,12-13,18-33,35-44,46-52,54-66,68-75,77-83,85-97
+  s_644e00651e10c2::t_713ee73c453ee1 3,10-11,14-17,34,45,53,67,76,84
+packages/db/drizzle/20260727141317_glorious_multiple_man/snapshot.json
+  s_644e00651e10c2::t_89fee8e820b7b7 1-288
+packages/credits/src/env.ts
+  s_644e00651e10c2::t_4f43032c1a4ec7 1-7
+packages/credits/__tests__/services.test.ts
+  s_644e00651e10c2::t_22ce0be805ae99 1-62
+packages/credits/src/read-models.ts
+  s_644e00651e10c2::t_584b0e416d75c4 1-113
+  s_644e00651e10c2::t_a6d6e795af97f7 114-116
+packages/credits/src/errors.ts
+  s_644e00651e10c2::t_b5604f71db392c 1-10
+packages/credits/package.json
+  s_644e00651e10c2::t_beb444b4817749 18
+  s_644e00651e10c2::t_5459b820be2735 19
+  s_644e00651e10c2::t_6bd8ed11e7c003 1-17,20-28
+packages/auth/package.json
+  s_644e00651e10c2::t_064cca08cca593 15-16
+packages/db/src/schema/index.ts
+  s_644e00651e10c2::t_4fdb76f848274a 3
+packages/credits/src/server.ts
+  s_644e00651e10c2::t_0b1437737c5e20 1-15
+  s_644e00651e10c2::t_3af2317397a117 16-18
+packages/db/drizzle.config.ts
+  s_644e00651e10c2::t_87403d01924df9 5-7
+packages/db/src/schema/credits.ts
+  s_644e00651e10c2::t_e36d7c7d7a30d4 2-45
+  s_644e00651e10c2::t_e029855d14c261 1
+packages/db/src/client.ts
+  s_644e00651e10c2::t_7b3d7a41f13c3a 9-10
+packages/auth/src/server.ts
+  s_644e00651e10c2::t_c537a5e32b96de 6-8,38-55
+  s_644e00651e10c2::t_622ea6b1a61838 56-57
+packages/credits/tsconfig.json
+  s_644e00651e10c2::t_53d9b705283a44 1-8
+packages/credits/src/types.ts
+  s_644e00651e10c2::t_975b17f047c380 1-23
+packages/db/src/index.ts
+  s_644e00651e10c2::t_2c9717f21454de 2,4
+packages/db/drizzle/20260727141317_glorious_multiple_man/migration.sql
+  s_644e00651e10c2::t_89fee8e820b7b7 1-23
+packages/db/package.json
+  s_644e00651e10c2::t_f31e60f648b64e 19-20,24
+bun.lock
+  s_644e00651e10c2::t_7d284e53f1522e 136-137,167-184,192,196,1051-1052,1081-1082,1755-1756
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "a1d092da9c11b00a5d784340af0aa056386d3119",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

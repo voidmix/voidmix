@@ -1,0 +1,21 @@
+apps/web/Dockerfile
+  s_bd94372328216f::t_37910fe74e70b6 7-16,39
+apps/admin/Dockerfile
+  s_bd94372328216f::t_37910fe74e70b6 6-15,38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "134e7a5894e2e84ccdbb7acc0708c293f5c3ff76",
+  "prompts": {},
+  "sessions": {
+    "s_bd94372328216f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fca7e-212f-70a3-8983-460f2bcb5f92",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

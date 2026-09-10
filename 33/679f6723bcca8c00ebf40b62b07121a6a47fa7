@@ -1,0 +1,26 @@
+apps/admin/__tests__/server/request-handler.test.ts
+  s_24e0da68ceacce::t_85836bf5903ae7 59
+packages/api-server/__tests__/router.test.ts
+  s_24e0da68ceacce::t_dd9b37e9487e23 21,60-77
+  s_24e0da68ceacce::t_877cadf2cbb5ef 78-79
+apps/admin/__tests__/server/api/app.test.ts
+  s_24e0da68ceacce::t_56e2c393fd4253 11,16,84
+packages/health/src/rpc.ts
+  s_24e0da68ceacce::t_56e2c393fd4253 20-30,32-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "33679f6723bcca8c00ebf40b62b07121a6a47fa7",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

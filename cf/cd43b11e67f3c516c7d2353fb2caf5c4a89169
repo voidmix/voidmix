@@ -1,0 +1,26 @@
+packages/scripts/src/policy/tsconfig.ts
+  s_d21bbf6c4a4d17::t_8734e9674ad94f 1-162
+  s_d21bbf6c4a4d17::t_ba92194d6b02b0 163-164
+packages/scripts/src/policy/tsconfig.test.ts
+  s_d21bbf6c4a4d17::t_e2c7646483a154 1-138
+packages/scripts/src/policy/checks.ts
+  s_d21bbf6c4a4d17::t_2b433b67b3a339 386
+  s_d21bbf6c4a4d17::t_403d2d15fbb47e 147-176
+  s_d21bbf6c4a4d17::t_38f8d6308382fc 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "cfcd43b11e67f3c516c7d2353fb2caf5c4a89169",
+  "prompts": {},
+  "sessions": {
+    "s_d21bbf6c4a4d17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31f37d36-5bcd-4ca6-baf8-f8f473a64ae5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

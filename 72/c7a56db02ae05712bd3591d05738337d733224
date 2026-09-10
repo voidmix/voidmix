@@ -1,0 +1,19 @@
+apps/web/src/styles.css
+  s_7e3e0a5e104ebe::t_97fea78b6c1e0f 115-117,175-177,227-229,429-431,492-494
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "72c7a56db02ae05712bd3591d05738337d733224",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+apps/web/messages/zh.json
+  s_958590984c2116::t_b355b0a8cd597c 35-37
+apps/web/messages/en.json
+  s_958590984c2116::t_b355b0a8cd597c 35-37
+apps/web/src/routes/index.tsx
+  s_958590984c2116::t_4b1dead2111167 4,119
+  s_958590984c2116::t_dc34446a926e73 130,146,154
+  s_958590984c2116::t_b355b0a8cd597c 3,5,7-8,11,13-16,61,64,72-76,79-86,88-96,98-118,120-122,124-129,131-145,147-153,155-172,180,183,188-204,207-210,279-282
+  s_958590984c2116::t_44b48c675a706b 211-232,234-235,237-253,256-266,268-276
+apps/web/e2e/home.spec.ts
+  s_958590984c2116::t_b355b0a8cd597c 35
+.hallmark/log.json
+  s_958590984c2116::t_b355b0a8cd597c 3-10
+  s_958590984c2116::t_51291a2c03b7df 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "ed56df436ff46aefe0f25c8a3a513ffb13876864",
+  "prompts": {},
+  "sessions": {
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

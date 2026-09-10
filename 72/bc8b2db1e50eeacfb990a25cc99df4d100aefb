@@ -1,0 +1,37 @@
+apps/web/src/features/auth/feedback.test.ts
+  s_dd909d2597cf6a::t_e0226f03563c44 5-10,12-42,44-48,53-58,62-64
+apps/web/messages/zh.json
+  s_dd909d2597cf6a::t_fd115bb942e607 60-63
+apps/web/src/i18n/api-errors.ts
+  s_dd909d2597cf6a::t_762ba8316d967f 3-8,12-15,18-23,26-35,38
+apps/web/messages/en.json
+  s_dd909d2597cf6a::t_fd115bb942e607 60-63
+apps/web/src/features/auth/feedback.ts
+  s_dd909d2597cf6a::t_8e4b094c1c8cfd 1,4-5,10,13-19,31-43
+  s_dd909d2597cf6a::t_86b46201605fe6 44
+apps/web/src/features/auth/verify-email.tsx
+  s_dd909d2597cf6a::t_5788756970b954 9-11,17,45
+  s_dd909d2597cf6a::t_40aa9145726c8e 30
+apps/web/src/features/auth/reset-password.tsx
+  s_dd909d2597cf6a::t_5788756970b954 11-13,18,42
+  s_dd909d2597cf6a::t_40aa9145726c8e 55
+apps/web/src/features/auth/auth-form.tsx
+  s_dd909d2597cf6a::t_40aa9145726c8e 51
+  s_dd909d2597cf6a::t_5788756970b954 13,17,40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "72bc8b2db1e50eeacfb990a25cc99df4d100aefb",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

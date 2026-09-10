@@ -1,0 +1,40 @@
+apps/web/src/routes/__root.tsx
+  s_6c01f76afc71fd::t_22e3983ba3fe97 18,26-29
+  s_fa2f779883d7dd::t_7401943e96b33d 30
+packages/ui/src/components/logo.tsx
+  s_6c01f76afc71fd::t_8c2dfd38fd27d8 1-11,13-18,20-25,29,37-43
+  s_6c01f76afc71fd::t_a4fb4945c652cc 12,19,26-28,30-36
+apps/web/public/favicon.svg
+  s_6c01f76afc71fd::t_591f4c07ca710d 1-10
+packages/ui/src/index.ts
+  s_6c01f76afc71fd::t_e4e4bc02cc262a 2
+apps/web/src/routes/index.tsx
+  s_fa2f779883d7dd::t_4616c26c3cdc77 19-22
+  s_6c01f76afc71fd::t_0d4476bd2e6e55 2,15
+apps/web/public/logo.svg
+  s_6c01f76afc71fd::t_16d0b867d31248 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "1aff1c6689271753efde43e2a380c57f8fca424f",
+  "prompts": {},
+  "sessions": {
+    "s_6c01f76afc71fd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "44ca9663-0c7c-4258-b215-e1e0235e38b6",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_fa2f779883d7dd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f6a082b3-77e4-4f5e-87e1-597148e45e85",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

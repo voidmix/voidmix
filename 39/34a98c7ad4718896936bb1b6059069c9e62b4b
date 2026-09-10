@@ -1,0 +1,19 @@
+e2e/tests/admin.spec.ts
+  s_b8747202faa771::t_3a33e8c247b6bc 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "3934a98c7ad4718896936bb1b6059069c9e62b4b",
+  "prompts": {},
+  "sessions": {
+    "s_b8747202faa771": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a602231-b45b-4d96-9535-ee66ca9b7d67",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

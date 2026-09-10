@@ -1,0 +1,37 @@
+packages/scripts/src/policy/workspaces.ts
+  s_7e3e0a5e104ebe::t_85803ab9f53a17 10-33
+  s_7e3e0a5e104ebe::t_4031371481b256 9
+skills/voidmix-infra/SKILL.md
+  s_7e3e0a5e104ebe::t_7c5a78307674db 55-59
+packages/scripts/src/policy/checks.ts
+  s_7e3e0a5e104ebe::t_11c946edc03954 6,36-37,260,262,270
+packages/scripts/src/policy/workspaces.test.ts
+  s_7e3e0a5e104ebe::t_90b5377c3d9d86 94-124
+  s_7e3e0a5e104ebe::t_bdeb3309b1fd5c 3-7
+docs/architecture/decisions/0003-three-skill-discovery-roots.md
+  s_7e3e0a5e104ebe::t_b841cedfaadfae 1-59
+docs/architecture/tooling.md
+  s_7e3e0a5e104ebe::t_129995008ba7f8 136-144
+AGENTS.md
+  s_7e3e0a5e104ebe::t_81350c44129574 33-35
+packages/scripts/src/policy/runtime.ts
+  s_7e3e0a5e104ebe::t_11c946edc03954 59-61,63,71-74,77,89-90,93,96-98,133
+docs/architecture/decisions/README.md
+  s_7e3e0a5e104ebe::t_763434f2714685 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "281f27302da17e7cd5bc24df20d59555dae20479",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

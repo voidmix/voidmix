@@ -1,0 +1,27 @@
+apps/admin/vite.config.ts
+  s_24e0da68ceacce::t_a1a44d02f6dbdd 1-2,4,19,39
+packages/i18n/__tests__/compiler.test.ts
+  s_24e0da68ceacce::t_53ffac5c1b7645 33
+  s_24e0da68ceacce::t_a10147649815dc 141
+  s_24e0da68ceacce::t_cc620034370354 139-140,142
+packages/i18n/src/build/paraglide/compiler/output-structure/message-modules.ts
+  s_24e0da68ceacce::t_cc620034370354 41-42
+apps/admin/project.inlang/settings.json
+  s_24e0da68ceacce::t_a2c2b08af40dcf 6-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "d24f565e60f8264ad1081a75dfd133eadbcadb6b",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

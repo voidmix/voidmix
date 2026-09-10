@@ -1,0 +1,85 @@
+packages/tooling/scripts/__tests__/ci-affected.test.ts
+  s_958590984c2116::t_7b745d00b8b1a8 3
+  s_958590984c2116::t_2406a43448a0e9 41-45
+  s_958590984c2116::t_0e2cbdf81fb744 1-2,4-40,46-100
+apps/web/playwright.config.ts
+  s_958590984c2116::t_2b98de1c508758 5-8,19-39,41
+apps/admin/vite.config.ts
+  s_958590984c2116::t_df4e64b5d736c0 22-25,28-30
+  s_958590984c2116::t_e22f6f7e5ce5a7 26
+  s_958590984c2116::t_b2a1c8a5fd3dc9 27
+apps/web/vite.config.ts
+  s_958590984c2116::t_b2a1c8a5fd3dc9 23
+  s_958590984c2116::t_df4e64b5d736c0 19-22,24-26
+packages/tooling/scripts/src/cli.ts
+  s_958590984c2116::t_0e2cbdf81fb744 47-55
+  s_b3b2965ea3ac2a::t_6ccb207007f381 46
+.github/workflows/ci.yml
+  s_958590984c2116::t_d766f846156f7b 21-41,51-55,57,67-72,74-76,80-81,84-86,116-120,122,136-198,200,204-211,214-219,224
+  s_958590984c2116::t_52946952ed0caf 58-60,123-125,201-203
+  s_958590984c2116::t_ddb79ea71eb75d 56,121,199
+  s_958590984c2116::t_df4e64b5d736c0 134,212
+apps/web/e2e/home.spec.ts
+  s_958590984c2116::t_d57513d5d4c629 62,64-66,93-96,99,101-104,106-109
+  s_958590984c2116::t_b4d2c703bc6a8e 90
+  s_958590984c2116::t_97cc511efd7538 1-3,8
+  s_958590984c2116::t_2b98de1c508758 63,98
+  s_958590984c2116::t_bef031f7e1c4b6 4-7,9-13,39,59,91-92
+  s_958590984c2116::t_3ed6c8c9a9ed79 97
+apps/web/e2e/auth.setup.ts
+  s_958590984c2116::t_d57513d5d4c629 6,8-10,12-15,17,22
+  s_958590984c2116::t_18869b9c34f905 11,18-20
+  s_958590984c2116::t_2b98de1c508758 1-5,7,16,21,23
+.gitignore
+  s_958590984c2116::t_0e2cbdf81fb744 41
+  s_958590984c2116::t_5661abb739c75c 42
+apps/web/src/components/user-menu.tsx
+  s_958590984c2116::t_cfe67672c5df8d 136-138
+packages/tooling/scripts/src/ci/affected.ts
+  s_958590984c2116::t_a18ed5440eedcc 233
+  s_958590984c2116::t_0e2cbdf81fb744 1-40,42-168,172-177,181-232,234-270
+  s_958590984c2116::t_7b745d00b8b1a8 41,169-171,178-180
+apps/web/e2e/auth.ts
+  s_958590984c2116::t_2ab76a6e5fe8e7 10
+  s_958590984c2116::t_2b98de1c508758 1-2,4-8
+  s_958590984c2116::t_fa35e2e16680f4 3
+  s_958590984c2116::t_d57513d5d4c629 9
+apps/web/e2e/auth.spec.ts
+  s_958590984c2116::t_2b98de1c508758 1-12,23
+  s_958590984c2116::t_cda87324cad607 13-22
+apps/admin/playwright.config.ts
+  s_958590984c2116::t_75ad6f289128e6 17
+  s_085be37978d557::t_2c46c04dbe0e6e 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c9dee78527351866de12e75c7991224522afa29d",
+  "prompts": {},
+  "sessions": {
+    "s_085be37978d557": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fd12b-bb7e-7753-9521-b74848295afc",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_b3b2965ea3ac2a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fd117-d83a-7ea1-a7f2-730e633d1352",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

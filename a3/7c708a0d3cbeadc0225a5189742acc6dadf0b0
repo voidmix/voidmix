@@ -1,0 +1,21 @@
+packages/i18n/package.json
+  s_17dbe15deaa4ec::t_afc774c216aabe 21
+packages/i18n/src/cli.ts
+  s_17dbe15deaa4ec::t_833c01cd58ed99 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "a37c708a0d3cbeadc0225a5189742acc6dadf0b0",
+  "prompts": {},
+  "sessions": {
+    "s_17dbe15deaa4ec": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a036ab-5b5e-73c3-9377-ad878a13346e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

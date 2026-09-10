@@ -1,0 +1,51 @@
+packages/database/__tests__/query.test.ts
+  s_24e0da68ceacce::t_9862e7a9049584 3-5
+apps/admin/src/lib/rpc.ts
+  s_24e0da68ceacce::t_75242cfd46b6de 5,37
+  s_24e0da68ceacce::t_701303ab2cea68 3,6,12,14-15,18,20-21,27-34,38
+  s_24e0da68ceacce::t_783ea0126d48bd 35
+packages/database/src/query.ts
+  s_24e0da68ceacce::t_9862e7a9049584 4
+apps/admin/src/lib/admin-route-context.ts
+  s_24e0da68ceacce::t_701303ab2cea68 8-10,13-16,20-21
+  s_24e0da68ceacce::t_75242cfd46b6de 5,12
+  s_24e0da68ceacce::t_a2e4c3a906ca89 11
+packages/admin/__tests__/schemas.test.ts
+  s_24e0da68ceacce::t_9862e7a9049584 3-8,28,30-40
+  s_24e0da68ceacce::t_9e91657815df42 29
+  s_24e0da68ceacce::t_62ab12de262e2b 41
+packages/database/__tests__/audit/audit.test.ts
+  s_24e0da68ceacce::t_9862e7a9049584 3-4,73-85
+  s_24e0da68ceacce::t_fdd1e7480f7593 86-88
+packages/admin/src/shared/schemas/users.ts
+  s_24e0da68ceacce::t_9862e7a9049584 1
+packages/database/src/query/schemas.ts
+  s_24e0da68ceacce::t_9862e7a9049584 1-6
+apps/admin/__tests__/lib/rpc.test.ts
+  s_24e0da68ceacce::t_701303ab2cea68 1-63
+apps/admin/__tests__/lib/admin-route-context.test.ts
+  s_24e0da68ceacce::t_701303ab2cea68 1-11,13-25,27-70
+  s_24e0da68ceacce::t_75242cfd46b6de 12,26
+packages/database/package.json
+  s_24e0da68ceacce::t_9862e7a9049584 9,14
+packages/admin/src/shared/schemas/audit.ts
+  s_24e0da68ceacce::t_9862e7a9049584 2-3
+packages/admin/src/shared/schemas/jobs.ts
+  s_24e0da68ceacce::t_9862e7a9049584 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "6f52a12a8a8f22d95739e823da385c42bab24732",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

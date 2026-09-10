@@ -1,0 +1,129 @@
+apps/desktop/src/routes/root.tsx
+  s_fa2f779883d7dd::t_3e7acc44688d2a 6
+packages/auth/package.json
+  s_fa2f779883d7dd::t_28507ce5c1b3df 8-9
+  s_fa2f779883d7dd::t_73999c447cf90c 1-7,10-26
+packages/auth/src/server.ts
+  s_fa2f779883d7dd::t_b8f68c2fffac99 7,9
+  s_fa2f779883d7dd::t_4b243ec46c0f50 1,3-6,8,11-14,16-28,32-34
+  s_fa2f779883d7dd::t_120985dc9c9dd7 2,10,15,29-31
+packages/auth/src/env.ts
+  s_fa2f779883d7dd::t_0bbfc4e52ed7dc 1-14
+vite.config.ts
+  s_fa2f779883d7dd::t_b98a0dbc4fdb72 8-10,15
+packages/api-client/src/index.ts
+  s_fa2f779883d7dd::t_fe082b3b29b659 1
+packages/db/src/schema/index.ts
+  s_fa2f779883d7dd::t_e5cbbaea3ce295 1-2
+packages/auth/src/client.ts
+  s_fa2f779883d7dd::t_916ef2fb6c370d 3-7,11-16,20-21,24-35
+  s_fa2f779883d7dd::t_ad8b0fced00658 1-2,8-10,17-19,22-23,36-37
+apps/web/src/lib/auth-client.ts
+  s_fa2f779883d7dd::t_613f37dae40d2d 1-4
+packages/api-server/src/router.ts
+  s_fa2f779883d7dd::t_d511136a9a2640 1-9
+packages/api-client/__tests__/client.test.ts
+  s_fa2f779883d7dd::t_0840fcbb5a7f65 1-35,38-39,41
+apps/web/src/routeTree.gen.ts
+  s_fa2f779883d7dd::t_be8c33b2ac499e 13-14,22-24,26-31,35,40-42,45-47,53-54,59,61-62,67-68,79-92,107-108
+  s_fa2f779883d7dd::t_c6b16fdc5aec50 32,109
+  s_fa2f779883d7dd::t_7563edf95451cf 21,36,51,58,60,63,66,69,72,74-78,93-101,110,113,115-117,119-120
+  s_fa2f779883d7dd::t_c10827cabfccde 11-12,15,18-19,33-34,39,48,52,55
+packages/api-server/src/procedures/users.ts
+  s_fa2f779883d7dd::t_c2fb708fe8cf09 4
+  s_fa2f779883d7dd::t_235a2f942411b8 17
+  s_fa2f779883d7dd::t_4054f06011641c 1-3
+  s_fa2f779883d7dd::t_2c466e4b920f94 5-7,14-16
+  s_fa2f779883d7dd::t_ca91d4012a317d 18-19
+  s_fa2f779883d7dd::t_b90e94b141a22d 8-13
+apps/web/src/routes/login.tsx
+  s_fa2f779883d7dd::t_f0fbc058cc40bd 1-95
+apps/web/src/routes/api/auth.$.ts
+  s_fa2f779883d7dd::t_1785bdd6d9e0bf 3,9-10
+  s_fa2f779883d7dd::t_8a8745fe2dbc77 1-2,4-8,11-13
+packages/auth/tsconfig.json
+  s_fa2f779883d7dd::t_4f1c089ac38629 1-8
+packages/auth/src/trusted-origins.ts
+  s_fa2f779883d7dd::t_00347e78033cc2 1-10
+packages/api-server/src/procedures/health.ts
+  s_fa2f779883d7dd::t_caa3eb2fe16e1a 1-10
+apps/web/playwright.config.ts
+  s_fa2f779883d7dd::t_1f1d44ab3a9454 1-20
+packages/api-server/src/index.ts
+  s_fa2f779883d7dd::t_7007a23c22a733 1-2
+apps/desktop/src/routes/home.tsx
+  s_fa2f779883d7dd::t_cfe9512cd14589 24-27
+packages/api-server/package.json
+  s_fa2f779883d7dd::t_70f632884fa2ee 1-24
+packages/api-server/__tests__/router.test.ts
+  s_fa2f779883d7dd::t_1865d95d20dd55 42-52,60-77
+  s_fa2f779883d7dd::t_fbe78d2f0e8b33 10,12-13,15
+  s_fa2f779883d7dd::t_dcdf7cfaf7cb09 1-9,11,14,16-41,53-59,78-83
+packages/api-client/package.json
+  s_fa2f779883d7dd::t_68917b87e2af10 13-15,17,19
+packages/db/src/schema/auth.ts
+  s_fa2f779883d7dd::t_31b01f13d91695 1-65
+apps/desktop/src/router.tsx
+  s_fa2f779883d7dd::t_0719bff738baef 4,8
+packages/api-client/src/client.ts
+  s_fa2f779883d7dd::t_88515634dab2cd 1-2,4-5,10,14-18,20,23
+packages/api-server/tsconfig.json
+  s_fa2f779883d7dd::t_0ee32db16ac8a7 1-8
+packages/db/src/schema/app.ts
+  s_fa2f779883d7dd::t_c652bcfc9738a5 1-5
+packages/db/package.json
+  s_fa2f779883d7dd::t_a128e19aa024c6 8
+apps/web/.gitignore
+  s_fa2f779883d7dd::t_879f79a540ad25 14-15
+apps/desktop/src/lib/auth-client.ts
+  s_fa2f779883d7dd::t_07f5c82644b747 1-15
+apps/desktop/src/routes/login.tsx
+  s_fa2f779883d7dd::t_f5d1cf4c42f2c3 1-100
+apps/web/src/lib/auth-handler.server.ts
+  s_fa2f779883d7dd::t_b6435186dbf863 1-5
+packages/db/drizzle.config.ts
+  s_fa2f779883d7dd::t_407ad2ce574e0e 5
+apps/web/src/tanstack-start.d.ts
+  s_fa2f779883d7dd::t_c69b1cab7434e7 1-7
+apps/web/src/lib/orpc-handler.server.ts
+  s_fa2f779883d7dd::t_70dc851a2af6bd 1-22
+apps/web/src/routes/api/rpc.$.ts
+  s_fa2f779883d7dd::t_3786c6d7f9f400 1-2,4-8,11-13
+  s_fa2f779883d7dd::t_31100d01e89c4d 3,9-10
+apps/web/src/lib/cors.server.ts
+  s_fa2f779883d7dd::t_b457ac9a62864d 2-13,15-35
+  s_fa2f779883d7dd::t_b6a7404cc4f377 1
+  s_fa2f779883d7dd::t_7bd15320b6b9fd 14
+packages/db/src/index.ts
+  s_fa2f779883d7dd::t_a9914f83182588 2
+apps/web/e2e/home.spec.ts
+  s_fa2f779883d7dd::t_908fd8a3877c2e 5
+  s_fa2f779883d7dd::t_9fa9a373a7f9ab 1-4,6-17
+apps/desktop/package.json
+  s_fa2f779883d7dd::t_73344482903ce9 19
+apps/web/package.json
+  s_fa2f779883d7dd::t_6d2bc3c0402c0e 24
+  s_fa2f779883d7dd::t_8374752ca8070f 34
+  s_fa2f779883d7dd::t_33faea9bd2a0a1 12-13
+  s_fa2f779883d7dd::t_15e0765ab6af78 16,23,25
+bun.lock
+  s_fa2f779883d7dd::t_78bba2c4000ab2 13-22,31,53,60-62,71,87-89,91,93,99-129,213-214,217-218,221-222,227-228,231-234,245-256,261-268,277-296,299-310,383-384,387-390,399-422,557-558,561-562,751-752,779-784,873-874,877-886,889-890,893-896,905-906,909-910,921-924,929-930,943-954,959-960,967-968,977-978,991-992,1001-1004,1013-1016,1029-1036,1039-1042,1047-1048,1059-1062,1089-1092,1099-1104,1111-1114,1119-1120,1131-1136,1147-1164,1169-1174,1181-1190,1195-1204,1213-1214,1217-1218,1225-1229,1233,1239-1240,1245-1248,1251-1252,1259-1260,1269-1270,1273-1276,1283-1286,1301-1304,1321-1322,1339-1340,1343-1344,1347-1348,1357-1360,1367-1404,1421-1432,1435-1436,1445-1454,1478-1481
+packages/api-server/src/context.ts
+  s_fa2f779883d7dd::t_b6c0e8e82fc80d 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "55c2870625de94aa4125adc1b2f5cec83cad3022",
+  "prompts": {},
+  "sessions": {
+    "s_fa2f779883d7dd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f6a082b3-77e4-4f5e-87e1-597148e45e85",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

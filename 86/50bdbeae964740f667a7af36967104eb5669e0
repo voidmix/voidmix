@@ -1,0 +1,23 @@
+apps/web/src/features/projects/components/workspace-shell.tsx
+  s_c2a4429a302405::t_0a98b6a93becf8 255,264-287
+docs/development/web-bundle.md
+  s_c2a4429a302405::t_e9eb836b7effb0 91-103
+e2e/tests/web.spec.ts
+  s_c2a4429a302405::t_561ea8fc80d362 25-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "8650bdbeae964740f667a7af36967104eb5669e0",
+  "prompts": {},
+  "sessions": {
+    "s_c2a4429a302405": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08069-9409-7351-8a13-3703538591b9",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

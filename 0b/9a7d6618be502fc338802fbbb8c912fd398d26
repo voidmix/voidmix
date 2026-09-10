@@ -1,0 +1,50 @@
+packages/logger/src/env.ts
+  s_644e00651e10c2::t_d3227269df744d 1-9
+packages/logger/src/index.ts
+  s_644e00651e10c2::t_7bc7db2681e071 1-214
+packages/logger/src/redact.ts
+  s_644e00651e10c2::t_ad6427a76debdd 1-91
+packages/logger/__tests__/redact.test.ts
+  s_644e00651e10c2::t_55d9a1e069ba57 1-26
+  s_644e00651e10c2::t_ce3ae0da231293 27-29
+  s_644e00651e10c2::t_7a445cf3ebc600 30
+packages/logger/src/request-context.ts
+  s_644e00651e10c2::t_655cbbf26e1322 1-101
+packages/logger/tsconfig.json
+  s_644e00651e10c2::t_33299c2f4fb920 1-8
+packages/logger/src/better-auth.ts
+  s_644e00651e10c2::t_f4702303d8aa29 1-168
+  s_644e00651e10c2::t_551c288a04e8b5 169-171
+packages/logger/package.json
+  s_644e00651e10c2::t_46a0d141aecdfe 1-27
+apps/web/src/lib/orpc-handler.server.ts
+  s_644e00651e10c2::t_6d960de18908e4 7-8,12
+packages/logger/src/pretty.ts
+  s_644e00651e10c2::t_7f5a22d0e22425 1-194
+  s_644e00651e10c2::t_6bdb39c3b67f95 195-197
+  s_644e00651e10c2::t_c48636fde95301 198
+apps/web/package.json
+  s_644e00651e10c2::t_9d3691f149a227 27
+packages/logger/src/events.ts
+  s_644e00651e10c2::t_3d0339c104958c 1-54
+apps/web/src/lib/logger.server.ts
+  s_644e00651e10c2::t_63fa1903fde42b 1-14
+bun.lock
+  s_644e00651e10c2::t_e47ad0d133ecc0 64,160-173,579-580,813-814,897-898,1159-1160,1199-1204,1231-1232,1237-1238,1257-1258,1273-1274,1299-1300,1333-1334,1491-1492
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "0b9a7d6618be502fc338802fbbb8c912fd398d26",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

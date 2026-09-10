@@ -1,0 +1,77 @@
+apps/web/src/components/theme-switcher.component.test.tsx
+  s_0f11182722ccdd::t_93ae0c7224a735 49,61
+package.json
+  s_0f11182722ccdd::t_9907bbf84b5af7 73
+docs/architecture/tooling.md
+  s_0f11182722ccdd::t_9907bbf84b5af7 23-25
+apps/web/src/features/auth/reset-password.tsx
+  s_0f11182722ccdd::t_3278493764d982 47-48,60
+apps/web/package.json
+  s_0f11182722ccdd::t_9907bbf84b5af7 45
+packages/ui/src/components/ui/toast.tsx
+  s_0f11182722ccdd::t_3278493764d982 16-17,102,118
+apps/web/src/components/language-switcher.tsx
+  s_0f11182722ccdd::t_17f620f902ae2e 21,25-26,29-36,39-54
+  s_0f11182722ccdd::t_6fcaf9fa4d9c9a 5,7-14,28,37-38,59-60,68
+  s_0f11182722ccdd::t_5f0335424fbe64 22,27,55-56
+  s_0f11182722ccdd::t_5133f1785c2af0 23
+  s_0f11182722ccdd::t_f1261fb2a4e8d8 61-66
+  s_e5e5cba8b52a8c::t_7d228bab51ee65 24
+apps/web/src/features/chat/components/attachment-menu.tsx
+  s_0f11182722ccdd::t_0bcaaba299983c 1,48,54-57
+  s_0f11182722ccdd::t_17f620f902ae2e 2-47,49-53,58-69
+docs/README.md
+  s_0f11182722ccdd::t_a83bb4964d4657 31-32
+apps/web/src/features/auth/auth-form.tsx
+  s_0f11182722ccdd::t_3278493764d982 29-30,46-47,59-61
+apps/web/src/features/admin/settings/use-mail-settings.ts
+  s_0f11182722ccdd::t_3278493764d982 57,130,135,143-145,149
+apps/web/src/features/chat/components/composer.tsx
+  s_0f11182722ccdd::t_1099a208e838cf 172-173,214-224
+  s_0f11182722ccdd::t_bd1f749f8aea0d 146-148
+  s_0f11182722ccdd::t_17f620f902ae2e 1,36,145,149-153,155-171,226-228
+  s_0f11182722ccdd::t_f1261fb2a4e8d8 22,37-39,154
+apps/web/vite.config.ts
+  s_0f11182722ccdd::t_9907bbf84b5af7 36
+apps/web/src/components/language-menu.tsx
+  s_0f11182722ccdd::t_17f620f902ae2e 1-52
+apps/web/src/features/chat/components/attachment-menu-lazy.ts
+  s_0f11182722ccdd::t_17f620f902ae2e 1-10
+apps/web/src/components/language-switcher.component.test.tsx
+  s_0f11182722ccdd::t_93ae0c7224a735 34,45-47,49
+  s_0f11182722ccdd::t_c14864fcb81e7a 1-33,35-44,48,50-52
+apps/web/AGENTS.md
+  s_0f11182722ccdd::t_c14864fcb81e7a 105-107
+  s_0f11182722ccdd::t_9907bbf84b5af7 102-104
+docs/development/web-bundle.md
+  s_0f11182722ccdd::t_e960cde7ee608b 16-21
+  s_0f11182722ccdd::t_a83bb4964d4657 1-15,22-41
+apps/web/src/features/admin/settings/use-auth-settings.ts
+  s_0f11182722ccdd::t_3278493764d982 50,107,112
+bun.lock
+  s_0f11182722ccdd::t_092a23ee105191 114,140,201-202,205,212-213,216-219,224,303,413,713-750,1139-1140,1619-1620
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6fee5d238b1f6a75ee80598121abe88bcc72a25d",
+  "prompts": {},
+  "sessions": {
+    "s_0f11182722ccdd": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0410c-2363-7fa1-bf8b-068e39262336",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_e5e5cba8b52a8c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03cca-0084-72a3-8d7f-15f51e7eef56",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

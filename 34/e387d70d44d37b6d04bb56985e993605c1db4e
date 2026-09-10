@@ -1,0 +1,58 @@
+packages/tooling/scripts/src/env.ts
+  s_d04ed08162a767::t_2fdd05addb9aeb 7
+apps/web/Dockerfile
+  s_d04ed08162a767::t_b02b6225a8fd3b 25
+packages/tooling/scripts/src/harness/catalog.ts
+  s_d04ed08162a767::t_072bf199e512a0 51,54,57,68,70-96,99-100,109-110,112-113,123,128
+packages/tooling/test-utils/src/db.ts
+  s_d04ed08162a767::t_ea8c2fda334105 18
+packages/tooling/scripts/__tests__/catalog.test.ts
+  s_d04ed08162a767::t_c4d21d4af192c1 3
+  s_d04ed08162a767::t_5ababe569ed9e1 23,57,65-84
+apps/admin/Dockerfile
+  s_d04ed08162a767::t_8a83f6df4d5e8e 28
+packages/auth/package.json
+  s_d04ed08162a767::t_7e74ff2c99f3bd 27
+package.json
+  h_c4259206f43666 6,113
+  h_c4259206f43666 7
+packages/tooling/scripts/src/smoke-desktop-artifact.ts
+  s_d04ed08162a767::t_89b85b1a25c7f7 22
+packages/tooling/scripts/src/harness/shared.ts
+  s_d04ed08162a767::t_4f0f33446bb0f8 13
+apps/desktop/package.json
+  s_d04ed08162a767::t_7e74ff2c99f3bd 19,31
+packages/tooling/test-utils/__tests__/migration.test.ts
+  s_d04ed08162a767::t_321bdd2b8fa490 8
+apps/web/railway.toml
+  s_d04ed08162a767::t_1a22c39f2dbe71 4
+apps/admin/railway.toml
+  s_d04ed08162a767::t_848a3fd7cafee7 4
+packages/tooling/test-utils/src/vitest-config.ts
+  s_d04ed08162a767::t_bd1399cf29d0e9 7-9
+bun.lock
+  s_d04ed08162a767::t_21e3c35eaa10b1 107,119,292,581-616,729,919,1615,1619,2037,2239,2709-2710
+packages/tooling/scripts/package.json
+  h_c4259206f43666 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "34e387d70d44d37b6d04bb56985e993605c1db4e",
+  "prompts": {},
+  "humans": {
+    "h_c4259206f43666": {
+      "author": "Zack <lorenx@163.com>"
+    }
+  },
+  "sessions": {
+    "s_d04ed08162a767": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3b9f62b-692f-4507-bf91-d28e928559d0",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

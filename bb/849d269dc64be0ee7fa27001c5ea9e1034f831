@@ -1,0 +1,36 @@
+apps/admin/playwright.config.ts
+  s_e83edb637e8c81::t_ed9f9be68f3fea 45
+apps/web/playwright.config.ts
+  s_e83edb637e8c81::t_de49e272a3c65b 46
+e2e/playwright.config.ts
+  s_e83edb637e8c81::t_3925636a4c14cb 17,35
+packages/tooling/scripts/src/clean.ts
+  s_e83edb637e8c81::t_e571e146312d34 4
+packages/tooling/scripts/src/skills.ts
+  s_e83edb637e8c81::t_78610e7abac367 6
+packages/tooling/scripts/src/harness/skills-integrity.ts
+  s_e83edb637e8c81::t_f9fe9d566ada92 86
+  s_e83edb637e8c81::t_123e3a3b53b64b 265
+packages/tooling/scripts/src/harness/shared.ts
+  s_e83edb637e8c81::t_71bd8fbb729756 4
+packages/tooling/scripts/__tests__/operations.test.ts
+  s_e83edb637e8c81::t_d005889693db8d 15
+packages/tooling/scripts/src/operations/railway.ts
+  s_e83edb637e8c81::t_c7284ba5cc5477 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "bb849d269dc64be0ee7fa27001c5ea9e1034f831",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

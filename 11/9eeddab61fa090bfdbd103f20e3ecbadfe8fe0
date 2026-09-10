@@ -1,0 +1,24 @@
+apps/web/tsdown.config.ts
+  s_e83edb637e8c81::t_20dd8df07f7770 1-14
+apps/web/package.json
+  s_e83edb637e8c81::t_51ebbe30d34343 10
+  s_e83edb637e8c81::t_80a5926ceaccd0 61
+pnpm-lock.yaml
+  s_e83edb637e8c81::t_6373d230c0d706 783,785
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "119eeddab61fa090bfdbd103f20e3ecbadfe8fe0",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

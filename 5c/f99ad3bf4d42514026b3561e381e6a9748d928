@@ -1,0 +1,25 @@
+Dockerfile
+  s_644e00651e10c2::t_87e4d177dd379c 1-16
+railway.json
+  s_644e00651e10c2::t_837bb71da72f6a 1-11
+README.md
+  s_644e00651e10c2::t_e7f59d203f8198 37-50
+.dockerignore
+  s_644e00651e10c2::t_b98b9eedce2254 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "5cf99ad3bf4d42514026b3561e381e6a9748d928",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

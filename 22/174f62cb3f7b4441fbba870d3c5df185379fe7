@@ -1,0 +1,75 @@
+package.json
+  s_c245cad754e0b0::t_4eb6d101de5feb 7-8
+apps/web/e2e/auth.setup.ts
+  s_c245cad754e0b0::t_007fa2dfda43a1 6,20-51,53
+apps/web/e2e/auth.ts
+  s_c245cad754e0b0::t_6385c2bad08cac 3-37,40-41
+e2e/package.json
+  s_c245cad754e0b0::t_78acb1c30f3c6b 1-14
+apps/admin/playwright.config.ts
+  s_c245cad754e0b0::t_60eb54dd385493 3-12,20,23-43,47-48
+e2e/tsconfig.json
+  s_c245cad754e0b0::t_5242712537abbb 1-9
+e2e/specs/cross-app-login.spec.ts
+  s_c245cad754e0b0::t_3a36d84e9633c5 1-17
+apps/admin/e2e/identities.ts
+  s_c245cad754e0b0::t_4615b3ad244e62 1-37
+apps/admin/e2e/env.ts
+  s_c245cad754e0b0::t_0277e9a51458d7 1-4
+e2e/playwright.config.ts
+  s_c245cad754e0b0::t_dbf352cb7200fb 1-49
+apps/admin/e2e/access-control.admin.spec.ts
+  s_c245cad754e0b0::t_8519e7242e1bca 1-7
+packages/tooling/scripts/__tests__/ci-affected.test.ts
+  s_c245cad754e0b0::t_bfb9a0adbe202f 25-37,57
+  s_c245cad754e0b0::t_1c98a32b8c6793 82
+.github/workflows/ci.yml
+  s_c245cad754e0b0::t_e9da98bf226c1f 26
+  s_c245cad754e0b0::t_f61f546f251aad 231-318
+apps/web/src/routes/index.tsx
+  s_fcf4e03e306d31::t_cab30021b723f2 37-44
+  s_fcf4e03e306d31::t_68d700aba30d48 178
+apps/admin/e2e/access-control.member.spec.ts
+  s_c245cad754e0b0::t_301b65ea415a77 1-8
+apps/web/playwright.config.ts
+  s_c245cad754e0b0::t_234e253f4bae20 5,9-13,27,32,35-36,38,41,43
+packages/tooling/scripts/src/ci/affected.ts
+  s_c245cad754e0b0::t_fe549f82541535 222
+  s_c245cad754e0b0::t_7b60cb1681ae26 102,118-123,155
+  s_c245cad754e0b0::t_809a92ed38600e 6
+  s_c245cad754e0b0::t_a5395c3249d364 252
+  s_c245cad754e0b0::t_ab2a9cec23a978 156
+apps/web/e2e/workspace-access.member.spec.ts
+  s_c245cad754e0b0::t_799315feeec8ca 1-20
+apps/admin/e2e/auth.setup.ts
+  s_c245cad754e0b0::t_bfc4019e597df3 11
+  s_c245cad754e0b0::t_a5735b505aca6b 1-10,12-41,43-148,154-158
+  s_c245cad754e0b0::t_c4e7897468e80d 149-153
+  s_c245cad754e0b0::t_df9194ca88f650 42
+bun.lock
+  s_c245cad754e0b0::t_68532be00637dc 202-210,2075-2076
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "22174f62cb3f7b4441fbba870d3c5df185379fe7",
+  "prompts": {},
+  "sessions": {
+    "s_c245cad754e0b0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1acfdb85-b1e9-4198-a62a-f4b4147efcb5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_fcf4e03e306d31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "839f6b7e-11db-4a23-a7fd-e6e41340dbdc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

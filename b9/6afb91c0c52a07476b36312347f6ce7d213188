@@ -1,0 +1,46 @@
+packages/ui/src/index.ts
+  s_aaaccda6882788::t_4c4355030eec27 8-13
+  s_aaaccda6882788::t_c6f028ad156990 463
+  s_aaaccda6882788::t_242c9071ca2e84 7
+packages/ui/src/components/account-menu.tsx
+  s_aaaccda6882788::t_d6f345ca85fcff 1-207
+packages/ui/src/lib/initials.ts
+  s_aaaccda6882788::t_4cda52f885bf7d 1-16
+packages/ui/__tests__/utils.test.ts
+  s_aaaccda6882788::t_7c344803ae9a58 3,18-25
+  s_aaaccda6882788::t_295220ae0ced20 26-27
+apps/web/src/components/user-menu.tsx
+  s_aaaccda6882788::t_2013166a3a9169 1,3-4,6,25-31,33-48
+apps/desktop/src/components/app-sidebar.tsx
+  s_aaaccda6882788::t_9d2763187c4ec6 4
+  s_aaaccda6882788::t_0f9b81e858f5b3 101-122
+  s_fb3e8157d053fe::t_934c7baf153049 14
+apps/web/src/features/settings/workspace-members-card.tsx
+  s_aaaccda6882788::t_100530faba4058 22
+packages/ui/__tests__/account-menu.test.tsx
+  s_aaaccda6882788::t_5a800b2b606c8b 1-142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b96afb91c0c52a07476b36312347f6ce7d213188",
+  "prompts": {},
+  "sessions": {
+    "s_aaaccda6882788": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ef8db82a-8167-4774-8c96-2b5048b3f97a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_fb3e8157d053fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a42373e947294c717",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

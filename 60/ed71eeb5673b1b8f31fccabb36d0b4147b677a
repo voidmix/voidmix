@@ -1,0 +1,71 @@
+docs/architecture/deployment.md
+  s_d21bbf6c4a4d17::t_c9f86b5a3a3561 46
+packages/scripts/src/runtime/action.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 21,46,51
+packages/scripts/src/env-runner.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 15
+packages/scripts/AGENTS.md
+  s_d21bbf6c4a4d17::t_c9f86b5a3a3561 7,49,51
+packages/scripts/src/policy/manifests.test.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 156
+apps/web/package.json
+  s_d21bbf6c4a4d17::t_916db05bd2087c 7-8,10
+packages/scripts/src/doctor/checks.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 92
+packages/scripts/src/policy/fixes.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 12
+apps/api/package.json
+  s_d21bbf6c4a4d17::t_916db05bd2087c 11,19
+docs/architecture/packages.md
+  s_d21bbf6c4a4d17::t_c9f86b5a3a3561 121
+apps/desktop/package.json
+  s_d21bbf6c4a4d17::t_916db05bd2087c 7-9
+packages/scripts/src/database/operation.test.ts
+  s_d21bbf6c4a4d17::t_9a62c4c03f226b 46-51,60-61
+packages/scripts/src/runtime/action.test.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 25,39
+docs/architecture/tooling.md
+  s_d21bbf6c4a4d17::t_fd99e28bc5d660 195-206
+  s_d21bbf6c4a4d17::t_c9f86b5a3a3561 128,140-141,156
+  s_d21bbf6c4a4d17::t_8870238f70f85c 224-225
+packages/scripts/package.json
+  s_d21bbf6c4a4d17::t_916db05bd2087c 6,10-20
+docs/development/getting-started.md
+  s_d21bbf6c4a4d17::t_c9f86b5a3a3561 33
+  s_d21bbf6c4a4d17::t_d928b04010d044 71-72,75-79
+README.md
+  s_d21bbf6c4a4d17::t_c9f86b5a3a3561 70,97
+packages/scripts/src/root.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 5
+packages/scripts/src/cli.test.ts
+  s_d21bbf6c4a4d17::t_916db05bd2087c 24
+packages/db/package.json
+  s_d21bbf6c4a4d17::t_916db05bd2087c 19
+apps/admin/package.json
+  s_d21bbf6c4a4d17::t_916db05bd2087c 7-8,10
+docs/architecture/decisions/0002-vite-plus-sole-orchestrator.md
+  s_d21bbf6c4a4d17::t_6d09ee1622147b 35-50
+packages/env/AGENTS.md
+  s_d21bbf6c4a4d17::t_c9f86b5a3a3561 25
+package.json
+  s_d21bbf6c4a4d17::t_880aba44384ba7 71-73,75
+  s_d21bbf6c4a4d17::t_4c0d1e9a94a9ae 88-95
+bun.lock
+  s_d21bbf6c4a4d17::t_d33226ce459eec 234
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "60ed71eeb5673b1b8f31fccabb36d0b4147b677a",
+  "prompts": {},
+  "sessions": {
+    "s_d21bbf6c4a4d17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31f37d36-5bcd-4ca6-baf8-f8f473a64ae5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+apps/web/src/components/theme-switcher.tsx
+  s_dd909d2597cf6a::t_a22ce42e282af6 7,9,12-13,21,23,31
+apps/web/src/features/admin/admin-shell.tsx
+  s_dd909d2597cf6a::t_0bd1eb23e7155e 69-70,73-74,76,79
+  s_dd909d2597cf6a::t_101cae9c1cebd7 28
+  s_dd909d2597cf6a::t_57dd2c33088ed0 1,7-16,19
+  s_dd909d2597cf6a::t_d48b0e5f346b7b 37
+  s_dd909d2597cf6a::t_ebe0e086f550ee 130-131
+  s_dd909d2597cf6a::t_5e21531b9219b7 104-129,132-153
+apps/web/src/features/admin/admin-shell.component.test.tsx
+  s_dd909d2597cf6a::t_dff77a26bb329d 1-7,9-36,51-125
+  s_dd909d2597cf6a::t_222f53dcc641ef 8
+  s_dd909d2597cf6a::t_5b6023e710f57c 37-50
+apps/web/src/components/theme-menu-items.tsx
+  s_dd909d2597cf6a::t_8116e0a1265941 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "97bfbadb31c04b4b6e923abafd6e790672e9a57e",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

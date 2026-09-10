@@ -1,0 +1,49 @@
+packages/ui/src/index.ts
+  s_644e00651e10c2::t_0168ee60681ac0 55-67
+  s_644e00651e10c2::t_6ff6560a29365a 52
+packages/ui/src/components/logo.tsx
+  s_644e00651e10c2::t_96aeb3f8c1bb6f 39
+packages/ui/src/theme/provider.tsx
+  s_644e00651e10c2::t_eaa01d3fd7657c 1-209
+packages/ui/src/theme/index.ts
+  s_644e00651e10c2::t_a0238d5b4100a6 1-11
+packages/ui/src/components/sonner.tsx
+  s_644e00651e10c2::t_82654276982933 17
+  s_644e00651e10c2::t_530f22bc825e5d 12-14
+  s_644e00651e10c2::t_723b42f378d8ec 49-51
+  s_3be5c0af596112::t_dfb3784240d643 15
+packages/ui/package.json
+  s_644e00651e10c2::t_5f62608c1d493e 6-8,13-14
+  s_644e00651e10c2::t_3413ea201b711d 26
+packages/ui/src/theme/toggle.tsx
+  s_644e00651e10c2::t_16d6c90bd71407 1-80
+packages/ui/src/styles.css
+  s_644e00651e10c2::t_422846eea93add 20-22
+  s_644e00651e10c2::t_d8a7574dccf097 83-110
+bun.lock
+  s_644e00651e10c2::t_7fe458d1091b0b 303
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "8b4915cfa579d54744a51a3a892d83bd684ede98",
+  "prompts": {},
+  "sessions": {
+    "s_3be5c0af596112": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3e776cb-34ab-42dd-9d1a-6d0f5d6bbcc0",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

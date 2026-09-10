@@ -1,0 +1,40 @@
+apps/web/src/routeTree.gen.ts
+  s_3008a892f2914e::t_2fee486bda74b0 29,119-123,162,185,210,235,258,282,431-437,470,477
+apps/web/src/routes/(app)/chat.tsx
+  s_3008a892f2914e::t_5e23f182e54451 1-7
+apps/web/src/features/chat/use-mock-chat.ts
+  s_3008a892f2914e::t_4fa47a3bc0f7d0 21
+  s_3008a892f2914e::t_a549b7ff335e9c 1-20,22-99
+apps/web/src/features/chat/mock-replies.ts
+  s_3008a892f2914e::t_242f6e3ad80d6d 1-17
+apps/web/src/components/app-shell.tsx
+  s_3008a892f2914e::t_cbfd1993aef1cd 28
+  s_3008a892f2914e::t_9a241be73b184c 17
+apps/web/src/features/chat/chat-message-list.tsx
+  s_3008a892f2914e::t_351ecc86ce58ba 3,14,35-41
+  s_3008a892f2914e::t_5e987a735a44aa 1-2,4-13,15-34,42-66
+apps/web/src/features/chat/chat-thinking-indicator.tsx
+  s_3008a892f2914e::t_c97b08aa16e9cb 1-20
+apps/web/src/features/chat/chat-page.tsx
+  s_3008a892f2914e::t_e0cc54d835c8e5 1-56
+apps/web/src/features/chat/chat-composer.tsx
+  s_3008a892f2914e::t_8aa37517a0d2ba 1-67
+apps/web/src/features/chat/chat-message-item.tsx
+  s_3008a892f2914e::t_8ef754771dd1fb 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c28c6f8c820aaeb617481498a9950326867500fc",
+  "prompts": {},
+  "sessions": {
+    "s_3008a892f2914e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8233a44-05e2-4895-891e-2b1dd545e4e5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+bun.lock
+  s_6c2bfc4a71e40d::t_dafcaa719cb9f7 639,684-685,720,723,725,762,796,820,1282,1284,1364,1466,1470,1472,1474,1476,1482,1484,1488,1490,1494,1498,1500,1502,2408,2508,2510,2780-2787,2790-2791
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "192b2098335cd32ed60a8284b8a2488d83028ba5",
+  "prompts": {},
+  "sessions": {
+    "s_6c2bfc4a71e40d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fd4de-9856-76d2-a79f-32cca57c5ee1",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

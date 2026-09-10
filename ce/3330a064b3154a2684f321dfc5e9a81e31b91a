@@ -1,0 +1,73 @@
+apps/desktop/tsr.config.json
+  s_4a3ad1ff241292::t_57722226637c6b 1-3
+apps/desktop/src/routes/settings.tsx
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 1,5-6,8
+apps/desktop/vitest.config.ts
+  s_4a3ad1ff241292::t_57722226637c6b 1-7
+apps/desktop/src/routeTree.gen.ts
+  s_4a3ad1ff241292::t_728b5960bb5b89 1-113
+  s_4a3ad1ff241292::t_8893424d930750 114-122
+apps/desktop/src/config.ts
+  s_4a3ad1ff241292::t_e26a92192456f9 9
+apps/desktop/src-tauri/tauri.conf.json
+  s_4a3ad1ff241292::t_06947d332b0c22 10
+apps/desktop/src/routes/index.tsx
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 1,4-6,8
+apps/desktop/src/routes/login.tsx
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 1,15-16,18
+apps/desktop/src/tanstack-start.d.ts
+  s_4a3ad1ff241292::t_57722226637c6b 1
+apps/desktop/src/components/app-sidebar.tsx
+  s_4a3ad1ff241292::t_e26a92192456f9 36
+apps/desktop/package.json
+  s_4a3ad1ff241292::t_e26a92192456f9 11,40-41
+  s_4a3ad1ff241292::t_57722226637c6b 9
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 8,18,31
+apps/desktop/tsconfig.json
+  s_4a3ad1ff241292::t_57722226637c6b 3,5-6,10-11
+apps/desktop/src/api.ts
+  s_4a3ad1ff241292::t_e26a92192456f9 3-4
+apps/desktop/tsconfig.node.json
+  s_4a3ad1ff241292::t_57722226637c6b 9
+apps/desktop/vite.config.ts
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 2-4,10
+  s_4a3ad1ff241292::t_57722226637c6b 9,11-20
+apps/desktop/src/routes/files.tsx
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 2,16-18,22
+apps/desktop/src/routes/__root.tsx
+  s_4a3ad1ff241292::t_4c0df6d8213b49 2,36-39,41
+  s_4a3ad1ff241292::t_9f2fb22b9cf10e 45-50,54-64
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 1,3-9,11-13,15-31,40,65-81
+apps/desktop/README.md
+  s_4a3ad1ff241292::t_06947d332b0c22 4-5
+  s_4a3ad1ff241292::t_e26a92192456f9 1,3,7-8,10-11
+apps/desktop/__tests__/bearer-token.test.ts
+  s_4a3ad1ff241292::t_e26a92192456f9 1-30
+apps/desktop/src/lib/bearer-token.ts
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 12-16
+apps/desktop/src/lib/auth-client.ts
+  s_4a3ad1ff241292::t_e26a92192456f9 3-5
+  s_4a3ad1ff241292::t_95813a8b513357 41-43
+apps/desktop/src/lib/theme-file-sync.tsx
+  s_4a3ad1ff241292::t_e26a92192456f9 13
+apps/desktop/src/router.tsx
+  s_4a3ad1ff241292::t_7ed2d468ef27c6 1,3,5-12,16
+bun.lock
+  s_4a3ad1ff241292::t_8d5a935653cf60 70,83,93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.17",
+  "base_commit_sha": "ce3330a064b3154a2684f321dfc5e9a81e31b91a",
+  "prompts": {},
+  "sessions": {
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

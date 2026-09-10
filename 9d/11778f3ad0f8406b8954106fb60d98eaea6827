@@ -1,0 +1,29 @@
+apps/web/src/features/chat/chat-shell.tsx
+  s_c39c5f4065a796::t_597d1fa6b18e18 5,12-22,24,27-30,48
+apps/web/src/features/home/components/workspace-launcher.tsx
+  s_c39c5f4065a796::t_8ade6837f6c8f7 1-198
+apps/web/src/features/home/components/workspace-layout.tsx
+  s_c39c5f4065a796::t_998e923453ba87 1
+apps/web/src/features/home/data.ts
+  s_c39c5f4065a796::t_08497bd4f40640 48-58
+apps/web/src/routeTree.gen.ts
+  s_c39c5f4065a796::t_fdb0e51a002290 22,73-77,98,110,126,140,152,167,251-257,314,319
+apps/web/src/routes/(app)/chat.$chatId.tsx
+  s_c39c5f4065a796::t_6ec5c6d40b2aaa 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "9d11778f3ad0f8406b8954106fb60d98eaea6827",
+  "prompts": {},
+  "sessions": {
+    "s_c39c5f4065a796": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05d22-87ae-7631-bfe0-93238149b194",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

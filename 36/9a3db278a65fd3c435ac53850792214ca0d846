@@ -1,0 +1,36 @@
+packages/scripts/src/policy/workspaces.test.ts
+  s_7e3e0a5e104ebe::t_44acd8deb2049c 6-7,127-188
+packages/scripts/src/policy/workspaces.ts
+  s_7e3e0a5e104ebe::t_625f21ff8b0dd3 60-78,83-119
+  s_7e3e0a5e104ebe::t_876f0efb97c514 79-82
+packages/scripts/src/policy/checks.ts
+  s_7e3e0a5e104ebe::t_b806112aa93d2b 6-11,59-60,273,279-283
+packages/scripts/src/policy/runtime.ts
+  s_7e3e0a5e104ebe::t_b806112aa93d2b 26
+apps/desktop/AGENTS.md
+  s_7e3e0a5e104ebe::t_573f20118d75c6 45-47
+apps/desktop/CHANGELOG.md
+  s_7e3e0a5e104ebe::t_ecf9e442a1e595 1-26
+README.md
+  s_7e3e0a5e104ebe::t_9661e0a2cd6cb1 22-26,49-51
+  s_7e3e0a5e104ebe::t_bcc44706e68ec8 52
+CONTRIBUTING.md
+  s_7e3e0a5e104ebe::t_573f20118d75c6 11-12,14-15
+  s_7e3e0a5e104ebe::t_3b405b5c0ac4ba 1-10,13,16-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "369a3db278a65fd3c435ac53850792214ca0d846",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

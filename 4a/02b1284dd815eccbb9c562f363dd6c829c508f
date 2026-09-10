@@ -1,0 +1,77 @@
+apps/web/server/api/app.server.ts
+  s_24e0da68ceacce::t_66c3a0ab636f06 3-9,11,17-22
+apps/admin/server/api/routers/rpc.server.ts
+  s_24e0da68ceacce::t_669b3be9e46053 1-22
+apps/web/server/api/routers/errors.server.ts
+  s_24e0da68ceacce::t_66c3a0ab636f06 1-13
+apps/web/server/api/routers/auth.server.ts
+  s_24e0da68ceacce::t_66c3a0ab636f06 1-11
+packages/api-server/__tests__/router.test.ts
+  s_24e0da68ceacce::t_f99baeb75b5e62 60
+packages/api-server/src/runtime.ts
+  s_24e0da68ceacce::t_5dc4f7369d45d4 17,62,71
+apps/admin/server/api/routers/health.server.ts
+  s_24e0da68ceacce::t_669b3be9e46053 12-21,26,31-33,35
+apps/web/server/api/handlers.server.ts
+  s_24e0da68ceacce::t_66c3a0ab636f06 1-25
+apps/web/server/api/routers/reference.server.ts
+  s_24e0da68ceacce::t_a72f74198ea4e3 13
+  s_24e0da68ceacce::t_66c3a0ab636f06 1-12,14-18
+packages/health/src/router.ts
+  s_24e0da68ceacce::t_93f652d83e0cbf 31,35
+apps/admin/__tests__/server/api/app.test.ts
+  s_24e0da68ceacce::t_4546f8c04da332 8,13,18
+  s_24e0da68ceacce::t_7af4ac0a7bedde 7,9-11,14-17,19-20
+  s_24e0da68ceacce::t_46c953e1735aff 40
+  s_24e0da68ceacce::t_f99baeb75b5e62 6
+  s_24e0da68ceacce::t_5dc4f7369d45d4 60,78
+  s_bc698b2c29af78::t_b0b0b5a11dddb6 12
+apps/web/server/api/routers/health.server.ts
+  s_24e0da68ceacce::t_66c3a0ab636f06 1-18
+apps/web/server/api/routers/cors.server.ts
+  s_24e0da68ceacce::t_66c3a0ab636f06 1-7
+apps/api/src/routers/status.ts
+  s_24e0da68ceacce::t_eb105878ce74cd 9-12,19-21
+  s_24e0da68ceacce::t_6f33b121e59d3e 1-8,13-18,22-24
+packages/api-server/src/app-router.ts
+  s_24e0da68ceacce::t_93f652d83e0cbf 5,19
+apps/web/server/api/routers/rpc.server.ts
+  s_24e0da68ceacce::t_66c3a0ab636f06 1-11
+apps/admin/server/api/app.server.ts
+  s_24e0da68ceacce::t_ffe8d33fd03774 3
+  s_24e0da68ceacce::t_669b3be9e46053 4,6,11
+packages/api-server/__tests__/runtime.test.ts
+  s_24e0da68ceacce::t_d2e4a1da60263e 76
+  s_24e0da68ceacce::t_d07f3245845328 28,68-69,71,73-75
+  s_24e0da68ceacce::t_5dc4f7369d45d4 58-67
+  s_24e0da68ceacce::t_f99baeb75b5e62 70,72,77
+apps/api/src/app.ts
+  s_24e0da68ceacce::t_39e68561394cf4 3
+  s_24e0da68ceacce::t_6f33b121e59d3e 5-7,17
+packages/health/package.json
+  s_24e0da68ceacce::t_93f652d83e0cbf 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "4a02b1284dd815eccbb9c562f363dd6c829c508f",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_bc698b2c29af78": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb767-5a04-7b20-8765-5dca1a16a408",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+apps/admin/package.json
+  s_4a3ad1ff241292::t_cb49838cbb95e5 42
+apps/web/package.json
+  s_4a3ad1ff241292::t_cb49838cbb95e5 47
+bun.lock
+  s_4a3ad1ff241292::t_9c352eef814fd3 43,132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.17",
+  "base_commit_sha": "3853dae89697c7853fcf238f1a3639edd7e7b721",
+  "prompts": {},
+  "sessions": {
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+apps/web/tsconfig.json
+  s_d21bbf6c4a4d17::t_f410217735537b 9
+e2e/tsconfig.json
+  s_d21bbf6c4a4d17::t_33423ba9d634f3 3
+packages/tsconfig/base.json
+  s_d21bbf6c4a4d17::t_2d71f7b677799a 11-13,18-19
+packages/client/tsconfig.json
+  s_d21bbf6c4a4d17::t_bca6778f56c5c7 4
+apps/admin/tsconfig.json
+  s_d21bbf6c4a4d17::t_1f5c5567781e6b 9
+packages/tsconfig/node.json
+  s_d21bbf6c4a4d17::t_1268ca5dd8247c 7-8
+apps/desktop/tsconfig.json
+  s_d21bbf6c4a4d17::t_0f973ceb66a3e5 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "f9e062b15029c2e6b782010ea3be12653abeeb74",
+  "prompts": {},
+  "sessions": {
+    "s_d21bbf6c4a4d17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31f37d36-5bcd-4ca6-baf8-f8f473a64ae5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

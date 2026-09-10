@@ -1,0 +1,63 @@
+packages/scripts/src/policy/report.ts
+  s_7e3e0a5e104ebe::t_bb09685e3e594c 1-15
+packages/scripts/src/policy/agents.test.ts
+  s_7e3e0a5e104ebe::t_e685987b739cc0 1-105
+packages/scripts/src/commands/verify.ts
+  s_7e3e0a5e104ebe::t_749b7e5ecc6bb9 36-43,48-53
+  s_7e3e0a5e104ebe::t_10a8af207882c8 7-8,12-16
+packages/scripts/src/policy/agents.ts
+  s_7e3e0a5e104ebe::t_674ffb6b1935da 1-103
+docs/development/testing.md
+  s_7e3e0a5e104ebe::t_56dbe03aaa635d 10
+AGENTS.md
+  s_7e3e0a5e104ebe::t_d925fe68b81330 127-129
+docs/architecture/tooling.md
+  s_7e3e0a5e104ebe::t_46267cbc19f279 103
+  s_7e3e0a5e104ebe::t_908765dae2bcab 135-144
+packages/scripts/src/root.ts
+  s_7e3e0a5e104ebe::t_37d9ac61146a94 12
+packages/scripts/src/policy/links.ts
+  s_7e3e0a5e104ebe::t_4bba76cebdecf2 1-9,13,15-57
+  s_7e3e0a5e104ebe::t_476ab27974f5e8 10-12,14
+packages/scripts/src/policy/workspaces.ts
+  s_7e3e0a5e104ebe::t_6f7f76aedb1086 1-86
+packages/scripts/src/policy/runtime.ts
+  s_7e3e0a5e104ebe::t_6c6e985f29a39b 63-65
+  s_7e3e0a5e104ebe::t_8c44370ffbb7d2 1,3-62,66-112,116-121
+  s_7e3e0a5e104ebe::t_ad273d5a43febb 113-115
+  s_7e3e0a5e104ebe::t_1a7790313ffc70 2
+packages/scripts/package.json
+  s_7e3e0a5e104ebe::t_cc0e3ad6180590 11
+packages/scripts/src/policy/checks.ts
+  s_7e3e0a5e104ebe::t_f15d42eca8ffa7 1-210
+package.json
+  s_7e3e0a5e104ebe::t_cc0e3ad6180590 72
+packages/scripts/src/policy/links.test.ts
+  s_7e3e0a5e104ebe::t_69034b7f176c80 1-60
+packages/scripts/src/commands/workflows.test.ts
+  s_7e3e0a5e104ebe::t_2c1f0135f9ddd0 17
+  s_7e3e0a5e104ebe::t_9675b90b4faa77 63-73
+packages/scripts/src/policy/command.ts
+  s_7e3e0a5e104ebe::t_3c9c22f6e38004 1-19
+packages/scripts/src/policy/workspaces.test.ts
+  s_7e3e0a5e104ebe::t_28c1bc82403c02 1-20,29-89
+  s_7e3e0a5e104ebe::t_6c6e985f29a39b 21-28
+.github/workflows/ci.yml
+  s_7e3e0a5e104ebe::t_3469b899505222 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c7558632e1186fa4e9ab764436f9bb37e4dcfea6",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

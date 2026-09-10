@@ -1,0 +1,37 @@
+apps/web/src/routes/(app)/settings.tsx
+  s_fcf4e03e306d31::t_c6947c66f7fe42 80-81
+  s_fcf4e03e306d31::t_2890f239ef492f 98-99,101
+  s_fcf4e03e306d31::t_6aeb30c3d81517 82,100
+  s_fcf4e03e306d31::t_142c3889886e48 32
+  s_fcf4e03e306d31::t_a784b1e4ebe9e4 27-31,33
+  s_fcf4e03e306d31::t_7269fbc955ea0a 1,10-11
+  s_fcf4e03e306d31::t_3ce9b7f371e057 12
+  s_fcf4e03e306d31::t_95c19812b20406 102-103
+apps/web/src/routes/(app)/dashboard.tsx
+  s_fcf4e03e306d31::t_69d1f9a66fbdd9 14
+  s_fcf4e03e306d31::t_ab3bb35ca7627f 244-263,268-270
+  s_fcf4e03e306d31::t_0c0bfd31aa10a4 132-163
+  s_fcf4e03e306d31::t_4db6ad55654713 71-75
+  s_fcf4e03e306d31::t_6d7fda7ac5a51d 6
+  s_fcf4e03e306d31::t_43c0871d8fe7dd 3-5,7-12
+  s_fcf4e03e306d31::t_5b7c7681345c26 110-131
+  s_fcf4e03e306d31::t_3956bbc7827e12 264-267
+  s_fcf4e03e306d31::t_73ed8540c26e00 58-59
+  s_fcf4e03e306d31::t_4744906a9b93f7 271-273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "2fdab017720f3be3c14da8b777a4760cee06bdce",
+  "prompts": {},
+  "sessions": {
+    "s_fcf4e03e306d31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "839f6b7e-11db-4a23-a7fd-e6e41340dbdc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

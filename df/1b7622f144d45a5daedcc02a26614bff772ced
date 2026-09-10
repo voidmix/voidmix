@@ -1,0 +1,60 @@
+packages/database/src/seed/data.ts
+  s_24e0da68ceacce::t_9a48d767ea13c3 25-29,173,182,191,216-217,225,229,235,239,245,249,301,304,311,331-333,338-340,363,376-386,394
+  s_24e0da68ceacce::t_4b4de59fff8e09 1-24,30-172,174-181,183-190,192-215,218-224,226-228,230-234,236-238,240-244,246-248,250-300,302-303,305-310,312-330,334-337,341-362,364-368,370-375,387-393,395-471
+  s_24e0da68ceacce::t_7ec8f604e172b3 369
+tooling/scripts/package.json
+  s_24e0da68ceacce::t_1c8965410e2429 20-21
+tooling/scripts/src/cli.ts
+  s_24e0da68ceacce::t_1c8965410e2429 35-42
+  s_24e0da68ceacce::t_eb13a359e5307b 34
+package.json
+  s_24e0da68ceacce::t_1c8965410e2429 31
+tooling/scripts/__tests__/db-seed.test.ts
+  s_24e0da68ceacce::t_42de8ffe709c26 1-23,26-67
+  s_24e0da68ceacce::t_a24759171561c3 24-25
+packages/database/src/seed/safety.ts
+  s_24e0da68ceacce::t_4b4de59fff8e09 2-32,34-37,39-40
+  s_24e0da68ceacce::t_42de8ffe709c26 1
+  s_24e0da68ceacce::t_b7c2dc752f30ea 33,38
+tooling/scripts/src/db-seed.ts
+  s_24e0da68ceacce::t_1c8965410e2429 1-12,14-31,33-80
+  s_24e0da68ceacce::t_42de8ffe709c26 13
+  s_24e0da68ceacce::t_367cde356a9e1b 32
+packages/database/src/seed/index.ts
+  s_24e0da68ceacce::t_0712f8309e7d14 163,176
+  s_24e0da68ceacce::t_92d9ce8dd34029 1,89-112
+  s_24e0da68ceacce::t_dc80357409f10c 164-170,172-173
+  s_24e0da68ceacce::t_c9a2f966bd51be 2-88,113-162,174-175,177-180
+  s_24e0da68ceacce::t_cc81164e4c6a46 171
+tooling/scripts/src/env.ts
+  s_24e0da68ceacce::t_b02a978ab0c045 2-3,5-7
+docs/db/seed.md
+  s_24e0da68ceacce::t_ca3255015088ec 1-21
+docs/README.md
+  s_24e0da68ceacce::t_6889bf46cab473 9
+.env.example
+  s_24e0da68ceacce::t_33fa64c77126bb 3-4
+packages/database/__tests__/seed.test.ts
+  s_24e0da68ceacce::t_42de8ffe709c26 1-36,43-90
+  s_24e0da68ceacce::t_49fe6be054bf5c 37-42
+packages/database/package.json
+  s_24e0da68ceacce::t_c9a2f966bd51be 15
+bun.lock
+  s_24e0da68ceacce::t_dd13c26aa3d802 626-627
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "df1b7622f144d45a5daedcc02a26614bff772ced",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

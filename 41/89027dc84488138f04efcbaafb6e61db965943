@@ -1,0 +1,27 @@
+packages/scripts/src/policy/checks.ts
+  s_d21bbf6c4a4d17::t_262b9c27ebe7e4 65
+  s_d21bbf6c4a4d17::t_c66a251cb8a427 318
+  s_d21bbf6c4a4d17::t_e1f60c61b40424 90-111
+  s_d21bbf6c4a4d17::t_2fd0e7eadb01f2 4
+packages/scripts/src/policy/ignores.ts
+  s_d21bbf6c4a4d17::t_c605f964fc9668 53-56
+  s_d21bbf6c4a4d17::t_52b46670610b17 1-52,57-94
+packages/scripts/src/policy/ignores.test.ts
+  s_d21bbf6c4a4d17::t_911c7d7d6a531b 1-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "4189027dc84488138f04efcbaafb6e61db965943",
+  "prompts": {},
+  "sessions": {
+    "s_d21bbf6c4a4d17": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31f37d36-5bcd-4ca6-baf8-f8f473a64ae5",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+apps/web/src/i18n/catalogs.test.ts
+  s_374685a980f535::t_b057d373b3a352 1-23
+apps/web/src/i18n/recovery-messages.ts
+  s_374685a980f535::t_b057d373b3a352 6-9
+packages/i18n/AGENTS.md
+  s_374685a980f535::t_b057d373b3a352 30-33
+apps/web/AGENTS.md
+  s_374685a980f535::t_1fb58ae17425d8 107-110
+docs/architecture/decisions/0004-i18n-and-paraglide.md
+  s_374685a980f535::t_23c28b21978fc7 20-24,58-59
+AGENTS.md
+  s_374685a980f535::t_8b08808e531787 159
+docs/development/agents.md
+  s_374685a980f535::t_8b08808e531787 33
+packages/i18n/src/client.ts
+  s_374685a980f535::t_f758a54c0c41f8 170-172
+  s_374685a980f535::t_f039dc8c472078 33-41,116,129-135,160-161
+apps/web/src/routes/__root.tsx
+  s_374685a980f535::t_b057d373b3a352 144-145
+apps/web/src/i18n/home.ts
+  s_374685a980f535::t_7a228aceda7eba 3
+packages/scripts/src/policy/agents.ts
+  s_374685a980f535::t_8b08808e531787 11
+docs/architecture/packages.md
+  s_374685a980f535::t_23c28b21978fc7 84-87
+CONTRIBUTING.md
+  s_374685a980f535::t_8b08808e531787 5
+packages/i18n/src/types.ts
+  s_374685a980f535::t_f039dc8c472078 7
+apps/web/src/i18n/common.ts
+  s_374685a980f535::t_7a228aceda7eba 3
+packages/i18n/src/build/index.ts
+  s_374685a980f535::t_6f85c3a5368dad 142
+  s_374685a980f535::t_07df818315aaa8 223
+  s_374685a980f535::t_7a228aceda7eba 221,224-227,229-234,242-245
+  s_374685a980f535::t_f039dc8c472078 222,228
+apps/web/src/i18n/errors.ts
+  s_374685a980f535::t_7a228aceda7eba 3
+apps/web/src/i18n/auth.ts
+  s_374685a980f535::t_7a228aceda7eba 3
+docs/architecture/applications.md
+  s_374685a980f535::t_b057d373b3a352 42-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "82636f35b0c236cf7bf8bcf721c41b510fdf736e",
+  "prompts": {},
+  "sessions": {
+    "s_374685a980f535": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03791-3b82-7542-9233-21f61af5cc7e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

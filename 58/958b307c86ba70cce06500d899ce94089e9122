@@ -1,0 +1,27 @@
+skills/voidmix-infra/references/orpc-procedures.md
+  s_7e3e0a5e104ebe::t_7dbf36b10a8791 1-98
+skills/voidmix-infra/SKILL.md
+  s_7e3e0a5e104ebe::t_92dff850ab8ab5 75
+  s_7e3e0a5e104ebe::t_f2f4203d32c574 1-64,68-74,76-102
+  s_7e3e0a5e104ebe::t_5c363548e6bc9a 65-67
+.gitignore
+  s_7e3e0a5e104ebe::t_61233b855896a1 61-65
+.claude/skills/voidmix-infra
+  s_7e3e0a5e104ebe::t_3bf548664c9143 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "58958b307c86ba70cce06500d899ce94089e9122",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

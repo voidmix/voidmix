@@ -1,0 +1,25 @@
+bun.lock
+  s_c2a4429a302405::t_5cf05691e4e275 340,400,1450-1451
+package.json
+  s_c2a4429a302405::t_5739a428cd33cc 45
+packages/ui/package.json
+  s_c2a4429a302405::t_d359189db2d89a 37
+packages/ui/src/lib/utils.ts
+  s_c2a4429a302405::t_f18409e4ae1c61 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "051b8f0d00712e9a633a1fe28693b8b30de78625",
+  "prompts": {},
+  "sessions": {
+    "s_c2a4429a302405": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08069-9409-7351-8a13-3703538591b9",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

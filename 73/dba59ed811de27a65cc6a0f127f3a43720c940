@@ -1,0 +1,19 @@
+apps/admin/e2e/auth.setup.ts
+  s_e83edb637e8c81::t_7e8cf9d7eaaf5e 105-110,114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "73dba59ed811de27a65cc6a0f127f3a43720c940",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

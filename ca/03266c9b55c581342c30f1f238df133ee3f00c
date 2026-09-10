@@ -1,0 +1,50 @@
+apps/web/src/lib/routes.ts
+  s_24e0da68ceacce::t_1edbf0f294feb9 50
+apps/web/__tests__/lib/api.test.ts
+  s_24e0da68ceacce::t_51a4b675b00fdb 1-3,5-46,54-67
+  s_24e0da68ceacce::t_3c014c63b3a012 4,47-53
+apps/web/src/routes/login.tsx
+  s_24e0da68ceacce::t_8fe17629856707 5,22,25
+  s_24e0da68ceacce::t_162fa2f3784bb6 6,11-19,21,23-24
+  s_24e0da68ceacce::t_9504cc1ecf550a 8
+apps/web/__tests__/server/login-redirect.test.ts
+  s_24e0da68ceacce::t_9504cc1ecf550a 1-38
+apps/web/server/login-redirect.server.ts
+  s_24e0da68ceacce::t_9504cc1ecf550a 1-41
+apps/web/server/api-policy.server.ts
+  s_24e0da68ceacce::t_25c9428fe0c260 49,54-66,70,84,134-137,154
+  s_24e0da68ceacce::t_74def7b38589c0 50-53
+apps/web/src/lib/api.ts
+  s_24e0da68ceacce::t_cc5c987498b22d 28-31
+  s_24e0da68ceacce::t_162fa2f3784bb6 12,14-15,18,20-21,27,32-35,39
+apps/web/__tests__/lib/routes.test.ts
+  s_24e0da68ceacce::t_0637cdf7c300a5 1-43
+apps/web/__tests__/server/api-policy.test.ts
+  s_24e0da68ceacce::t_50c38801059726 2,74-77,79-81
+  s_24e0da68ceacce::t_74def7b38589c0 27-32,68-73
+  s_24e0da68ceacce::t_25c9428fe0c260 52-65,67,82-85
+  s_24e0da68ceacce::t_a708cfebdca639 66,78
+apps/web/__tests__/routes/login.test.ts
+  s_24e0da68ceacce::t_57aee95bd60ecb 1-3,7-11,13-15,18-32,34-37,41-44,48-51,55-61
+  s_24e0da68ceacce::t_162fa2f3784bb6 4-5,16-17,33,39-40,46-47,53-54
+  s_24e0da68ceacce::t_99b8077ebac5ea 6,12,38,45,52
+apps/web/src/lib/login-redirect.functions.ts
+  s_24e0da68ceacce::t_9504cc1ecf550a 1-5,7-8,11
+  s_24e0da68ceacce::t_ff773598a4e789 6,9-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "ca03266c9b55c581342c30f1f238df133ee3f00c",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

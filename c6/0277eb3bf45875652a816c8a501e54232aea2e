@@ -1,0 +1,73 @@
+packages/scripts/src/cli.test.ts
+  s_dd909d2597cf6a::t_e25c56d07c981f 43
+packages/scripts/package.json
+  s_dd909d2597cf6a::t_c847d17aef792a 23
+  s_dd909d2597cf6a::t_391d767c4a4111 22
+docs/architecture/tooling.md
+  s_dd909d2597cf6a::t_6d00125505d7b6 106
+  s_dd909d2597cf6a::t_2ecc0483405bcf 107
+  s_dd909d2597cf6a::t_d1866362153c2d 259-260
+packages/db/src/postgres.ts
+  s_dd909d2597cf6a::t_07e0445aa2ee0b 66-79
+packages/scripts/src/commands/generate.ts
+  s_dd909d2597cf6a::t_881c53eec53ede 12-17,20,30,33
+README.md
+  s_dd909d2597cf6a::t_cc32466c258c76 92
+  s_dd909d2597cf6a::t_f2c0d90ddbf1b9 93
+packages/scripts/src/commands/workflows.test.ts
+  s_dd909d2597cf6a::t_4905aa46a0e236 55-64
+packages/scripts/src/database/operation.ts
+  s_dd909d2597cf6a::t_58fa306d3e2f7d 42-52
+  s_dd909d2597cf6a::t_d525ace8e3a299 85,91,97-98,102,104
+  s_dd909d2597cf6a::t_8383f473faabb2 19-23
+  s_dd909d2597cf6a::t_a641930f690890 81-82,87,89,94-96,99-101,103,105-111
+package.json
+  s_dd909d2597cf6a::t_bedebfa41e51ae 106
+  s_dd909d2597cf6a::t_3ca7d5c426d66b 107
+packages/scripts/src/database/operation.test.ts
+  s_dd909d2597cf6a::t_a4f13b21b1369b 142
+  s_dd909d2597cf6a::t_20f656981a0ca6 62-69
+  s_dd909d2597cf6a::t_4d22228f338efb 145,149-153,156
+  s_dd909d2597cf6a::t_4f3a227d562860 5
+  s_dd909d2597cf6a::t_fecbee5827983b 113,116,118-120
+  s_dd909d2597cf6a::t_6a113386f01cda 131-132,143-144,146-148,154-155,157-158
+  s_dd909d2597cf6a::t_535d3816855ec8 130
+packages/db/AGENTS.md
+  s_dd909d2597cf6a::t_2cca805df42b5a 70-71
+  s_dd909d2597cf6a::t_1e0a1ac2e47a61 62-64
+  s_dd909d2597cf6a::t_c8ef8452a9e37d 67-69,74-76
+  s_dd909d2597cf6a::t_71309d5e5845d9 10-14
+  s_dd909d2597cf6a::t_f6bf0fe59c174a 72-73
+packages/db/src/index.ts
+  s_dd909d2597cf6a::t_2b1612364679f8 7
+docs/development/getting-started.md
+  s_dd909d2597cf6a::t_de4d03efefd773 102-104,112
+  s_dd909d2597cf6a::t_0e2f7e5f03bf20 71
+  s_dd909d2597cf6a::t_70f45b23648e5d 105-111
+  s_dd909d2597cf6a::t_1ad5408991491f 113-118
+  s_dd909d2597cf6a::t_d83ab14a96da12 72
+  s_dd909d2597cf6a::t_826d9e3d0c75e1 85
+  s_dd909d2597cf6a::t_83a8cdb0a4bba3 86
+packages/scripts/src/database/command.ts
+  s_dd909d2597cf6a::t_a10f59f626d33a 54-55,57-61,63-66
+  s_dd909d2597cf6a::t_1ca2d201ea352a 83
+  s_dd909d2597cf6a::t_4a3afdebb641cc 85
+  s_dd909d2597cf6a::t_a382963ec38a0a 41-53
+  s_dd909d2597cf6a::t_d148d3bd852129 56,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "c60277eb3bf45875652a816c8a501e54232aea2e",
+  "prompts": {},
+  "sessions": {
+    "s_dd909d2597cf6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2dc67449-e0e7-424b-a1bf-a15117400f6a",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+apps/web/src/features/projects/components/workspace-shell.tsx
+  s_40d6e4f44d7e85::t_8a5179a7d70883 132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "4de740f3dd14695cdb47ed0337e1823734158796",
+  "prompts": {},
+  "sessions": {
+    "s_40d6e4f44d7e85": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a079ae-dc70-7ab0-8f19-df9346115deb",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+apps/web/src/components/language-switcher.tsx
+  s_4c374905db98d4::t_05902da2f558d1 1,39,43
+apps/web/src/components/language-switcher/component.test.tsx
+  s_4c374905db98d4::t_eb28c5fa0a7776 30,50-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6d4c839f0edb846abf3f5956f872a0539bde8ba0",
+  "prompts": {},
+  "sessions": {
+    "s_4c374905db98d4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05ca3-abbe-7302-87bd-399d1d077d4a",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

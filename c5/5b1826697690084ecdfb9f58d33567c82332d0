@@ -1,0 +1,33 @@
+apps/api/src/index.ts
+  s_e83edb637e8c81::t_d1d3443797dec7 101
+  s_e83edb637e8c81::t_00322cb4deba55 15,17-20,30
+  s_e83edb637e8c81::t_c3fc5339dd7aa8 16
+  s_e83edb637e8c81::t_dd1b0f46054e03 80
+  s_e83edb637e8c81::t_1156e009cd4bf0 1,14
+  s_e83edb637e8c81::t_15a868f1ca2a1d 8,23-29,31
+apps/api/package.json
+  s_e83edb637e8c81::t_c0a0325388bacd 7-9,15,20,26
+apps/api/scripts/build.mjs
+  s_e83edb637e8c81::t_3c16b1cfbbf31b 1-12,15,19
+  s_e83edb637e8c81::t_9449630921656b 13-14,16-18
+pnpm-workspace.yaml
+  s_e83edb637e8c81::t_826e3d6925320f 78
+pnpm-lock.yaml
+  s_e83edb637e8c81::t_790efc0048c8e6 27-29,445-447,460-462,473-475
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c55b1826697690084ecdfb9f58d33567c82332d0",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

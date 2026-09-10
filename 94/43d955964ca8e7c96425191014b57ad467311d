@@ -1,0 +1,25 @@
+apps/web/messages/zh.json
+  s_fcf4e03e306d31::t_647b7c99664d39 103,107,111
+apps/web/src/components/public-footer.tsx
+  s_fcf4e03e306d31::t_cfc17a62c234d5 23-58,61-83,90-114,117,119
+  s_fcf4e03e306d31::t_f7bef9d0248e44 115-116
+  s_fcf4e03e306d31::t_4b2a7054cac7b6 118
+apps/web/messages/en.json
+  s_fcf4e03e306d31::t_d24c4a3e0e01d0 103,107,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "9443d955964ca8e7c96425191014b57ad467311d",
+  "prompts": {},
+  "sessions": {
+    "s_fcf4e03e306d31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "839f6b7e-11db-4a23-a7fd-e6e41340dbdc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

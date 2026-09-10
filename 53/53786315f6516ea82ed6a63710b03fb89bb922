@@ -1,0 +1,143 @@
+packages/i18n/AGENTS.md
+  s_374685a980f535::t_45b4fd7fd6a76e 6,13,20-23,27-31
+packages/i18n/src/types.ts
+  s_374685a980f535::t_8ad08cef9e4db4 5-13
+apps/web/src/features/home/components/mobile-navigation.tsx
+  s_374685a980f535::t_c0f08e2278e674 2,24,84
+packages/mail/src/templates/welcome.tsx
+  s_374685a980f535::t_d5a07994026e00 5,8-9
+apps/desktop/AGENTS.md
+  s_374685a980f535::t_cf871fb633dd1d 25,46-47
+apps/desktop/src/features/devices/page.tsx
+  s_374685a980f535::t_ffa64564a65edc 7
+apps/web/src/features/admin/admin-shell.component.test.tsx
+  s_374685a980f535::t_39f1a217b43ac2 7,11-12,61-67
+apps/web/src/i18n/messages.ts
+  s_374685a980f535::t_c874983b1bbf4a 1-4
+package.json
+  s_374685a980f535::t_82c9dfc6a72aec 16,49
+apps/web/src/features/auth/verify-email.tsx
+  s_374685a980f535::t_ffa64564a65edc 16
+apps/web/src/components/language-switcher.tsx
+  s_374685a980f535::t_ffa64564a65edc 22
+docs/architecture/tooling.md
+  s_374685a980f535::t_478a1bb1b238ab 79-85
+docs/architecture/packages.md
+  s_374685a980f535::t_d2983a928effd9 67-68,77,79-85
+apps/web/tsconfig.json
+  s_374685a980f535::t_82c9dfc6a72aec 11
+apps/web/src/components/theme-switcher.tsx
+  s_374685a980f535::t_c0f08e2278e674 9,14
+apps/desktop/src/features/shell/desktop-shell.tsx
+  s_374685a980f535::t_ffa64564a65edc 22,53
+packages/mail/src/i18n.ts
+  s_374685a980f535::t_974a9658983adb 4-5
+  s_374685a980f535::t_d5a07994026e00 1-2,7-8,10-15
+apps/desktop/package.json
+  s_374685a980f535::t_82c9dfc6a72aec 10
+packages/mail/package.json
+  s_374685a980f535::t_82c9dfc6a72aec 12
+docs/architecture/decisions/0005-recipient-locale-on-mail-inputs.md
+  s_374685a980f535::t_478a1bb1b238ab 37-38
+  s_374685a980f535::t_9268b5bd206448 9
+packages/mail/src/templates/password-reset.tsx
+  s_374685a980f535::t_d5a07994026e00 6,9-10
+packages/i18n/src/translator.test.ts
+  s_374685a980f535::t_1fa3072ef5b9ed 1,3,5-8,10,12-19
+apps/web/src/features/chat/components/message.tsx
+  s_374685a980f535::t_ffa64564a65edc 13
+apps/desktop/src/features/activity/page.tsx
+  s_374685a980f535::t_ffa64564a65edc 55
+packages/i18n/src/index.ts
+  s_374685a980f535::t_8ad08cef9e4db4 14-15
+packages/mail/tsconfig.json
+  s_374685a980f535::t_82c9dfc6a72aec 4
+packages/i18n/tsconfig.json
+  s_374685a980f535::t_82c9dfc6a72aec 4
+apps/web/src/features/chat/components/composer.tsx
+  s_374685a980f535::t_c0f08e2278e674 2,41
+packages/i18n/src/translator.ts
+  s_374685a980f535::t_3aab3471b202b7 24
+  s_374685a980f535::t_8ad08cef9e4db4 1,3,5-23
+packages/i18n/src/client.ts
+  s_374685a980f535::t_3aab3471b202b7 24-25
+  s_374685a980f535::t_3b4c03c0274fd7 10-14,156,170-171,173,177-180,184-185,187,193-194,196
+  s_374685a980f535::t_ddf79b5a508b4c 19,131,167-169,174-176,181-183,188-192,195
+  s_374685a980f535::t_8ad08cef9e4db4 18,27,36,81-87,92,102,105,109-112,114-121,134,150-151,166,197,199,203
+  s_374685a980f535::t_c559cee8a93db7 124-125
+  s_374685a980f535::t_c70d06c584c10b 157-164,172,186,198
+  s_374685a980f535::t_d8065270992e64 113,122-123,126-130,132-133
+  s_374685a980f535::t_6a385ebdd6a299 135
+  s_374685a980f535::t_d5a6be9b757316 165
+apps/web/src/features/chat/components/composer.component.test.tsx
+  s_374685a980f535::t_39f1a217b43ac2 7,9,16-20
+apps/web/src/features/home/components/auth-actions.tsx
+  s_374685a980f535::t_c0f08e2278e674 2,6
+packages/i18n/src/server.ts
+  s_374685a980f535::t_8ad08cef9e4db4 3
+apps/desktop/src/features/settings/page.tsx
+  s_374685a980f535::t_ffa64564a65edc 36
+apps/desktop/src/i18n/messages.ts
+  s_374685a980f535::t_c874983b1bbf4a 1-4
+apps/web/src/features/chat/chat-shell.tsx
+  s_374685a980f535::t_ffa64564a65edc 13
+apps/web/AGENTS.md
+  s_374685a980f535::t_cf871fb633dd1d 29,67-68,100,107-110
+docs/architecture/applications.md
+  s_374685a980f535::t_d2983a928effd9 42-46,60
+  s_374685a980f535::t_666e21ea9d2387 62
+apps/web/src/features/chat/components/message-list.tsx
+  s_374685a980f535::t_ffa64564a65edc 10
+apps/web/src/features/auth/reset-password.tsx
+  s_374685a980f535::t_ffa64564a65edc 17
+apps/web/src/features/home/components/project-context.tsx
+  s_374685a980f535::t_ffa64564a65edc 10
+apps/web/src/i18n/catalogs.test.ts
+  s_374685a980f535::t_bb3aa6cc3e835b 3,7-16,18-19
+apps/web/src/features/home/components/activity-section.tsx
+  s_374685a980f535::t_ffa64564a65edc 9
+packages/mail/AGENTS.md
+  s_374685a980f535::t_cf871fb633dd1d 16
+apps/web/src/features/auth/auth-form.tsx
+  s_374685a980f535::t_ffa64564a65edc 14-15
+packages/i18n/package.json
+  s_374685a980f535::t_82c9dfc6a72aec 19,22
+README.md
+  s_374685a980f535::t_478a1bb1b238ab 43
+apps/desktop/src/main.tsx
+  s_374685a980f535::t_c874983b1bbf4a 6,17
+apps/web/src/components/theme-menu-items.tsx
+  s_374685a980f535::t_c0f08e2278e674 2,27
+apps/web/src/routes/__root.tsx
+  s_374685a980f535::t_c874983b1bbf4a 16,174
+packages/mail/src/templates/verification.tsx
+  s_374685a980f535::t_d5a07994026e00 7,10-11
+apps/web/src/features/home/components/sidebar.tsx
+  s_374685a980f535::t_ffa64564a65edc 10
+apps/web/package.json
+  s_374685a980f535::t_82c9dfc6a72aec 11
+apps/desktop/src/features/overview/page.tsx
+  s_374685a980f535::t_ffa64564a65edc 32,46,90,126,179,214
+docs/architecture/decisions/README.md
+  s_374685a980f535::t_9268b5bd206448 33
+bun.lock
+  s_374685a980f535::t_c96013328fb5b1 227,340,557,559,561,563,821,823,1235,1395-1396,1399-1400,1767
+docs/architecture/decisions/0004-use-intl-static-catalogs.md
+  s_374685a980f535::t_b0c49e47243638 1,5,10-12,16-20,22-26,31-32,35-37,39-41,45-53,57-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "5353786315f6516ea82ed6a63710b03fb89bb922",
+  "prompts": {},
+  "sessions": {
+    "s_374685a980f535": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03791-3b82-7542-9233-21f61af5cc7e",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

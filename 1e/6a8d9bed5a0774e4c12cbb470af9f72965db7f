@@ -1,0 +1,19 @@
+apps/web/src/routes/index.tsx
+  s_958590984c2116::t_6e9eb49936b95c 148-150,154,214
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1e6a8d9bed5a0774e4c12cbb470af9f72965db7f",
+  "prompts": {},
+  "sessions": {
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

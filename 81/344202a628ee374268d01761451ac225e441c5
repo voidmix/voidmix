@@ -1,0 +1,16 @@
+bun.lock
+  h_c4259206f43666 684-685,796,820,2508,2510,2660,2858-2861
+package.json
+  h_c4259206f43666 53-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "81344202a628ee374268d01761451ac225e441c5",
+  "prompts": {},
+  "humans": {
+    "h_c4259206f43666": {
+      "author": "Zack <lorenx@163.com>"
+    }
+  }
+}

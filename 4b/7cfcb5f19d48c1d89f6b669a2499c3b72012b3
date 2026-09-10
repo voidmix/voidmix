@@ -1,0 +1,21 @@
+.agents/skills/better-harness/references/asset-demand-reconciliation.md
+  s_4a3ad1ff241292::t_a72e2bed1dafc7 1-77
+.agents/skills/better-harness/references/project-harness.md
+  s_4a3ad1ff241292::t_2e2ca8da69f88d 1-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.17",
+  "base_commit_sha": "4b7cfcb5f19d48c1d89f6b669a2499c3b72012b3",
+  "prompts": {},
+  "sessions": {
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

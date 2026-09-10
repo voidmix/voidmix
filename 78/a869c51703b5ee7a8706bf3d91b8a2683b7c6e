@@ -1,0 +1,51 @@
+packages/scripts/src/policy/workspaces.test.ts
+  s_7e3e0a5e104ebe::t_df46d03f0a1afd 4,190-208
+  s_7e3e0a5e104ebe::t_cf0a577914c405 209
+docs/development/file-structure.md
+  s_7e3e0a5e104ebe::t_6f00865aa63d0e 94-98
+  s_7e3e0a5e104ebe::t_a5675efdeaf98f 89-92,99
+  s_7e3e0a5e104ebe::t_fdfecdf737dc10 1-88,93,100-109
+packages/scripts/src/policy/workspaces.ts
+  s_7e3e0a5e104ebe::t_8c73d61e01e259 35-51
+  s_7e3e0a5e104ebe::t_060ed6077318ae 34
+apps/admin/src/routes/__root.tsx
+  s_7e3e0a5e104ebe::t_7ba6ce352db373 29-32
+  s_7e3e0a5e104ebe::t_54c52e1aa67219 28
+apps/admin/public/favicon.svg
+  s_7e3e0a5e104ebe::t_ad047a86361a2f 1-5
+packages/scripts/src/policy/checks.ts
+  s_7e3e0a5e104ebe::t_420a07aab9745d 7,44-45,270,273,283
+docs/README.md
+  s_7e3e0a5e104ebe::t_1fa16499bb125c 29-30
+apps/desktop/AGENTS.md
+  s_7e3e0a5e104ebe::t_b30a265a8a7837 45-51
+apps/web/public/robots.txt
+  s_7e3e0a5e104ebe::t_ad047a86361a2f 1-3
+packages/scripts/src/policy/runtime.ts
+  s_7e3e0a5e104ebe::t_9bdb7cf3eb1f9c 181
+  s_7e3e0a5e104ebe::t_231f2e0bf31168 137-141
+  s_7e3e0a5e104ebe::t_37ca0fec7c078d 116-136,142-165
+apps/web/public/favicon.svg
+  s_7e3e0a5e104ebe::t_823ddef9bf29ea 1-5
+apps/web/src/routes/__root.tsx
+  s_7e3e0a5e104ebe::t_0f30446d8d2a44 30-33
+  s_7e3e0a5e104ebe::t_62809554a9f435 29
+apps/admin/public/robots.txt
+  s_7e3e0a5e104ebe::t_ad047a86361a2f 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "78a869c51703b5ee7a8706bf3d91b8a2683b7c6e",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

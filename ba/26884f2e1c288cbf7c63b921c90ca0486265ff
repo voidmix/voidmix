@@ -1,0 +1,170 @@
+.claude/skills/shadcn
+  s_7e3e0a5e104ebe::t_7d7e3d432f4d8e 1
+.agents/skills/tanstack-router-best-practices/rules/ts-use-from-param.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-130
+.agents/skills/postgres-drizzle/references/SCHEMA.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-605
+.agents/skills/tanstack-router-best-practices/rules/load-use-loaders.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-148
+.agents/skills/tanstack-router-best-practices/rules/search-custom-serializer.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-198
+.agents/skills/tanstack-start-best-practices/rules/auth-route-protection.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-192
+.agents/skills/tanstack-start-best-practices/rules/ssr-hydration-safety.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-187
+.agents/skills/shadcn/SKILL.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-277
+packages/scripts/src/policy/checks.ts
+  s_7e3e0a5e104ebe::t_9a3ccf59ded7b2 36-37
+  s_7e3e0a5e104ebe::t_33d685c6778ca8 5,51,269-271
+  s_7e3e0a5e104ebe::t_4b8c46748c9817 202-248
+skills/postgres-drizzle
+  s_7e3e0a5e104ebe::t_69441acfa3212a 1
+.agents/skills/tanstack-start-best-practices/rules/file-separation.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-152
+skills/voidmix-infra/SKILL.md
+  s_7e3e0a5e104ebe::t_29195d5ce2283c 25-28,32-37
+.agents/skills/postgres-drizzle/references/PERFORMANCE.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-589
+.agents/skills/tanstack-start-best-practices/rules/ssr-prerender.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-199
+package.json
+  s_7e3e0a5e104ebe::t_de0a2938bab3aa 73
+.agents/skills/tanstack-router-best-practices/rules/router-default-options.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-163
+.agents/skills/shadcn/rules/icons.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-101
+.agents/skills/tanstack-start-best-practices/rules/sf-input-validation.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-158
+.agents/skills/tanstack-router-best-practices/SKILL.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-113
+.agents/skills/shadcn/rules/styling.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-185
+.agents/skills/tanstack-router-best-practices/rules/search-validation.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-158
+.agents/skills/tanstack-router-best-practices/rules/nav-route-masks.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-197
+.agents/skills/tanstack-start-best-practices/rules/mw-request-middleware.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-166
+.agents/skills/tanstack-router-best-practices/rules/preload-intent.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-133
+.agents/skills/postgres-drizzle/references/RELATIONS.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-741
+.agents/skills/postgres-drizzle/README.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-69
+.agents/skills/tanstack-start-best-practices/SKILL.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-109
+.claude/skills/postgres-drizzle
+  s_7e3e0a5e104ebe::t_8147166bfdfa17 1
+packages/scripts/src/policy/runtime.ts
+  s_7e3e0a5e104ebe::t_7e45f3d9aed263 93-109
+  s_7e3e0a5e104ebe::t_5b094953265361 5,126
+.agents/skills/tanstack-router-best-practices/rules/split-lazy-routes.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-148
+.agents/skills/hono/SKILL.md
+  s_7e3e0a5e104ebe::t_f998ed295f55f4 1-579
+.agents/skills/tanstack-router-best-practices/rules/ts-register-router.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-113
+.agents/skills/tanstack-router-best-practices/rules/org-virtual-routes.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-133
+.agents/skills/postgres-drizzle/references/QUERIES.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-803
+.agents/skills/tanstack-router-best-practices/rules/nav-link-component.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-178
+.agents/skills/tanstack-start-best-practices/rules/ssr-streaming.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-201
+.agents/skills/tanstack-router-best-practices/rules/err-not-found.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-194
+.agents/skills/tanstack-start-best-practices/rules/deploy-adapters.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-201
+.agents/skills/postgres-drizzle/references/POSTGRES.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-660
+.agents/skills/postgres-drizzle/SKILL.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-225
+docs/development/agents.md
+  s_7e3e0a5e104ebe::t_a781c37b776681 124-176
+.agents/skills/tanstack-start-best-practices/rules/api-routes.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-238
+skills-lock.json
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 9-20
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 21-32
+  s_7e3e0a5e104ebe::t_f998ed295f55f4 1-8,33-35
+.agents/skills/tanstack-router-best-practices/rules/load-ensure-query-data.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-153
+.agents/skills/shadcn/rules/base-vs-radix.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-306
+.agents/skills/postgres-drizzle/references/MIGRATIONS.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-587
+skills/voidmix-infra/references/tanstack.md
+  s_7e3e0a5e104ebe::t_1cbdca6727d90b 1-90
+.agents/skills/shadcn/cli.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-290
+.agents/skills/tanstack-start-best-practices/rules/env-functions.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-211
+skills/tanstack-start-best-practices
+  s_7e3e0a5e104ebe::t_d11733007cd959 1
+.claude/skills/hono
+  s_7e3e0a5e104ebe::t_c929678ede596a 1
+.agents/skills/tanstack-start-best-practices/rules/err-server-errors.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-187
+.agents/skills/shadcn/rules/chat.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-224
+.agents/skills/tanstack-router-best-practices/rules/load-parallel.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-190
+.agents/skills/shadcn/rules/composition.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-213
+.prettierignore
+  s_7e3e0a5e104ebe::t_971ceef7406f63 10-14
+.agents/skills/tanstack-start-best-practices/rules/auth-session-management.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-191
+skills/tanstack-router-best-practices
+  s_7e3e0a5e104ebe::t_3ad4db20427819 1
+.agents/skills/tanstack-start-best-practices/rules/sf-create-server-fn.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-146
+.agents/skills/postgres-drizzle/references/CHEATSHEET.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-439
+skills/hono
+  s_7e3e0a5e104ebe::t_a385e9f1a9381b 1
+.agents/skills/voidmix-infra
+  s_7e3e0a5e104ebe::t_8a3d634d8f9388 1
+.claude/skills/tanstack-router-best-practices
+  s_7e3e0a5e104ebe::t_458e1e9bf341f4 1
+packages/scripts/src/policy/skills.test.ts
+  s_7e3e0a5e104ebe::t_3db5ec173db21e 1-88
+packages/scripts/src/policy/skills.ts
+  s_7e3e0a5e104ebe::t_6af92214c0e3be 1-89
+skills/shadcn
+  s_7e3e0a5e104ebe::t_62a534dc2172c6 1
+.agents/skills/shadcn/customization.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-209
+.claude/skills/tanstack-start-best-practices
+  s_7e3e0a5e104ebe::t_b8b38075898e07 1
+.agents/skills/shadcn/rules/forms.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-192
+.agents/skills/shadcn/mcp.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-105
+.agents/skills/shadcn/evals/evals.json
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-77
+.agents/skills/shadcn/agents/openai.yml
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-5
+.agents/skills/shadcn/registry.md
+  s_7e3e0a5e104ebe::t_98b93cfe64503f 1-277
+.agents/skills/tanstack-router-best-practices/rules/ctx-root-context.md
+  s_7e3e0a5e104ebe::t_463e3cf86e20c4 1-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ba26884f2e1c288cbf7c63b921c90ca0486265ff",
+  "prompts": {},
+  "sessions": {
+    "s_7e3e0a5e104ebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a1b5601f-216d-48c4-bd15-ec190ad117bf",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

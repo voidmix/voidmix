@@ -1,0 +1,27 @@
+apps/web/AGENTS.md
+  s_175e8a2bb799ac::t_6e8be01b32e975 105-108
+package.json
+  s_175e8a2bb799ac::t_6e8be01b32e975 72
+apps/web/vite.config.ts
+  s_175e8a2bb799ac::t_6e8be01b32e975 5,36-37
+apps/web/package.json
+  s_175e8a2bb799ac::t_6e8be01b32e975 41
+bun.lock
+  s_175e8a2bb799ac::t_e2267f435cb278 110,409,1109-1110,1773-1774,1825-1826,1975-1976,2015-2016
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "98eb574dafe95746056cf2a4c69b8bbb495be9d7",
+  "prompts": {},
+  "sessions": {
+    "s_175e8a2bb799ac": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a057f5-4276-7912-a812-765b3c64f8eb",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

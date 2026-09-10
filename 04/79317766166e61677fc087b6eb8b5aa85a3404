@@ -1,0 +1,41 @@
+packages/scripts/src/commands/verify.ts
+  s_8b653907b24a72::t_ec82da075d14b5 6-10,21-22,30-38
+  s_8b653907b24a72::t_eb93c4b0462074 15-18
+docs/development/testing.md
+  s_8b653907b24a72::t_eb93c4b0462074 42-48
+apps/api/vite.config.ts
+  s_8b653907b24a72::t_bcb47d6aaf9914 6
+docs/architecture/deployment.md
+  s_8b653907b24a72::t_3ba54442c885f0 59-67
+apps/admin/Dockerfile
+  s_8b653907b24a72::t_bcb47d6aaf9914 18-19
+apps/web/Dockerfile
+  s_8b653907b24a72::t_bcb47d6aaf9914 16-17
+packages/scripts/src/commands/workflows.test.ts
+  s_8b653907b24a72::t_ec82da075d14b5 19,62
+  s_8b653907b24a72::t_eb93c4b0462074 57-61
+packages/scripts/src/verify/nitro.test.ts
+  s_8b653907b24a72::t_ec82da075d14b5 1-19,26-95
+  s_8b653907b24a72::t_f696d059b0cfdc 20-25
+packages/scripts/src/verify/nitro.ts
+  s_8b653907b24a72::t_ec82da075d14b5 1-30,58-158
+  s_8b653907b24a72::t_21e5b7090676b3 31-57
+apps/api/Dockerfile
+  s_8b653907b24a72::t_bcb47d6aaf9914 15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0479317766166e61677fc087b6eb8b5aa85a3404",
+  "prompts": {},
+  "sessions": {
+    "s_8b653907b24a72": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00d8e-a5f4-7622-a2a7-af5f904bcd34",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

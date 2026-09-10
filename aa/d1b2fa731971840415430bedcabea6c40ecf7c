@@ -1,0 +1,25 @@
+.claude/agents/domain-dev.md
+  s_91db6c778ee124::t_bd46af5a92837d 14
+.claude/agents/api-auth.md
+  s_91db6c778ee124::t_7e739f3ee037bc 29
+  s_91db6c778ee124::t_d3d33112a725fb 13,15-17
+  s_91db6c778ee124::t_cedfa0206a9604 21
+  s_91db6c778ee124::t_08a12daeaac587 7
+  s_91db6c778ee124::t_cf830905d80646 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "aad1b2fa731971840415430bedcabea6c40ecf7c",
+  "prompts": {},
+  "sessions": {
+    "s_91db6c778ee124": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a9f7bc7-cacb-4695-b3f7-3f8a707aa551",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

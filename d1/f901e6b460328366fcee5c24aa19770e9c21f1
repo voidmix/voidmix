@@ -1,0 +1,117 @@
+.claude/agents/web-dev.md
+  s_e83edb637e8c81::t_37152fd29a3ea4 11,13
+docs/operations/observability.md
+  s_e83edb637e8c81::t_0170483b463623 56
+docs/development/environment.md
+  s_e83edb637e8c81::t_10c5603c25a92e 47
+docs/architecture/packages.md
+  s_e83edb637e8c81::t_a01cfcbee38fea 52
+packages/env/tsconfig.json
+  s_e83edb637e8c81::t_b9b46391f0ab9d 6
+packages/tooling/scripts/src/release/production.ts
+  s_e83edb637e8c81::t_677bb2d5a8ec6c 145
+docs/operations/deployment.md
+  s_e83edb637e8c81::t_938af6a1d834aa 14-15
+  s_e83edb637e8c81::t_53e793b453fe73 50
+apps/web/README.md
+  s_e83edb637e8c81::t_c4972948d8befe 17
+  s_e83edb637e8c81::t_b6a4e63011eae5 8-9
+AGENTS.md
+  s_e83edb637e8c81::t_68052133941796 56
+  s_e83edb637e8c81::t_12d222dc8f2a24 252
+  s_e83edb637e8c81::t_219ec7839c6ba3 264
+  s_e83edb637e8c81::t_e3fc4cad563d02 61-62
+  s_e83edb637e8c81::t_16122f5be6b409 299
+  s_e83edb637e8c81::t_92c6a1fbb1c452 45
+  s_e83edb637e8c81::t_c4e74ca9559ca4 88
+  s_e83edb637e8c81::t_916126b2501f03 76-87,89-90
+  s_e83edb637e8c81::t_de7b72cf45eae2 191
+  s_e83edb637e8c81::t_f57bdb2c4692ce 145-157,160-162
+  s_e83edb637e8c81::t_bbeab2d8ecae1f 292
+  s_e83edb637e8c81::t_ddc948ff6ad96b 294-295
+  s_e83edb637e8c81::t_f4c84cc033d552 92,94
+  s_e83edb637e8c81::t_5389e6cc87ee5f 116
+  s_e83edb637e8c81::t_9415bd72018dcc 91
+README.md
+  s_e83edb637e8c81::t_f297a03a235a79 44
+  s_e83edb637e8c81::t_ef35b1805401ac 4
+  s_e83edb637e8c81::t_def8a864a4434a 69-70,73-75,77,84-88,94-97,105-106,110-111,118
+  s_e83edb637e8c81::t_18f7a1849e5051 26
+docs/db/seed.md
+  s_e83edb637e8c81::t_b00ca64636cf09 8-9
+apps/admin/messages/en.json
+  s_e83edb637e8c81::t_d9fe1b3ab91e05 623
+PRODUCT.md
+  s_e83edb637e8c81::t_20c84f6f31a8e9 10
+apps/web/.cta.json
+  s_e83edb637e8c81::t_ff20b86d3d4c3c 6
+.agents/skills/verify/SKILL.md
+  s_e83edb637e8c81::t_82d5512714a6b4 81-82,88
+  s_e83edb637e8c81::t_a9613f63a612c2 109
+  s_e83edb637e8c81::t_bb13f9a98d442c 3
+  s_e83edb637e8c81::t_dcba2a261b0152 30
+  s_e83edb637e8c81::t_a56c279b61bf5c 37
+  s_e83edb637e8c81::t_18242ad9043d81 68
+apps/admin/messages/zh.json
+  s_e83edb637e8c81::t_f6599979df46d2 623
+packages/tooling/scripts/__tests__/hooks.test.ts
+  s_e83edb637e8c81::t_6e8c94282fb9b7 75,78
+  s_e83edb637e8c81::t_1511e76f9411ba 79-80
+apps/desktop/AGENTS.md
+  s_e83edb637e8c81::t_936b1c407d3df0 8
+.claude/agents/ui-dev.md
+  s_e83edb637e8c81::t_89dea392df7e87 18
+  s_e83edb637e8c81::t_657b7e4b366662 41
+apps/desktop/README.md
+  s_e83edb637e8c81::t_2e992d868a85c5 7-8
+apps/api/tsconfig.json
+  s_e83edb637e8c81::t_90dabea0175838 4
+packages/tooling/scripts/src/hooks/guard-bash.ts
+  s_e83edb637e8c81::t_fc5aec7cf6490c 154-155
+packages/i18n/tsconfig.json
+  s_e83edb637e8c81::t_7704ae6e03a279 9
+docs/development/desktop.md
+  s_e83edb637e8c81::t_1032efc8db28c1 27-31
+packages/i18n/src/cli.ts
+  s_e83edb637e8c81::t_913f00b1302299 1
+docs/db/migrations.md
+  s_e83edb637e8c81::t_9fae0fe778532c 11-14
+docs/development/workflow.md
+  s_e83edb637e8c81::t_bfcc5e448a99d8 36-37,42
+  s_e83edb637e8c81::t_54f3cd96da9164 19
+  s_e83edb637e8c81::t_7db93da13caddd 5-6,10
+.claude/agents/vp-verify.md
+  s_e83edb637e8c81::t_c039f3776de710 7,17
+packages/tooling/scripts/tsconfig.json
+  s_e83edb637e8c81::t_d842caee27117b 5
+packages/mail/tsconfig.json
+  s_e83edb637e8c81::t_6f9155bbd458b5 6
+docs/architecture/overview.md
+  s_e83edb637e8c81::t_b96c0ad6353a3e 3
+  s_e83edb637e8c81::t_f53a722eb027ce 76
+.claude/agents/db-migrate.md
+  s_e83edb637e8c81::t_2db1880c8f18fa 18
+docs/ROADMAP.md
+  s_e83edb637e8c81::t_376d94cc4e4de6 8
+  s_e83edb637e8c81::t_cb0f278ca1a097 26
+  s_e83edb637e8c81::t_e80bdd0e8c95b0 42
+.claude/agents/desktop-dev.md
+  s_e83edb637e8c81::t_0057fe530a5c64 14
+  s_e83edb637e8c81::t_99fbea0b6da551 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d1f901e6b460328366fcee5c24aa19770e9c21f1",
+  "prompts": {},
+  "sessions": {
+    "s_e83edb637e8c81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3c27949d-2737-4a1c-86ae-8e700a977f28",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

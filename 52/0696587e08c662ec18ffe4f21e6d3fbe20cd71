@@ -1,0 +1,34 @@
+apps/web/messages/en.json
+  s_fcf4e03e306d31::t_1b89efb1ac35a2 91
+  s_fcf4e03e306d31::t_cdfd7fc1e8f41a 84
+  s_fcf4e03e306d31::t_1e4170f899f45e 54
+  s_fcf4e03e306d31::t_634f816ef87702 97
+apps/web/src/routes/index.tsx
+  s_fcf4e03e306d31::t_bf5d6b2d9a0424 247-248,257-261,281
+  s_fcf4e03e306d31::t_fe0de5c14114e1 19
+apps/web/messages/zh.json
+  s_fcf4e03e306d31::t_c8c74146bd0f39 56
+  s_fcf4e03e306d31::t_b0a63279656daf 91
+  s_fcf4e03e306d31::t_e0de266ad8564f 97
+  s_fcf4e03e306d31::t_ca4b5dce8d79d9 84
+  s_fcf4e03e306d31::t_49276c45e9119d 107
+  s_fcf4e03e306d31::t_fd50b985edcf7f 54
+apps/web/src/components/capability-highlights.tsx
+  s_fcf4e03e306d31::t_7a81aac5e6eab7 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "520696587e08c662ec18ffe4f21e6d3fbe20cd71",
+  "prompts": {},
+  "sessions": {
+    "s_fcf4e03e306d31": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "839f6b7e-11db-4a23-a7fd-e6e41340dbdc",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

@@ -1,0 +1,109 @@
+apps/web/__tests__/server/monitoring.test.ts
+  s_3c9511304bb034::t_60246e812e1ecd 23
+  s_3c9511304bb034::t_261ffeaf7ca1b9 18-22,26
+apps/web/server/runtime.server.ts
+  s_3c9511304bb034::t_fa3b70c17801a7 4
+  s_3c9511304bb034::t_817b9c0d806cd8 38
+  s_3c9511304bb034::t_09c8ec3d246c86 5,25,34-37,39-41
+package.json
+  s_3c9511304bb034::t_07a1856165e3ef 75-82
+packages/observability/package.json
+  s_3c9511304bb034::t_07a1856165e3ef 16-23,26-27
+packages/observability/src/server.ts
+  s_3c9511304bb034::t_9a82932ca597c2 91-96
+  s_3c9511304bb034::t_3b72b02cc0b464 260
+  s_3c9511304bb034::t_c52fef7487a7c9 2-8,11,15-16,25-34,38-39,61-63,66,70-85,87-90,97-111,114,122,145-146,148,150-156,159,162-163,165,169,171,173-176,178,182,184,186-189,191,194-197,199-202,204,207,210-217,219,223,225,229-230,232-236,238,240-241,262,264-265,269-270,272,277
+  s_3c9511304bb034::t_4e676d8be9afbd 286-287,295
+  s_3c9511304bb034::t_d22a71c7a8cf53 40,42-51,54-58,118-121,123-125,127-142,144,166,243-259,261,263,271,282-285,288,294,296-299
+  s_3c9511304bb034::t_ae154cf19da4df 1,226
+  s_3c9511304bb034::t_1e3a7fa64bb024 22,266-268
+  s_3c9511304bb034::t_7c9dd7e09788e9 13,242
+  s_3c9511304bb034::t_463e158ee4b081 289-293
+  s_3c9511304bb034::t_ed146a596a6949 126
+  s_3c9511304bb034::t_ba4ba0404b9434 12,14,41
+packages/observability/__tests__/server.test.ts
+  s_3c9511304bb034::t_9a82932ca597c2 31-32
+  s_3c9511304bb034::t_ed146a596a6949 21-22,24-29,87
+  s_3c9511304bb034::t_593c4cb35ee3d7 3-5,10-17,19-20,23,30,33,35-37,48-51,53-54,56-60,67-68,70-71,77,79,82,84,88,91-96,107-109,112-115,118-119,123,126,128,132-135,137,139,141,143,147-155,158,161-163,166-167,175,177-184,188,191-192,195,200
+  s_3c9511304bb034::t_35cf7a48f17110 18
+  s_3c9511304bb034::t_c9700b820b7c46 41-47,52,55,61-66,69,72-76
+packages/observability/src/types.ts
+  s_3c9511304bb034::t_132d369fce2080 38-40,44
+  s_3c9511304bb034::t_35cf7a48f17110 30-37
+.env.example
+  s_3c9511304bb034::t_a076d38a82a09b 67-69,71
+  s_3c9511304bb034::t_a129689f6965fe 70
+packages/logger/src/index.ts
+  s_3c9511304bb034::t_4777cd3fe2a421 21,43,129,133,144,146-148,192
+  s_3c9511304bb034::t_1e3a7fa64bb024 16-20
+  s_3c9511304bb034::t_55d57e9c210e7d 139,223-230,232,240
+  s_3c9511304bb034::t_ed146a596a6949 31,140,145,161-170,201-210,231
+README.md
+  s_3c9511304bb034::t_a076d38a82a09b 16
+packages/observability/__tests__/env.test.ts
+  s_3c9511304bb034::t_817b9c0d806cd8 4,31-33,37-42
+  s_3c9511304bb034::t_593c4cb35ee3d7 7,12-14,18-20,23,27,30
+  s_3c9511304bb034::t_fa3b70c17801a7 34-36
+docs/operations/runbooks/auth-storage-secrets.md
+  s_3c9511304bb034::t_92afa7ec9f6023 13,32,48
+docs/operations/observability.md
+  s_3c9511304bb034::t_3206428610e4ee 8-10,16-17,24,51
+  s_3c9511304bb034::t_a129689f6965fe 14-15
+  s_3c9511304bb034::t_df6889be6bcc59 46-50
+docs/operations/runbooks/database-recovery.md
+  s_3c9511304bb034::t_ed146a596a6949 31
+docs/operations/runbooks/deployment-rollback.md
+  s_3c9511304bb034::t_92afa7ec9f6023 24
+apps/admin/server/runtime.server.ts
+  s_3c9511304bb034::t_09c8ec3d246c86 5,23,32-35,37-39
+  s_3c9511304bb034::t_817b9c0d806cd8 36
+  s_3c9511304bb034::t_fa3b70c17801a7 4
+docs/architecture/overview.md
+  s_3c9511304bb034::t_640111341ddce1 66,102
+docs/operations/runbooks/actions-outage.md
+  s_3c9511304bb034::t_92afa7ec9f6023 37
+apps/admin/server/monitoring.server.ts
+  s_3c9511304bb034::t_410284da730e19 3,9,35-37,41
+  s_3c9511304bb034::t_fa3b70c17801a7 2
+  s_3c9511304bb034::t_817b9c0d806cd8 39
+packages/observability/src/env.ts
+  s_3c9511304bb034::t_817b9c0d806cd8 9,14-20
+  s_3c9511304bb034::t_132d369fce2080 6-8
+docs/ROADMAP.md
+  s_3c9511304bb034::t_53eb34e031c666 44
+apps/web/server/monitoring.server.ts
+  s_3c9511304bb034::t_410284da730e19 3,41,46-48,52
+  s_3c9511304bb034::t_fa3b70c17801a7 2
+  s_3c9511304bb034::t_817b9c0d806cd8 50
+apps/admin/__tests__/server/monitoring.test.ts
+  s_3c9511304bb034::t_60246e812e1ecd 23
+  s_3c9511304bb034::t_261ffeaf7ca1b9 19-21,26
+packages/logger/__tests__/logger.test.ts
+  s_3c9511304bb034::t_ed146a596a6949 3,128-166
+  s_3c9511304bb034::t_1f710c5545ef08 167
+docs/development/environment.md
+  s_3c9511304bb034::t_640111341ddce1 19
+bun.lock
+  s_3c9511304bb034::t_de5619d9ed05ec 508-515,519,688-695,1075-1077,1081-1087,1091-1094,1099-1100,1277-1280,2361-2362
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "2bada58c272c3be3fdb86c9f75bce58d1451efde",
+  "prompts": {},
+  "humans": {
+    "h_c4259206f43666": {
+      "author": "Zack <lorenx@163.com>"
+    }
+  },
+  "sessions": {
+    "s_3c9511304bb034": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fcc7e-f19e-72f0-9294-5ed7c052e680",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

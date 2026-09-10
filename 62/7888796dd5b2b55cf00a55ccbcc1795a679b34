@@ -1,0 +1,1735 @@
+.agents/skills/bun-runtime/SKILL.md
+  s_f43ac2349e6c0d::t_970f075c29eaf8 1-85
+.agents/skills/hallmark/SKILL.md
+  s_d04ed08162a767::t_0ab28d9c7849c5 1-598
+.agents/skills/hallmark/references/anti-patterns.md
+  s_d04ed08162a767::t_4c91810fffa026 1-418
+.agents/skills/hallmark/references/assets.md
+  s_d04ed08162a767::t_058a43e8da7baf 1-418
+.agents/skills/hallmark/references/color.md
+  s_d04ed08162a767::t_e37fab652e6ffa 1-95
+.agents/skills/hallmark/references/component-cookbook.md
+  s_d04ed08162a767::t_6a86d96d2875af 1-258
+.agents/skills/hallmark/references/components/c1-outlined-chip.md
+  s_d04ed08162a767::t_8aacc6096d756a 1-20
+.agents/skills/hallmark/references/components/c2-inline-form-as-cta.md
+  s_d04ed08162a767::t_6a9e50e08603e7 1-27
+.agents/skills/hallmark/references/components/c3-typographic-link.md
+  s_d04ed08162a767::t_95598a4fe4ea3c 1-9
+.agents/skills/hallmark/references/components/c4-sticky-bottom-bar.md
+  s_d04ed08162a767::t_4d6900396ef94a 1-29
+.agents/skills/hallmark/references/components/f1-bento-grid.md
+  s_d04ed08162a767::t_ade55ea3b32ad1 1-37
+.agents/skills/hallmark/references/components/f2-sticky-scroll-stack.md
+  s_d04ed08162a767::t_d1a394cd183cdd 1-36
+.agents/skills/hallmark/references/components/f3-tabular-spec-sheet.md
+  s_d04ed08162a767::t_d4d718562b7df1 1-18
+.agents/skills/hallmark/references/components/f4-step-sequence.md
+  s_d04ed08162a767::t_bf699f08337873 1-20
+.agents/skills/hallmark/references/components/f5-annotated-screenshot.md
+  s_d04ed08162a767::t_c09905674427a2 1-12
+.agents/skills/hallmark/references/components/f6-product-card-grid.md
+  s_d04ed08162a767::t_89d95262c6e45e 1-94
+.agents/skills/hallmark/references/components/ft1-mast-headed.md
+  s_d04ed08162a767::t_ba47773a9dfc8e 1-13
+.agents/skills/hallmark/references/components/ft2-inline-rule-single-line.md
+  s_d04ed08162a767::t_2146538d3961d3 1-11
+.agents/skills/hallmark/references/components/ft3-index-style-category-list.md
+  s_d04ed08162a767::t_1a89084a1c60dd 1-28
+.agents/skills/hallmark/references/components/ft4-dense-typographic.md
+  s_d04ed08162a767::t_40bb91b8c64365 1-14
+.agents/skills/hallmark/references/components/ft5-statement.md
+  s_d04ed08162a767::t_082b961e1bc7e2 1-40
+.agents/skills/hallmark/references/components/ft6-letter-close.md
+  s_d04ed08162a767::t_b4917c3010438e 1-37
+.agents/skills/hallmark/references/components/ft7-newsletter-first.md
+  s_d04ed08162a767::t_e46fb08be99285 1-53
+.agents/skills/hallmark/references/components/ft8-marquee-scroll.md
+  s_d04ed08162a767::t_44d3994729d0aa 1-52
+.agents/skills/hallmark/references/components/h1-marquee.md
+  s_d04ed08162a767::t_5f9b75e627c20a 1-24
+.agents/skills/hallmark/references/components/h2-split-diptych.md
+  s_d04ed08162a767::t_8ed57458bebc20 1-30
+.agents/skills/hallmark/references/components/h3-quote-led.md
+  s_d04ed08162a767::t_e8e5ec1cecc2d6 1-12
+.agents/skills/hallmark/references/components/h4-stat-led.md
+  s_d04ed08162a767::t_5aaf9162ccc3bc 1-20
+.agents/skills/hallmark/references/components/h5-letter-hero.md
+  s_d04ed08162a767::t_86e7921db00364 1-12
+.agents/skills/hallmark/references/components/h6-photographic-fold.md
+  s_d04ed08162a767::t_bba360ee6f57c2 1-29
+.agents/skills/hallmark/references/components/h7-demo-video-clipped-by-viewport-edge.md
+  s_d04ed08162a767::t_7797dc15c3f544 1-53
+.agents/skills/hallmark/references/components/h8-mockup-split-browser-framed.md
+  s_d04ed08162a767::t_ccceea6c8c936a 1-46
+.agents/skills/hallmark/references/components/h9-custom-illustration-centerpiece.md
+  s_d04ed08162a767::t_5985e6783d5416 1-41
+.agents/skills/hallmark/references/components/n1-wordmark-2-links.md
+  s_d04ed08162a767::t_9b224d6cbc41ae 1-15
+.agents/skills/hallmark/references/components/n10-floating-on-scroll-morph.md
+  s_d04ed08162a767::t_38ed29bc7ccd7b 1-22
+.agents/skills/hallmark/references/components/n11-mega-menu.md
+  s_d04ed08162a767::t_b6af562b2e815f 1-92
+.agents/skills/hallmark/references/components/n12-banner-retract.md
+  s_d04ed08162a767::t_3a60ce24732f30 1-65
+.agents/skills/hallmark/references/components/n13-inline-cmdk-pill.md
+  s_d04ed08162a767::t_4554abbb05dc6e 1-88
+.agents/skills/hallmark/references/components/n1b-saas-three-section.md
+  s_d04ed08162a767::t_00770cb843142e 1-88
+.agents/skills/hallmark/references/components/n2-floating-chip.md
+  s_d04ed08162a767::t_aaa5d9bfaf85e8 1-25
+.agents/skills/hallmark/references/components/n3-side-rail.md
+  s_d04ed08162a767::t_f79ffd9bd01540 1-28
+.agents/skills/hallmark/references/components/n4-hidden-behind-k.md
+  s_d04ed08162a767::t_128ee6150dea66 1-10
+.agents/skills/hallmark/references/components/n5-floating-pill.md
+  s_d04ed08162a767::t_3dea3aff01aeda 1-36
+.agents/skills/hallmark/references/components/n6-newspaper-masthead.md
+  s_d04ed08162a767::t_3113fe40b3842a 1-57
+.agents/skills/hallmark/references/components/n7-brutal-slab.md
+  s_d04ed08162a767::t_61d9e92b1657a2 1-50
+.agents/skills/hallmark/references/components/n8-terminal-command.md
+  s_d04ed08162a767::t_c91caa93a91094 1-53
+.agents/skills/hallmark/references/components/n9-edge-aligned-minimal.md
+  s_d04ed08162a767::t_25fe925daac939 1-27
+.agents/skills/hallmark/references/components/s1-left-margin-numbered.md
+  s_d04ed08162a767::t_7cb26b1d35ad0b 1-21
+.agents/skills/hallmark/references/components/s2-hanging.md
+  s_d04ed08162a767::t_64828b9e073508 1-17
+.agents/skills/hallmark/references/components/s3-sticky-pinned.md
+  s_d04ed08162a767::t_ce5bda27607ecc 1-28
+.agents/skills/hallmark/references/components/s4-inline-no-break.md
+  s_d04ed08162a767::t_4df4588aa197e0 1-17
+.agents/skills/hallmark/references/components/s5-bottom-anchored.md
+  s_d04ed08162a767::t_22d5fffc88e830 1-14
+.agents/skills/hallmark/references/components/t1-pull-quote-with-marginalia.md
+  s_d04ed08162a767::t_f0840340d185b1 1-12
+.agents/skills/hallmark/references/components/t2-logo-wall-hairline.md
+  s_d04ed08162a767::t_53118043decf2a 1-33
+.agents/skills/hallmark/references/components/t3-single-huge-quote.md
+  s_d04ed08162a767::t_3f1d4b5234cc1b 1-12
+.agents/skills/hallmark/references/components/t4-numbered-stat-strip.md
+  s_d04ed08162a767::t_086201e97e9c07 1-15
+.agents/skills/hallmark/references/contract.md
+  s_d04ed08162a767::t_bb620a1e3381fb 1-25
+.agents/skills/hallmark/references/copy.md
+  s_d04ed08162a767::t_2803103fda21ca 1-182
+.agents/skills/hallmark/references/custom-craft.md
+  s_d04ed08162a767::t_f36798ca22e1cb 1-815
+.agents/skills/hallmark/references/custom-theme.md
+  s_d04ed08162a767::t_7334cb4052aa53 1-378
+.agents/skills/hallmark/references/design-md.md
+  s_d04ed08162a767::t_9b8ea733f25730 1-125
+.agents/skills/hallmark/references/export-formats.md
+  s_d04ed08162a767::t_4f47e31659c56b 1-331
+.agents/skills/hallmark/references/floating-nav.md
+  s_d04ed08162a767::t_663944ef924dfc 1-100
+.agents/skills/hallmark/references/genres/atmospheric.md
+  s_d04ed08162a767::t_b8ca836c920bd2 1-69
+.agents/skills/hallmark/references/genres/editorial.md
+  s_d04ed08162a767::t_57053eb7d1a809 1-72
+.agents/skills/hallmark/references/genres/modern-minimal.md
+  s_d04ed08162a767::t_eef1c49466f13e 1-71
+.agents/skills/hallmark/references/genres/playful.md
+  s_d04ed08162a767::t_eee8071e64fc4e 1-70
+.agents/skills/hallmark/references/hero-enrichment.md
+  s_d04ed08162a767::t_176ceea7eabe58 1-599
+.agents/skills/hallmark/references/imagery-kit.md
+  s_d04ed08162a767::t_e15b6a5e9cc235 1-197
+.agents/skills/hallmark/references/interaction-and-states.md
+  s_d04ed08162a767::t_66a25373dd7eb7 1-212
+.agents/skills/hallmark/references/layout-and-space.md
+  s_d04ed08162a767::t_87c447a27a15d5 1-116
+.agents/skills/hallmark/references/macrostructures.md
+  s_d04ed08162a767::t_c6de39ade7f1af 1-89
+.agents/skills/hallmark/references/macrostructures/01-bento-grid.md
+  s_d04ed08162a767::t_526b9401298d3d 1-39
+.agents/skills/hallmark/references/macrostructures/02-long-document.md
+  s_d04ed08162a767::t_813a30d52b13b7 1-35
+.agents/skills/hallmark/references/macrostructures/03-marquee-hero.md
+  s_d04ed08162a767::t_e32069f6246d5f 1-32
+.agents/skills/hallmark/references/macrostructures/04-stat-led.md
+  s_d04ed08162a767::t_a792d54607fca0 1-35
+.agents/skills/hallmark/references/macrostructures/05-workbench.md
+  s_d04ed08162a767::t_3de83415d4bf33 1-36
+.agents/skills/hallmark/references/macrostructures/06-conversational-faq.md
+  s_d04ed08162a767::t_e8d76db685fd4b 1-34
+.agents/skills/hallmark/references/macrostructures/07-manifesto.md
+  s_d04ed08162a767::t_b48009b11fad0e 1-33
+.agents/skills/hallmark/references/macrostructures/08-photographic.md
+  s_d04ed08162a767::t_76267b78b7a084 1-35
+.agents/skills/hallmark/references/macrostructures/09-quote-led.md
+  s_d04ed08162a767::t_59b0ce4d5d407a 1-33
+.agents/skills/hallmark/references/macrostructures/10-specimen.md
+  s_d04ed08162a767::t_8b511567d52b24 1-33
+.agents/skills/hallmark/references/macrostructures/11-catalogue.md
+  s_d04ed08162a767::t_af020cee1d6f4b 1-24
+.agents/skills/hallmark/references/macrostructures/12-letter.md
+  s_d04ed08162a767::t_12423463a910fb 1-24
+.agents/skills/hallmark/references/macrostructures/13-index-first.md
+  s_d04ed08162a767::t_cbdb5ac7fb1fdd 1-24
+.agents/skills/hallmark/references/macrostructures/14-narrative-workflow.md
+  s_d04ed08162a767::t_c61b042d296a5c 1-24
+.agents/skills/hallmark/references/macrostructures/15-split-studio.md
+  s_d04ed08162a767::t_00cba45bdba44f 1-24
+.agents/skills/hallmark/references/macrostructures/16-feature-stack.md
+  s_d04ed08162a767::t_619bb9f5cfa664 1-24
+.agents/skills/hallmark/references/macrostructures/17-type-specimen.md
+  s_d04ed08162a767::t_fd38bfdae99d95 1-24
+.agents/skills/hallmark/references/macrostructures/18-portfolio-grid.md
+  s_d04ed08162a767::t_974164a97fea00 1-24
+.agents/skills/hallmark/references/macrostructures/19-map-diagram.md
+  s_d04ed08162a767::t_64f1c60d0e8991 1-24
+.agents/skills/hallmark/references/macrostructures/20-ecosystem-index.md
+  s_d04ed08162a767::t_97e36fa27bbf0a 1-24
+.agents/skills/hallmark/references/macrostructures/21-component-playground.md
+  s_d04ed08162a767::t_bd13e42132ff37 1-24
+.agents/skills/hallmark/references/microinteractions.md
+  s_d04ed08162a767::t_6ae2921e49f42e 1-273
+.agents/skills/hallmark/references/motion.md
+  s_d04ed08162a767::t_f4afb191870275 1-125
+.agents/skills/hallmark/references/preview-examples.md
+  s_d04ed08162a767::t_5dab288ee8ed10 1-53
+.agents/skills/hallmark/references/responsive.md
+  s_d04ed08162a767::t_282ee2319f027b 1-156
+.agents/skills/hallmark/references/slop-test.md
+  s_d04ed08162a767::t_4ad34c06773353 1-192
+.agents/skills/hallmark/references/structure.md
+  s_d04ed08162a767::t_42d22be51d0941 1-160
+.agents/skills/hallmark/references/study.md
+  s_d04ed08162a767::t_7faf480c953ed3 1-509
+.agents/skills/hallmark/references/themes/carnival.md
+  s_d04ed08162a767::t_5e1490da1f7d4c 1-336
+.agents/skills/hallmark/references/themes/cobalt.md
+  s_d04ed08162a767::t_0ef6421033d81f 1-183
+.agents/skills/hallmark/references/themes/hum.md
+  s_d04ed08162a767::t_4a62b4f941f37b 1-510
+.agents/skills/hallmark/references/themes/lumen.md
+  s_d04ed08162a767::t_43e10ba55da6bf 1-528
+.agents/skills/hallmark/references/typography.md
+  s_d04ed08162a767::t_86d23ae5365f33 1-243
+.agents/skills/hallmark/references/vendor/LICENSE
+  s_d04ed08162a767::t_c0d601edae90b3 1-21
+.agents/skills/hallmark/references/vendor/README.md
+  s_d04ed08162a767::t_f60b28faa3928a 1-31
+.agents/skills/hallmark/references/vendor/css/tokens.css
+  s_d04ed08162a767::t_420472b41846da 1-1212
+.agents/skills/hallmark/references/vendor/docs/recipes.md
+  s_d04ed08162a767::t_86cbe96867ee6c 1-186
+.agents/skills/hallmark/references/vendor/docs/study-examples.md
+  s_d04ed08162a767::t_70336a42241aef 1-179
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/index.html
+  s_d04ed08162a767::t_5ba08f3ab1d7ae 1-418
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/script.js
+  s_d04ed08162a767::t_741ec37c54acd3 1-301
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/styles.css
+  s_d04ed08162a767::t_f12572c2976450 1-1238
+.agents/skills/hallmark/references/vendor/examples/cobalt-01/tokens.css
+  s_d04ed08162a767::t_22cd633ebe97fb 1-79
+.agents/skills/hallmark/references/vendor/tests/03-maple-bakery/brief.md
+  s_d04ed08162a767::t_6d23625e6d4a44 1-64
+.agents/skills/hallmark/references/vendor/tests/03-maple-bakery/index.html
+  s_d04ed08162a767::t_0d2714ccb97608 1-183
+.agents/skills/hallmark/references/vendor/tests/03-maple-bakery/style.css
+  s_d04ed08162a767::t_c617de36272d1c 1-268
+.agents/skills/hallmark/references/vendor/tests/05-tracejam-saas/brief.md
+  s_d04ed08162a767::t_0c06254c1ded54 1-63
+.agents/skills/hallmark/references/vendor/tests/05-tracejam-saas/index.html
+  s_d04ed08162a767::t_079631ebff1d4a 1-260
+.agents/skills/hallmark/references/vendor/tests/05-tracejam-saas/style.css
+  s_d04ed08162a767::t_658afb3c9bf1d2 1-563
+.agents/skills/hallmark/references/verbs/audit.md
+  s_d04ed08162a767::t_24c7aa554b8815 1-25
+.agents/skills/hallmark/references/verbs/redesign.md
+  s_d04ed08162a767::t_dcf032f396b2c4 1-300
+.agents/skills/impeccable/SKILL.md
+  s_055a892ead239d::t_b50202f457b788 1-81
+.agents/skills/impeccable/agents/openai.yaml
+  s_055a892ead239d::t_2e3039c20e348b 1-4
+.agents/skills/impeccable/reference/adapt.md
+  s_055a892ead239d::t_fc5f0136c61833 1-333
+.agents/skills/impeccable/reference/adapt.native.md
+  s_055a892ead239d::t_92f20a32d51c50 1-59
+.agents/skills/impeccable/reference/animate.md
+  s_055a892ead239d::t_ede9b50d744cf2 1-86
+.agents/skills/impeccable/reference/audit.md
+  s_055a892ead239d::t_e35ead4ff94183 1-146
+.agents/skills/impeccable/reference/audit.native.md
+  s_055a892ead239d::t_abb91ede61d6ff 1-150
+.agents/skills/impeccable/reference/colorize.md
+  s_055a892ead239d::t_23012ba1ae2ef3 1-94
+.agents/skills/impeccable/reference/critique.md
+  s_055a892ead239d::t_e1b74b1ba08996 1-885
+.agents/skills/impeccable/reference/degraded/asset-producer.md
+  s_055a892ead239d::t_bb8af05722781e 1-88
+.agents/skills/impeccable/reference/degraded/documenter.md
+  s_055a892ead239d::t_8a2e39e6710b9e 1-25
+.agents/skills/impeccable/reference/degraded/finish-reviewer.md
+  s_055a892ead239d::t_af78828a985c4f 1-38
+.agents/skills/impeccable/reference/degraded/manual-edit-applier.md
+  s_055a892ead239d::t_d1894c5574f401 1-118
+.agents/skills/impeccable/reference/distill.md
+  s_055a892ead239d::t_d36cafb385b2d9 1-118
+.agents/skills/impeccable/reference/document.md
+  s_055a892ead239d::t_ac407d26d2fe6c 1-451
+.agents/skills/impeccable/reference/extract.md
+  s_055a892ead239d::t_ef5e904230d429 1-69
+.agents/skills/impeccable/reference/harden.md
+  s_055a892ead239d::t_9b6b07f3ee9979 1-368
+.agents/skills/impeccable/reference/hooks.md
+  s_055a892ead239d::t_f661fab1b9069f 1-105
+.agents/skills/impeccable/reference/init.md
+  s_055a892ead239d::t_012d796472fc7b 1-135
+.agents/skills/impeccable/reference/layout.md
+  s_055a892ead239d::t_7ed7a638058833 1-92
+.agents/skills/impeccable/reference/live-setup.md
+  s_055a892ead239d::t_c1b310f44037cd 1-100
+.agents/skills/impeccable/reference/live.md
+  s_055a892ead239d::t_fdc05e1f5e9f6f 1-341
+.agents/skills/impeccable/reference/onboard.md
+  s_055a892ead239d::t_5878de34509658 1-263
+.agents/skills/impeccable/reference/optimize.md
+  s_055a892ead239d::t_07f5060b614cab 1-280
+.agents/skills/impeccable/reference/overdrive.md
+  s_055a892ead239d::t_7ee75640a99f59 1-144
+.agents/skills/impeccable/reference/quieter.md
+  s_055a892ead239d::t_5fca2150aadbd7 1-105
+.agents/skills/impeccable/reference/typeset.md
+  s_055a892ead239d::t_c3bd8b4d0d1909 1-88
+.agents/skills/impeccable/scripts/concept-seed.mjs
+  s_d04ed08162a767::t_616f6a641d767f 1-621
+.agents/skills/impeccable/scripts/context-signals.mjs
+  s_055a892ead239d::t_000e268be66f31 1-363
+.agents/skills/impeccable/scripts/context.mjs
+  s_055a892ead239d::t_c0737aaa48564c 1-1554
+.agents/skills/impeccable/scripts/critique-storage.mjs
+  s_055a892ead239d::t_08169f2a1d323b 1-230
+.agents/skills/impeccable/scripts/detect-csp.mjs
+  s_055a892ead239d::t_60112848f5557f 1-205
+.agents/skills/impeccable/scripts/detect.mjs
+  s_055a892ead239d::t_f4241d88803d12 1-21
+.agents/skills/impeccable/scripts/detector/browser/injected/index.mjs
+  s_d04ed08162a767::t_aac9f00cabb389 1-2320
+.agents/skills/impeccable/scripts/detector/cli/main.mjs
+  s_055a892ead239d::t_a0a48e238c8907 1-474
+.agents/skills/impeccable/scripts/detector/design-system.mjs
+  s_055a892ead239d::t_198b4f49586279 1-1154
+.agents/skills/impeccable/scripts/detector/detect-antipatterns-browser.js
+  s_d04ed08162a767::t_e4b12a5298c3d2 1-9697
+.agents/skills/impeccable/scripts/detector/detect-antipatterns.mjs
+  s_055a892ead239d::t_776043b1c10687 1-72
+.agents/skills/impeccable/scripts/detector/engines/browser/detect-url.mjs
+  s_055a892ead239d::t_156d7677072988 1-467
+.agents/skills/impeccable/scripts/detector/engines/regex/detect-text.mjs
+  s_055a892ead239d::t_6249668eeaff29 1-1444
+.agents/skills/impeccable/scripts/detector/engines/static-html/css-cascade.mjs
+  s_d04ed08162a767::t_c785f704b3cc8a 1-1331
+.agents/skills/impeccable/scripts/detector/engines/static-html/detect-html.mjs
+  s_055a892ead239d::t_59987c7303ab3b 1-382
+.agents/skills/impeccable/scripts/detector/engines/visual/screenshot-contrast.mjs
+  s_055a892ead239d::t_36572a113b4954 1-197
+.agents/skills/impeccable/scripts/detector/findings.mjs
+  s_055a892ead239d::t_85b8c962717dab 1-27
+.agents/skills/impeccable/scripts/detector/node/file-system.mjs
+  s_055a892ead239d::t_4318ede9b54b04 1-258
+.agents/skills/impeccable/scripts/detector/profile/profiler.mjs
+  s_055a892ead239d::t_1ca9aec169ad7b 1-166
+.agents/skills/impeccable/scripts/detector/registry/antipatterns.mjs
+  s_055a892ead239d::t_7d87c192ac88e3 1-615
+.agents/skills/impeccable/scripts/detector/rules/checks.mjs
+  s_d04ed08162a767::t_c617fc0938dc41 1-6527
+.agents/skills/impeccable/scripts/detector/shared/color.mjs
+  s_055a892ead239d::t_f6831dec287579 1-140
+.agents/skills/impeccable/scripts/detector/shared/constants.mjs
+  s_055a892ead239d::t_e53120927118fc 1-195
+.agents/skills/impeccable/scripts/detector/shared/fonts.mjs
+  s_055a892ead239d::t_4deec9f147edd8 1-30
+.agents/skills/impeccable/scripts/detector/shared/inline-ignores.mjs
+  s_055a892ead239d::t_55cf759ab868d8 1-155
+.agents/skills/impeccable/scripts/detector/shared/page.mjs
+  s_055a892ead239d::t_f694bc00d5f094 1-7
+.agents/skills/impeccable/scripts/doctor.mjs
+  s_055a892ead239d::t_5fab5a0debe686 1-361
+.agents/skills/impeccable/scripts/embed-prompt.mjs
+  s_055a892ead239d::t_0f6f8f12318416 1-203
+.agents/skills/impeccable/scripts/generate-image.mjs
+  s_055a892ead239d::t_f92ff05c1e85e4 1-270
+.agents/skills/impeccable/scripts/hook-admin.mjs
+  s_055a892ead239d::t_b8c1e570461d7d 1-902
+.agents/skills/impeccable/scripts/hook-before-edit.mjs
+  s_055a892ead239d::t_423c9bf0415308 1-545
+.agents/skills/impeccable/scripts/hook-lib.mjs
+  s_055a892ead239d::t_ec59f80fe71c81 1-2312
+.agents/skills/impeccable/scripts/hook.mjs
+  s_055a892ead239d::t_4311a45e8794d3 1-84
+.agents/skills/impeccable/scripts/lib/artifact-schema.mjs
+  s_055a892ead239d::t_84360cda195526 1-94
+.agents/skills/impeccable/scripts/lib/composition-catalog.mjs
+  s_055a892ead239d::t_828f10c3a87aa6 1-252
+.agents/skills/impeccable/scripts/lib/concept-catalog.mjs
+  s_055a892ead239d::t_b51ddd10d81666 1-439
+.agents/skills/impeccable/scripts/lib/design-parser.mjs
+  s_055a892ead239d::t_e5cbc8a181526f 1-943
+.agents/skills/impeccable/scripts/lib/impeccable-config.mjs
+  s_055a892ead239d::t_11f0e19abdfd54 1-709
+.agents/skills/impeccable/scripts/lib/impeccable-paths.mjs
+  s_055a892ead239d::t_d015f609629154 1-146
+.agents/skills/impeccable/scripts/lib/is-generated.mjs
+  s_055a892ead239d::t_133542c545fea3 1-73
+.agents/skills/impeccable/scripts/lib/roll-selection.mjs
+  s_055a892ead239d::t_e71599ba02c6cf 1-394
+.agents/skills/impeccable/scripts/lib/staleness-deep.mjs
+  s_055a892ead239d::t_f7f2ff0e391fa7 1-526
+.agents/skills/impeccable/scripts/lib/staleness-notice.mjs
+  s_055a892ead239d::t_e5552378777ccd 1-172
+.agents/skills/impeccable/scripts/lib/staleness.mjs
+  s_055a892ead239d::t_45d8cad0433738 1-508
+.agents/skills/impeccable/scripts/lib/surface-briefs.mjs
+  s_055a892ead239d::t_52e6b256760196 1-185
+.agents/skills/impeccable/scripts/lib/target-args.mjs
+  s_055a892ead239d::t_0f1d17e6d70111 1-42
+.agents/skills/impeccable/scripts/lib/target-slug.mjs
+  s_055a892ead239d::t_7ef30dc7b0dfee 1-37
+.agents/skills/impeccable/scripts/lib/template-extensions.mjs
+  s_055a892ead239d::t_3287a23e5a8eef 1-156
+.agents/skills/impeccable/scripts/live-accept.mjs
+  s_055a892ead239d::t_6c99a0a007b3a1 1-1057
+.agents/skills/impeccable/scripts/live-browser-dom.js
+  s_055a892ead239d::t_537bf85a46c6df 1-150
+.agents/skills/impeccable/scripts/live-browser-session.js
+  s_055a892ead239d::t_a8e7c359479bee 1-141
+.agents/skills/impeccable/scripts/live-browser.js
+  s_055a892ead239d::t_8b36e189d0562d 1-14230
+.agents/skills/impeccable/scripts/live-commit-manual-edits.mjs
+  s_d04ed08162a767::t_43e9b2eb81995b 1-1376
+.agents/skills/impeccable/scripts/live-complete.mjs
+  s_055a892ead239d::t_adb2a00b5892aa 1-135
+.agents/skills/impeccable/scripts/live-copy-edit-agent.mjs
+  s_d04ed08162a767::t_d48e323631bf23 1-741
+.agents/skills/impeccable/scripts/live-discard-manual-edits.mjs
+  s_055a892ead239d::t_5f1dce52b6db68 1-51
+.agents/skills/impeccable/scripts/live-inject.mjs
+  s_055a892ead239d::t_417c94018de7b6 1-544
+.agents/skills/impeccable/scripts/live-insert.mjs
+  s_055a892ead239d::t_f642a83eab7670 1-326
+.agents/skills/impeccable/scripts/live-manual-edit-evidence.mjs
+  s_055a892ead239d::t_7338fde0567ee5 1-419
+.agents/skills/impeccable/scripts/live-poll.mjs
+  s_055a892ead239d::t_07efc8846a5f1b 1-475
+.agents/skills/impeccable/scripts/live-resume.mjs
+  s_055a892ead239d::t_b15c58405efbff 1-139
+.agents/skills/impeccable/scripts/live-server.mjs
+  s_055a892ead239d::t_9f5b8a6cf1ec0c 1-1870
+.agents/skills/impeccable/scripts/live-status.mjs
+  s_055a892ead239d::t_9377bd090823d9 1-73
+.agents/skills/impeccable/scripts/live-target.mjs
+  s_055a892ead239d::t_a44a312d770acc 1-32
+.agents/skills/impeccable/scripts/live-wrap.mjs
+  s_055a892ead239d::t_490ff683118007 1-1046
+.agents/skills/impeccable/scripts/live.mjs
+  s_055a892ead239d::t_7caae8cb944830 1-422
+.agents/skills/impeccable/scripts/live/accept-css.mjs
+  s_055a892ead239d::t_7b45d954f433d5 1-660
+.agents/skills/impeccable/scripts/live/accept-verify.mjs
+  s_055a892ead239d::t_158288602c2bf0 1-71
+.agents/skills/impeccable/scripts/live/browser-script-parts.mjs
+  s_055a892ead239d::t_8e587189460a37 1-67
+.agents/skills/impeccable/scripts/live/completion.mjs
+  s_055a892ead239d::t_e41432d76a4019 1-28
+.agents/skills/impeccable/scripts/live/event-validation.mjs
+  s_055a892ead239d::t_921a8413e117f3 1-242
+.agents/skills/impeccable/scripts/live/frameworks/astro.mjs
+  s_055a892ead239d::t_a6a98c14b7a35c 1-47
+.agents/skills/impeccable/scripts/live/frameworks/detect-utils.mjs
+  s_055a892ead239d::t_845bb9e873a438 1-75
+.agents/skills/impeccable/scripts/live/frameworks/index.mjs
+  s_055a892ead239d::t_19f934789040fe 1-145
+.agents/skills/impeccable/scripts/live/frameworks/journal.mjs
+  s_055a892ead239d::t_6782a091dd0161 1-215
+.agents/skills/impeccable/scripts/live/frameworks/nextjs.mjs
+  s_055a892ead239d::t_6502002d292ee2 1-60
+.agents/skills/impeccable/scripts/live/frameworks/nuxt.mjs
+  s_055a892ead239d::t_6d2aef6ea708da 1-165
+.agents/skills/impeccable/scripts/live/frameworks/script-src.mjs
+  s_055a892ead239d::t_f2064dad2367cb 1-17
+.agents/skills/impeccable/scripts/live/frameworks/static-html.mjs
+  s_055a892ead239d::t_c6c070367aff9b 1-26
+.agents/skills/impeccable/scripts/live/frameworks/sveltekit.mjs
+  s_055a892ead239d::t_5101cac38bb2b2 1-71
+.agents/skills/impeccable/scripts/live/frameworks/tag-strategy.mjs
+  s_055a892ead239d::t_cd7a26e992993c 1-272
+.agents/skills/impeccable/scripts/live/frameworks/tanstack-start.mjs
+  s_055a892ead239d::t_10b63952f8c0bd 1-70
+.agents/skills/impeccable/scripts/live/frameworks/vite-generic.mjs
+  s_055a892ead239d::t_e7bd4839821bf8 1-42
+.agents/skills/impeccable/scripts/live/generation-preflight.mjs
+  s_055a892ead239d::t_b20641dfed0bf4 1-150
+.agents/skills/impeccable/scripts/live/insert-ui.mjs
+  s_055a892ead239d::t_d3f62f3b3ef449 1-460
+.agents/skills/impeccable/scripts/live/instructions.mjs
+  s_055a892ead239d::t_37fab5513edc5e 1-158
+.agents/skills/impeccable/scripts/live/manual-apply.mjs
+  s_055a892ead239d::t_6cce8e8c32c4e2 1-1025
+.agents/skills/impeccable/scripts/live/manual-edit-routes.mjs
+  s_055a892ead239d::t_164f17db1a6648 1-437
+.agents/skills/impeccable/scripts/live/manual-edits-buffer.mjs
+  s_055a892ead239d::t_d85c9204734d4a 1-155
+.agents/skills/impeccable/scripts/live/poll-lanes.mjs
+  s_055a892ead239d::t_4b0be3b4ff4d84 1-21
+.agents/skills/impeccable/scripts/live/roots.mjs
+  s_055a892ead239d::t_979d33195299f4 1-575
+.agents/skills/impeccable/scripts/live/session-store.mjs
+  s_055a892ead239d::t_aacbc534ab91fb 1-622
+.agents/skills/impeccable/scripts/live/source-lock.mjs
+  s_055a892ead239d::t_285dab37a2a24e 1-121
+.agents/skills/impeccable/scripts/live/source-search.mjs
+  s_055a892ead239d::t_d530105232fdd4 1-136
+.agents/skills/impeccable/scripts/live/svelte-ast.mjs
+  s_055a892ead239d::t_d39362868d97e2 1-1109
+.agents/skills/impeccable/scripts/live/svelte-component.mjs
+  s_055a892ead239d::t_6e350bbfae932b 1-1480
+.agents/skills/impeccable/scripts/live/sveltekit-adapter.mjs
+  s_055a892ead239d::t_7c12fbd7de2f89 1-330
+.agents/skills/impeccable/scripts/live/tanstack-adapter.mjs
+  s_055a892ead239d::t_5311917900cec8 1-283
+.agents/skills/impeccable/scripts/live/vocabulary.mjs
+  s_055a892ead239d::t_f4ae579eac3551 1-220
+.agents/skills/impeccable/scripts/modern-screenshot.umd.js
+  s_055a892ead239d::t_de3d270c3184ee 1-1437
+.agents/skills/impeccable/scripts/palette.mjs
+  s_055a892ead239d::t_72b316c1ba14e7 1-1149
+.agents/skills/impeccable/scripts/pin.mjs
+  s_055a892ead239d::t_143f364159a341 1-254
+.agents/skills/impeccable/scripts/serve-question.mjs
+  s_055a892ead239d::t_5d78408e24b173 1-1187
+.agents/skills/impeccable/scripts/surface-brief.mjs
+  s_055a892ead239d::t_e404d93d49c325 1-90
+.agents/skills/postgres-drizzle/README.md
+  s_f43ac2349e6c0d::t_5bbdc88bbd951c 1-69
+.agents/skills/postgres-drizzle/SKILL.md
+  s_f43ac2349e6c0d::t_6704b51ff56b15 1-228
+.agents/skills/postgres-drizzle/references/CHEATSHEET.md
+  s_f43ac2349e6c0d::t_6934954410c6c5 1-445
+.agents/skills/postgres-drizzle/references/MIGRATIONS.md
+  s_f43ac2349e6c0d::t_d2e243d3b96d04 1-596
+.agents/skills/postgres-drizzle/references/PERFORMANCE.md
+  s_f43ac2349e6c0d::t_441fb5d7adaccc 1-598
+.agents/skills/postgres-drizzle/references/POSTGRES.md
+  s_f43ac2349e6c0d::t_7cc684799c40f0 1-668
+.agents/skills/postgres-drizzle/references/QUERIES.md
+  s_f43ac2349e6c0d::t_cd6f8cb8f3cdf9 1-742
+.agents/skills/postgres-drizzle/references/RELATIONS.md
+  s_f43ac2349e6c0d::t_7a920468f44091 1-765
+.agents/skills/postgres-drizzle/references/SCHEMA.md
+  s_f43ac2349e6c0d::t_cb94b07fdf8639 1-625
+.agents/skills/tanstack-start-best-practices/SKILL.md
+  s_f43ac2349e6c0d::t_aa678ab69a1e10 1-110
+.agents/skills/tanstack-start-best-practices/rules/api-routes.md
+  s_f43ac2349e6c0d::t_87974bca435cc3 1-236
+.agents/skills/tanstack-start-best-practices/rules/auth-route-protection.md
+  s_f43ac2349e6c0d::t_2414ae25eaffe8 1-188
+.agents/skills/tanstack-start-best-practices/rules/auth-session-management.md
+  s_f43ac2349e6c0d::t_8a490d7dbef558 1-189
+.agents/skills/tanstack-start-best-practices/rules/deploy-adapters.md
+  s_f43ac2349e6c0d::t_bddc72cfb94fe6 1-197
+.agents/skills/tanstack-start-best-practices/rules/env-functions.md
+  s_f43ac2349e6c0d::t_207dd924d3ac34 1-207
+.agents/skills/tanstack-start-best-practices/rules/err-server-errors.md
+  s_f43ac2349e6c0d::t_462016c92524cf 1-189
+.agents/skills/tanstack-start-best-practices/rules/file-separation.md
+  s_f43ac2349e6c0d::t_8a84677d68c4ef 1-151
+.agents/skills/tanstack-start-best-practices/rules/mw-request-middleware.md
+  s_f43ac2349e6c0d::t_8fcaec89a0effe 1-157
+.agents/skills/tanstack-start-best-practices/rules/sf-create-server-fn.md
+  s_f43ac2349e6c0d::t_133a6108116a0b 1-146
+.agents/skills/tanstack-start-best-practices/rules/sf-input-validation.md
+  s_f43ac2349e6c0d::t_05021fffdf16b5 1-168
+.agents/skills/tanstack-start-best-practices/rules/ssr-hydration-safety.md
+  s_f43ac2349e6c0d::t_6f6383c47568ef 1-184
+.agents/skills/tanstack-start-best-practices/rules/ssr-prerender.md
+  s_f43ac2349e6c0d::t_dfdf5b8d78a746 1-190
+.agents/skills/tanstack-start-best-practices/rules/ssr-streaming.md
+  s_f43ac2349e6c0d::t_e33e3e4bf4b282 1-201
+.agents/skills/tauri-v2/README.md
+  s_f43ac2349e6c0d::t_9597449bb77379 1-201
+.agents/skills/tauri-v2/SKILL.md
+  s_f43ac2349e6c0d::t_de2b2ff7df5aba 1-510
+.agents/skills/tauri-v2/references/README.md
+  s_f43ac2349e6c0d::t_aa319cc17327b8 1-23
+.agents/skills/tauri-v2/references/advanced-runtime-reference.md
+  s_f43ac2349e6c0d::t_8f8279e878690d 1-192
+.agents/skills/tauri-v2/references/capabilities-reference.md
+  s_f43ac2349e6c0d::t_41a45a415c105d 1-372
+.agents/skills/tauri-v2/references/ipc-patterns.md
+  s_f43ac2349e6c0d::t_429351ef200e67 1-537
+.agents/skills/tauri-v2/references/plugin-reference.md
+  s_f43ac2349e6c0d::t_5a80d64b2704de 1-431
+.agents/skills/tauri-v2/references/updater-distribution-reference.md
+  s_f43ac2349e6c0d::t_d7fac1312c0623 1-154
+.agents/skills/verify/SKILL.md
+  s_4a3ad1ff241292::t_9b171bbc1856f2 1-115
+.agents/skills/vite/GENERATION.md
+  s_f43ac2349e6c0d::t_c656729c75bca4 1-5
+.agents/skills/vite/SKILL.md
+  s_f43ac2349e6c0d::t_aa7927a060c081 1-72
+.agents/skills/vite/references/build-and-ssr.md
+  s_f43ac2349e6c0d::t_45a3fc9340a6af 1-164
+.agents/skills/vite/references/core-config.md
+  s_f43ac2349e6c0d::t_c8b185351a9b23 1-162
+.agents/skills/vite/references/core-features.md
+  s_f43ac2349e6c0d::t_08363a3b36b0ea 1-207
+.agents/skills/vite/references/core-plugin-api.md
+  s_f43ac2349e6c0d::t_2b7f5542a5468a 1-237
+.agents/skills/vite/references/environment-api.md
+  s_f43ac2349e6c0d::t_77c25e17f298d2 1-108
+.agents/skills/vite/references/rolldown-migration.md
+  s_f43ac2349e6c0d::t_f9f4ff28864e05 1-157
+.claude/agents/api-auth.md
+  s_d74e0a51d9eaf4::t_13f2dd0804e88b 1-29
+.claude/agents/db-migrate.md
+  s_644e00651e10c2::t_4d9763430c5d4e 1-18
+.claude/agents/desktop-dev.md
+  s_f43ac2349e6c0d::t_1ed64e5ad5875e 1-15
+.claude/agents/ui-dev.md
+  s_0038eeb108e16f::t_eb573b9dd8dcd6 1-36
+.claude/agents/vp-verify.md
+  s_f43ac2349e6c0d::t_d3c52fe2be2cd1 1-23
+.claude/agents/web-dev.md
+  s_f43ac2349e6c0d::t_67b27b1f7ad15e 1-16
+.claude/settings.json
+  s_0038eeb108e16f::t_69bc4d16f14482 1-67
+.claude/skills/bun-runtime
+  s_f43ac2349e6c0d::t_42660c8c728b06 1
+.claude/skills/hallmark
+  s_d04ed08162a767::t_d7e5e0f4b6432d 1
+.claude/skills/postgres-drizzle
+  s_f43ac2349e6c0d::t_d3f5fbe245eb7c 1
+.claude/skills/tanstack-start-best-practices
+  s_f43ac2349e6c0d::t_0415fec8980055 1
+.claude/skills/tauri-v2
+  s_f43ac2349e6c0d::t_b63987d67c4324 1
+.claude/skills/verify
+  s_0038eeb108e16f::t_ae637aa8117d80 1
+.claude/skills/vite
+  s_f43ac2349e6c0d::t_6f9ae38cca746f 1
+.env.example
+  s_3c9511304bb034::t_30ac284a969668 1-85
+.github/workflows/security.yml
+  s_d74e0a51d9eaf4::t_127bf695eec672 1-69
+.github/workflows/supply-chain.yml
+  s_d74e0a51d9eaf4::t_e5875aaf249eb6 1-62
+.gitignore
+  s_d74e0a51d9eaf4::t_91e720a76e7360 1-39
+.hallmark/log.json
+  s_958590984c2116::t_f65e14de6cbe25 1-20
+.hallmark/preflight.json
+  s_d04ed08162a767::t_024c318189c4df 1-8
+.vite-hooks/pre-commit
+  s_f43ac2349e6c0d::t_84920b32de650c 1
+CLAUDE.md
+  s_0038eeb108e16f::t_0350b4a7a5e95d 1-6
+README.md
+  s_3c9511304bb034::t_602cfa3ec5bc97 1-132
+apps/admin/__tests__/env.test.ts
+  s_d74e0a51d9eaf4::t_381ae3bbcc161b 1-39
+apps/admin/__tests__/server/api/app.test.ts
+  s_d74e0a51d9eaf4::t_cbf55f80dceed9 1-113
+apps/admin/__tests__/server/monitoring.test.ts
+  s_3c9511304bb034::t_858769276e78fe 1-121
+apps/admin/__tests__/server/runtime.test.ts
+  s_d74e0a51d9eaf4::t_40be9e247c68be 1-82
+apps/admin/messages/en.json
+  s_2bf98a569d4942::t_c2552f309dbabf 1-1172
+apps/admin/messages/zh.json
+  s_2bf98a569d4942::t_6b3fc4e84d2ccd 1-1172
+apps/admin/public/logo.svg
+  s_24e0da68ceacce::t_5e6c78f05704bd 1-10
+apps/admin/server/api/app.server.ts
+  s_24e0da68ceacce::t_11fce0d3af5220 1-24
+apps/admin/server/api/routers/health.server.ts
+  s_d74e0a51d9eaf4::t_5e8b16a99093ac 1-65
+apps/admin/server/api/routers/rpc.server.ts
+  s_24e0da68ceacce::t_f439de53fba515 1-22
+apps/admin/server/env.server.ts
+  s_d74e0a51d9eaf4::t_afd1c30bc547f6 1-18
+apps/admin/server/monitoring.server.ts
+  s_3c9511304bb034::t_cfa852e1ce3231 1-122
+apps/admin/server/runtime.server.ts
+  s_3c9511304bb034::t_c48078da7687e9 1-79
+apps/admin/server/services.server.ts
+  s_d74e0a51d9eaf4::t_18cd792c8d11d6 1-66
+apps/admin/src/features/admin/client/dashboard/monitoring-charts.tsx
+  s_958590984c2116::t_24de40110a8404 1-203
+apps/admin/src/features/admin/client/dashboard/monitoring-config-card.tsx
+  s_958590984c2116::t_c9765b7f40834e 1-113
+apps/admin/src/features/admin/client/jobs/constants.ts
+  s_2bf98a569d4942::t_b4d91498cc3d24 1-14
+apps/admin/src/features/admin/client/jobs/display.ts
+  s_2bf98a569d4942::t_4cf1fe4d3f7338 1-101
+apps/admin/src/features/admin/client/jobs/jobs-table.tsx
+  s_2bf98a569d4942::t_c0307edd6461ab 1-234
+apps/admin/src/features/admin/client/rpc.ts
+  s_958590984c2116::t_b1fe234159e1ae 1-302
+apps/admin/src/features/admin/shared/client/stat-tile.tsx
+  s_24e0da68ceacce::t_b234e7533e020a 1-43
+apps/admin/src/lib/rpc.ts
+  s_d74e0a51d9eaf4::t_0465223d1203ba 1-56
+apps/admin/src/routes/(admin)/-jobs-page.tsx
+  s_2bf98a569d4942::t_b25cba2baaf363 1-144
+apps/admin/src/styles.css
+  s_4a3ad1ff241292::t_32d4397cd99226 1-33
+apps/admin/src/tanstack-start.d.ts
+  s_4a3ad1ff241292::t_d0db30d0331de5 1
+apps/api/src/routers/status.ts
+  s_24e0da68ceacce::t_20fdb0ef9c4123 1-24
+apps/cli/__tests__/api.test.ts
+  s_d74e0a51d9eaf4::t_c03d35e8175073 1-45
+apps/cli/src/api/client.ts
+  s_d74e0a51d9eaf4::t_852429da9fc595 1-33
+apps/desktop/.gitignore
+  s_f43ac2349e6c0d::t_7b83c69f9270b3 1-24
+apps/desktop/.vscode/extensions.json
+  s_f43ac2349e6c0d::t_dac4c97e661a75 1-3
+apps/desktop/__tests__/bearer-token.test.ts
+  s_4a3ad1ff241292::t_b3a4a56a841632 1-30
+apps/desktop/public/favicon.svg
+  s_644e00651e10c2::t_361464472bb00b 1-10
+apps/desktop/src-tauri/build.rs
+  s_f43ac2349e6c0d::t_aabca8f6102791 1-3
+apps/desktop/src-tauri/src/main.rs
+  s_f43ac2349e6c0d::t_ea31cbed62b5ae 1-6
+apps/desktop/src-tauri/tauri.conf.json
+  s_24e0da68ceacce::t_939a1939fed37b 1-43
+apps/desktop/src/api.ts
+  s_d74e0a51d9eaf4::t_b100afc3810925 1-18
+apps/desktop/src/components/app-sidebar.tsx
+  s_24e0da68ceacce::t_df356d521787a6 1-290
+apps/desktop/src/env.ts
+  s_f43ac2349e6c0d::t_1efeff6b792a0b 1-11
+apps/desktop/src/lib/bearer-token.ts
+  s_4a3ad1ff241292::t_9e8a1546128e0f 1-25
+apps/desktop/src/lib/login-gate.ts
+  s_3be5c0af596112::t_00a49195b11c9a 1-23
+apps/desktop/src/router.tsx
+  s_4a3ad1ff241292::t_1eeee08a450187 1-18
+apps/desktop/src/routes/__root.tsx
+  s_24e0da68ceacce::t_cd39662d4552f3 1-83
+apps/desktop/src/routes/index.tsx
+  s_bc698b2c29af78::t_d7610ac525ba66 1-220
+apps/desktop/src/routes/login.tsx
+  s_24e0da68ceacce::t_f7c72be572caf8 1-230
+apps/desktop/src/routes/settings.tsx
+  s_bc698b2c29af78::t_b98709ac1618ca 1-148
+apps/desktop/src/tanstack-start.d.ts
+  s_4a3ad1ff241292::t_f6e71a981ee545 1
+apps/desktop/src/vite-env.d.ts
+  s_f43ac2349e6c0d::t_f54fc4da049aa0 1
+apps/desktop/tsconfig.json
+  s_4a3ad1ff241292::t_0326febd68b7b0 1-14
+apps/desktop/tsconfig.node.json
+  s_4a3ad1ff241292::t_6bc04809ebf0ee 1-10
+apps/desktop/tsr.config.json
+  s_4a3ad1ff241292::t_d08217399e258f 1-3
+apps/desktop/vite.config.ts
+  s_4a3ad1ff241292::t_b944022e3ac485 1-43
+apps/desktop/vitest.config.ts
+  s_4a3ad1ff241292::t_94c5e255df45c3 1-7
+apps/web/.cta.json
+  s_f43ac2349e6c0d::t_dbfca2f8bf7f8d 1-17
+apps/web/.vscode/settings.json
+  s_f43ac2349e6c0d::t_487564bb64b8d1 1-11
+apps/web/README.md
+  s_d74e0a51d9eaf4::t_3d020bc0e994cf 1-177
+apps/web/__tests__/features/account-settings-actions.test.ts
+  s_d74e0a51d9eaf4::t_0d66013d79990d 1-64
+apps/web/__tests__/features/preferences-settings-card.test.ts
+  s_d74e0a51d9eaf4::t_5317aa9a258bb5 1-36
+apps/web/__tests__/features/profile-settings-card.test.ts
+  s_d74e0a51d9eaf4::t_7aece11a6b13a1 1-43
+apps/web/__tests__/server/api-policy.test.ts
+  s_d74e0a51d9eaf4::t_9705f9494380a8 1-156
+apps/web/__tests__/server/jobs/runtime.test.ts
+  s_d74e0a51d9eaf4::t_41c694100d90fc 1-139
+apps/web/__tests__/server/monitoring.test.ts
+  s_3c9511304bb034::t_aaac533a188dc8 1-130
+apps/web/__tests__/server/runtime.test.ts
+  s_d74e0a51d9eaf4::t_b96322a972eaec 1-71
+apps/web/e2e/home.spec.ts
+  s_958590984c2116::t_bd2d771827ffcc 1-126
+apps/web/messages/en.json
+  s_958590984c2116::t_73701610127e9d 1-86
+apps/web/messages/zh.json
+  s_958590984c2116::t_6cccec6ce2c429 1-86
+apps/web/playwright.config.ts
+  s_d74e0a51d9eaf4::t_88e45b6d676480 1-30
+apps/web/project.inlang/settings.json
+  s_d74e0a51d9eaf4::t_7fd363ff48d124 1-13
+apps/web/public/favicon.svg
+  s_6c01f76afc71fd::t_cdcde84a218acf 1-10
+apps/web/public/logo.svg
+  s_6c01f76afc71fd::t_57478b0e7e672b 1-10
+apps/web/public/manifest.webmanifest
+  s_24e0da68ceacce::t_e657a33f8e7e0f 1-17
+apps/web/server/api/routers/reference.server.ts
+  s_24e0da68ceacce::t_d89bf84f0847a7 1-18
+apps/web/server/app.ts
+  s_d74e0a51d9eaf4::t_a47cde647850fe 1-6
+apps/web/server/jobs/monitoring.server.ts
+  s_d74e0a51d9eaf4::t_b35b1cd5463990 1-89
+apps/web/server/login-redirect.server.ts
+  s_d74e0a51d9eaf4::t_e2af2e30ff7b1b 1-41
+apps/web/server/monitoring.server.ts
+  s_3c9511304bb034::t_2c9799e660c245 1-161
+apps/web/server/origin-policy.server.ts
+  s_d74e0a51d9eaf4::t_0ed1c86d294ef1 1-48
+apps/web/server/runtime.server.ts
+  s_3c9511304bb034::t_5aaa4d28a0e2db 1-123
+apps/web/server/services.server.ts
+  s_d74e0a51d9eaf4::t_87d26217f8dfb0 1-121
+apps/web/server/storage.server.ts
+  s_d74e0a51d9eaf4::t_542d44a512fdc8 1-48
+apps/web/src/components/locale-switcher.tsx
+  s_d74e0a51d9eaf4::t_9b9995eade73b4 1-58
+apps/web/src/components/notifications-popover.tsx
+  s_d74e0a51d9eaf4::t_8fe0dbf75cb7d4 1-178
+apps/web/src/env.server.ts
+  s_d74e0a51d9eaf4::t_084100bddbf7cf 1-29
+apps/web/src/features/settings/account-settings-actions.ts
+  s_d74e0a51d9eaf4::t_e2cef69d3b0d17 1-47
+apps/web/src/features/settings/account-settings.tsx
+  s_d74e0a51d9eaf4::t_b36d4c647c5528 1-44
+apps/web/src/features/settings/preferences-settings-card.tsx
+  s_d74e0a51d9eaf4::t_31295bd6de783a 1-154
+apps/web/src/lib/api.ts
+  s_d74e0a51d9eaf4::t_ba4a3a028e434c 1-48
+apps/web/src/lib/i18n.ts
+  s_d74e0a51d9eaf4::t_d78c69a85a4595 1-46
+apps/web/src/routes/(app)/dashboard.tsx
+  s_d74e0a51d9eaf4::t_2ae3b36c622349 1-166
+apps/web/src/routes/index.tsx
+  s_958590984c2116::t_d1c5f8ab039e42 1-286
+apps/web/src/server.ts
+  s_d74e0a51d9eaf4::t_b6371505831b8e 1-23
+apps/web/src/styles.css
+  s_3be5c0af596112::t_a7e1d5194d7176 1-15
+apps/web/tsr.config.json
+  s_f43ac2349e6c0d::t_8acad228018034 1-3
+bun.lock
+  s_2bf98a569d4942::t_a017c9e22e7c51 1-2960
+docs/README.md
+  s_d74e0a51d9eaf4::t_a38c4d3387ea8b 1-29
+docs/ROADMAP.md
+  s_3c9511304bb034::t_212448dd360acd 1-71
+docs/architecture/overview.md
+  s_3c9511304bb034::t_d02d9f5900d2db 1-105
+docs/architecture/packages.md
+  s_d74e0a51d9eaf4::t_d7c910b786b54f 1-49
+docs/development/environment.md
+  s_3c9511304bb034::t_34927f94d61a26 1-52
+docs/operations/observability.md
+  s_65bbfba9beff80::t_8bb8a5e5e3ad09 1-68
+docs/operations/runbooks/actions-outage.md
+  s_3c9511304bb034::t_568a9e2477759e 1-52
+docs/operations/runbooks/auth-storage-secrets.md
+  s_3c9511304bb034::t_47bff08c51e1e4 1-48
+docs/operations/runbooks/database-recovery.md
+  s_3c9511304bb034::t_4a770270ea6573 1-42
+docs/operations/runbooks/deployment-rollback.md
+  s_3c9511304bb034::t_d0897c00b324bf 1-50
+docs/operations/runbooks/redis-jobs.md
+  s_d74e0a51d9eaf4::t_7034014d7b69e9 1-36
+package.json
+  s_2bf98a569d4942::t_8f5093ae40d0ff 1-160
+packages/account/src/server/preferences.ts
+  s_d74e0a51d9eaf4::t_786c67e091bc4e 1-34
+packages/account/src/server/routes/profile.ts
+  s_d74e0a51d9eaf4::t_4052db5ebadc92 1-28
+packages/account/src/server/routes/session.ts
+  s_d74e0a51d9eaf4::t_fb7b7bad5806c1 1-22
+packages/admin/__tests__/authorization.test.ts
+  s_d74e0a51d9eaf4::t_af9fbce979b016 1-14
+packages/admin/__tests__/context.test.ts
+  s_d74e0a51d9eaf4::t_211cfde1e2b3a5 1-67
+packages/admin/__tests__/dashboard-service.test.ts
+  s_2bf98a569d4942::t_82f4751e493efd 1-169
+packages/admin/__tests__/routes.test.ts
+  s_958590984c2116::t_9ee668c64e577d 1-209
+packages/admin/src/server/authorization.ts
+  s_d74e0a51d9eaf4::t_630537ba0a57de 1-51
+packages/admin/src/server/queries/audit.ts
+  s_d74e0a51d9eaf4::t_b5491cdfe46c4f 1-26
+packages/admin/src/server/routes/dashboard.ts
+  s_958590984c2116::t_4282eb99b25a9a 1-103
+packages/admin/src/shared/schemas/audit.ts
+  s_d74e0a51d9eaf4::t_3a2500c02101c8 1-33
+packages/admin/src/shared/schemas/jobs.ts
+  s_2bf98a569d4942::t_4ad7070ce69110 1-77
+packages/api-client/__tests__/client.test.ts
+  s_d74e0a51d9eaf4::t_78c012e55ee148 1-98
+packages/api-client/src/client.ts
+  s_d74e0a51d9eaf4::t_a73fc23f9ed57b 1-42
+packages/api-client/src/index.ts
+  s_d74e0a51d9eaf4::t_b68991dd20fc7d 1-8
+packages/api-client/tsconfig.json
+  s_f43ac2349e6c0d::t_0b0862ee0c1e6a 1-8
+packages/api-server/__tests__/router.test.ts
+  s_2bf98a569d4942::t_3f98919560bf86 1-124
+packages/api-server/__tests__/runtime.test.ts
+  s_2bf98a569d4942::t_dcae781458e376 1-226
+packages/api-server/src/app-router.ts
+  s_d74e0a51d9eaf4::t_9aa53d94cb67d6 1-25
+packages/api-server/src/runtime.ts
+  s_2bf98a569d4942::t_064ffe4940f667 1-149
+packages/api-server/src/server-runtime-types.ts
+  s_d74e0a51d9eaf4::t_8aad28238a5be2 1-32
+packages/audit/__tests__/audit.test.ts
+  s_d74e0a51d9eaf4::t_732a144e21bfc1 1-146
+packages/audit/src/schemas.ts
+  s_d74e0a51d9eaf4::t_e47951589fe22b 1-15
+packages/audit/src/server.ts
+  s_d74e0a51d9eaf4::t_a1cc3d167dcb5c 1-87
+packages/audit/src/types.ts
+  s_d74e0a51d9eaf4::t_b0d4ded538723c 1-15
+packages/audit/tsconfig.json
+  s_d74e0a51d9eaf4::t_b5dd71be456c17 1-9
+packages/auth/package.json
+  s_2bf98a569d4942::t_e3ad58800d4b44 1-36
+packages/auth/src/server/audit.ts
+  s_d82c5029b9ccea::t_0a495341960731 1-84
+packages/auth/src/server/config.ts
+  s_d82c5029b9ccea::t_f93fcb77db4c93 1-135
+packages/auth/src/server/context.ts
+  s_d82c5029b9ccea::t_fdcee14423520b 1-121
+packages/auth/src/server/membership.ts
+  s_d82c5029b9ccea::t_283ce52b602781 1-63
+packages/auth/src/server/setup-state.ts
+  s_d82c5029b9ccea::t_8a3f3a56718edf 1-68
+packages/authorization/src/admin/defaults.ts
+  s_d74e0a51d9eaf4::t_1de669818e0aa8 1-55
+packages/authorization/src/admin/factory.ts
+  s_d74e0a51d9eaf4::t_0ac4fb6d4eb1c0 1-57
+packages/authorization/src/admin/utils.ts
+  s_d74e0a51d9eaf4::t_ed6c37ece09c8f 1-30
+packages/authorization/src/compiler.ts
+  s_d74e0a51d9eaf4::t_069307cc383a27 1-53
+packages/authorization/src/defaults.ts
+  s_d74e0a51d9eaf4::t_4796950f017b34 1-43
+packages/authorization/src/factory.ts
+  s_d74e0a51d9eaf4::t_4dccb2bf0ae07f 1-55
+packages/authorization/src/shared-factory.ts
+  s_d74e0a51d9eaf4::t_e85b14a2a8f6bf 1-66
+packages/authorization/src/utils.ts
+  s_d74e0a51d9eaf4::t_61f6c62ed61fba 1-79
+packages/authorization/tsconfig.json
+  s_d74e0a51d9eaf4::t_3488673e9ce290 1-9
+packages/authorization/vitest.config.ts
+  s_d74e0a51d9eaf4::t_1f23fdc5dda4cb 1-5
+packages/core/__tests__/kernel.test.ts
+  s_d74e0a51d9eaf4::t_a4d64490a29039 1-10
+packages/core/src/refs.ts
+  s_d74e0a51d9eaf4::t_90c5507e426eea 1-4
+packages/credits/__tests__/router.test.ts
+  s_24e0da68ceacce::t_064ecc5cd9a299 1-65
+packages/credits/src/server/router.ts
+  s_d74e0a51d9eaf4::t_d68257eec363d5 1-139
+packages/database/__tests__/health.test.ts
+  s_644e00651e10c2::t_25bb0dbce64a24 1-28
+packages/database/drizzle/20260804032851_famous_captain_britain/migration.sql
+  s_bd94372328216f::t_ccfac58608cf74 1-217
+packages/database/drizzle/20260804032851_famous_captain_britain/snapshot.json
+  s_bd94372328216f::t_d448da1827b227 1-2784
+packages/database/drizzle/20260805032945_unknown_beast/migration.sql
+  s_958590984c2116::t_6d8acbea5d4986 1-32
+packages/database/drizzle/20260805032945_unknown_beast/snapshot.json
+  s_958590984c2116::t_d64b3be0dab17a 1-3136
+packages/database/src/schema/monitoring.ts
+  s_958590984c2116::t_dd2a3c42ba6533 1-96
+packages/database/src/schema/relations.ts
+  s_bd94372328216f::t_45b34a4590b6e3 1-22
+packages/database/src/seed/index.ts
+  s_24e0da68ceacce::t_54ff727e688161 1-180
+packages/database/src/seed/safety.ts
+  s_24e0da68ceacce::t_c1ee60d01c2ce5 1-40
+packages/i18n/__tests__/build-entry.test.ts
+  s_2bf98a569d4942::t_717342c9cafeb2 1-54
+packages/i18n/__tests__/helpers/build.ts
+  s_24e0da68ceacce::t_6737fc9029b0de 1-93
+packages/i18n/__tests__/project.test.ts
+  s_24e0da68ceacce::t_996be61f3baa5b 1-142
+packages/i18n/__tests__/vite-hmr.test.ts
+  s_24e0da68ceacce::t_c29a002df26b9c 1-132
+packages/i18n/__tests__/vite.test.ts
+  s_24e0da68ceacce::t_e57c5301185161 1-74
+packages/i18n/package.json
+  s_2bf98a569d4942::t_fc1d2d5b52f946 1-37
+packages/jobs/__tests__/job-service.test.ts
+  s_2bf98a569d4942::t_17f2f0b19f8612 1-461
+packages/jobs/__tests__/repeatables.test.ts
+  s_d74e0a51d9eaf4::t_7031657eb78ca9 1-16
+packages/jobs/src/constants.ts
+  s_2bf98a569d4942::t_f4f9d80a386195 1-19
+packages/jobs/src/env.ts
+  s_d74e0a51d9eaf4::t_55634d6a11187f 1-20
+packages/jobs/src/job-service.ts
+  s_2bf98a569d4942::t_8de0bc8eb3d9bb 1-274
+packages/jobs/src/queue.ts
+  s_d74e0a51d9eaf4::t_34fc5d594b2297 1-55
+packages/jobs/src/serialization.ts
+  s_d74e0a51d9eaf4::t_16d9a35eccbd3a 1-70
+packages/jobs/src/types.ts
+  s_2bf98a569d4942::t_e4c90f0a4293e4 1-158
+packages/logger/__tests__/logger.test.ts
+  s_3c9511304bb034::t_85fc7c37281f06 1-168
+packages/logger/__tests__/redact.test.ts
+  s_644e00651e10c2::t_1c5088e119d7c7 1-30
+packages/logger/package.json
+  s_2bf98a569d4942::t_d36a097763386b 1-26
+packages/logger/src/better-auth.ts
+  s_644e00651e10c2::t_52db2a89f183ac 1-171
+packages/logger/src/index.ts
+  s_3c9511304bb034::t_339fa8e79c5766 1-258
+packages/mail/__tests__/fixtures/samples.ts
+  s_d74e0a51d9eaf4::t_a63e0d2b9d990a 1-146
+packages/mail/package.json
+  s_2bf98a569d4942::t_b7069cd5c98a44 1-35
+packages/mail/src/render.ts
+  s_d74e0a51d9eaf4::t_dd58e301d5eb44 1-10
+packages/observability/__tests__/env.test.ts
+  s_3c9511304bb034::t_e5e8849dc07a09 1-44
+packages/observability/__tests__/server.test.ts
+  s_3c9511304bb034::t_e4d03503269cf5 1-203
+packages/observability/package.json
+  s_3c9511304bb034::t_cbe4a06e938078 1-34
+packages/observability/src/env.ts
+  s_3c9511304bb034::t_01d79a49753401 1-20
+packages/observability/src/server.ts
+  s_3c9511304bb034::t_4eb7d7d54b85fc 1-300
+packages/observability/src/types.ts
+  s_3c9511304bb034::t_c9373f5afb0b97 1-45
+packages/organization/__tests__/router.test.ts
+  s_d74e0a51d9eaf4::t_e5b0267f65e131 1-192
+packages/organization/src/server/audit.ts
+  s_d74e0a51d9eaf4::t_1ff29a1cadd513 1-27
+packages/organization/src/server/deps.ts
+  s_d74e0a51d9eaf4::t_e027523a9b1c64 1-148
+packages/organization/src/server/routes.ts
+  s_d74e0a51d9eaf4::t_5cfa4d428aae06 1-24
+packages/organization/src/shared/audit.ts
+  s_d74e0a51d9eaf4::t_a5115188efa336 1-32
+packages/organization/src/shared/schemas.ts
+  s_d74e0a51d9eaf4::t_cb6d331c2974ab 1-5
+packages/organization/src/workspace/index.ts
+  s_d74e0a51d9eaf4::t_9b0d0ca56478db 1-24
+packages/organization/src/workspace/types.ts
+  s_d74e0a51d9eaf4::t_3a66aed82e06b1 1
+packages/rpc/__tests__/transport.test.ts
+  s_d74e0a51d9eaf4::t_1ef70255cdad5d 1-78
+packages/storage/__tests__/health.test.ts
+  s_d74e0a51d9eaf4::t_65b901b7919598 1-57
+packages/storage/src/health.ts
+  s_d74e0a51d9eaf4::t_f863ca8da28296 1-50
+packages/storage/src/types.ts
+  s_d74e0a51d9eaf4::t_69a55d3ebc4a8d 1-51
+packages/tooling/scripts/src/cli.ts
+  s_2bf98a569d4942::t_9ef23713ce9414 1-92
+packages/tsconfig/base.json
+  s_f43ac2349e6c0d::t_4f31d90b713629 1-16
+packages/tsconfig/package.json
+  s_f43ac2349e6c0d::t_ec282fdb17dec4 1-10
+packages/tsconfig/react.json
+  s_f43ac2349e6c0d::t_2cc9195e4c35e7 1-7
+packages/ui/__tests__/data-table.test.tsx
+  s_2bf98a569d4942::t_8540babaa72adc 1-132
+packages/ui/package.json
+  s_d04ed08162a767::t_1f5fa0f91f11ce 1-63
+packages/ui/src/components/data-table.tsx
+  s_2bf98a569d4942::t_63c223d0b28db7 1-585
+packages/ui/src/index.ts
+  s_2bf98a569d4942::t_878b92a63d4755 1-474
+tsconfig.json
+  s_f43ac2349e6c0d::t_d7719032c89dde 1-9
+vite.config.ts
+  s_2bf98a569d4942::t_d704a54753c9c3 1-46
+.agents/skills/impeccable/agents/impeccable_asset_producer.toml
+  s_d04ed08162a767::t_027978323f39d7 1-94
+.agents/skills/impeccable/agents/impeccable_documenter.toml
+  s_d04ed08162a767::t_6ce981c04295d7 1-27
+.agents/skills/impeccable/agents/impeccable_finish_reviewer.toml
+  s_d04ed08162a767::t_2fd9f81484719b 1-40
+.agents/skills/impeccable/agents/impeccable_manual_edit_applier.toml
+  s_d04ed08162a767::t_9e47166e33db12 1-95
+.agents/skills/impeccable/reference/android.md
+  s_d04ed08162a767::t_a110e055a2a37d 1-40
+.agents/skills/impeccable/reference/bolder.md
+  s_d04ed08162a767::t_4c18ef712558e7 1-31
+.agents/skills/impeccable/reference/clarify.md
+  s_d04ed08162a767::t_3d0931c3e95e15 1-94
+.agents/skills/impeccable/reference/craft-floor.md
+  s_d04ed08162a767::t_db42e0a62d3c34 1-48
+.agents/skills/impeccable/reference/craft.md
+  s_d04ed08162a767::t_2b65980f599ad2 1-5
+.agents/skills/impeccable/reference/delight.md
+  s_d04ed08162a767::t_722ab601eaf0dc 1-70
+.agents/skills/impeccable/reference/doctor.md
+  s_d04ed08162a767::t_a07ce2ccf3312f 1-53
+.agents/skills/impeccable/reference/ios.md
+  s_d04ed08162a767::t_9b33559715b8be 1-45
+.agents/skills/impeccable/reference/new-work.md
+  s_d04ed08162a767::t_5d50ef229e59df 1-108
+.agents/skills/impeccable/reference/operate.md
+  s_d04ed08162a767::t_d9662ec1281747 1-61
+.agents/skills/impeccable/reference/polish.md
+  s_d04ed08162a767::t_028c7fc0744a9a 1-97
+.agents/skills/impeccable/reference/routing.md
+  s_d04ed08162a767::t_f21b090b04d503 1-18
+.agents/skills/impeccable/reference/shape.md
+  s_d04ed08162a767::t_7d46dfef291d60 1-59
+.agents/skills/impeccable/reference/visualize.md
+  s_d04ed08162a767::t_5f3018ef7f5315 1-49
+.agents/skills/impeccable/scripts/command-metadata.json
+  s_d04ed08162a767::t_21907972ac85f5 1-94
+.agents/skills/impeccable/scripts/lib/provider.mjs
+  s_d04ed08162a767::t_5ce6132b188cf7 1-5
+.claude/skills/impeccable
+  s_d04ed08162a767::t_87d0196350e7ad 1
+.dockerignore
+  s_644e00651e10c2::t_f810a57e47675c 1-18
+.github/workflows/ci.yml
+  s_2bf98a569d4942::t_6dbe27b2b5101b 1-89
+apps/admin/__tests__/lib/admin-route-context.test.ts
+  s_7c14ecce0e2a8f::t_649fb8274a667e 1-70
+apps/admin/__tests__/lib/rpc.test.ts
+  s_24e0da68ceacce::t_e06bbbe757b7d7 1-63
+apps/admin/__tests__/server/request-handler.test.ts
+  s_d74e0a51d9eaf4::t_c6a93f09ae1dd1 1-128
+apps/admin/server/app.ts
+  s_d74e0a51d9eaf4::t_794e9d402d4e5a 1-6
+apps/admin/server/request-handler.server.ts
+  s_d74e0a51d9eaf4::t_013e3bb4fe245b 1-131
+apps/admin/server/runtime.plugin.ts
+  s_d74e0a51d9eaf4::t_03c9a372facb9d 1-39
+apps/admin/src/components/error/feature-error-boundary.tsx
+  s_7c14ecce0e2a8f::t_1f7949aa34f6e6 1-46
+apps/admin/src/env.public.ts
+  s_7c14ecce0e2a8f::t_c1fca58932c04c 1-18
+apps/admin/src/features/admin/api/query-helpers.ts
+  s_958590984c2116::t_7a4599e70522de 1-88
+apps/admin/src/features/admin/client/dashboard/dashboard.tsx
+  s_958590984c2116::t_73d3428ef86de0 1-147
+apps/admin/src/features/admin/client/dashboard/stats-cards.tsx
+  s_958590984c2116::t_3ab822583caa7f 1-67
+apps/admin/src/features/admin/client/notifications/notification-broadcast.tsx
+  s_d74e0a51d9eaf4::t_27079d7cfb9ced 1-152
+apps/admin/src/features/admin/client/routes.ts
+  s_d74e0a51d9eaf4::t_177f3575e60a06 1-112
+apps/admin/src/layouts/admin/index.tsx
+  s_d74e0a51d9eaf4::t_e166604102365e 1-306
+apps/admin/src/lib/admin-route-context.ts
+  s_7c14ecce0e2a8f::t_75e1334ead8307 1-23
+apps/admin/src/routes/(admin)/-dashboard-page.tsx
+  s_958590984c2116::t_7a7a966d3d7f40 1-58
+apps/admin/src/routes/__root.tsx
+  s_24e0da68ceacce::t_cc0544452fbb67 1-48
+apps/admin/tsconfig.json
+  s_24e0da68ceacce::t_2df5e6aeceacde 1-17
+apps/admin/vite.config.ts
+  s_d74e0a51d9eaf4::t_49f50d7319457f 1-60
+apps/api/src/app.ts
+  s_24e0da68ceacce::t_6a2648f80d6ed6 1-26
+apps/desktop/src-tauri/.gitignore
+  s_fa2f779883d7dd::t_df273530e73089 1-10
+apps/desktop/src/index.css
+  s_e9c4f8ad25c3cc::t_c3dff882e70798 1
+apps/web/.gitignore
+  s_7e73617f963e47::t_0c2efa58a3a2d8 1-16
+apps/web/__tests__/routes/login.test.ts
+  s_24e0da68ceacce::t_b58b330a2d874f 1-63
+apps/web/__tests__/server/avatar-file-service.test.ts
+  s_fcf59377c468bd::t_3015a2b1ce1bb6 1-227
+apps/web/__tests__/server/health-handler.test.ts
+  s_d74e0a51d9eaf4::t_ef2417f523d824 1-57
+apps/web/__tests__/server/jobs/handlers.test.ts
+  s_d74e0a51d9eaf4::t_8ed5ba4f09479e 1-89
+apps/web/__tests__/server/jobs/monitoring.test.ts
+  s_d74e0a51d9eaf4::t_7da588955990a9 1-59
+apps/web/__tests__/server/origin-policy.test.ts
+  s_d013fb821d4ab7::t_434f1f8f155069 1-42
+apps/web/__tests__/server/request-handler.test.ts
+  s_d74e0a51d9eaf4::t_02a59b8e84def7 1-160
+apps/web/server/api/routers/auth.server.ts
+  s_23bc630f5325f7::t_15c7feab97cf6e 1-11
+apps/web/server/api/routers/cors.server.ts
+  s_23bc630f5325f7::t_69196bc842017b 1-7
+apps/web/server/api/routers/errors.server.ts
+  s_23bc630f5325f7::t_748fc088ba758d 1-13
+apps/web/server/api/routers/health.server.ts
+  s_23bc630f5325f7::t_5747292a167795 1-18
+apps/web/server/api/routers/rpc.server.ts
+  s_23bc630f5325f7::t_708e0e2edc694d 1-11
+apps/web/server/avatar-file-service.server.ts
+  s_fcf59377c468bd::t_e0328f6fe8c994 1-226
+apps/web/server/health-handler.server.ts
+  s_d74e0a51d9eaf4::t_52aeb3e7ff4193 1-48
+apps/web/server/jobs/handlers.server.ts
+  s_d74e0a51d9eaf4::t_eec072cb167321 1-44
+apps/web/server/jobs/runtime.server.ts
+  s_d74e0a51d9eaf4::t_d1b1d1024ec658 1-194
+apps/web/server/jobs/services.server.ts
+  s_7a4032f8ed6e56::t_feb975c7b1d940 1-21
+apps/web/server/migrate.ts
+  s_04a12697709bf2::t_dc0806c117e477 1-10
+apps/web/server/request-handler.server.ts
+  s_d74e0a51d9eaf4::t_3ae351d13bc43f 1-177
+apps/web/server/runtime.plugin.ts
+  s_04a12697709bf2::t_f4830e1508d397 1-43
+apps/web/src/components/app-shell.tsx
+  s_d74e0a51d9eaf4::t_57f2e6df6abd8f 1-133
+apps/web/src/components/auth-shell.tsx
+  s_980c5a02154741::t_f6e730c4e1fcb1 1-105
+apps/web/src/components/cookie-consent.tsx
+  s_7e73617f963e47::t_0bf4d2b897d676 1-80
+apps/web/src/components/public-footer.tsx
+  s_d04ed08162a767::t_a835b184752114 1-77
+apps/web/src/components/public-header.tsx
+  s_d04ed08162a767::t_647478ef96a57a 1-149
+apps/web/src/components/root-providers.tsx
+  s_7e73617f963e47::t_11f52f3e70fa49 1-24
+apps/web/src/components/user-menu.tsx
+  s_d74e0a51d9eaf4::t_2121cd04677252 1-112
+apps/web/src/features/settings/profile-settings-card.tsx
+  s_d74e0a51d9eaf4::t_84ee83b4097e3c 1-134
+apps/web/src/features/settings/settings-types.ts
+  s_d74e0a51d9eaf4::t_130d4f40ace535 1-24
+apps/web/src/lib/auth-client.ts
+  s_fa2f779883d7dd::t_a069deb0724233 1-4
+apps/web/src/lib/routes.ts
+  s_d74e0a51d9eaf4::t_26166a2623e003 1-62
+apps/web/src/routes/__root.tsx
+  s_7e73617f963e47::t_1a1dfc2ddc8a53 1-69
+apps/web/src/routes/login.tsx
+  s_24e0da68ceacce::t_41ea3872856358 1-46
+apps/web/src/routes/signup.tsx
+  s_9c594eaed97548::t_59923ee05ea46f 1-59
+apps/web/src/tanstack-start.d.ts
+  s_fa2f779883d7dd::t_27ba1a044ebec4 1-7
+apps/web/tsconfig.json
+  s_7e73617f963e47::t_dda2f6ceb9deae 1-21
+apps/web/vite.config.ts
+  s_7e73617f963e47::t_c1d334f6d88ccd 1-66
+apps/web/vitest.config.ts
+  s_0b646b95b50087::t_a494c284fb3bab 1-12
+docs/db/migrations.md
+  s_24e0da68ceacce::t_9017704e9dbba8 1-22
+docs/db/seed.md
+  s_24e0da68ceacce::t_f503ee93712101 1-21
+packages/account/src/shared/route-session.ts
+  s_d74e0a51d9eaf4::t_1a3f7294c21d92 1-39
+packages/admin/__tests__/schemas.test.ts
+  s_958590984c2116::t_2a9e85a95c555e 1-75
+packages/admin/src/server/context.ts
+  s_d74e0a51d9eaf4::t_fa94338ee5f4ec 1-98
+packages/admin/src/server/serializers/jobs.ts
+  s_d74e0a51d9eaf4::t_73a9bbab843b4d 1-33
+packages/admin/src/server/services/dashboard.ts
+  s_2bf98a569d4942::t_ffba0f8d703c0e 1-148
+packages/admin/src/shared/schemas/dashboard.ts
+  s_958590984c2116::t_8fdc489a9f6ea6 1-43
+packages/admin/src/shared/schemas/notifications.ts
+  s_d74e0a51d9eaf4::t_b438717af48ea6 1-18
+packages/admin/src/shared/schemas/users.ts
+  s_24e0da68ceacce::t_b3236e46191d7b 1-80
+packages/admin/src/shared/types.ts
+  s_958590984c2116::t_7b5710d7a0543b 1-79
+packages/api-server/__tests__/server-runtime.test.ts
+  s_c6833af19dc323::t_89654e2604ef4d 1-172
+packages/api-server/src/server-runtime.ts
+  s_04a12697709bf2::t_255493d41215ec 1-164
+packages/api-server/src/system-router.ts
+  s_66e508a6f5b08f::t_ca04e95de738b2 1-27
+packages/api-server/src/types.ts
+  s_c6833af19dc323::t_de039807838f6c 1-10
+packages/api-server/tsconfig.json
+  s_fa2f779883d7dd::t_1b8ba7d793acb9 1-8
+packages/audit/src/index.ts
+  s_fcf59377c468bd::t_cf56480fca9e00 1-9
+packages/auth/__tests__/cookies.test.ts
+  s_4a3ad1ff241292::t_e36269df96407b 1-48
+packages/auth/src/lib/cookies.ts
+  s_4a3ad1ff241292::t_5929b3d468cd8e 1-23
+packages/authorization/__tests__/rbac.test.ts
+  s_d74e0a51d9eaf4::t_6c08b94801d42c 1-87
+packages/authorization/src/admin/index.ts
+  s_fcf59377c468bd::t_e0a0ff34915172 1-21
+packages/authorization/src/admin/types.ts
+  s_d74e0a51d9eaf4::t_749f4ae26dfd47 1-47
+packages/authorization/src/admin/validator.ts
+  s_d74e0a51d9eaf4::t_ea979c108fe34d 1-12
+packages/authorization/src/index.ts
+  s_fcf59377c468bd::t_c60983e46cf53c 1-21
+packages/authorization/src/types.ts
+  s_d74e0a51d9eaf4::t_442f1515e300dd 1-52
+packages/authorization/src/validator.ts
+  s_d74e0a51d9eaf4::t_ee6574e5860b36 1-79
+packages/cache/__tests__/keys.test.ts
+  s_644e00651e10c2::t_0222797faf735e 1-18
+packages/cache/src/index.ts
+  s_d74e0a51d9eaf4::t_f41243bb62d7a5 1-5
+packages/cache/src/keys.ts
+  s_644e00651e10c2::t_9437748e8b0088 1-17
+packages/cache/src/ratelimit.ts
+  s_644e00651e10c2::t_2493eb29fa1712 1-48
+packages/cache/src/session.ts
+  s_644e00651e10c2::t_7b97c5e28f50e5 1-21
+packages/cache/src/singleton.ts
+  s_644e00651e10c2::t_8f5192989ed48a 1-19
+packages/cache/src/types.ts
+  s_d74e0a51d9eaf4::t_5f9c28399f1850 1-50
+packages/credits/src/errors.ts
+  s_644e00651e10c2::t_054e56d980d815 1-10
+packages/credits/src/read-models.ts
+  s_d74e0a51d9eaf4::t_c5027fdfa0d4f7 1-132
+packages/credits/src/server.ts
+  s_fcf59377c468bd::t_154e1e63b30891 1-15
+packages/credits/src/types.ts
+  s_d74e0a51d9eaf4::t_7c75935d43626c 1-23
+packages/database/__tests__/query.test.ts
+  s_24e0da68ceacce::t_ca149c33d0ac7e 1-30
+packages/database/__tests__/schema.test.ts
+  s_958590984c2116::t_1f30bb17a755e4 1-80
+packages/database/package.json
+  s_d0dde38ee21d41::t_a89cd395625a51 1-47
+packages/database/src/index.ts
+  s_d0dde38ee21d41::t_d052d85a2d8aa5 1-9
+packages/database/src/monitoring.ts
+  s_958590984c2116::t_5b296250995e83 1-130
+packages/database/src/query.ts
+  s_24e0da68ceacce::t_89dea09edbcf25 1-33
+packages/database/src/query/schemas.ts
+  s_24e0da68ceacce::t_0f6694524ea95c 1-6
+packages/database/src/schema.ts
+  s_d0dde38ee21d41::t_62c8e131d667f2 1-6
+packages/database/src/schema/auth.ts
+  s_c0458e29f7a822::t_b38620b1bb9e20 1-104
+packages/health/__tests__/client.test.ts
+  s_d74e0a51d9eaf4::t_d55162110e5d9a 1-109
+packages/health/__tests__/services.test.ts
+  s_d74e0a51d9eaf4::t_c82b9b5f38cce3 1-89
+packages/health/src/client.ts
+  s_d74e0a51d9eaf4::t_e1b46782c1cf55 1-179
+packages/health/src/router.ts
+  s_d74e0a51d9eaf4::t_1cc7d7fd86323e 1-30
+packages/health/src/server/index.ts
+  s_d74e0a51d9eaf4::t_d0e035fed1eced 1-8
+packages/health/src/server/services.ts
+  s_d74e0a51d9eaf4::t_a606e6f927630c 1-144
+packages/health/src/shared/schemas.ts
+  s_d74e0a51d9eaf4::t_56fe03af8ca890 1-34
+packages/health/src/types.ts
+  s_d74e0a51d9eaf4::t_b4994a56fa8b37 1-7
+packages/i18n/THIRD_PARTY_NOTICES.md
+  s_24e0da68ceacce::t_5197f3bed414c2 1-40
+packages/i18n/src/build/paraglide/compiler/output-structure/message-modules.ts
+  s_24e0da68ceacce::t_7e76a01214ec57 1-212
+packages/i18n/src/build/paraglide/vite.ts
+  s_24e0da68ceacce::t_45deef523145c3 1-213
+packages/i18n/src/build/project.ts
+  s_24e0da68ceacce::t_4c87f7de8c520f 1-40
+packages/jobs/src/index.ts
+  s_8d2e56f30bef26::t_a919b9b16d4fd7 1-21
+packages/jobs/src/repeatables.ts
+  s_8d2e56f30bef26::t_63976079c946b2 1-16
+packages/jobs/src/schemas.ts
+  s_d74e0a51d9eaf4::t_b4218ea588b62b 1-35
+packages/jobs/src/server.ts
+  s_d74e0a51d9eaf4::t_df69e6f4b5095b 1-5
+packages/jobs/src/worker.ts
+  s_d74e0a51d9eaf4::t_b2d869c1610a68 1-201
+packages/logger/src/redact.ts
+  s_644e00651e10c2::t_fd4f43255eb095 1-91
+packages/mail/src/auth.ts
+  s_fcf59377c468bd::t_5c983b4768bbc5 1-66
+packages/mail/src/contact.ts
+  s_fcf59377c468bd::t_7d65e5edabd56b 1-11
+packages/mail/src/emails/contact.tsx
+  s_fcf59377c468bd::t_4d5d2523384f31 1-78
+packages/mail/src/emails/email-verification.tsx
+  s_fcf59377c468bd::t_712d9ebb0f9a95 1-57
+packages/mail/src/emails/layout.tsx
+  s_644e00651e10c2::t_0a74b792e9abc6 1-71
+packages/mail/src/emails/magic-link.tsx
+  s_fcf59377c468bd::t_5042738e58ad45 1-57
+packages/mail/src/emails/org-invitation.tsx
+  s_fcf59377c468bd::t_ab5b880720031d 1-76
+packages/mail/src/emails/org-removed.tsx
+  s_fcf59377c468bd::t_a38fb5157b09cf 1-51
+packages/mail/src/emails/org-role-changed.tsx
+  s_fcf59377c468bd::t_cdb9b1f0800b39 1-58
+packages/mail/src/emails/otp.tsx
+  s_fcf59377c468bd::t_8883c60c60eca5 1-69
+packages/mail/src/emails/password-reset.tsx
+  s_fcf59377c468bd::t_d996a39650871f 1-59
+packages/mail/src/emails/welcome.tsx
+  s_fcf59377c468bd::t_a89597ea797252 1-63
+packages/mail/src/internal-types.ts
+  s_fcf59377c468bd::t_940cbe32e07730 1-28
+packages/mail/src/mailer.ts
+  s_fcf59377c468bd::t_f14a5bd2d05283 1-66
+packages/mail/src/organization.ts
+  s_fcf59377c468bd::t_61f4f130f219c5 1-16
+packages/mail/src/send.ts
+  s_fcf59377c468bd::t_f526c2ece4b115 1-18
+packages/mail/src/server.ts
+  s_fcf59377c468bd::t_b67fcfec4e581e 1
+packages/mail/src/service.ts
+  s_fcf59377c468bd::t_2a43d833e6b21d 1-22
+packages/mail/src/transports/index.ts
+  s_644e00651e10c2::t_ce0df7a78dbacc 1-5
+packages/mail/src/transports/logger.ts
+  s_644e00651e10c2::t_f7b29f62748c8e 1-25
+packages/mail/src/transports/noop.ts
+  s_644e00651e10c2::t_2b8f59554c0908 1-9
+packages/mail/src/types.ts
+  s_fcf59377c468bd::t_dda6c2f507db39 1-77
+packages/notice/src/server/cache.ts
+  s_fcf59377c468bd::t_8de861ebae2443 1-46
+packages/organization/src/types.ts
+  s_d74e0a51d9eaf4::t_a84d57e3cace29 1-14
+packages/rpc/src/handler.ts
+  s_c6833af19dc323::t_8b341fd3d47159 1-120
+packages/rpc/src/index.ts
+  s_c6833af19dc323::t_e09e79b0cf9bc3 1-39
+packages/storage/src/drivers/s3.ts
+  s_fcf59377c468bd::t_4feca39805b3f6 1-110
+packages/storage/src/errors.ts
+  s_fcf59377c468bd::t_7a91f02ec140f9 1-6
+packages/storage/src/factory.ts
+  s_fcf59377c468bd::t_f2216cb6624c54 1-92
+packages/storage/src/index.ts
+  s_d74e0a51d9eaf4::t_1b14a1b4ac421e 1-2
+packages/tooling/test-utils/src/session.ts
+  s_7c572da4d32e1c::t_9d1ed7e0d26d46 1-59
+packages/tooling/test-utils/src/types.ts
+  s_7c572da4d32e1c::t_e201a30f2396e0 1-85
+packages/tooling/test-utils/src/vitest-config.ts
+  s_7c572da4d32e1c::t_1dc4bc563c4a0a 1-37
+packages/tooling/test-utils/tsconfig.json
+  s_7c572da4d32e1c::t_4dabce60c09224 1-9
+packages/tooling/test-utils/vitest.config.ts
+  s_7c572da4d32e1c::t_54943fe99c75e1 1-5
+packages/tsconfig/node.json
+  s_644e00651e10c2::t_d76b57aacb8167 1-9
+packages/ui/__tests__/components.test.tsx
+  s_5ea6a833fd5d86::t_d5084d28174abe 1-184
+packages/ui/__tests__/styles.test.ts
+  s_8e3f4db1c0a8ae::t_0ce949a548cde1 1-34
+packages/ui/src/components/logo.tsx
+  s_8e3f4db1c0a8ae::t_e667c3cfb3481e 1-80
+packages/ui/src/styles.css
+  s_8e3f4db1c0a8ae::t_0f3296ed51efa5 1-238
+skills-lock.json
+  s_d04ed08162a767::t_c8323c234c2cc0 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "627888796dd5b2b55cf00a55ccbcc1795a679b34",
+  "prompts": {},
+  "sessions": {
+    "s_0038eeb108e16f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a6ea690-8c30-4603-bd7a-fdf80e5d40cc",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_04a12697709bf2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc764-e000-7492-9b1c-f9001bab8ebc",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_055a892ead239d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d8f79209-0b4c-41e2-a84a-25b393f7f5aa",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_0b646b95b50087": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fabc0-514d-7a13-afb5-bc66db4e3cbf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_23bc630f5325f7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb798-4ad3-7552-93e4-2dd859a67403",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_2bf98a569d4942": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fd04c-1af8-79e1-a1b3-e6c8f0e050c2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_3be5c0af596112": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3e776cb-34ab-42dd-9d1a-6d0f5d6bbcc0",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_3c9511304bb034": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fcc7e-f19e-72f0-9294-5ed7c052e680",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_5ea6a833fd5d86": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb6c4-541d-7100-85eb-e71d731f65fd",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_65bbfba9beff80": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccaa-931d-7382-b53a-132d175dff1b",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_66e508a6f5b08f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb6b5-e555-7fb1-a06f-99c7d94efccb",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_6c01f76afc71fd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "44ca9663-0c7c-4258-b215-e1e0235e38b6",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_7a4032f8ed6e56": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc65e-a369-7af2-ad8f-c1f504ef853e",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_7c14ecce0e2a8f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc767-8a79-7c30-bafd-4191c458a15f",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_7c572da4d32e1c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a289fd89d0d1b1f50",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_7e73617f963e47": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc6d8-d970-7ef1-a9a8-6287e149ca32",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_8d2e56f30bef26": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc65f-a7d0-7fc0-a7ee-ca77dde5d015",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_8e3f4db1c0a8ae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a15d945c764a14024",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_958590984c2116": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fccf2-e7d8-76b2-887e-d516c0f03055",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_980c5a02154741": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb6c3-405c-7ec2-a63c-fdf415ac3065",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_9c594eaed97548": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-af8c0cdbbcc021dd3",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_bc698b2c29af78": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb767-5a04-7b20-8765-5dca1a16a408",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_bd94372328216f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fca7e-212f-70a3-8983-460f2bcb5f92",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_c0458e29f7a822": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fca7e-7191-7713-a5aa-e8a4ef7ccecf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_c6833af19dc323": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc764-21a8-78c3-aa5c-18be07380cb6",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_d013fb821d4ab7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb130-e076-7b61-8f24-a83399f8bc5b",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_d04ed08162a767": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d3b9f62b-692f-4507-bf91-d28e928559d0",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_d0dde38ee21d41": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fcfe0-07c2-77f3-b240-f8b514807dd1",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_d74e0a51d9eaf4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc56b-4178-7ee2-86db-8858612da5a9",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_d82c5029b9ccea": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5ffaca6-dcb4-43db-8ca7-320755a488d4",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_e9c4f8ad25c3cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0d67cb5b-bd18-4251-8ad7-c04c4ec06bb2",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_f43ac2349e6c0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9a791d6a-6c2f-4715-94a8-8007dc6a197b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_fa2f779883d7dd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f6a082b3-77e4-4f5e-87e1-597148e45e85",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_fcf59377c468bd": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fc61e-112f-7aa3-a6bc-4e09fd5118cd",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

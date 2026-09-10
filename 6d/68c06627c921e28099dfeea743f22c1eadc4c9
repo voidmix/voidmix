@@ -1,0 +1,25 @@
+.hallmark/log.json
+  s_91db6c778ee124::t_b0d398dc85e9a2 3-10
+  s_91db6c778ee124::t_a0eb55eae59cef 2
+apps/web/src/routes/index.tsx
+  s_91db6c778ee124::t_81acf60815567c 4,15,19-20
+  s_91db6c778ee124::t_b075d2e6078e6b 21-22
+  s_91db6c778ee124::t_62244e6ef0127c 87,124-127,129-136,138,141-142,147-148,153-162,164-167,169-170,172-174,176-181,183,221-222,224-228,231,239-240,242-260,262-272,275-283,286-306
+  s_91db6c778ee124::t_30f44df65e2345 175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6d68c06627c921e28099dfeea743f22c1eadc4c9",
+  "prompts": {},
+  "sessions": {
+    "s_91db6c778ee124": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4a9f7bc7-cacb-4695-b3f7-3f8a707aa551",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

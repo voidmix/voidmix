@@ -1,0 +1,68 @@
+packages/account-ui/__tests__/setup.ts
+  s_aaaccda6882788::t_410e01a162069f 1-19
+packages/account-ui/src/types.ts
+  s_aaaccda6882788::t_622eb2ef5baab2 1-13
+apps/web/src/features/settings/account-settings.tsx
+  s_aaaccda6882788::t_49e1dd6c882714 5-6,9,13-21,43-92,98-99,101
+packages/account-ui/src/components/avatar-settings.tsx
+  s_aaaccda6882788::t_1bf6eaf07badb9 1-116
+packages/account-ui/__tests__/delete-account-settings.test.tsx
+  s_aaaccda6882788::t_940f13b55119ca 1-102
+packages/account-ui/src/index.ts
+  s_aaaccda6882788::t_40e2d8aa3aafb9 1-2,4,6
+  s_aaaccda6882788::t_f79c967be141c8 3,5
+packages/account-ui/package.json
+  s_aaaccda6882788::t_7474c8c720b4df 1-16,19-34
+  s_aaaccda6882788::t_22378e2bf158af 17-18
+apps/web/package.json
+  s_aaaccda6882788::t_1e2a000b7ff0ce 23
+packages/account-ui/__tests__/avatar-settings.test.tsx
+  s_aaaccda6882788::t_1fb171e8c29b23 30
+  s_aaaccda6882788::t_1fdff5d2415689 1-29,31-44,46-62
+  s_aaaccda6882788::t_ac7bbc46a678d8 45
+packages/account-ui/src/components/profile-settings-card.tsx
+  s_aaaccda6882788::t_66fc7935bd2332 80-86
+  s_aaaccda6882788::t_ddef5e35c5a84a 1-24,27-79,87-137
+  s_aaaccda6882788::t_1a90eec9266956 25-26
+packages/account-ui/__tests__/access-settings.test.tsx
+  s_aaaccda6882788::t_f202e6936b5a63 1-129
+packages/account-ui/src/components/access-settings.tsx
+  s_aaaccda6882788::t_34a0f6e6e3dd28 1-153
+packages/account-ui/vitest.config.ts
+  s_aaaccda6882788::t_65daa802cb2653 1-10
+packages/account-ui/__tests__/profile-settings-card.test.tsx
+  s_aaaccda6882788::t_1ecf8a9e53da07 1-110,112-120,138
+  s_aaaccda6882788::t_a25262f4b7b4e0 111
+  s_aaaccda6882788::t_e7826044a3dac0 121-137
+apps/web/src/features/settings/security-settings.tsx
+  s_aaaccda6882788::t_8cdfe19d2670e2 5-12
+packages/account-ui/__tests__/authentication-settings.test.tsx
+  s_aaaccda6882788::t_2be90c39d3ef6f 162
+  s_aaaccda6882788::t_bb256a784575ca 175-177
+  s_aaaccda6882788::t_118a9c203cd87c 1
+  s_aaaccda6882788::t_275cf2dfc96885 2-32,34-43,50-85,87-99,101-102,107-117,119-131,133-134,136-161,163-174,178-183
+  s_aaaccda6882788::t_665447cb366bc0 33,44-49
+  s_aaaccda6882788::t_7009915bd0ee33 86,100,103-106,118,132,135
+packages/account-ui/src/components/delete-account-settings.tsx
+  s_aaaccda6882788::t_7ebb68e3d61ef4 1-126
+packages/account-ui/tsconfig.json
+  s_aaaccda6882788::t_7ca63cd98500d7 1-9
+packages/account-ui/src/components/authentication-settings.tsx
+  s_aaaccda6882788::t_4e7e05f4ed3c69 1-217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "10240d1de8ab4a2990c3aa1e010f063593560c93",
+  "prompts": {},
+  "sessions": {
+    "s_aaaccda6882788": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ef8db82a-8167-4774-8c96-2b5048b3f97a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

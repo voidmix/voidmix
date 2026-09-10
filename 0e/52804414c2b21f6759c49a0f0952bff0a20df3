@@ -1,0 +1,60 @@
+packages/jobs/src/queue.ts
+  s_644e00651e10c2::t_e8aff09f151301 1-44
+  s_644e00651e10c2::t_ee51ac41e56124 45-47
+packages/jobs/src/env.ts
+  s_644e00651e10c2::t_01d8d95ef9d783 1-20
+apps/worker/src/worker.ts
+  s_644e00651e10c2::t_119bf7972ef970 1-17
+packages/jobs/tsconfig.json
+  s_644e00651e10c2::t_039950668a069d 1-8
+packages/jobs/src/health.ts
+  s_644e00651e10c2::t_2cc8c90f458705 1-26
+apps/worker/src/handlers.ts
+  s_644e00651e10c2::t_177493fcbf271e 1-15
+packages/jobs/__tests__/serialization.test.ts
+  s_644e00651e10c2::t_0f4b7bdf9045d3 1-29
+  s_644e00651e10c2::t_6d7d86da2043c5 30-31
+packages/jobs/src/job-service.ts
+  s_644e00651e10c2::t_531c160ec25b0c 1-234
+  s_644e00651e10c2::t_4e477fd92df0ce 235-237
+packages/jobs/package.json
+  s_644e00651e10c2::t_3c2bd3ab9c1680 1-30
+apps/worker/src/index.ts
+  s_644e00651e10c2::t_a5f4d3013f339a 1-40
+packages/jobs/src/server.ts
+  s_644e00651e10c2::t_be9051c0c6e3db 1-12
+packages/jobs/src/worker.ts
+  s_644e00651e10c2::t_5fa4209c05fc21 1-190
+  s_644e00651e10c2::t_124fb0d2cbe462 191-193
+packages/jobs/src/index.ts
+  s_644e00651e10c2::t_c243bd5b19c1db 1-69
+apps/worker/package.json
+  s_644e00651e10c2::t_3ffdeb8ea4ebb8 1-22
+apps/worker/tsconfig.json
+  s_644e00651e10c2::t_f032fc6968f5cd 1-8
+packages/jobs/src/timeline.ts
+  s_644e00651e10c2::t_625f702f86fda4 1-42
+apps/worker/src/env.ts
+  s_644e00651e10c2::t_0192dfbf94888b 1-10
+packages/jobs/src/types.ts
+  s_644e00651e10c2::t_6e60451b032349 1-171
+  s_644e00651e10c2::t_56a9c12d10656e 172-174
+bun.lock
+  s_644e00651e10c2::t_d6298e46bbcaf5 86-101,192-208,479-490,927-928,939-940,1041-1042,1089-1090,1263-1264,1283-1286,1299-1302
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "0e52804414c2b21f6759c49a0f0952bff0a20df3",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

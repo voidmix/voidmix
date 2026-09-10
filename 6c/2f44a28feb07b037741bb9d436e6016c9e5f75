@@ -1,0 +1,19 @@
+apps/desktop/src-tauri/tauri.conf.json
+  s_644e00651e10c2::t_9afed4fcffcb3f 17,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "6c2f44a28feb07b037741bb9d436e6016c9e5f75",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

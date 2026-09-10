@@ -1,0 +1,36 @@
+apps/admin/__tests__/lib/admin-route-context.test.ts
+  s_24e0da68ceacce::t_8d1b983daece3b 8
+apps/admin/Dockerfile
+  s_24e0da68ceacce::t_aee9d2238af8ae 13
+  s_24e0da68ceacce::t_8d1b983daece3b 12,14-15
+docs/operations/deployment.md
+  s_24e0da68ceacce::t_8d1b983daece3b 29-30
+  s_24e0da68ceacce::t_aee9d2238af8ae 31
+apps/admin/playwright.config.ts
+  s_24e0da68ceacce::t_8d1b983daece3b 21
+.env.example
+  s_24e0da68ceacce::t_8d1b983daece3b 18
+apps/admin/src/env.ts
+  s_24e0da68ceacce::t_8d1b983daece3b 3,9,14,16
+apps/admin/src/lib/admin-route-context.ts
+  s_24e0da68ceacce::t_8d1b983daece3b 9
+apps/admin/src/layouts/admin/index.tsx
+  s_24e0da68ceacce::t_1f8afa6da3adf8 235
+  s_24e0da68ceacce::t_aee9d2238af8ae 291
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "f5ede24afda1a53789e5b5b3841f3c9a0f0f1e85",
+  "prompts": {},
+  "sessions": {
+    "s_24e0da68ceacce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb61c-da50-7dc0-9cd2-a10aa1662220",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

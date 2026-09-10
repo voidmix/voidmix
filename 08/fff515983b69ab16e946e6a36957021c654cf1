@@ -1,0 +1,23 @@
+.agents/skills/verify/SKILL.md
+  s_4a3ad1ff241292::t_20af81e783320f 3,8-11,13,17-19,33-53,55,57-58,64-65,67,69,72-75,82,85-86,91,93-96,98,112,114-115
+  s_4a3ad1ff241292::t_39cd1d138de5d4 20-32
+AGENTS.md
+  s_4a3ad1ff241292::t_20af81e783320f 28-30,32-37,43-45,48-50,54,58-61
+  s_4a3ad1ff241292::t_39cd1d138de5d4 62-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.17",
+  "base_commit_sha": "08fff515983b69ab16e946e6a36957021c654cf1",
+  "prompts": {},
+  "sessions": {
+    "s_4a3ad1ff241292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fb129-b8d2-7962-9557-d3e012ada932",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

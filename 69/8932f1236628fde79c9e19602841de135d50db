@@ -1,0 +1,19 @@
+apps/web/src/features/projects/workspace-styles.ts
+  s_40d6e4f44d7e85::t_27b151d55220be 1,3-10,16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "698932f1236628fde79c9e19602841de135d50db",
+  "prompts": {},
+  "sessions": {
+    "s_40d6e4f44d7e85": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a079ae-dc70-7ab0-8f19-df9346115deb",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

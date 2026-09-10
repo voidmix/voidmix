@@ -1,0 +1,22 @@
+package.json
+  s_bd94372328216f::t_4b909f1ae18e91 57,100,137,145-146
+  s_bd94372328216f::t_382a875a72226e 119
+bun.lock
+  s_bd94372328216f::t_73bd84ac901386 687,716,734,751,760-761
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "f647f145c4a08f9b98012a40e706c58b8a300890",
+  "prompts": {},
+  "sessions": {
+    "s_bd94372328216f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fca7e-212f-70a3-8983-460f2bcb5f92",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}

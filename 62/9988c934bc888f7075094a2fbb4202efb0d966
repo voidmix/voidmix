@@ -1,0 +1,32 @@
+packages/observability/src/server.ts
+  s_644e00651e10c2::t_6087ce1533a243 1-74
+packages/observability/src/types.ts
+  s_644e00651e10c2::t_1675cd35737f5f 1-17
+packages/observability/__tests__/server.test.ts
+  s_644e00651e10c2::t_37bccad1303d43 1-82
+  s_644e00651e10c2::t_1560c73e1ec9d8 83-84
+packages/observability/package.json
+  s_644e00651e10c2::t_18eb2d98022761 1-26
+packages/observability/tsconfig.json
+  s_644e00651e10c2::t_0a03a920d529d7 1-8
+packages/observability/src/env.ts
+  s_644e00651e10c2::t_4d0696bc463816 1-11
+bun.lock
+  s_644e00651e10c2::t_3d4e2fc8fb64ca 174-188,236-241,442-455,654-667,864-865,948-949,992-993,1072-1075,1118-1119,1188-1189,1196-1197,1328-1329,1344-1345,1484-1485
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "629988c934bc888f7075094a2fbb4202efb0d966",
+  "prompts": {},
+  "sessions": {
+    "s_644e00651e10c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5d431e86-226d-4c38-b88c-fcf2f64dd309",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
