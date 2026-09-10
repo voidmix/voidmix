@@ -1,0 +1,17 @@
+{
+  "name": "@voidmix/jobs",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@voidmix/contracts": "workspace:*",
+    "@voidmix/db": "workspace:*",
+    "@voidmix/observability": "workspace:*",
+    "drizzle-orm": "0.45.2"
+  }
+}

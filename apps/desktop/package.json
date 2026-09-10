@@ -1,0 +1,26 @@
+{
+  "name": "@voidmix/desktop",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp run bundle",
+    "check": "tsc --noEmit",
+    "electron": "bunx electron@44.3.0 electron/main.cjs",
+    "tauri": "bunx @tauri-apps/cli@2.11.4 dev"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.11.1",
+    "@voidmix/config": "workspace:*",
+    "@voidmix/contracts": "workspace:*",
+    "@voidmix/desktop-bridge": "workspace:*",
+    "@voidmix/rpc": "workspace:*",
+    "@voidmix/ui": "workspace:*",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "5.2.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.1"
+  }
+}

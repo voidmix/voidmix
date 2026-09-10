@@ -1,0 +1,17 @@
+{
+  "name": "@voidmix/auth",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@voidmix/config": "workspace:*",
+    "@voidmix/db": "workspace:*",
+    "better-auth": "1.7.3"
+  }
+}

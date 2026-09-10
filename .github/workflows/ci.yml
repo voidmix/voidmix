@@ -1,0 +1,55 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.6-alpine
+        env:
+          POSTGRES_USER: voidmix
+          POSTGRES_PASSWORD: voidmix
+          POSTGRES_DB: voidmix_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U voidmix"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://voidmix:voidmix@localhost:5432/voidmix_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.0'
+      - run: bun install --frozen-lockfile
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.vite/task-cache
+          key: vp-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+          restore-keys: vp-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
+      - run: bun run check
+      - run: bun run test
+      - run: bun run test:integration
+      - run: bun run build
+      - run: bunx playwright install --with-deps chromium
+      - name: Browser integration
+        run: |
+          cp .env.example .env.e2e
+          sed -i 's/NODE_ENV=development/NODE_ENV=test/; s@DATABASE_URL=.*@DATABASE_URL=${{ env.TEST_DATABASE_URL }}@; s/minioadmin/S3RVER/g' .env.e2e
+          node scripts/test-s3.mjs > /tmp/s3.log 2>&1 &
+          node --env-file=.env.e2e apps/web/.output/server/index.mjs > /tmp/web.log 2>&1 &
+          trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl -sf http://localhost:3000/ready && break; sleep 1; done
+          bun run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/

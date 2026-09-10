@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": { "@voidmix/ui/*": ["../../packages/ui/src/*"] }
+  },
+  "include": ["src", "vite.config.ts"]
+}

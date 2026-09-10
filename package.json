@@ -1,0 +1,48 @@
+{
+  "name": "voidmix",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vp run @voidmix/web#dev",
+    "dev:desktop": "vp run @voidmix/desktop#dev",
+    "build": "vp run --filter '@voidmix/*' build",
+    "check": "vp check && vp run types && vp run boundaries",
+    "typecheck": "vp run types",
+    "test": "vp test run",
+    "test:integration": "vp test run --config vitest.integration.config.ts",
+    "test:e2e": "vp exec playwright test",
+    "format": "vp fmt",
+    "ui:add": "vp exec shadcn add --cwd apps/web",
+    "db:generate": "vp run @voidmix/db#generate",
+    "db:migrate": "vp run @voidmix/db#migrate",
+    "worker": "vp run @voidmix/web#worker"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "24.13.4",
+    "@types/nodemailer": "7.0.9",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "s3rver": "3.7.1",
+    "shadcn": "4.21.0",
+    "typescript": "5.9.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
+    "vite-plus": "0.3.1",
+    "vitest": "4.1.11"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
+    "vitest": "4.1.11"
+  },
+  "engines": {
+    "bun": ">=1.4.0",
+    "node": ">=24.11.0"
+  },
+  "packageManager": "bun@1.4.0"
+}

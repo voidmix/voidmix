@@ -1,0 +1,16 @@
+node_modules/
+**/dist/
+**/.output/
+**/.nitro/
+**/.vite/
+**/.tanstack/
+.vite-plus/
+.env
+.env.*
+!.env.example
+**/target/
+playwright-report/
+test-results/
+coverage/
+.DS_Store
+**/src-tauri/gen/

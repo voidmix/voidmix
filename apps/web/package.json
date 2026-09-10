@@ -1,0 +1,40 @@
+{
+  "name": "@voidmix/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp run bundle",
+    "start": "node --env-file-if-exists=../../.env .output/server/index.mjs",
+    "check": "tsc --noEmit",
+    "worker": "bun --env-file=../../.env server/worker.ts"
+  },
+  "dependencies": {
+    "@orpc/server": "1.15.0",
+    "@tanstack/react-router": "1.170.34",
+    "@tanstack/react-start": "1.168.51",
+    "@voidmix/auth": "workspace:*",
+    "@voidmix/config": "workspace:*",
+    "@voidmix/contracts": "workspace:*",
+    "@voidmix/db": "workspace:*",
+    "@voidmix/domain": "workspace:*",
+    "@voidmix/jobs": "workspace:*",
+    "@voidmix/observability": "workspace:*",
+    "@voidmix/rpc": "workspace:*",
+    "@voidmix/storage": "workspace:*",
+    "@voidmix/ui": "workspace:*",
+    "bowser": "2.14.1",
+    "drizzle-orm": "0.45.2",
+    "hono": "4.13.7",
+    "lucide-react": "1.43.0",
+    "nodemailer": "7.0.12",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "4.6.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "5.2.0",
+    "nitro": "3.0.260903-beta",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.1"
+  }
+}
