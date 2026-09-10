@@ -1,0 +1,432 @@
+apps/web/components.json
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 1-21
+apps/web/server/api.integration.test.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 16-32,34-53,55-86,88-209
+  s_8c28c5ecdbf153::t_7cf4150ad85af8 1-15,33,54,87,210
+packages/ui/src/components/input.tsx
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 1-4,12-13
+  s_8c28c5ecdbf153::t_f11bbe0cc75477 10-11
+  s_8c28c5ecdbf153::t_e7aec52251ce7a 5-9,14-20
+packages/contracts/src/index.ts
+  s_8c28c5ecdbf153::t_b322795d1b5694 12,60,69,74,81-86,93-95
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-11,13-17,19-42,50-58,61-68,70-73,75-80,87-92
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1,18,59
+  s_8c28c5ecdbf153::t_dab97241d3d415 43-49
+apps/desktop/src/env.d.ts
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 1
+apps/desktop/electron/preload.cjs
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3-5
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 1-2,6-7
+vitest.integration.config.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-9
+  s_8c28c5ecdbf153::t_1730ae5ccf2c51 1
+packages/desktop-bridge/src/index.test.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3-16
+  s_8c28c5ecdbf153::t_7cf4150ad85af8 1-2,17
+vite.config.ts
+  s_8c28c5ecdbf153::t_6c735dadbff9c0 1-2,57
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3-22,34,36-37,53-56
+  s_8c28c5ecdbf153::t_dab97241d3d415 25-33,38-52
+  s_8c28c5ecdbf153::t_3a32a77dbea01b 23-24,35
+apps/web/tsconfig.json
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 3-5
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6
+  s_8c28c5ecdbf153::t_c45490fb8a5442 1-2,7
+packages/ui/src/components/alert-dialog.tsx
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 1-97,117-154
+  s_8c28c5ecdbf153::t_f11bbe0cc75477 111
+  s_8c28c5ecdbf153::t_1cf465fc9c5948 98-110,112-116,155-179
+apps/web/server/services.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 14-35,39-46
+  s_8c28c5ecdbf153::t_b97e3929dc8876 1-13,36-38
+packages/observability/src/index.test.ts
+  s_8c28c5ecdbf153::t_7cf4150ad85af8 1-3,14
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 4-13
+apps/web/src/routes/device.tsx
+  s_8c28c5ecdbf153::t_738f601f10d114 1-4,10,82
+  s_8c28c5ecdbf153::t_f1e58978dc185e 52,67
+  s_8c28c5ecdbf153::t_54e24048e5b2c1 5,48
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6-9,11-46,49-51,54-66,68-81
+  s_8c28c5ecdbf153::t_1c9bd98a0e4add 53
+  s_8c28c5ecdbf153::t_6a20fba4268ce0 47
+packages/db/src/migrate.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 4-5,7-13
+  s_8c28c5ecdbf153::t_deafe33725a8b7 1-3,6
+packages/ui/src/brand.tsx
+  s_8c28c5ecdbf153::t_ff30581725ae06 1-15
+packages/config/src/client.ts
+  s_8c28c5ecdbf153::t_b322795d1b5694 1,6-7
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-5
+packages/jobs/package.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 13
+  s_8c28c5ecdbf153::t_aa21905c1d8448 14-15
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-6,17
+  s_8c28c5ecdbf153::t_347b6f684cfe14 7-12,16
+packages/auth/package.json
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-12,16-17
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 13-15
+apps/web/server/worker.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3,5,8-22,24-27,33-46,48-55,57-60
+  s_8c28c5ecdbf153::t_b97e3929dc8876 1-2,4,6-7,23,28-32,47,56
+packages/ui/src/index.tsx
+  s_8c28c5ecdbf153::t_16aca915b32a40 1-9,12-13
+  s_8c28c5ecdbf153::t_ff30581725ae06 10-11
+apps/desktop/electron/main.cjs
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 5-6,17,19-31,33-54,56-57,59-79,81-86
+  s_8c28c5ecdbf153::t_dab97241d3d415 7-14,18,80
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 1-4,15-16,32,55,58,87-88
+packages/ui/src/styles.css
+  s_8c28c5ecdbf153::t_dfb2a01abaf4aa 1-720
+packages/db/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_8e6f5e612e970d 1-2,4
+packages/storage/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_542068cd0f5de5 1-2,4
+packages/ui/src/components/badge.tsx
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 1-33
+  s_8c28c5ecdbf153::t_b412faa5f11a66 34-45
+packages/ui/tsconfig.json
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 3-5
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6
+  s_8c28c5ecdbf153::t_8202798e3495c0 1-2,7
+packages/contracts/src/index.test.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 4-24
+  s_8c28c5ecdbf153::t_54720bba8112c1 1-2,25
+  s_8c28c5ecdbf153::t_7cf4150ad85af8 3
+.gitignore
+  s_8c28c5ecdbf153::t_6c735dadbff9c0 8-10
+  s_8c28c5ecdbf153::t_1730ae5ccf2c51 1-7,11-15
+  s_8c28c5ecdbf153::t_adef2767d565c6 16
+apps/desktop/src-tauri/Cargo.toml
+  s_8c28c5ecdbf153::t_1730ae5ccf2c51 1-22
+packages/ui/src/components/alert.tsx
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 1-36,46-52
+  s_8c28c5ecdbf153::t_1b6ba979d6fe73 40
+  s_8c28c5ecdbf153::t_98d3b9bbdb2dd3 37-39,41-45,53-59
+packages/ui/src/components/button.tsx
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 1-4,15-17,22-47
+  s_8c28c5ecdbf153::t_134a1300ddf23c 12
+  s_8c28c5ecdbf153::t_f11bbe0cc75477 7,20
+  s_8c28c5ecdbf153::t_ff30581725ae06 11,14
+  s_8c28c5ecdbf153::t_d3b3aee32ae490 5-6,8-10,13,18-19,21,48-60
+apps/web/src/routes/reset-password.tsx
+  s_8c28c5ecdbf153::t_6a20fba4268ce0 40
+  s_8c28c5ecdbf153::t_134a1300ddf23c 46
+  s_8c28c5ecdbf153::t_738f601f10d114 1-4,10,61
+  s_8c28c5ecdbf153::t_54e24048e5b2c1 5,41
+  s_8c28c5ecdbf153::t_f1e58978dc185e 50
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6-9,11-39,42-45,47-49,51-60
+apps/web/vite.config.ts
+  s_8c28c5ecdbf153::t_b97e3929dc8876 1-2,6-9,12,46-47
+  s_8c28c5ecdbf153::t_2b7c44bb9804c9 3,5
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 10-11,13-16,18-28,30,35-45
+  s_8c28c5ecdbf153::t_1241d74ed38fab 4,17,29
+  s_8c28c5ecdbf153::t_dab97241d3d415 31-34
+packages/observability/package.json
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-14
+apps/web/src/routeTree.gen.ts
+  s_8c28c5ecdbf153::t_110bea3b356670 13-14,21-30,34-35,39-40,45-46,50,52-53,58-59,69-82,90-91
+  s_8c28c5ecdbf153::t_14fb9ef0a76fc0 1-11,15,42-43,47-49,51,54-55,61-62,86-87,93-104
+  s_8c28c5ecdbf153::t_381c06ab5de04f 12,16-20,31-33,36-38,41,44,56-57,60,63-68,83-85,88-89,92
+packages/domain/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_19e78c56932d3d 1-2,4
+packages/db/src/schema.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 1-129,131-142
+  s_8c28c5ecdbf153::t_dbd06c3ddb48d7 130
+packages/desktop-bridge/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_f986e79ff7bdbf 1-2,4
+apps/desktop/index.html
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 1-7,9-16
+  s_8c28c5ecdbf153::t_94b6ab639aa309 8
+packages/ui/src/notice.tsx
+  s_8c28c5ecdbf153::t_16aca915b32a40 1,3-4,15-18,21-22,24-26
+  s_8c28c5ecdbf153::t_f11bbe0cc75477 23
+  s_8c28c5ecdbf153::t_ff30581725ae06 2,5-14,19-20
+packages/domain/src/index.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3-9,11-15,19-22,33-47,52-53,55-67,79-87,90-95,100-101,103-104,108-109
+  s_8c28c5ecdbf153::t_b322795d1b5694 1-2,10,16-18,23-32,48-51,54,68-78,88-89,96-99,102,105-107,110-127
+packages/ui/src/components/label.tsx
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 1-5,11
+  s_8c28c5ecdbf153::t_f11bbe0cc75477 10
+  s_8c28c5ecdbf153::t_2269bc2924e7f1 6-9,12-18
+apps/desktop/src-tauri/tauri.conf.json
+  s_8c28c5ecdbf153::t_94b6ab639aa309 15
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6-14,16-17
+  s_8c28c5ecdbf153::t_1730ae5ccf2c51 1-5,18-19
+packages/ui/src/components/skeleton.tsx
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 1-7
+  s_8c28c5ecdbf153::t_38e85c0d9bfac1 8-13
+apps/web/src/routes/index.tsx
+  s_8c28c5ecdbf153::t_54720bba8112c1 1,3
+  s_8c28c5ecdbf153::t_738f601f10d114 2
+packages/ui/src/file-workspace.tsx
+  s_8c28c5ecdbf153::t_16aca915b32a40 1-2,13-16,26-40,43-90,95,105-106,120-129,131,137-139,143-145,147,149-150,234,237-252,259-281,291,300-301,311-319,328-334
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 17-25,91-93,104,140-142,253-258,282-290,299,302-310,320-327
+  s_8c28c5ecdbf153::t_1c9bd98a0e4add 41
+  s_8c28c5ecdbf153::t_134a1300ddf23c 3-12,96-103,114-115,153-162,164-231,292-298
+  s_8c28c5ecdbf153::t_5496898747e581 42,94,107-113,116-119,130,132-136,146,148,151-152,163,232-233,235-236
+apps/web/server/hono.ts
+  s_8c28c5ecdbf153::t_dab97241d3d415 141-145
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 8-15,22-27,32-36,38-42,44-54,59-61,63-66,69-87,91-94,99-133,136-140,146-170,176-179,181-184,187-219,222-252
+  s_8c28c5ecdbf153::t_2b7c44bb9804c9 1
+  s_8c28c5ecdbf153::t_b97e3929dc8876 2-7,16-21,28-31,37,43,55-58,62,67-68,88-90,95-98,134-135,171-175,180,185-186,220-221,253-254
+packages/db/drizzle.config.ts
+  s_8c28c5ecdbf153::t_deafe33725a8b7 1
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-8
+packages/db/src/index.ts
+  s_8c28c5ecdbf153::t_deafe33725a8b7 5,13-14,16
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6-12
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-4,15
+apps/web/server/plugins/services.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3-6
+  s_8c28c5ecdbf153::t_b97e3929dc8876 1-2
+packages/rpc/src/client.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 5-76
+  s_8c28c5ecdbf153::t_dbd06c3ddb48d7 1-4,78-79
+  s_8c28c5ecdbf153::t_bd801ba3d3c9be 77
+DESIGN.md
+  s_8c28c5ecdbf153::t_1b6ba979d6fe73 1-4,6-10,12-16,26-30,34,36-43
+  s_8c28c5ecdbf153::t_c37b8ff995f6f7 5,11,31-33,35
+  s_8c28c5ecdbf153::t_2e42eee0dda48c 17-25
+README.md
+  s_8c28c5ecdbf153::t_6120bc5c368256 122
+  s_8c28c5ecdbf153::t_62554857776038 51-68
+  s_8c28c5ecdbf153::t_3a32a77dbea01b 3,5,7-8,10,12-42,44-50,71-113,115-121,123-138,140,142
+  s_8c28c5ecdbf153::t_b18874c585e425 69-70
+  s_8c28c5ecdbf153::t_54720bba8112c1 1-2,4,6,9,11,114,139,141
+  s_8c28c5ecdbf153::t_1c9bd98a0e4add 43
+packages/auth/src/index.ts
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-2,14,108-109
+  s_8c28c5ecdbf153::t_dab97241d3d415 16
+  s_8c28c5ecdbf153::t_dbd06c3ddb48d7 3-6,13,20-21,73,98,110
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 7-12,15,17-19,22-72,74-97,99-107
+packages/storage/src/index.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 1-8,15-24,27-35,37-48,50-95
+  s_8c28c5ecdbf153::t_dbd06c3ddb48d7 10-14,25-26,49
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 9,36,96-97
+packages/desktop-bridge/src/index.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 1-5,17-27,30-39,41-47,54-72,75-79,81-82
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 6,85
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 7-16,28-29,40,48-53,73-74,80,83-84
+packages/config/src/desktop.ts
+  s_8c28c5ecdbf153::t_b322795d1b5694 1,11-12
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-10
+apps/desktop/src-tauri/src/main.rs
+  s_8c28c5ecdbf153::t_89fd9ba9626825 4-11,13-17,19-22,25-30,32-52,59-66,68-73,78-80,84-111
+  s_8c28c5ecdbf153::t_1730ae5ccf2c51 1-3,12,18,23-24,31,53-58,67,74-77,81-83,112
+apps/desktop/src/bridge.ts
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 1-2,9-10,19,44
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3-8,11-18,20-43
+packages/config/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_20693065217688 1-2,4
+packages/config/src/server.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-62,64-66,69-72,76-83
+  s_8c28c5ecdbf153::t_b322795d1b5694 1,63,67-68,73-75,84
+packages/rpc/package.json
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-12,19-20
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 14
+  s_8c28c5ecdbf153::t_aa21905c1d8448 17-18
+  s_8c28c5ecdbf153::t_8cad739b590338 13,15-16
+packages/contracts/package.json
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-14
+apps/desktop/src-tauri/build.rs
+  s_8c28c5ecdbf153::t_89fd9ba9626825 1-3
+packages/auth/src/client.ts
+  s_8c28c5ecdbf153::t_dbd06c3ddb48d7 1-3
+.github/workflows/ci.yml
+  s_8c28c5ecdbf153::t_3a32a77dbea01b 1-55
+apps/web/package.json
+  s_8c28c5ecdbf153::t_aa21905c1d8448 8,27,33
+  s_8c28c5ecdbf153::t_243113fac0cbb0 35-39
+  s_8c28c5ecdbf153::t_dc27bcb35c4ed1 26,29
+  s_8c28c5ecdbf153::t_2b7c44bb9804c9 1-6,11-12,16-17,22-23,34,40
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 13-15,20,24,28,30-32
+  s_8c28c5ecdbf153::t_258871fcb5d026 7,9-10,18-19,21,25
+apps/web/src/server.ts
+  s_8c28c5ecdbf153::t_b97e3929dc8876 1-5
+  s_8c28c5ecdbf153::t_b18874c585e425 6-19
+apps/web/src/routes/__root.tsx
+  s_8c28c5ecdbf153::t_738f601f10d114 1-3,32
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 4-31
+apps/desktop/src/main.tsx
+  s_8c28c5ecdbf153::t_f1e58978dc185e 65,88
+  s_8c28c5ecdbf153::t_6a20fba4268ce0 78
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 9-11,14-17,19-62,64,66-77,80-87,89-97
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 1-5,7-8,12-13,18,98-99
+  s_8c28c5ecdbf153::t_54e24048e5b2c1 6,63,79
+tests/e2e/workspace.spec.ts
+  s_8c28c5ecdbf153::t_94b6ab639aa309 31
+  s_8c28c5ecdbf153::t_62554857776038 6-30,33-80
+  s_8c28c5ecdbf153::t_0225e4f7f6f758 1-5,32,81
+packages/db/src/repositories.ts
+  s_8c28c5ecdbf153::t_deafe33725a8b7 1-4,9-10,21-23,35,52,62-63,76-80,96-99,113,121-122,147-148,151
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 5-8,11-20,24-34,36-51,53-61,64-75,81-95,100-112,114-120,123-146,149-150
+packages/ui/package.json
+  s_8c28c5ecdbf153::t_67f1be6786c984 20-24
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 10-13
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-4,8,14,17-18,28
+  s_8c28c5ecdbf153::t_02fa6ffd0f94a5 5-7,27
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 19
+  s_8c28c5ecdbf153::t_4df8c21b3d4149 9,15-16,25-26
+apps/web/server/job-handlers.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 1-40
+tests/types.d.ts
+  s_8c28c5ecdbf153::t_7cf4150ad85af8 1,13
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-12
+packages/ui/src/assets.d.ts
+  s_8c28c5ecdbf153::t_ff30581725ae06 1-4
+packages/ui/src/password-input.tsx
+  s_8c28c5ecdbf153::t_ff30581725ae06 1-27
+packages/db/package.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 16-19
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-10,14-15,20-24
+  s_8c28c5ecdbf153::t_aa21905c1d8448 13
+  s_8c28c5ecdbf153::t_e2e12c16c8704f 11-12
+apps/web/src/screens/home.tsx
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 19-39,41-64,66-76,79-85,101,109-112,114-116,123-127,129-132,135,137-139,141-143,145-146,148-155,157,159-161,164-173,176,179-190,193-208,211-214,217,227-231,237,284-286
+  s_8c28c5ecdbf153::t_f1e58978dc185e 140,144,191
+  s_8c28c5ecdbf153::t_134a1300ddf23c 89-100,103-105,107,117-122,224-226,233-236,238-243,249-283
+  s_8c28c5ecdbf153::t_54e24048e5b2c1 134,147
+  s_8c28c5ecdbf153::t_738f601f10d114 1-3,17-18,40,65,209,287
+  s_8c28c5ecdbf153::t_6a20fba4268ce0 4-16,77-78,86-88,102,106,108,113,128,133,136,156,158,162-163,174-175,177-178,192,210,215-216,218-223,232,244-248
+packages/ui/src/assets/voidmix.svg
+  s_8c28c5ecdbf153::t_ff30581725ae06 1-5
+apps/desktop/components.json
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 1-21
+packages/config/src/server.test.ts
+  s_8c28c5ecdbf153::t_7cf4150ad85af8 1-4,23
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 5-22
+apps/desktop/vite.config.ts
+  s_8c28c5ecdbf153::t_1241d74ed38fab 4,8,21-22
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 5-7,9-19,26-33
+  s_8c28c5ecdbf153::t_dab97241d3d415 20,23-25
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 1-3
+packages/observability/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_3178eccae89b43 1-2,4
+packages/config/src/index.ts
+  s_8c28c5ecdbf153::t_b322795d1b5694 1-3
+packages/storage/package.json
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-11,18-19
+  s_8c28c5ecdbf153::t_aa21905c1d8448 14
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 15-17
+  s_8c28c5ecdbf153::t_255e8e08d04c3d 12-13
+packages/rpc/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_1615829d0ec784 1-2,4
+tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 13-14
+  s_8c28c5ecdbf153::t_6c735dadbff9c0 1-12,15
+packages/auth/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_c94e2ae4b793ec 1-2,4
+docker-compose.yml
+  s_8c28c5ecdbf153::t_6c735dadbff9c0 1-2,4-7,15,17-20,36-38
+  s_8c28c5ecdbf153::t_1730ae5ccf2c51 3,9,11-13,16,21,24-34
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 8,10,14,22-23,35
+apps/desktop/package.json
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 5-8,11,14,17-19,22-25
+  s_8c28c5ecdbf153::t_2b7c44bb9804c9 1-4,12,15-16,21,26
+  s_8c28c5ecdbf153::t_1730ae5ccf2c51 9-10
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 13,20
+packages/domain/src/index.test.ts
+  s_8c28c5ecdbf153::t_7cf4150ad85af8 1,9,20,77
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 2-8,10-19,21-76
+packages/ui/src/field.tsx
+  s_8c28c5ecdbf153::t_ff30581725ae06 1,4-12,14-17
+  s_8c28c5ecdbf153::t_16aca915b32a40 2-3,13,18-19
+packages/observability/src/index.ts
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 32,34,47-48
+  s_8c28c5ecdbf153::t_deafe33725a8b7 1-2,5,15,23-24,33,49
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3-4,6-14,16-22,25-31,35-46
+packages/jobs/src/index.ts
+  s_8c28c5ecdbf153::t_deafe33725a8b7 1-4,12-13,23-24,31-36,44-50,61,76,84
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 5-11,14-21,25-30,37-43,51-60,62-75,77-83
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 22
+packages/ui/components.json
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 1-21
+packages/config/package.json
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-17
+packages/rpc/src/index.ts
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6-11,13-20,22-28,32-41,45-47,49-54
+  s_8c28c5ecdbf153::t_dbd06c3ddb48d7 1-5,12,21,29-31,42-44,48,55-56
+packages/jobs/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_f07fadaa9a536a 1-2,4
+apps/desktop/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 6
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 3-5
+  s_8c28c5ecdbf153::t_dfd7d2279982ca 1-2,7
+apps/web/src/router.tsx
+  s_8c28c5ecdbf153::t_e341272680fe1f 1-6
+scripts/check-boundaries.ts
+  s_8c28c5ecdbf153::t_dda4eb1d700db5 75
+  s_8c28c5ecdbf153::t_3a32a77dbea01b 1-33,84-90
+  s_8c28c5ecdbf153::t_ab8da075a004eb 34-74,76-83
+packages/desktop-bridge/package.json
+  s_8c28c5ecdbf153::t_bb79e22f05dc54 1-14
+package.json
+  s_8c28c5ecdbf153::t_1241d74ed38fab 19
+  s_8c28c5ecdbf153::t_ee82f031bef15b 26,33
+  s_8c28c5ecdbf153::t_6c735dadbff9c0 1-7,9,18,23-24,38-39,48
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 8,25,28-32,34-37,40-47
+  s_8c28c5ecdbf153::t_3a32a77dbea01b 13
+  s_8c28c5ecdbf153::t_88add182d44442 10-12
+  s_8c28c5ecdbf153::t_c61134c5229b18 14-17
+  s_8c28c5ecdbf153::t_7f0b6a815cfd2d 20-22
+  s_8c28c5ecdbf153::t_6e34f6586b3815 27
+.env.example
+  s_8c28c5ecdbf153::t_6c735dadbff9c0 1,4,6,8-10,19-20
+  s_8c28c5ecdbf153::t_b97e3929dc8876 2-3,7,11-18
+  s_8c28c5ecdbf153::t_aa21905c1d8448 5
+PRODUCT.md
+  s_8c28c5ecdbf153::t_1b6ba979d6fe73 1-32
+packages/contracts/tsconfig.json
+  s_8c28c5ecdbf153::t_d4c8780dc7d3ac 3
+  s_8c28c5ecdbf153::t_84766ef8e57991 1-2,4
+apps/desktop/src-tauri/Cargo.lock
+  s_8c28c5ecdbf153::t_8a112e8c309de5 1-5045
+apps/web/src/client.tsx
+  s_8c28c5ecdbf153::t_77e7a7928d0180 1-4
+bun.lock
+  s_8c28c5ecdbf153::t_3eec0f8d7cd56d 1-2115
+packages/db/drizzle/0000_motionless_zodiak.sql
+  s_8c28c5ecdbf153::t_2fb5489c5aa427 1-129
+packages/db/drizzle/meta/0000_snapshot.json
+  s_8c28c5ecdbf153::t_d5cca665edf3aa 1-897
+packages/db/drizzle/meta/_journal.json
+  s_8c28c5ecdbf153::t_b71d99c41ac7d8 1-13
+packages/domain/package.json
+  s_8c28c5ecdbf153::t_2d259b61ac07a1 1-14
+packages/ui/src/lib/utils.ts
+  s_8c28c5ecdbf153::t_bee5aa426bd50f 1
+playwright.config.ts
+  s_8c28c5ecdbf153::t_1d179026cb9707 1-17
+scripts/test-s3.mjs
+  s_8c28c5ecdbf153::t_23cc27a5536cc0 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9ffce34eb747da019ed3266c0d08e25e72c38901",
+  "prompts": {},
+  "humans": {
+    "h_2f444dd408c3f2": {
+      "author": "heixing <heixing@xiaohongshu.com>"
+    }
+  },
+  "sessions": {
+    "s_8c28c5ecdbf153": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a089bf-8782-7f70-9e2e-f404c7f1248a",
+        "model": "gpt-6-astra"
+      },
+      "human_author": null
+    }
+  }
+}
