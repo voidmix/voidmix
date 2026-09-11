@@ -231,6 +231,20 @@ export const agentStepSchema = z.object({
   finishedAt: z.date().nullable(),
   error: z.string().nullable(),
 });
+export const scheduledTaskSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  projectId: z.string().min(1).nullable(),
+  createdBy: z.string().min(1),
+  name: z.string().min(1),
+  instruction: z.string().min(1),
+  schedule: z.string().min(1),
+  status: z.enum(["active", "paused"]),
+  executionStatus: z.enum(["configured", "unavailable"]),
+  nextRunAt: z.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
 export const agentLeaseSchema = z.object({
   runId: z.string().min(1),
   holderId: z.string().min(1),
@@ -385,6 +399,13 @@ export const piSessionSchema = z.object({
   updatedAt: z.date(),
   completedAt: z.date().nullable(),
 });
+export const piSessionEventSchema = z.object({
+  id: z.string().min(1),
+  sessionId: z.string().min(1),
+  type: z.string().min(1),
+  payload: z.record(z.string(), z.unknown()),
+  createdAt: z.date(),
+});
 
 export const projectDetailSchema = projectSummarySchema.extend({
   brief: z.string().nullable(),
@@ -408,6 +429,7 @@ export const piRunProjectionSchema = z.object({
 
 export const piSessionDetailSchema = piSessionSchema.extend({
   run: piRunProjectionSchema,
+  events: z.array(piSessionEventSchema),
 });
 
 export const librarySearchResultSchema = z.object({
@@ -727,6 +749,21 @@ const getPiSession = oc
   .output(piSessionDetailSchema);
 
 const cancelPiSession = getPiSession;
+const updatePiSession = oc
+  .input(
+    z.object({
+      sessionId: z.string().min(1),
+      parameters: z
+        .record(z.string(), z.unknown())
+        .refine((v) => Object.keys(v).length > 0)
+        .refine((v) => Object.keys(v).length <= 32),
+    }),
+  )
+  .output(piSessionDetailSchema);
+
+const pausePiSession = getPiSession;
+const resumePiSession = getPiSession;
+
 const retryPiSession = oc
   .input(
     z.object({
@@ -735,6 +772,18 @@ const retryPiSession = oc
     }),
   )
   .output(piSessionDetailSchema);
+
+/** Submit a durable remote instruction for execution by a connected Desktop Agent. */
+const createRemoteCommand = oc
+  .input(
+    z.object({
+      workspaceId: z.string().trim().min(1),
+      instruction: z.string().trim().min(1).max(10_000),
+      targetDeviceId: z.string().trim().min(1).optional(),
+      idempotencyKey: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(agentRunSchema);
 
 const createAsset = oc
   .input(z.object({ workspaceId: z.string().trim().min(1), path: z.string().min(1).max(1024) }))
@@ -825,6 +874,39 @@ const transitionAgentStep = oc
     }),
   )
   .output(agentStepSchema);
+const listScheduledTasks = oc
+  .input(
+    z.object({
+      workspaceId: z.string().min(1),
+      projectId: z.string().min(1).optional(),
+      limit: z.number().int().min(1).max(100).default(50),
+      cursor: z.string().optional(),
+    }),
+  )
+  .output(z.object({ items: z.array(scheduledTaskSchema), nextCursor: z.string().nullable() }));
+const createScheduledTask = oc
+  .input(
+    z.object({
+      workspaceId: z.string().min(1),
+      projectId: z.string().min(1).nullable().optional(),
+      name: z.string().trim().min(1).max(200),
+      instruction: z.string().trim().min(1).max(10000),
+      schedule: z.string().trim().min(1).max(200),
+    }),
+  )
+  .output(scheduledTaskSchema);
+const updateScheduledTask = oc
+  .input(
+    z.object({
+      taskId: z.string().min(1),
+      name: z.string().trim().min(1).max(200).optional(),
+      instruction: z.string().trim().min(1).max(10000).optional(),
+      schedule: z.string().trim().min(1).max(200).optional(),
+      status: z.enum(["active", "paused"]).optional(),
+      nextRunAt: z.date().nullable().optional(),
+    }),
+  )
+  .output(scheduledTaskSchema);
 
 export const apiContract = {
   health,
@@ -882,7 +964,16 @@ export const apiContract = {
       get: getPiSession,
       cancel: cancelPiSession,
       retry: retryPiSession,
+      update: updatePiSession,
+      pause: pausePiSession,
+      resume: resumePiSession,
     },
+  },
+  remote: {
+    commands: { create: createRemoteCommand },
+  },
+  scheduled: {
+    tasks: { list: listScheduledTasks, create: createScheduledTask, update: updateScheduledTask },
   },
   public: {
     auth: {
@@ -955,6 +1046,7 @@ export type SyncConflictDto = z.infer<typeof syncConflictSchema>;
 export type AgentRunDto = z.infer<typeof agentRunSchema>;
 export type AgentStepDto = z.infer<typeof agentStepSchema>;
 export type AgentLeaseDto = z.infer<typeof agentLeaseSchema>;
+export type ScheduledTaskDto = z.infer<typeof scheduledTaskSchema>;
 export type ProjectStage = z.infer<typeof projectStageSchema>;
 export type ProjectMemberDto = z.infer<typeof projectMemberSchema>;
 export type ProjectSummaryDto = z.infer<typeof projectSummarySchema>;
@@ -968,5 +1060,6 @@ export type ActivityDto = z.infer<typeof activitySchema>;
 export type PiSessionDto = z.infer<typeof piSessionSchema>;
 export type PiRunProjectionDto = z.infer<typeof piRunProjectionSchema>;
 export type PiSessionDetailDto = z.infer<typeof piSessionDetailSchema>;
+export type PiSessionEventDto = z.infer<typeof piSessionEventSchema>;
 export type LibrarySearchResultDto = z.infer<typeof librarySearchResultSchema>;
 export type StudioSnapshotDto = z.infer<typeof studioSnapshotSchema>;

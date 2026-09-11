@@ -130,7 +130,15 @@
     "workspaceChanges": "工作区变更",
     "workspaceChangesDescription": "设备和访问权限发生变化时显示桌面通知。",
     "devices": "设备",
-    "manageDevices": "管理已注册设备"
+    "manageDevices": "管理已注册设备",
+    "theme": "主题",
+    "darkTheme": "深色",
+    "lightTheme": "浅色",
+    "localProject": "本地项目",
+    "projectFolder": "项目目录",
+    "projectFolderDescription": "授权 Pi 读取和写入本地目录。",
+    "projectFolderPlaceholder": "/Users/you/project",
+    "bindFolder": "绑定目录"
   },
   "projects": {
     "title": "项目",

@@ -28,6 +28,9 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
   const project = snapshot.projects.find((item) => item.id === projectId);
   const [draft, setDraft] = useState("");
   const [confirm, setConfirm] = useState(false);
+  const [temperature, setTemperature] = useState("0.2");
+  const [controlBusy, setControlBusy] = useState(false);
+  const [controlError, setControlError] = useState(false);
   const controller = useRef<AbortController | null>(null);
   const confirmInvoker = useRef<HTMLElement | null>(null);
   useEffect(
@@ -109,7 +112,57 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
           </p>
         </div>
       ) : null}
-      {session.status !== "idle" ? <RunTimeline session={session} /> : null}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_260px]">
+        <div>{session.status !== "idle" ? <RunTimeline session={session} /> : null}</div>
+        <aside
+          className="h-fit rounded-xl border border-border bg-card p-4"
+          aria-label={t("agentRoles")}
+        >
+          <h2 className="text-sm font-semibold">{t("agentRoles")}</h2>
+          <div className="mt-3 flex flex-col gap-2">
+            {["rolePm", "roleDev", "roleQa", "roleDesigner"].map((role, i) => (
+              <div
+                key={role}
+                className="flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2.5"
+              >
+                <span
+                  className={`size-2 rounded-full ${["bg-violet-500", "bg-blue-500", "bg-emerald-500", "bg-fuchsia-500"][i]}`}
+                  aria-hidden="true"
+                />
+                <span className="min-w-0 flex-1 text-xs">{t(role as never)}</span>
+                <span className="text-[11px] text-muted-foreground">
+                  {t(
+                    session.status === "running" && i < session.steps.length
+                      ? "completed"
+                      : "ready",
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 border-t border-border pt-4 text-xs text-muted-foreground">
+            {t("device")}: <span className="text-foreground">{t("localPreview")}</span>
+          </div>
+        </aside>
+      </div>
+      <section className="rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold">{t("runDetails")}</h2>
+          <span className="text-xs text-muted-foreground">{t(session.status)}</span>
+        </div>
+        <div className="mt-3 grid gap-3 text-xs text-muted-foreground sm:grid-cols-2">
+          <div>
+            {t("device")}
+            <p className="mt-1 text-foreground">{t("localPreview")}</p>
+          </div>
+          <div>
+            {t("outputs")}
+            <p className="mt-1 text-foreground">
+              {task ? displayTaskTitle(task, t) : t("noOutputs")}
+            </p>
+          </div>
+        </div>
+      </section>
       <div role="status" className="my-4 text-sm text-muted-foreground">
         {session.status === "cancelled"
           ? t("stopped")
@@ -126,9 +179,27 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
               : ""}
       </div>
       {session.status === "running" ? (
-        <Button data-pi-stop onClick={() => controller.current?.abort()} variant="secondary">
-          {t("stop")}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button data-pi-stop onClick={() => controller.current?.abort()} variant="secondary">
+            {t("stop")}
+          </Button>
+          {source.pauseSession ? (
+            <Button
+              variant="ghost"
+              disabled={controlBusy}
+              onClick={() => {
+                setControlBusy(true);
+                setControlError(false);
+                void source
+                  .pauseSession?.(session.id)
+                  .catch(() => setControlError(true))
+                  .finally(() => setControlBusy(false));
+              }}
+            >
+              {t("pause")}
+            </Button>
+          ) : null}
+        </div>
       ) : task ? (
         <section className="rounded-lg border border-border bg-card p-[22px]">
           <div className="flex items-center justify-between gap-3">
@@ -183,6 +254,68 @@ export function PiPage({ projectId, sessionId }: { projectId: string; sessionId:
           />
         </div>
       )}
+      {source.updateSessionParameters ? (
+        <section
+          className="mt-6 rounded-xl border border-border bg-card p-4"
+          aria-labelledby="pi-parameters-title"
+        >
+          <h2 id="pi-parameters-title" className="text-sm font-semibold">
+            {t("parameters")}
+          </h2>
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <label className="text-xs text-muted-foreground">
+              {t("temperature")}
+              <input
+                aria-label={t("temperature")}
+                className="mt-1 block h-9 w-24 rounded-md border border-border bg-background px-2 text-sm text-foreground"
+                type="number"
+                min="0"
+                max="2"
+                step="0.1"
+                value={temperature}
+                onChange={(event) => setTemperature(event.target.value)}
+              />
+            </label>
+            <Button
+              variant="secondary"
+              disabled={
+                controlBusy || session.status === "completed" || session.status === "cancelled"
+              }
+              onClick={() => {
+                setControlBusy(true);
+                setControlError(false);
+                void source
+                  .updateSessionParameters?.(session.id, { temperature: Number(temperature) })
+                  .catch(() => setControlError(true))
+                  .finally(() => setControlBusy(false));
+              }}
+            >
+              {t("applyParameters")}
+            </Button>
+            {source.resumeSession && session.status === "idle" ? (
+              <Button
+                variant="ghost"
+                disabled={controlBusy}
+                onClick={() => {
+                  setControlBusy(true);
+                  setControlError(false);
+                  void source
+                    .resumeSession?.(session.id)
+                    .catch(() => setControlError(true))
+                    .finally(() => setControlBusy(false));
+                }}
+              >
+                {t("resume")}
+              </Button>
+            ) : null}
+          </div>
+          {controlError ? (
+            <p role="alert" className="mt-2 text-xs text-destructive">
+              {t("controlUnavailable")}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
       <p className="mt-5 text-xs leading-6 text-muted-foreground">{t("previewNote")}</p>
       <Dialog
         open={confirm}

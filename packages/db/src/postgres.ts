@@ -56,8 +56,12 @@ import type {
   UpdateReviewInput,
   PiSession,
   PiSessionRepository,
+  PiSessionEvent,
+  PiSessionEventRepository,
   ProjectMember,
   ProjectMemberRepository,
+  ScheduledTask,
+  ScheduledTaskRepository,
 } from "@voidmix/core";
 import {
   createDefaultAuthSettings,
@@ -70,7 +74,7 @@ import {
   assertFeedbackStatusTransition,
   assertReviewStatusTransition,
 } from "@voidmix/core";
-import { and, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres, { type Sql } from "postgres";
@@ -95,7 +99,9 @@ import {
   feedback,
   reviews,
   piSessions,
+  piSessionEvents,
   projectMembers,
+  scheduledTasks,
 } from "./schema.js";
 
 const mailSettingKeys = [
@@ -689,6 +695,7 @@ export class PostgresPiSessionRepository implements PiSessionRepository {
       .set({
         ...(input.agentRunId !== undefined ? { agentRunId: input.agentRunId } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.context !== undefined ? { context: input.context } : {}),
         ...(input.completedAt !== undefined ? { completedAt: input.completedAt } : {}),
         updatedAt: this.now(),
       })
@@ -703,6 +710,40 @@ export class PostgresPiSessionRepository implements PiSessionRepository {
   }
   private id(): string {
     return (this.options.id ?? defaultIdGenerator.next)();
+  }
+}
+
+export class PostgresPiSessionEventRepository implements PiSessionEventRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {}
+  async append(input: Omit<PiSessionEvent, "id" | "createdAt">): Promise<PiSessionEvent> {
+    const payload = Object.fromEntries(
+      Object.entries(input.payload).map(([k, v]) => [
+        k,
+        typeof v === "string" ? v.slice(0, 8192) : v,
+      ]),
+    );
+    const [row] = await this.db
+      .insert(piSessionEvents)
+      .values({
+        ...input,
+        id: (this.options.id ?? defaultIdGenerator.next)(),
+        payload,
+        createdAt: (this.options.now ?? defaultClock.now)(),
+      })
+      .returning();
+    if (!row) throw new Error("Failed to append Pi session event");
+    return row;
+  }
+  async list(sessionId: string, limit = 500): Promise<PiSessionEvent[]> {
+    return this.db
+      .select()
+      .from(piSessionEvents)
+      .where(eq(piSessionEvents.sessionId, sessionId))
+      .orderBy(asc(piSessionEvents.createdAt))
+      .limit(limit);
   }
 }
 
@@ -1712,5 +1753,75 @@ function toProjectTask(row: typeof projectTasks.$inferSelect): ProjectTask {
     status: row.status,
     createdBy: row.createdBy,
     updatedAt: new Date(row.updatedAt),
+  };
+}
+
+export class PostgresScheduledTaskRepository implements ScheduledTaskRepository {
+  constructor(
+    private readonly db: PostgresJsDatabase,
+    private readonly options: { now?: () => Date; id?: () => string } = {},
+  ) {}
+  async list(input: { workspaceId: string; projectId?: string; limit: number; cursor?: string }) {
+    const rows = await this.db
+      .select()
+      .from(scheduledTasks)
+      .where(eq(scheduledTasks.workspaceId, input.workspaceId))
+      .orderBy(desc(scheduledTasks.updatedAt))
+      .limit(input.limit + 1);
+    const items = rows.slice(0, input.limit).map(toScheduledTask);
+    return {
+      items,
+      nextCursor:
+        rows.length > input.limit ? String((Number(input.cursor ?? 0) || 0) + input.limit) : null,
+    };
+  }
+  async getById(id: string) {
+    const [row] = await this.db
+      .select()
+      .from(scheduledTasks)
+      .where(eq(scheduledTasks.id, id))
+      .limit(1);
+    return row ? toScheduledTask(row) : null;
+  }
+  async create(input: Omit<ScheduledTask, "id" | "createdAt" | "updatedAt">) {
+    const now = this.now();
+    const [row] = await this.db
+      .insert(scheduledTasks)
+      .values({ ...input, id: this.id(), createdAt: now, updatedAt: now })
+      .returning();
+    if (!row) throw new Error("Failed to create scheduled task");
+    return toScheduledTask(row);
+  }
+  async update(input: Parameters<ScheduledTaskRepository["update"]>[0]) {
+    const [row] = await this.db
+      .update(scheduledTasks)
+      .set({
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.instruction !== undefined ? { instruction: input.instruction } : {}),
+        ...(input.schedule !== undefined ? { schedule: input.schedule } : {}),
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.nextRunAt !== undefined ? { nextRunAt: input.nextRunAt } : {}),
+        updatedAt: this.now(),
+      })
+      .where(eq(scheduledTasks.id, input.id))
+      .returning();
+    if (!row) throw new Error("Scheduled task not found");
+    return toScheduledTask(row);
+  }
+  private now() {
+    return new Date((this.options.now ?? defaultClock.now)());
+  }
+  private id() {
+    return (this.options.id ?? defaultIdGenerator.next)();
+  }
+}
+
+function toScheduledTask(row: typeof scheduledTasks.$inferSelect): ScheduledTask {
+  return {
+    ...row,
+    projectId: row.projectId ?? null,
+    nextRunAt: row.nextRunAt ?? null,
+    status: row.status as ScheduledTask["status"],
+    executionStatus: row.executionStatus as ScheduledTask["executionStatus"],
   };
 }

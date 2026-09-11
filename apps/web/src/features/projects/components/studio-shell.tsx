@@ -5,6 +5,9 @@ import {
   House,
   MagnifyingGlass,
   SidebarSimple,
+  PlugsConnected,
+  Stack,
+  UsersThree,
 } from "@phosphor-icons/react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslations } from "../../../i18n/client";
@@ -36,7 +39,7 @@ export function ProjectStudioShell({
   title,
 }: {
   children: ReactNode;
-  current?: "home" | "projects" | "library";
+  current?: "home" | "projects" | "library" | "control" | "templates" | "collaboration";
   projectSearch?: { tab: ProjectTab; filter: TaskFilter };
   title?: string;
 }) {
@@ -117,6 +120,45 @@ export function ProjectStudioShell({
       >
         <Files aria-hidden="true" />
         <span className={compact ? "hidden" : undefined}>{t("library")}</span>
+      </Link>
+      <Link
+        to="/templates"
+        onClick={() => close(false)}
+        className={cn(
+          "flex min-h-[38px] items-center gap-[11px] rounded-lg px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none [&_svg]:size-[18px] [&_svg]:shrink-0",
+          current === "templates" && "bg-background text-foreground",
+        )}
+        aria-current={current === "templates" ? "page" : undefined}
+        title={t("templatesTitle")}
+      >
+        <Stack aria-hidden="true" />
+        <span className={compact ? "hidden" : undefined}>{t("templatesTitle")}</span>
+      </Link>
+      <Link
+        to="/collaboration"
+        onClick={() => close(false)}
+        className={cn(
+          "flex min-h-[38px] items-center gap-[11px] rounded-lg px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          current === "collaboration" && "bg-background text-foreground",
+        )}
+        aria-current={current === "collaboration" ? "page" : undefined}
+        title={t("collaborationTitle")}
+      >
+        <UsersThree aria-hidden="true" />
+        <span className={compact ? "hidden" : undefined}>{t("collaborationTitle")}</span>
+      </Link>
+      <Link
+        to="/control"
+        onClick={() => close(false)}
+        className={cn(
+          "flex min-h-[38px] items-center gap-[11px] rounded-lg px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none [&_svg]:size-[18px] [&_svg]:shrink-0",
+          current === "control" && "bg-background text-foreground",
+        )}
+        aria-current={current === "control" ? "page" : undefined}
+        title={t("controlTitle")}
+      >
+        <PlugsConnected aria-hidden="true" />
+        <span className={compact ? "hidden" : undefined}>{t("controlTitle")}</span>
       </Link>
       <Link
         to="/projects"

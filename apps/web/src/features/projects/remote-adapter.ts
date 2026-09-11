@@ -20,6 +20,7 @@ type ProjectDetailDto = Awaited<ReturnType<ApiClient["projects"]["get"]>>;
 type ProjectTaskDto = Awaited<ReturnType<ApiClient["projects"]["tasks"]["list"]>>["items"][number];
 type ActivityDto = Awaited<ReturnType<ApiClient["activity"]["list"]>>["items"][number];
 type PiSessionDto = StudioSnapshotDto["activeSessions"][number];
+type PiSessionEventDto = Awaited<ReturnType<ApiClient["pi"]["sessions"]["get"]>>["events"][number];
 type TaskOwnerContext = Pick<StudioSnapshotDto["account"], "id" | "displayName">;
 type LibraryAssetDto = Awaited<ReturnType<ApiClient["library"]["search"]>>["assets"][number];
 type LibraryVersionDto = Awaited<ReturnType<ApiClient["library"]["search"]>>["versions"][number];
@@ -115,7 +116,7 @@ function sessionStatus(session: PiSessionDto): PiSessionView["status"] {
   switch (session.status) {
     case "queued":
     case "waiting_for_approval":
-      return "idle";
+      return "paused";
     case "succeeded":
       return "completed";
     default:
@@ -131,6 +132,10 @@ function toSessionView(session: PiSessionDto): PiSessionView {
     status: sessionStatus(session),
     steps: [],
     taskId: null,
+    events:
+      "events" in session
+        ? (session.events as PiSessionEventDto[]).map((event) => ({ ...event }))
+        : [],
   };
 }
 
@@ -138,9 +143,12 @@ async function snapshotFromDto(
   client: ApiClient,
   snapshot: StudioSnapshotDto,
 ): Promise<StudioSnapshot> {
-  const [details, library] = await Promise.all([
+  const [details, library, sessionDetails] = await Promise.all([
     Promise.all(snapshot.projects.map((project) => client.projects.get({ projectId: project.id }))),
     client.library.search({ limit: 100 }),
+    Promise.all(
+      snapshot.activeSessions.map((session) => client.pi.sessions.get({ sessionId: session.id })),
+    ),
   ]);
   return {
     version: 1,
@@ -151,7 +159,7 @@ async function snapshotFromDto(
     activity: snapshot.recentActivity
       .map(toActivityView)
       .filter((activity): activity is ActivityView => activity !== null),
-    sessions: snapshot.activeSessions.map(toSessionView),
+    sessions: sessionDetails.map(toSessionView),
     assets: library.assets.map(toAssetView),
     versions: library.versions.map(toVersionView),
     assetReferences: details.flatMap((project) =>
@@ -538,6 +546,36 @@ export function createProjectStudioRemoteAdapter(
       if (session.status === "cancelled" && remoteSessionIds.has(session.id)) {
         void client.pi.sessions.cancel({ sessionId: session.id }).catch(fail);
       }
+    },
+    async pauseSession(sessionId) {
+      const remote = await client.pi.sessions.pause({ sessionId });
+      const next = toSessionView(remote);
+      remoteSessionIds.add(next.id);
+      publish({
+        ...snapshot,
+        sessions: snapshot.sessions.map((item) => (item.id === sessionId ? next : item)),
+      });
+      return next;
+    },
+    async resumeSession(sessionId) {
+      const remote = await client.pi.sessions.resume({ sessionId });
+      const next = toSessionView(remote);
+      remoteSessionIds.add(next.id);
+      publish({
+        ...snapshot,
+        sessions: snapshot.sessions.map((item) => (item.id === sessionId ? next : item)),
+      });
+      return next;
+    },
+    async updateSessionParameters(sessionId, parameters) {
+      const remote = await client.pi.sessions.update({ sessionId, parameters });
+      const next = toSessionView(remote);
+      remoteSessionIds.add(next.id);
+      publish({
+        ...snapshot,
+        sessions: snapshot.sessions.map((item) => (item.id === sessionId ? next : item)),
+      });
+      return next;
     },
     getPersistenceWarning: () => persistenceWarning,
   };

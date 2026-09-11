@@ -16,8 +16,10 @@ import {
   type ProjectRepository,
   type WorkspaceMembershipRepository,
   type ProjectStudioRepositories,
+  type ScheduledTaskRepository,
 } from "@voidmix/core";
 import type { Locale } from "@voidmix/i18n/types";
+import type { AiProvider } from "@voidmix/ai";
 import type {
   ActivityDto,
   AssetReferenceDto,
@@ -185,6 +187,11 @@ export interface ProjectStudioService {
   ): Promise<PiSessionDetailDto>;
   getPiSession(input: ActorInput & { sessionId: string }): Promise<PiSessionDetailDto | null>;
   cancelPiSession(input: ActorInput & { sessionId: string }): Promise<PiSessionDetailDto>;
+  updatePiSession(
+    input: ActorInput & { sessionId: string; parameters: Record<string, unknown> },
+  ): Promise<PiSessionDetailDto>;
+  pausePiSession(input: ActorInput & { sessionId: string }): Promise<PiSessionDetailDto>;
+  resumePiSession(input: ActorInput & { sessionId: string }): Promise<PiSessionDetailDto>;
   retryPiSession(
     input: ActorInput & { sessionId: string; idempotencyKey: string },
   ): Promise<PiSessionDetailDto>;
@@ -211,6 +218,9 @@ export interface CreateApiModulesOptions {
   /** Object storage stays outside the Project Studio snapshot and is optional until a provider is selected. */
   blobStorage?: BlobStorageRepository;
   projectStudioRepositories?: ProjectStudioRepositories;
+  /** Optional Pi provider; when present, sessions execute asynchronously on creation. */
+  aiProvider?: AiProvider;
+  scheduledTasks?: ScheduledTaskRepository;
 }
 
 export interface ApiModules {
@@ -227,6 +237,8 @@ export interface ApiModules {
   studio?: ProjectStudioService;
   blobStorage?: BlobStorageRepository;
   projectStudioRepositories?: ProjectStudioRepositories;
+  aiProvider?: AiProvider;
+  scheduled?: ScheduledTaskRepository;
 }
 
 export function createApiModules(options: CreateApiModulesOptions): ApiModules {
@@ -244,6 +256,7 @@ export function createApiModules(options: CreateApiModulesOptions): ApiModules {
           ...(options.agents ? { agents: options.agents } : {}),
           ...(options.now ? { now: options.now } : {}),
           ...(options.id ? { id: options.id } : {}),
+          ...(options.aiProvider ? { aiProvider: options.aiProvider } : {}),
         })
       : undefined);
   return {
@@ -303,5 +316,6 @@ export function createApiModules(options: CreateApiModulesOptions): ApiModules {
       : {}),
     ...(studio ? { studio } : {}),
     ...(options.blobStorage ? { blobStorage: options.blobStorage } : {}),
+    ...(options.scheduledTasks ? { scheduled: options.scheduledTasks } : {}),
   };
 }

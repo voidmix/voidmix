@@ -62,9 +62,19 @@ export const piSessionViewSchema = z.object({
   id: z.string(),
   projectId: z.string(),
   prompt: z.string(),
-  status: z.enum(["idle", "running", "completed", "cancelled", "failed"]),
+  status: z.enum(["idle", "running", "paused", "completed", "cancelled", "failed"]),
   steps: z.array(runStepSchema),
   taskId: z.string().nullable(),
+  events: z
+    .array(
+      z.object({
+        id: z.string(),
+        type: z.string(),
+        payload: z.record(z.string(), z.unknown()),
+        createdAt: z.coerce.date(),
+      }),
+    )
+    .optional(),
 });
 export interface StudioAsset {
   id: string;

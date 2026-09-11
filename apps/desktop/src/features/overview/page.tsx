@@ -122,7 +122,7 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
               className="job-progress"
               aria-label={t("percentComplete", { percent: job.progress })}
             >
-              <span style={{ width: `${job.progress}%` }} />
+              <span style={{ transform: `scaleX(${job.progress / 100})`, width: "100%" }} />
             </div>
             <span className={cn("job-status", job.status)}>
               {job.status === "complete"

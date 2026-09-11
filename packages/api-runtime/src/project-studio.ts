@@ -33,6 +33,7 @@ import type {
 } from "@voidmix/contracts";
 
 import type { ProjectStudioService } from "./modules.js";
+import type { AiProvider } from "@voidmix/ai";
 
 interface CursorPage<Item> {
   items: Item[];
@@ -48,6 +49,7 @@ interface CreateProjectStudioServiceOptions {
   agents?: AgentRepositories;
   now?: () => Date;
   id?: () => string;
+  aiProvider?: AiProvider;
 }
 
 /**
@@ -70,6 +72,7 @@ export function createProjectStudioService(
         ...(options.id ? { id: options.id } : {}),
       })
     : null;
+  const aiProvider = options.aiProvider;
 
   const parseCursor = (cursor: string | undefined) => {
     if (!cursor) return 0;
@@ -158,6 +161,9 @@ export function createProjectStudioService(
 
   const piSession = async (value: PiSession) => {
     const run = agentAdministration ? await agentAdministration.getRun(value.agentRunId) : null;
+    const events = options.repositories?.piSessionEvents
+      ? await options.repositories.piSessionEvents.list(value.id, 200)
+      : [];
     return {
       id: value.id,
       projectId: value.projectId,
@@ -180,6 +186,7 @@ export function createProjectStudioService(
         startedAt: run && run.status !== "queued" ? run.updatedAt : null,
         finishedAt: value.completedAt,
       },
+      events: events.map((event) => ({ ...event })),
     };
   };
 
@@ -1048,6 +1055,65 @@ export function createProjectStudioService(
         context,
         status: run.status,
       });
+      if (aiProvider) {
+        void (async () => {
+          try {
+            const providerSession = await aiProvider.createSession({
+              projectId,
+              title: project.name,
+            });
+            await agentAdministration
+              .transitionRun({ runId: run.id, status: "running" })
+              .catch(() => undefined);
+            for await (const event of aiProvider.run({
+              session: providerSession,
+              project,
+              prompt,
+            })) {
+              if (options.repositories?.piSessionEvents) {
+                await options.repositories.piSessionEvents.append({
+                  sessionId: session.id,
+                  type: event.type,
+                  payload: event as unknown as Record<string, unknown>,
+                });
+              }
+              if (event.type === "completed") {
+                await agentAdministration
+                  .transitionRun({ runId: run.id, status: "succeeded" })
+                  .catch(() => undefined);
+                await options.repositories!.piSessions!.update({
+                  id: session.id,
+                  status: "succeeded",
+                  completedAt: options.now?.() ?? new Date(),
+                });
+              } else if (event.type === "failed") {
+                await agentAdministration
+                  .transitionRun({ runId: run.id, status: "failed" })
+                  .catch(() => undefined);
+                await options.repositories!.piSessions!.update({
+                  id: session.id,
+                  status: "failed",
+                  completedAt: options.now?.() ?? new Date(),
+                });
+              } else if (event.type === "cancelled") {
+                await options.repositories!.piSessions!.update({
+                  id: session.id,
+                  status: "cancelled",
+                  completedAt: options.now?.() ?? new Date(),
+                });
+              }
+            }
+          } catch {
+            await options
+              .repositories!.piSessions!.update({
+                id: session.id,
+                status: "failed",
+                completedAt: options.now?.() ?? new Date(),
+              })
+              .catch(() => undefined);
+          }
+        })();
+      }
       await recordActivity({
         actorId,
         workspaceId: workspaceIdFor(project),
@@ -1084,10 +1150,77 @@ export function createProjectStudioService(
       if (run && !["succeeded", "failed", "cancelled"].includes(run.status)) {
         await agentAdministration.transitionRun({ runId: run.id, status: "cancelled" });
       }
+      if (aiProvider) await aiProvider.cancel(session.id).catch(() => undefined);
       const updated = await options.repositories.piSessions.update({
         id: session.id,
         status: "cancelled",
         completedAt: options.now?.() ?? new Date(),
+      });
+      return piSession(updated);
+    },
+    async updatePiSession({ actorId, sessionId, parameters }) {
+      if (!options.repositories?.piSessions) return notImplemented();
+      const session = await options.repositories.piSessions.getById(sessionId);
+      const project = session ? await visibleProject(actorId, session.projectId) : null;
+      if (!session || !project)
+        throw new ProjectStudioDomainError(
+          "PI_SESSION_NOT_FOUND",
+          "The requested Pi session was not found.",
+        );
+      await assertProjectAccess(actorId, project, "write");
+      const updated = await options.repositories.piSessions.update({
+        id: session.id,
+        context: {
+          ...session.context,
+          parameters: {
+            ...(session.context.parameters as Record<string, unknown> | undefined),
+            ...parameters,
+          },
+        },
+      });
+      return piSession(updated);
+    },
+    async pausePiSession({ actorId, sessionId }) {
+      if (!agentAdministration || !options.repositories?.piSessions) return notImplemented();
+      const session = await options.repositories.piSessions.getById(sessionId);
+      const project = session ? await visibleProject(actorId, session.projectId) : null;
+      if (!session || !project)
+        throw new ProjectStudioDomainError(
+          "PI_SESSION_NOT_FOUND",
+          "The requested Pi session was not found.",
+        );
+      await assertProjectAccess(actorId, project, "write");
+      const run = await agentAdministration.getRun(session.agentRunId);
+      if (!run || run.status !== "queued")
+        throw new ProjectStudioDomainError(
+          "PI_SESSION_NOT_FOUND",
+          "Only queued Pi sessions can be paused before execution.",
+        );
+      const updated = await options.repositories.piSessions.update({
+        id: session.id,
+        status: "waiting_for_approval",
+      });
+      return piSession(updated);
+    },
+    async resumePiSession({ actorId, sessionId }) {
+      if (!agentAdministration || !options.repositories?.piSessions) return notImplemented();
+      const session = await options.repositories.piSessions.getById(sessionId);
+      const project = session ? await visibleProject(actorId, session.projectId) : null;
+      if (!session || !project)
+        throw new ProjectStudioDomainError(
+          "PI_SESSION_NOT_FOUND",
+          "The requested Pi session was not found.",
+        );
+      await assertProjectAccess(actorId, project, "write");
+      const run = await agentAdministration.getRun(session.agentRunId);
+      if (!run || run.status !== "waiting_for_approval")
+        throw new ProjectStudioDomainError("PI_SESSION_NOT_FOUND", "The Pi session is not paused.");
+      await agentAdministration
+        .transitionRun({ runId: run.id, status: "running" })
+        .catch(() => undefined);
+      const updated = await options.repositories.piSessions.update({
+        id: session.id,
+        status: "running",
       });
       return piSession(updated);
     },
@@ -1113,6 +1246,53 @@ export function createProjectStudioService(
         status: run.status,
         completedAt: null,
       });
+      if (aiProvider) {
+        void (async () => {
+          try {
+            const providerSession = await aiProvider.createSession({
+              projectId: project.id,
+              title: project.name,
+            });
+            await agentAdministration
+              .transitionRun({ runId: run.id, status: "running" })
+              .catch(() => undefined);
+            for await (const event of aiProvider.run({
+              session: providerSession,
+              project,
+              prompt: session.prompt,
+            })) {
+              await options.repositories!.piSessionEvents?.append({
+                sessionId: updated.id,
+                type: event.type,
+                payload: event as unknown as Record<string, unknown>,
+              });
+              if (
+                event.type === "completed" ||
+                event.type === "failed" ||
+                event.type === "cancelled"
+              ) {
+                const status = event.type === "completed" ? "succeeded" : event.type;
+                await agentAdministration
+                  .transitionRun({ runId: run.id, status })
+                  .catch(() => undefined);
+                await options.repositories!.piSessions!.update({
+                  id: updated.id,
+                  status,
+                  completedAt: options.now?.() ?? new Date(),
+                });
+              }
+            }
+          } catch {
+            await options
+              .repositories!.piSessions!.update({
+                id: updated.id,
+                status: "failed",
+                completedAt: options.now?.() ?? new Date(),
+              })
+              .catch(() => undefined);
+          }
+        })();
+      }
       return piSession(updated);
     },
   };

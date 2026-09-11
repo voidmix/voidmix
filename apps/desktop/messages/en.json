@@ -130,7 +130,15 @@
     "workspaceChanges": "Workspace changes",
     "workspaceChangesDescription": "Show desktop notices for device and access changes.",
     "devices": "Devices",
-    "manageDevices": "Manage registered devices"
+    "manageDevices": "Manage registered devices",
+    "theme": "Theme",
+    "darkTheme": "Dark",
+    "lightTheme": "Light",
+    "localProject": "Local project",
+    "projectFolder": "Project folder",
+    "projectFolderDescription": "Authorize a local folder for Pi to read and write.",
+    "projectFolderPlaceholder": "/Users/you/project",
+    "bindFolder": "Bind folder"
   },
   "projects": {
     "title": "Projects",

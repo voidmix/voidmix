@@ -20,6 +20,8 @@ import type {
   UpdateReviewInput,
   PiSession,
   PiSessionRepository,
+  PiSessionEvent,
+  PiSessionEventRepository,
   ProjectMember,
   ProjectMemberRepository,
 } from "@voidmix/core";
@@ -432,6 +434,7 @@ export class InMemoryPiSessionRepository implements PiSessionRepository {
       ...current,
       ...(input.agentRunId !== undefined ? { agentRunId: input.agentRunId } : {}),
       ...(input.status !== undefined ? { status: input.status } : {}),
+      ...(input.context !== undefined ? { context: { ...input.context } } : {}),
       ...(input.completedAt !== undefined
         ? { completedAt: input.completedAt ? cloneDate(input.completedAt) : null }
         : {}),
@@ -446,6 +449,40 @@ export class InMemoryPiSessionRepository implements PiSessionRepository {
   }
   private get id(): () => string {
     return this.options.id ?? defaultIdGenerator.next;
+  }
+}
+
+export class InMemoryPiSessionEventRepository implements PiSessionEventRepository {
+  readonly events: PiSessionEvent[] = [];
+  constructor(
+    seed: readonly PiSessionEvent[] = [],
+    private readonly options: ProjectStudioMemoryOptions = {},
+  ) {
+    this.events.push(
+      ...seed.map((e) => ({ ...e, payload: { ...e.payload }, createdAt: cloneDate(e.createdAt) })),
+    );
+  }
+  async append(input: Omit<PiSessionEvent, "id" | "createdAt">): Promise<PiSessionEvent> {
+    const payload = Object.fromEntries(
+      Object.entries(input.payload).map(([k, v]) => [
+        k,
+        typeof v === "string" ? v.slice(0, 8_192) : v,
+      ]),
+    );
+    const event: PiSessionEvent = {
+      ...input,
+      id: identifier(this.options.id ?? defaultIdGenerator.next),
+      payload,
+      createdAt: timestamp(this.options.now ?? defaultClock.now),
+    };
+    this.events.push(event);
+    return { ...event, payload: { ...event.payload }, createdAt: cloneDate(event.createdAt) };
+  }
+  async list(sessionId: string, limit = 500): Promise<PiSessionEvent[]> {
+    return this.events
+      .filter((e) => e.sessionId === sessionId)
+      .slice(-limit)
+      .map((e) => ({ ...e, payload: { ...e.payload }, createdAt: cloneDate(e.createdAt) }));
   }
 }
 
@@ -507,6 +544,7 @@ export function createInMemoryProjectStudioRepositories(
     activities?: readonly Activity[];
     assetReferences?: readonly AssetReference[];
     piSessions?: readonly PiSession[];
+    piSessionEvents?: readonly PiSessionEvent[];
     members?: readonly ProjectMember[];
     now?: () => Date;
     id?: () => string;
@@ -517,6 +555,7 @@ export function createInMemoryProjectStudioRepositories(
   activity: InMemoryActivityRepository;
   assetReferences: InMemoryAssetReferenceRepository;
   piSessions: InMemoryPiSessionRepository;
+  piSessionEvents: InMemoryPiSessionEventRepository;
   members: InMemoryProjectMemberRepository;
 } {
   const repositoryOptions: ProjectStudioMemoryOptions = {
@@ -532,6 +571,10 @@ export function createInMemoryProjectStudioRepositories(
       repositoryOptions,
     ),
     piSessions: new InMemoryPiSessionRepository(options.piSessions ?? [], repositoryOptions),
+    piSessionEvents: new InMemoryPiSessionEventRepository(
+      options.piSessionEvents ?? [],
+      repositoryOptions,
+    ),
     members: new InMemoryProjectMemberRepository(options.members ?? [], repositoryOptions),
   };
 }

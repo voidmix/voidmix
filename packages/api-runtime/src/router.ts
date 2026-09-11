@@ -607,6 +607,53 @@ export function createApiRouter(options: CreateApiRouterOptions) {
             await assertWorkspaceAccess(options.modules, context, session.workspaceId, "write");
             return session;
           }),
+        update: os.pi.sessions.update
+          .use(requirePermission("workspace.agents.write"))
+          .handler(async ({ context, input }) => {
+            const studio = requireStudioModule(options.modules);
+            const session = await requireStudioPiSession(
+              studio,
+              options.modules,
+              context,
+              input.sessionId,
+              "write",
+            );
+            const updated = await callStudio(() =>
+              studio.updatePiSession({
+                actorId: context.principal.user.id,
+                sessionId: input.sessionId,
+                parameters: input.parameters,
+              }),
+            );
+            await assertWorkspaceAccess(options.modules, context, session.workspaceId, "write");
+            return updated;
+          }),
+        pause: os.pi.sessions.pause
+          .use(requirePermission("workspace.agents.write"))
+          .handler(async ({ context, input }) => {
+            const studio = requireStudioModule(options.modules);
+            const session = await callStudio(() =>
+              studio.pausePiSession({
+                actorId: context.principal.user.id,
+                sessionId: input.sessionId,
+              }),
+            );
+            await assertWorkspaceAccess(options.modules, context, session.workspaceId, "write");
+            return session;
+          }),
+        resume: os.pi.sessions.resume
+          .use(requirePermission("workspace.agents.write"))
+          .handler(async ({ context, input }) => {
+            const studio = requireStudioModule(options.modules);
+            const session = await callStudio(() =>
+              studio.resumePiSession({
+                actorId: context.principal.user.id,
+                sessionId: input.sessionId,
+              }),
+            );
+            await assertWorkspaceAccess(options.modules, context, session.workspaceId, "write");
+            return session;
+          }),
         retry: os.pi.sessions.retry
           .use(requirePermission("workspace.agents.write"))
           .handler(async ({ context, input }) => {
@@ -627,6 +674,76 @@ export function createApiRouter(options: CreateApiRouterOptions) {
             );
             await assertWorkspaceAccess(options.modules, context, session.workspaceId, "write");
             return session;
+          }),
+      },
+    },
+    remote: {
+      commands: {
+        create: os.remote.commands.create
+          .use(requirePermission("workspace.agents.write"))
+          .handler(async ({ context, input }) => {
+            if (!options.modules.agents) {
+              // Keep provider absence explicit; never report a command as queued
+              // when no local Agent runtime is connected.
+              throw createApiError("SERVICE_UNAVAILABLE", "REMOTE_COMMAND_UNAVAILABLE");
+            }
+            await assertWorkspaceAccess(options.modules, context, input.workspaceId, "write");
+            try {
+              return await options.modules.agents.createRun({
+                workspaceId: input.workspaceId,
+                requestedBy: context.principal.user.id,
+                goal: input.instruction,
+              });
+            } catch (error) {
+              throw mapDomainError(error);
+            }
+          }),
+      },
+    },
+    scheduled: {
+      tasks: {
+        list: os.scheduled.tasks.list
+          .use(requirePermission("workspace.agents.read"))
+          .handler(async ({ input }) => {
+            const repo = options.modules.scheduled;
+            if (!repo) throw createApiError("SERVICE_UNAVAILABLE", "SCHEDULED_TASKS_UNAVAILABLE");
+            return repo.list({
+              workspaceId: input.workspaceId,
+              limit: input.limit,
+              ...(input.projectId ? { projectId: input.projectId } : {}),
+              ...(input.cursor ? { cursor: input.cursor } : {}),
+            });
+          }),
+        create: os.scheduled.tasks.create
+          .use(requirePermission("workspace.agents.write"))
+          .handler(async ({ context, input }) => {
+            const repo = options.modules.scheduled;
+            if (!repo) throw createApiError("SERVICE_UNAVAILABLE", "SCHEDULED_TASKS_UNAVAILABLE");
+            return repo.create({
+              workspaceId: input.workspaceId,
+              projectId: input.projectId ?? null,
+              createdBy: context.principal.user.id,
+              name: input.name,
+              instruction: input.instruction,
+              schedule: input.schedule,
+              status: "active",
+              executionStatus: "unavailable",
+              nextRunAt: null,
+            });
+          }),
+        update: os.scheduled.tasks.update
+          .use(requirePermission("workspace.agents.write"))
+          .handler(async ({ input }) => {
+            const repo = options.modules.scheduled;
+            if (!repo) throw createApiError("SERVICE_UNAVAILABLE", "SCHEDULED_TASKS_UNAVAILABLE");
+            return repo.update({
+              id: input.taskId,
+              ...(input.name ? { name: input.name } : {}),
+              ...(input.instruction ? { instruction: input.instruction } : {}),
+              ...(input.schedule ? { schedule: input.schedule } : {}),
+              ...(input.status ? { status: input.status } : {}),
+              ...(input.nextRunAt !== undefined ? { nextRunAt: input.nextRunAt } : {}),
+            });
           }),
       },
     },

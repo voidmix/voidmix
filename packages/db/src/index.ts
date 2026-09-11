@@ -21,6 +21,7 @@ export {
   InMemoryFeedbackRepository,
   InMemoryReviewRepository,
   InMemoryPiSessionRepository,
+  InMemoryPiSessionEventRepository,
   InMemoryProjectMemberRepository,
   createInMemoryProjectStudioRepositories,
 } from "./project-studio-memory.js";
@@ -40,6 +41,8 @@ export {
   PostgresFeedbackRepository,
   PostgresActivityRepository,
   PostgresPiSessionRepository,
+  PostgresPiSessionEventRepository,
+  PostgresScheduledTaskRepository,
   PostgresProjectMemberRepository,
   PostgresSyncConflictRepository,
   PostgresSystemSettingsRepository,
@@ -82,6 +85,9 @@ export {
   feedback,
   activities,
   piSessions,
+  piSessionEvents,
   projectMembers,
   users,
+  scheduledTasks,
+  scheduledTaskStatusEnum,
 } from "./schema.js";

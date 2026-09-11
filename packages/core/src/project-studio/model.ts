@@ -104,6 +104,19 @@ export interface PiSession {
   completedAt: Date | null;
 }
 
+export interface PiSessionEvent {
+  id: string;
+  sessionId: string;
+  type: string;
+  payload: Record<string, unknown>;
+  createdAt: Date;
+}
+
+export interface PiSessionEventRepository {
+  append(input: Omit<PiSessionEvent, "id" | "createdAt">): Promise<PiSessionEvent>;
+  list(sessionId: string, limit?: number): Promise<PiSessionEvent[]>;
+}
+
 export interface PiSessionRepository {
   list(query: {
     projectId: string;
@@ -118,6 +131,7 @@ export interface PiSessionRepository {
     id: string;
     agentRunId?: string;
     status?: AgentRunStatus;
+    context?: Record<string, unknown>;
     completedAt?: Date | null;
   }): Promise<PiSession>;
 }
@@ -227,6 +241,7 @@ export interface ProjectStudioRepositories {
   feedback: FeedbackRepository;
   activity: ActivityRepository;
   piSessions?: PiSessionRepository;
+  piSessionEvents?: PiSessionEventRepository;
 }
 
 const reviewTransitions: Record<ReviewStatus, readonly ReviewStatus[]> = {

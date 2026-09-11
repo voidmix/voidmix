@@ -640,7 +640,8 @@ kbd {
   height: 100%;
   border-radius: inherit;
   background: var(--primary);
-  transition: width 300ms ease;
+  transform-origin: left center;
+  transition: transform 300ms ease;
 }
 .job-status {
   color: var(--primary);
@@ -1154,4 +1155,55 @@ kbd {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* VoidMix desktop theme tokens: dark by default, with a restrained light option. */
+:root {
+  --primary: #5865f2;
+  --primary-foreground: #ffffff;
+  --ring: #8b6cff;
+  --success: #36c58a;
+  --warning: #f2b84b;
+}
+
+[data-theme="dark"] {
+  --background: #0b1020;
+  --foreground: #f5f7ff;
+  --card: #121a2e;
+  --card-foreground: #f5f7ff;
+  --popover: #121a2e;
+  --popover-foreground: #f5f7ff;
+  --secondary: #1b2640;
+  --secondary-foreground: #e5e9ff;
+  --muted: #1b2640;
+  --muted-foreground: #9aa7c7;
+  --accent: #202d4b;
+  --accent-foreground: #f5f7ff;
+  --border: #263454;
+  --input: #263454;
+  --sidebar: #0e1528;
+  --sidebar-foreground: #f5f7ff;
+  --sidebar-accent: #1b2640;
+  --sidebar-accent-foreground: #ffffff;
+}
+
+[data-theme="light"] {
+  --background: #f7f9fc;
+  --foreground: #172033;
+  --card: #ffffff;
+  --card-foreground: #172033;
+  --popover: #ffffff;
+  --popover-foreground: #172033;
+  --secondary: #edf1f8;
+  --secondary-foreground: #27324a;
+  --muted: #edf1f8;
+  --muted-foreground: #66728b;
+  --accent: #e6ebff;
+  --accent-foreground: #2737a0;
+  --border: #dbe2ef;
+  --input: #dbe2ef;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #172033;
+  --sidebar-accent: #edf1f8;
+  --sidebar-accent-foreground: #2737a0;
 }

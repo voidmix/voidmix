@@ -14,7 +14,10 @@ import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as appadminRouteRouteImport } from './routes/(app)/(admin)/route'
+import { Route as appCollaborationRouteImport } from './routes/(app)/collaboration'
+import { Route as appControlRouteImport } from './routes/(app)/control'
 import { Route as appLibraryRouteImport } from './routes/(app)/library'
+import { Route as appTemplatesRouteImport } from './routes/(app)/templates'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
@@ -49,9 +52,24 @@ const appadminRouteRoute = appadminRouteRouteImport.update({
   id: '/(admin)',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appCollaborationRoute = appCollaborationRouteImport.update({
+  id: '/collaboration',
+  path: '/collaboration',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appControlRoute = appControlRouteImport.update({
+  id: '/control',
+  path: '/control',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appLibraryRoute = appLibraryRouteImport.update({
   id: '/library',
   path: '/library',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appTemplatesRoute = appTemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
   getParentRoute: () => appRouteRoute,
 } as any)
 const authLoginRoute = authLoginRouteImport.update({
@@ -115,7 +133,10 @@ const appProjectsProjectIdPiSessionIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/collaboration': typeof appCollaborationRoute
+  '/control': typeof appControlRoute
   '/library': typeof appLibraryRoute
+  '/templates': typeof appTemplatesRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
@@ -131,7 +152,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/collaboration': typeof appCollaborationRoute
+  '/control': typeof appControlRoute
   '/library': typeof appLibraryRoute
+  '/templates': typeof appTemplatesRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
@@ -151,7 +175,10 @@ export interface FileRoutesById {
   '/(auth)': typeof authRouteRouteWithChildren
   '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/(app)/(admin)': typeof appadminRouteRouteWithChildren
+  '/(app)/collaboration': typeof appCollaborationRoute
+  '/(app)/control': typeof appControlRoute
   '/(app)/library': typeof appLibraryRoute
+  '/(app)/templates': typeof appTemplatesRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
@@ -169,7 +196,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/manifest.webmanifest'
+    | '/collaboration'
+    | '/control'
     | '/library'
+    | '/templates'
     | '/login'
     | '/reset-password'
     | '/signup'
@@ -185,7 +215,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/manifest.webmanifest'
+    | '/collaboration'
+    | '/control'
     | '/library'
+    | '/templates'
     | '/login'
     | '/reset-password'
     | '/signup'
@@ -204,7 +237,10 @@ export interface FileRouteTypes {
     | '/(auth)'
     | '/manifest.webmanifest'
     | '/(app)/(admin)'
+    | '/(app)/collaboration'
+    | '/(app)/control'
     | '/(app)/library'
+    | '/(app)/templates'
     | '/(auth)/login'
     | '/(auth)/reset-password'
     | '/(auth)/signup'
@@ -262,11 +298,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appadminRouteRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/collaboration': {
+      id: '/(app)/collaboration'
+      path: '/collaboration'
+      fullPath: '/collaboration'
+      preLoaderRoute: typeof appCollaborationRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/control': {
+      id: '/(app)/control'
+      path: '/control'
+      fullPath: '/control'
+      preLoaderRoute: typeof appControlRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/library': {
       id: '/(app)/library'
       path: '/library'
       fullPath: '/library'
       preLoaderRoute: typeof appLibraryRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/templates': {
+      id: '/(app)/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof appTemplatesRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(auth)/login': {
@@ -388,7 +445,10 @@ const appadminRouteRouteWithChildren = appadminRouteRoute._addFileChildren(
 
 interface appRouteRouteChildren {
   appadminRouteRoute: typeof appadminRouteRouteWithChildren
+  appCollaborationRoute: typeof appCollaborationRoute
+  appControlRoute: typeof appControlRoute
   appLibraryRoute: typeof appLibraryRoute
+  appTemplatesRoute: typeof appTemplatesRoute
   appChatChatIdRoute: typeof appChatChatIdRoute
   appProjectsProjectIdRoute: typeof appProjectsProjectIdRoute
   appProjectsIndexRoute: typeof appProjectsIndexRoute
@@ -397,7 +457,10 @@ interface appRouteRouteChildren {
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appadminRouteRoute: appadminRouteRouteWithChildren,
+  appCollaborationRoute: appCollaborationRoute,
+  appControlRoute: appControlRoute,
   appLibraryRoute: appLibraryRoute,
+  appTemplatesRoute: appTemplatesRoute,
   appChatChatIdRoute: appChatChatIdRoute,
   appProjectsProjectIdRoute: appProjectsProjectIdRoute,
   appProjectsIndexRoute: appProjectsIndexRoute,

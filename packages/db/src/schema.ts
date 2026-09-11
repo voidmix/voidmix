@@ -89,6 +89,7 @@ export const projectMemberRoleEnum = pgEnum("project_member_role", [
   "viewer",
 ]);
 export const projectMemberStatusEnum = pgEnum("project_member_status", ["active", "removed"]);
+export const scheduledTaskStatusEnum = pgEnum("scheduled_task_status", ["active", "paused"]);
 
 export const users = pgTable(
   "users",
@@ -326,6 +327,46 @@ export const piSessions = pgTable(
   (table) => [
     uniqueIndex("pi_sessions_agent_run_id_idx").on(table.agentRunId),
     index("pi_sessions_project_id_updated_at_idx").on(table.projectId, table.updatedAt),
+  ],
+);
+
+export const piSessionEvents = pgTable(
+  "pi_session_events",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id")
+      .notNull()
+      .references(() => piSessions.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (table) => [index("pi_session_events_session_created_idx").on(table.sessionId, table.createdAt)],
+);
+
+export const scheduledTasks = pgTable(
+  "scheduled_tasks",
+  {
+    id: text("id").primaryKey(),
+    workspaceId: text("workspace_id").notNull(),
+    projectId: text("project_id").references(() => projects.id, { onDelete: "cascade" }),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    name: text("name").notNull(),
+    instruction: text("instruction").notNull(),
+    schedule: text("schedule").notNull(),
+    status: scheduledTaskStatusEnum("status").notNull().default("active"),
+    executionStatus: text("execution_status").notNull().default("unavailable"),
+    nextRunAt: timestamp("next_run_at", { withTimezone: true, mode: "date" }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("scheduled_tasks_workspace_updated_idx").on(table.workspaceId, table.updatedAt),
   ],
 );
 
@@ -623,6 +664,7 @@ export const schema = {
   feedback,
   activities,
   piSessions,
+  piSessionEvents,
   auditEvents,
   authSessions,
   authAccounts,

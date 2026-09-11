@@ -13,6 +13,7 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
+import { applyDesktopTheme, readDesktopTheme } from "../../lib/theme";
 import { AccountControl } from "./account-control";
 import { useDesktopTranslations, useLocale, useSetLocale } from "../../i18n/client";
 
@@ -49,6 +50,7 @@ function WindowActions() {
 
 export function DesktopShell() {
   const t = useDesktopTranslations("common");
+  const themeT = useDesktopTranslations("settings");
   const locale = useLocale();
   const setLocale = useSetLocale();
   const navigation = [
@@ -58,6 +60,7 @@ export function DesktopShell() {
     { to: "/activity", label: t("activity"), icon: Pulse },
     { to: "/settings", label: t("settings"), icon: Gear },
   ] as const;
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [runtime, setRuntime] = useState<DesktopRuntime>({
     appVersion: "0.1.0",
     platform: "browser",
@@ -65,6 +68,9 @@ export function DesktopShell() {
   });
 
   useEffect(() => {
+    const initialTheme = readDesktopTheme();
+    setTheme(initialTheme);
+    applyDesktopTheme(initialTheme);
     void getDesktopRuntime().then(setRuntime);
   }, []);
 
@@ -112,6 +118,19 @@ export function DesktopShell() {
             <kbd>
               <Command size={11} />K
             </kbd>
+          </Button>
+          <Button
+            className="window-hide"
+            variant="ghost"
+            onClick={() => {
+              const nextTheme = theme === "dark" ? "light" : "dark";
+              setTheme(nextTheme);
+              applyDesktopTheme(nextTheme);
+            }}
+            aria-label={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
+            title={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
+          >
+            {theme === "dark" ? "☼" : "◐"}
           </Button>
           <Button
             className="window-hide"

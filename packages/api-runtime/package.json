@@ -19,6 +19,7 @@
   "dependencies": {
     "@better-auth/drizzle-adapter": "catalog:",
     "@orpc/server": "catalog:",
+    "@voidmix/ai": "workspace:*",
     "@voidmix/auth": "workspace:*",
     "@voidmix/cache": "workspace:*",
     "@voidmix/contracts": "workspace:*",

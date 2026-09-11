@@ -1,70 +1,27 @@
-# Product Design
+# Product design
 
-> Status: implemented baseline, updated August 17, 2026.
+> Status: VoidMix cross-platform AI workbench target direction, September 11, 2026.
 
-Voidmix uses one visual language across Web, Admin, and Desktop, with intensity
-calibrated to the job of each surface. The strategic source is
-[`PRODUCT.md`](../../PRODUCT.md); the machine-readable and narrative visual
-specification is [`DESIGN.md`](../../DESIGN.md).
+The canonical visual specification is [`DESIGN.md`](../../DESIGN.md); the product and delivery boundaries are in [`PRODUCT.md`](../../PRODUCT.md) and [`voidmix-delivery-goal.md`](./voidmix-delivery-goal.md). This document explains how the design applies across surfaces. It is a target specification, not a claim that every current CSS token has migrated.
 
-## Design posture
+## Surface roles
 
-The creative north star is **The Live Signal Room**. Voidmix should look like a
-system already in motion: strong hierarchy, precise rules, realistic state, and
-one rare full-contrast inversion. The palette is achromatic; the signal is
-carried by contrast rather than by a brand hue. It does not use generic purple
-AI gradients, decorative glass effects, editorial serif styling, or mascot-led
-storytelling.
+- **Desktop** is the Pi execution room: local project authorization, multi-Agent cowork, terminal/logs, workflow editing, files and previews. It defaults to `#0B1020`, uses denser 12–24px spacing and collapsible multi-panel rails.
+- **Web** is the cloud management and sharing surface: project/task overview, device state, remote commands, schedules, team permissions, templates, usage and share links. It defaults to `#F7F9FC`, uses wider 16–32px spacing and expands detail views on demand.
+- Marketing may use a soft blue→violet→cyan gradient and restrained glow around a product mockup; operational views stay calm, flat and evidence-led.
 
-## Surface intensity
+## Shared language
 
-- **Web** is the brand surface. It may use dramatic scale, asymmetry, a staged
-  product demonstration, and one purposeful arrival animation.
-- **Admin** is a dark control surface. Density, operational status, and table
-  scanability take precedence over visual spectacle.
-- **Desktop** is a light field workstation. It uses the same geometry and
-  achromatic vocabulary while remaining comfortable for long sessions.
+Both clients use the same Inter/SF Pro/Segoe UI/Noto Sans SC stack, Phosphor icon vocabulary, blue `#5865F2`, violet `#8B6CFF`, cyan `#36C5D8`, role colours (PM/Dev/QA/Designer/Data), status labels, and terminology (`Project`, `Task`, `Workflow`, `Agent`, `Artifact`, `Device`). Components carry text and icon semantics in addition to colour. See the token and state tables in [`DESIGN.md`](../../DESIGN.md).
 
-### Clean Signal workspace
+## Information architecture and focal patterns
 
-The Web home and project routes are operating surfaces, not marketing stages.
-They use a quiet tonal sidebar, a restrained command entry, compact task rows,
-three project summaries, and a collapsed activity history. The home offers one
-command submission action; project creation belongs to the project list.
-The responsive shell uses a 224px desktop sidebar, an optional 72px compact
-mode, and a modal navigation menu at 800px and below. Project tabs remain URL
-state so switching projects preserves the current tab and task filter.
-
-These pages currently use an explicitly labelled, tab-local preview adapter.
-Pi runs demonstrate cancellable local task creation, not a live model response.
-See [workspace preview](../development/workspace-preview.md) for data boundaries
-and verification. Admin and Desktop retain their existing composition and tokens.
-
-## Shared vocabulary
-
-- Void `#0A0A0A` and Cloud `#F5F5F5` form the primary dark and light fields.
-- The inverted primary fill — Void Raised `#171717` on light surfaces, Line
-  Light `#E5E5E5` on dark — identifies primary actions, current selection, and
-  genuinely live state. Product screens keep its coverage below 12%.
-- Chroma is reserved for destructive state (`#E7000B` light, `#FF6467` dark).
-  Every other token is achromatic.
-- Avenir Next, Segoe UI, and Helvetica Neue form the main sans-serif stack.
-  Monospace is limited to time, IDs, status, and machine metadata.
-- Permanent product panels use tonal layering and one-pixel rules. Large soft
-  shadows are reserved for the single Web product stage.
-- Shared components use compact 4 to 10 pixel radii. Pill geometry is reserved
-  for people or compact state tokens.
-
-## Ownership
-
-`@voidmix/ui` owns reusable primitives, focus behavior, base tokens, and the
-brand mark. Each application owns its page composition and calibrated density.
-App-specific visuals must use the shared palette and component vocabulary
-without moving product-specific layouts into the shared package prematurely.
+The desktop cowork view keeps the conversation timeline central, with agent roles and artifacts visible beside it; the Web task detail uses the same event model in a compressed, shareable layout. Remote control and scheduled tasks always name the target device, authorization scope and resulting state. Empty, loading, offline, failed and unavailable states preserve layout and explain the next action. Preview fixtures are visibly labelled and never presented as live execution. A paused run uses the canonical `waiting_for_approval` state and may show the friendlier “Paused” label only alongside it.
 
 ## Accessibility and motion
 
-All renderer surfaces target WCAG 2.2 AA contrast, semantic landmarks, visible
-keyboard focus, and useful accessible names. Color is never the only state
-signal. Motion must represent activity, progress, arrival, or feedback and
-must provide a reduced-motion alternative.
+Target WCAG 2.2 AA, visible keyboard focus, semantic landmarks and 44px touch targets on mobile. Desktop may be information-dense, but it must remain zoomable and keyboard navigable. Motion represents arrival, progress or feedback only; `prefers-reduced-motion` removes translations and looping effects. Light/dark theme changes preserve contrast, labels and state meaning.
+
+## Current implementation boundary
+
+Reusable primitives and tokens belong in `packages/ui`; page composition remains in `apps/desktop` and `apps/web`. The existing runtime can still contain neutral/achromatic CSS while migration proceeds. Pi owns execution/session events; VoidMix owns orchestration, authorization, persistence, synchronization and presentation. This separation prevents visual previews from implying unavailable local models, credentials or devices.

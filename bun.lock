@@ -40,6 +40,7 @@
         "@tanstack/react-start": "catalog:",
         "@tauri-apps/api": "catalog:frontend",
         "@tauri-apps/plugin-opener": "catalog:frontend",
+        "@voidmix/ai": "workspace:*",
         "@voidmix/client": "workspace:*",
         "@voidmix/env": "workspace:*",
         "@voidmix/i18n": "workspace:*",
@@ -148,6 +149,7 @@
       "dependencies": {
         "@better-auth/drizzle-adapter": "catalog:",
         "@orpc/server": "catalog:",
+        "@voidmix/ai": "workspace:*",
         "@voidmix/auth": "workspace:*",
         "@voidmix/cache": "workspace:*",
         "@voidmix/contracts": "workspace:*",

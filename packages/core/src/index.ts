@@ -3,6 +3,7 @@ export * from "./assets/index.js";
 export * from "./identity/index.js";
 export * from "./projects/index.js";
 export * from "./project-studio/index.js";
+export * from "./scheduled-tasks/index.js";
 export * from "./settings/index.js";
 export * from "./shared/index.js";
 export * from "./workspace/index.js";

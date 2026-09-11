@@ -137,6 +137,12 @@ export interface ProjectStudioDataSource {
   createSession(projectId: string, prompt: string): PiSessionView;
   startSession?(session: PiSessionView): Promise<PiSessionView>;
   updateSession(session: PiSessionView): void;
+  pauseSession?(sessionId: string): Promise<PiSessionView>;
+  resumeSession?(sessionId: string): Promise<PiSessionView>;
+  updateSessionParameters?(
+    sessionId: string,
+    parameters: Record<string, unknown>,
+  ): Promise<PiSessionView>;
   getPersistenceWarning(this: void): boolean;
 }
 
