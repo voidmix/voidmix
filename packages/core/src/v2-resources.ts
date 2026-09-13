@@ -163,6 +163,26 @@ export interface AgentRunV2 {
   updatedAt: Date;
 }
 
+export interface AgentRunV2Repository {
+  getById(id: string): Promise<AgentRunV2 | null>;
+  create(input: {
+    id: string;
+    projectId: string;
+    requestedByUserId: string;
+    assetVersionId: string | null;
+    attempt: number;
+    input: Record<string, unknown>;
+    now: Date;
+  }): Promise<AgentRunV2>;
+  updateStatus(input: {
+    id: string;
+    status: AgentRunStatusV2;
+    output?: Record<string, unknown> | null;
+    error?: string | null;
+    now: Date;
+  }): Promise<AgentRunV2 | null>;
+}
+
 export class AgentRunV2DomainError extends DomainError<
   "AGENT_RUN_INVALID_INPUT" | "AGENT_RUN_TERMINAL"
 > {

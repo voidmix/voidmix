@@ -15,6 +15,8 @@ import type {
   AssetV2Repository,
   AssetVersionV2,
   AssetVersionV2Repository,
+  AgentRunV2,
+  AgentRunV2Repository,
 } from "@voidmix/core";
 import { and, asc, desc, eq } from "drizzle-orm";
 
@@ -24,6 +26,7 @@ import {
   v2Feedback,
   v2Assets,
   v2AssetVersions,
+  v2AgentRuns,
   v2ProjectMembers,
   v2ProjectTasks,
   v2Projects,
@@ -31,6 +34,52 @@ import {
 } from "./schema.js";
 
 type Database = DatabaseConnection["db"];
+
+export class PostgresAgentRunV2Repository implements AgentRunV2Repository {
+  constructor(private readonly db: Database) {}
+
+  async getById(id: string): Promise<AgentRunV2 | null> {
+    const [run] = await this.db.select().from(v2AgentRuns).where(eq(v2AgentRuns.id, id)).limit(1);
+    return run ?? null;
+  }
+
+  async create(input: Parameters<AgentRunV2Repository["create"]>[0]): Promise<AgentRunV2> {
+    const [run] = await this.db
+      .insert(v2AgentRuns)
+      .values({
+        id: input.id,
+        projectId: input.projectId,
+        requestedByUserId: input.requestedByUserId,
+        assetVersionId: input.assetVersionId,
+        status: "queued",
+        attempt: input.attempt,
+        input: input.input,
+        output: null,
+        error: null,
+        createdAt: input.now,
+        updatedAt: input.now,
+      })
+      .returning();
+    if (!run) throw new Error("Agent run insert did not return a row.");
+    return run;
+  }
+
+  async updateStatus(
+    input: Parameters<AgentRunV2Repository["updateStatus"]>[0],
+  ): Promise<AgentRunV2 | null> {
+    const [run] = await this.db
+      .update(v2AgentRuns)
+      .set({
+        status: input.status,
+        ...(input.output !== undefined ? { output: input.output } : {}),
+        ...(input.error !== undefined ? { error: input.error } : {}),
+        updatedAt: input.now,
+      })
+      .where(eq(v2AgentRuns.id, input.id))
+      .returning();
+    return run ?? null;
+  }
+}
 
 export class PostgresAssetV2Repository implements AssetV2Repository {
   constructor(private readonly db: Database) {}

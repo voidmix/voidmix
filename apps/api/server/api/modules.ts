@@ -36,7 +36,7 @@ import type {
   StudioSnapshotDto,
 } from "@voidmix/contracts";
 import type { Mailer } from "@voidmix/mail/types";
-import type { ProjectApplication } from "@voidmix/application";
+import type { AgentRunApplication, ProjectApplication } from "@voidmix/application";
 
 import { createProjectStudioService } from "./project-studio.js";
 
@@ -201,6 +201,7 @@ export interface ProjectStudioService {
 export interface CreateApiModulesOptions {
   /** V2 account-first Project application. */
   v2Projects?: ProjectApplication;
+  v2AgentRuns?: AgentRunApplication;
   users: UserRepository;
   settings: SystemSettingsRepository;
   mailFallback: MailSettingsFallback;
@@ -228,6 +229,7 @@ export interface CreateApiModulesOptions {
 
 export interface ApiModules {
   v2Projects?: ProjectApplication;
+  v2AgentRuns?: AgentRunApplication;
   users: ReturnType<typeof createUserAdministration>;
   settings: {
     auth: ReturnType<typeof createAuthSettingsAdministration>;
@@ -265,6 +267,7 @@ export function createApiModules(options: CreateApiModulesOptions): ApiModules {
       : undefined);
   return {
     ...(options.v2Projects ? { v2Projects: options.v2Projects } : {}),
+    ...(options.v2AgentRuns ? { v2AgentRuns: options.v2AgentRuns } : {}),
     users: createUserAdministration({
       users: options.users,
       ...(options.now ? { now: options.now } : {}),

@@ -26,8 +26,9 @@ import {
   PostgresFeedbackV2Repository,
   PostgresAssetV2Repository,
   PostgresAssetVersionV2Repository,
+  PostgresAgentRunV2Repository,
 } from "@voidmix/db";
-import { createProjectApplication } from "@voidmix/application";
+import { createAgentRunApplication, createProjectApplication } from "@voidmix/application";
 import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
 import type { AuthSettings, MailSettingsFallback } from "@voidmix/core";
 import { createLoggerConfig, type EvlogConfig } from "@voidmix/logger";
@@ -131,19 +132,24 @@ export async function createApiRuntime({
       getAuthSettings,
       getMailSettings: async () => (await settings.resolveMailConfiguration(mailFallback)).settings,
     });
+    const v2Projects = createProjectApplication({
+      projects: new PostgresProjectV2Repository(connection.db),
+      tasks: new PostgresProjectTaskV2Repository(connection.db),
+      projectMembers: new PostgresProjectMemberV2Repository(connection.db),
+      organizationMembers: new PostgresOrganizationMemberV2Repository(connection.db),
+      reviews: new PostgresReviewV2Repository(connection.db),
+      feedback: new PostgresFeedbackV2Repository(connection.db),
+      assets: new PostgresAssetV2Repository(connection.db),
+      assetVersions: new PostgresAssetVersionV2Repository(connection.db),
+      blobStorage: environment.BLOB_STORAGE_DIR
+        ? new FileSystemBlobStorageRepository(environment.BLOB_STORAGE_DIR)
+        : new InMemoryBlobStorageRepository(),
+    });
     const modules = createApiModules({
-      v2Projects: createProjectApplication({
-        projects: new PostgresProjectV2Repository(connection.db),
-        tasks: new PostgresProjectTaskV2Repository(connection.db),
-        projectMembers: new PostgresProjectMemberV2Repository(connection.db),
-        organizationMembers: new PostgresOrganizationMemberV2Repository(connection.db),
-        reviews: new PostgresReviewV2Repository(connection.db),
-        feedback: new PostgresFeedbackV2Repository(connection.db),
-        assets: new PostgresAssetV2Repository(connection.db),
-        assetVersions: new PostgresAssetVersionV2Repository(connection.db),
-        blobStorage: environment.BLOB_STORAGE_DIR
-          ? new FileSystemBlobStorageRepository(environment.BLOB_STORAGE_DIR)
-          : new InMemoryBlobStorageRepository(),
+      v2Projects,
+      v2AgentRuns: createAgentRunApplication({
+        projects: v2Projects,
+        runs: new PostgresAgentRunV2Repository(connection.db),
       }),
       users: new PostgresUserRepository(connection.db),
       workspaceMemberships: new PostgresWorkspaceMembershipRepository(connection.db),

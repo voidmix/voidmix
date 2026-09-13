@@ -10,6 +10,7 @@ export {
   PostgresFeedbackV2Repository,
   PostgresAssetV2Repository,
   PostgresAssetVersionV2Repository,
+  PostgresAgentRunV2Repository,
 } from "./v2.js";
 export {
   InMemoryAgentCommandRepository,

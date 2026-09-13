@@ -28,6 +28,8 @@ import {
   type ReviewV2Repository,
 } from "@voidmix/core";
 
+export { createAgentRunApplication, type AgentRunApplication } from "./agent-v2.js";
+
 export type {
   OrganizationMemberV2Repository,
   ProjectMemberV2Repository,

@@ -640,6 +640,27 @@ export const assetVersionV2Schema = z.object({
   checksum: z.string().min(1),
   createdAt: z.date(),
 });
+export const agentRunStatusV2Schema = z.enum([
+  "queued",
+  "running",
+  "waiting_for_approval",
+  "succeeded",
+  "failed",
+  "cancelled",
+]);
+export const agentRunV2Schema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  requestedByUserId: z.string().min(1),
+  assetVersionId: z.string().min(1).nullable(),
+  status: agentRunStatusV2Schema,
+  attempt: z.number().int().positive(),
+  input: z.record(z.string(), z.unknown()),
+  output: z.record(z.string(), z.unknown()).nullable(),
+  error: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
 
 const v2ProjectPage = createCursorPageSchema(projectV2Schema);
 const v2ListProjects = oc.input(z.object({})).output(v2ProjectPage);
@@ -737,6 +758,18 @@ const v2CompleteAssetUpload = oc
     }),
   )
   .output(assetVersionV2Schema);
+const v2CreateAgentRun = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      assetVersionId: z.string().min(1).nullable().optional(),
+      input: z.record(z.string(), z.unknown()).default({}),
+    }),
+  )
+  .output(agentRunV2Schema);
+const v2GetAgentRun = oc.input(z.object({ runId: z.string().min(1) })).output(agentRunV2Schema);
+const v2CancelAgentRun = v2GetAgentRun;
+const v2RetryAgentRun = v2GetAgentRun;
 const v2ListProjectTasks = oc
   .input(z.object({ projectId: z.string().min(1) }))
   .output(z.object({ items: z.array(projectTaskV2Schema), nextCursor: z.string().nullable() }));
@@ -1190,6 +1223,12 @@ export const apiContract = {
         create: v2CreateAsset,
         versions: { list: v2ListAssetVersions },
         upload: { create: v2CreateAssetUpload, complete: v2CompleteAssetUpload },
+      },
+      agentRuns: {
+        create: v2CreateAgentRun,
+        get: v2GetAgentRun,
+        cancel: v2CancelAgentRun,
+        retry: v2RetryAgentRun,
       },
     },
   },

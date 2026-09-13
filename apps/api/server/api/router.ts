@@ -404,6 +404,47 @@ export function createApiRouter(options: CreateApiRouterOptions) {
               }),
           },
         },
+        agentRuns: {
+          create: os.v2.projects.agentRuns.create
+            .use(requireAuthenticated)
+            .handler(async ({ context, input }) => {
+              const application = requireV2AgentRuns(options.modules);
+              return callV2(() =>
+                application.create({
+                  actorId: context.principal.user.id,
+                  projectId: input.projectId,
+                  ...(input.assetVersionId !== undefined
+                    ? { assetVersionId: input.assetVersionId }
+                    : {}),
+                  input: input.input,
+                }),
+              );
+            }),
+          get: os.v2.projects.agentRuns.get
+            .use(requireAuthenticated)
+            .handler(async ({ context, input }) => {
+              const application = requireV2AgentRuns(options.modules);
+              return callV2(() =>
+                application.get({ actorId: context.principal.user.id, runId: input.runId }),
+              );
+            }),
+          cancel: os.v2.projects.agentRuns.cancel
+            .use(requireAuthenticated)
+            .handler(async ({ context, input }) => {
+              const application = requireV2AgentRuns(options.modules);
+              return callV2(() =>
+                application.cancel({ actorId: context.principal.user.id, runId: input.runId }),
+              );
+            }),
+          retry: os.v2.projects.agentRuns.retry
+            .use(requireAuthenticated)
+            .handler(async ({ context, input }) => {
+              const application = requireV2AgentRuns(options.modules);
+              return callV2(() =>
+                application.retry({ actorId: context.principal.user.id, runId: input.runId }),
+              );
+            }),
+        },
       },
     },
     studio: {
@@ -1477,6 +1518,12 @@ function requireV2Projects(modules: ApiModules) {
   if (!modules.v2Projects)
     throw createApiError("INTERNAL_SERVER_ERROR", "V2_PROJECTS_NOT_CONFIGURED");
   return modules.v2Projects;
+}
+
+function requireV2AgentRuns(modules: ApiModules) {
+  if (!modules.v2AgentRuns)
+    throw createApiError("INTERNAL_SERVER_ERROR", "V2_AGENT_RUNS_NOT_CONFIGURED");
+  return modules.v2AgentRuns;
 }
 
 type StudioModule = NonNullable<ApiModules["studio"]>;
