@@ -1,23 +1,23 @@
 import {
   Bell,
-  Cloud,
   Command,
-  DotsThree,
+  FolderSimple,
   Gear,
-  Laptop,
+  House,
   MagnifyingGlass,
   Pulse,
 } from "@phosphor-icons/react";
 import { Link, Outlet } from "@tanstack/react-router";
-import { useLocale, useSetLocale, useTranslations } from "@voidmix/i18n/client";
-import { Avatar } from "@voidmix/ui/avatar";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
+import { applyDesktopTheme, readDesktopTheme } from "../../lib/theme";
+import { AccountControl } from "./account-control";
+import { useDesktopTranslations, useLocale, useSetLocale } from "../../i18n/client";
 
 function WindowActions() {
-  const t = useTranslations("common");
+  const t = useDesktopTranslations("common");
   const [message, setMessage] = useState("");
 
   async function handleHide() {
@@ -48,15 +48,17 @@ function WindowActions() {
 }
 
 export function DesktopShell() {
-  const t = useTranslations("common");
+  const t = useDesktopTranslations("common");
+  const themeT = useDesktopTranslations("settings");
   const locale = useLocale();
   const setLocale = useSetLocale();
   const navigation = [
-    { to: "/", label: t("overview"), icon: Cloud },
+    { to: "/", label: t("home"), icon: House },
+    { to: "/projects", label: t("projects"), icon: FolderSimple },
     { to: "/activity", label: t("activity"), icon: Pulse },
-    { to: "/devices", label: t("devices"), icon: Laptop },
     { to: "/settings", label: t("settings"), icon: Gear },
   ] as const;
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [runtime, setRuntime] = useState<DesktopRuntime>({
     appVersion: "0.1.0",
     platform: "browser",
@@ -64,6 +66,9 @@ export function DesktopShell() {
   });
 
   useEffect(() => {
+    const initialTheme = readDesktopTheme();
+    setTheme(initialTheme);
+    applyDesktopTheme(initialTheme);
     void getDesktopRuntime().then(setRuntime);
   }, []);
 
@@ -91,14 +96,7 @@ export function DesktopShell() {
         </nav>
 
         <div className="sidebar-spacer" />
-        <div className="workspace-switcher account-switcher">
-          <Avatar name="Zack" size="small" />
-          <span>
-            <strong>Zack</strong>
-            <small>Personal studio</small>
-          </span>
-          <DotsThree size={16} aria-hidden="true" weight="regular" />
-        </div>
+        <AccountControl />
         <div className="runtime-status">
           <span className={runtime.trayEnabled ? "runtime-dot ready" : "runtime-dot"} />
           <span>
@@ -114,7 +112,7 @@ export function DesktopShell() {
         <header className="titlebar" data-tauri-drag-region>
           <Button className="search-trigger" variant="outline">
             <MagnifyingGlass size={15} weight="regular" />
-            <span>{t("searchWorkspace").replace("workspace", "projects")}</span>
+            <span>{t("searchProjects")}</span>
             <kbd>
               <Command size={11} />K
             </kbd>
@@ -122,10 +120,23 @@ export function DesktopShell() {
           <Button
             className="window-hide"
             variant="ghost"
+            onClick={() => {
+              const nextTheme = theme === "dark" ? "light" : "dark";
+              setTheme(nextTheme);
+              applyDesktopTheme(nextTheme);
+            }}
+            aria-label={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
+            title={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
+          >
+            {theme === "dark" ? "☼" : "◐"}
+          </Button>
+          <Button
+            className="window-hide"
+            variant="ghost"
             onClick={() => void setLocale(locale === "en" ? "zh" : "en").catch(() => undefined)}
             title={t("language")}
           >
-            {locale === "en" ? "中文" : "EN"}
+            {t(locale === "en" ? "chinese" : "english")}
           </Button>
           <WindowActions />
         </header>

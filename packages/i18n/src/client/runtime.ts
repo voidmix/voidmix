@@ -2,11 +2,13 @@ import { createContext, createElement, useContext, useMemo, type PropsWithChildr
 import { IntlProvider } from "use-intl";
 
 import { formats } from "../formats.js";
-import type { Locale, MessageCatalog, MessageTree } from "../types.js";
+import type { IntlRuntimeOptions, Locale, MessageCatalog, MessageTree } from "../types.js";
 
 type I18nContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => Promise<void>;
+  timeZone: string;
+  formats: IntlRuntimeOptions["formats"];
 };
 
 const I18nContext = createContext<I18nContextValue | null>(null);
@@ -15,8 +17,15 @@ export function LocaleContextProvider({
   children,
   locale,
   setLocale,
-}: PropsWithChildren<I18nContextValue>) {
-  const context = useMemo(() => ({ locale, setLocale }), [locale, setLocale]);
+  timeZone = "UTC",
+  formats: runtimeFormats,
+}: PropsWithChildren<
+  Pick<I18nContextValue, "locale" | "setLocale"> & Pick<IntlRuntimeOptions, "timeZone" | "formats">
+>) {
+  const context = useMemo(
+    () => ({ locale, setLocale, timeZone, formats: runtimeFormats ?? formats }),
+    [locale, setLocale, timeZone, runtimeFormats],
+  );
   return createElement(I18nContext.Provider, { value: context }, children);
 }
 
@@ -24,16 +33,18 @@ export function IntlCatalogProvider({
   children,
   locale,
   messages,
-}: PropsWithChildren<{ locale: Locale; messages: MessageCatalog }>) {
+  timeZone = "UTC",
+  formats: runtimeFormats,
+}: PropsWithChildren<{ locale: Locale; messages: MessageCatalog } & IntlRuntimeOptions>) {
   return createElement(IntlProvider, {
     locale,
     // A fixed server timezone keeps SSR and hydration deterministic.
-    timeZone: "UTC",
+    timeZone,
     messages: messages as MessageTree,
     formats: {
-      dateTime: formats.dateTime,
-      list: formats.list,
-      number: formats.number,
+      dateTime: (runtimeFormats?.dateTime ?? formats.dateTime) as never,
+      list: (runtimeFormats?.list ?? formats.list) as never,
+      number: (runtimeFormats?.number ?? formats.number) as never,
     },
     children,
   });

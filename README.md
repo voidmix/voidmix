@@ -7,7 +7,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-d22128?logo=apache&logoColor=fff)](./LICENSE)
 
 Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud
-web app with an embedded typed Hono API, an operations console, and a Tauri
+web app with a standalone typed Hono API, an operations console, and a Tauri
 desktop client.
 
 Dependency versions are centralized with Bun Catalogs in the root
@@ -30,13 +30,14 @@ request.
 ```text
 apps/web        TanStack Start user application
 apps/desktop    Tauri 2 desktop client
-apps/api        Temporary standalone Nitro API compatibility host
+apps/api        Standalone Nitro API application
+apps/worker     Durable Agent and outbox execution host
 apps/storybook  Storybook UI component workbench
 e2e             Playwright Web smoke tests, including protected Admin routes
 
 packages/ui         Shared visual primitives
+packages/application Shared Project commands and queries for API and Worker
 packages/ai         Server-side Pi Agent adapter
-packages/api-runtime Shared Hono, oRPC, Better Auth, and database composition
 packages/cache      Redis cache facade and Better Auth secondary storage
 packages/client     Typed oRPC client
 packages/contracts  Runtime API contracts
@@ -52,8 +53,9 @@ packages/tsconfig   Shared TypeScript presets
 ```
 
 `bun run policy` keeps this listing and the one in `AGENTS.md` in step with the
-workspaces Bun actually resolves, in both directions. A background worker is
-deliberately deferred until a real asynchronous job needs its own lifecycle.
+workspaces Bun actually resolves, in both directions. The Worker owns durable
+Agent and outbox execution; its event handler is injected at the process
+boundary so the runtime stays independent from HTTP and UI state.
 
 ## Requirements
 
@@ -77,10 +79,10 @@ workspace scripts run through `vmx env -- <command>`, which loads root
 the shell. Unit tests do not use this runner and must provide their environment
 explicitly.
 
-The Web/API runtime requires `DATABASE_URL` at startup. Use the local PostgreSQL service
-from the commands below, or point it at another PostgreSQL instance. Admin
-authentication uses Better Auth cookies; local auth mail is logged when Resend
-is not configured.
+The API and Worker require `DATABASE_URL` at startup; Web only needs the API
+origin (`VITE_API_URL`). Use the local PostgreSQL service from the commands
+below, or point it at another PostgreSQL instance. Admin authentication uses
+Better Auth cookies; local auth mail is logged when Resend is not configured.
 
 ## Common commands
 
@@ -124,5 +126,5 @@ bun run db:seed
 bun run db:studio
 ```
 
-The integrated `/admin` surface calls the Web service's same-origin oRPC API
-first and falls back to local preview data when the API is unavailable.
+The integrated `/admin` surface calls the standalone API origin through oRPC.
+Unavailable API states are surfaced in the Web UI.

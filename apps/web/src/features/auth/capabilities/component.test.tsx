@@ -17,9 +17,7 @@ describe("public auth capabilities", () => {
       verificationEmailRequestAvailable: false,
       passwordResetRequestAvailable: true,
     }));
-    const api = {
-      public: { auth: { capabilities: { get } } },
-    } as unknown as ApiClient;
+    const api = { auth: { capabilities: { get } } } as unknown as ApiClient;
     const adapter = createPublicAuthCapabilitiesAdapter(api);
 
     await expect(adapter.get()).resolves.toMatchObject({ registrationAvailable: false });

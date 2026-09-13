@@ -18,6 +18,10 @@ and no barrel to update.
 
 - Own the request and response shape of every procedure, and the DTO types that
   consumers import.
+- API failures use the open transport code plus `data.error.code` and optional
+  primitive `values` (`string`, `number`, `boolean`, or `null`). Keep that
+  envelope stable so Web and Desktop can translate codes without consuming
+  server diagnostic messages.
 - The `workspace.assets` and `workspace.agents` trees describe immutable asset
   versions, sync conflicts, Agent runs/steps, and leases. Keep their output
   dates as native `Date` values and preserve the input fields needed for
@@ -33,7 +37,7 @@ and no barrel to update.
 - DTOs are declared at the bottom as `export type FooDto = z.infer<typeof fooSchema>`.
 - **Dates stay native `Date`.** Use `z.date()`; never serialize to ISO strings.
   `src/index.test.ts` exists solely to lock this in.
-- The contract tree and `@voidmix/api-runtime`'s router tree must match **exactly**. Adding
+- The contract tree and `apps/api/server/api`'s router tree must match **exactly**. Adding
   to one without the other is a type error deep inside `os.router()` whose
   message does not point at your edit.
 - Public Auth capabilities expose only registration, verification-request, and
@@ -59,5 +63,5 @@ for the full edit order across contracts, domain, db, and the API.
 ```bash
 bun run --cwd packages/contracts check
 bun run --cwd packages/contracts test
-bun run --cwd packages/api-runtime test   # the contract's real consumer
+bun run --cwd apps/api test   # the contract's real consumer
 ```

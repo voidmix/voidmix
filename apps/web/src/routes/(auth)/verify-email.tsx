@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { VerifyEmail } from "../../features/auth/verify-email";
 import { validateAuthSearch } from "../../features/auth/route-search";
+import { localizedRouteHead } from "../../i18n/route-meta";
 
 export const Route = createFileRoute("/(auth)/verify-email")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -16,12 +17,7 @@ export const Route = createFileRoute("/(auth)/verify-email")({
     };
   },
   component: VerifyEmailRoute,
-  head: () => ({
-    meta: [
-      { title: "Verify email | Voidmix" },
-      { name: "description", content: "Verify your email address to finish setting up Voidmix." },
-    ],
-  }),
+  head: ({ matches }) => localizedRouteHead(matches, "verifyEmailTitle", "verifyEmailDescription"),
 });
 
 function VerifyEmailRoute() {

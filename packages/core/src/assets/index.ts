@@ -27,7 +27,12 @@ export type AssetDomainErrorCode =
   | "ASSET_CONFLICT_NOT_FOUND"
   | "ASSET_CONFLICT_ALREADY_RESOLVED"
   | "ASSET_IDEMPOTENCY_CONFLICT"
-  | "ASSET_INVALID_VERSION";
+  | "ASSET_INVALID_VERSION"
+  | "BLOB_NOT_FOUND"
+  | "BLOB_TOO_LARGE"
+  | "BLOB_UNSUPPORTED_MEDIA_TYPE"
+  | "BLOB_CHECKSUM_MISMATCH"
+  | "BLOB_UPLOAD_EXPIRED";
 
 /** Error raised when an asset invariant is violated. */
 export class AssetDomainError extends DomainError<AssetDomainErrorCode> {
@@ -61,6 +66,48 @@ export interface AssetVersion {
   idempotencyKey: string;
 }
 
+/**
+ * Content storage is deliberately separate from Asset metadata. Implementations
+ * may use object storage, but callers only depend on bounded upload/download
+ * commands and never place Blob bytes in a Project Studio snapshot.
+ */
+export interface BlobUpload {
+  id: string;
+  workspaceId: string;
+  actorId: string;
+  byteSize: number;
+  contentType: string;
+  expectedHash: string;
+  expiresAt: Date;
+}
+
+export interface BlobDownload {
+  blobHash: string;
+  byteSize: number;
+  contentType: string | null;
+  body: AsyncIterable<Uint8Array>;
+}
+
+export interface BlobStorageRepository {
+  createUpload(input: {
+    workspaceId: string;
+    actorId: string;
+    byteSize: number;
+    contentType: string;
+    expectedHash: string;
+  }): Promise<BlobUpload>;
+  completeUpload(input: {
+    uploadId: string;
+    actorId: string;
+    byteSize: number;
+    contentType: string;
+    blobHash: string;
+    body?: Uint8Array;
+  }): Promise<{ blobHash: string; byteSize: number; contentType: string }>;
+  getDownload(input: { workspaceId: string; blobHash: string }): Promise<BlobDownload | null>;
+  delete(input: { workspaceId: string; blobHash: string }): Promise<void>;
+}
+
 export interface SyncConflict {
   id: string;
   workspaceId: string;
@@ -82,6 +129,12 @@ export interface AssetRepository {
   createIfPathAvailable(
     asset: Asset,
   ): Promise<{ status: "created"; asset: Asset } | { status: "path_conflict" }>;
+  listByWorkspace?(input: {
+    workspaceId: string;
+    query?: string;
+    limit: number;
+    cursor?: string;
+  }): Promise<{ items: Asset[]; nextCursor: string | null }>;
 }
 
 export interface AssetVersionRepository {
@@ -90,6 +143,11 @@ export interface AssetVersionRepository {
     assetId: string;
     idempotencyKey: string;
   }): Promise<AssetVersion | null>;
+  listByAsset?(input: {
+    assetId: string;
+    limit: number;
+    cursor?: string;
+  }): Promise<{ items: AssetVersion[]; nextCursor: string | null }>;
 }
 
 export type AssetVersionCommitOutcome =

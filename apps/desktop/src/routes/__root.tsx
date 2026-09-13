@@ -23,7 +23,7 @@ export const Route = createRootRoute({
         name: "viewport",
         content: "width=device-width, initial-scale=1.0, viewport-fit=cover",
       },
-      { name: "theme-color", content: "#f4f6f1" },
+      { name: "theme-color", content: "#0b1020" },
       { title: "VoidMix" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],

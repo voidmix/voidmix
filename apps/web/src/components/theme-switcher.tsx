@@ -6,7 +6,7 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useTheme, type UserTheme } from "@voidmix/ui/theme";
 
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../i18n/client";
 import { themeOptions } from "./theme-options";
 
 const themeIcons: Record<UserTheme, typeof Sun> = {
@@ -19,9 +19,6 @@ export function ThemeSwitcher() {
   const { setTheme, theme } = useTheme();
   const t = useTranslations("common");
   const optionRefs = useRef<Array<HTMLElement | null>>([]);
-
-  const labelFor = (value: UserTheme) =>
-    t(`theme${value === "light" ? "Light" : value === "dark" ? "Dark" : "System"}`);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const key = event.key;
@@ -51,7 +48,7 @@ export function ThemeSwitcher() {
       {themeOptions.map((option, index) => {
         const Icon = themeIcons[option.value];
         const selected = option.value === theme;
-        const label = labelFor(option.value);
+        const label = t(option.labelKey);
 
         return (
           <Button

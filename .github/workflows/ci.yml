@@ -24,6 +24,10 @@ jobs:
       - run: bun run verify
       - run: git diff --exit-code # route trees must match the Start plugin's output
       - run: bun run generate
+        env:
+          # Drizzle validates its config at import time; generation does not
+          # connect to PostgreSQL, so a non-routable URL is sufficient here.
+          DATABASE_URL: postgres://voidmix:ci@example.invalid:5432/voidmix
       - run: git diff --exit-code # Drizzle artifacts must be committed
       # The layer scripts are the only thing that exercises layer selection.
       # `bun run test` inside verify passes whether or not these filters match,

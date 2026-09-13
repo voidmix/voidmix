@@ -2,12 +2,15 @@ import type { Translator } from "@voidmix/i18n";
 import { toast } from "@voidmix/ui/toast";
 
 import { translateKnownApiError } from "../../../i18n/api-errors";
+import type { WebTranslator } from "../../i18n/client";
+
+type AuthTranslator = Translator | WebTranslator<"errors">;
 
 interface NotifyAuthFailureOptions {
   error: unknown;
   fallback: string;
   title: string;
-  translateError: Translator;
+  translateError: AuthTranslator;
 }
 
 export function notifyAuthFailure({
@@ -29,48 +32,15 @@ export function notifyAuthFailure({
 }
 
 /**
- * Order matters. The API sends a machine-readable code and no prose, so a known
- * code is the only way to state the actual reason in the reader's language.
- * Server or library prose is used only when no code matched, and is preferred
- * over the generic fallback because it is at least specific.
+ * The API's stable code is the only server value that may become user-facing
+ * copy. Unknown codes and library prose stay behind the generic fallback so a
+ * diagnostic message cannot bypass the locale catalog.
  */
 export function getAuthErrorMessage(
   error: unknown,
   fallback: string,
-  translateError: Translator,
+  translateError: AuthTranslator,
 ): string {
   const translated = translateKnownApiError(error, translateError);
-  if (translated) return translated;
-
-  const message = extractErrorMessage(error);
-  return message && !isTransportError(message) ? message : fallback;
-}
-
-function extractErrorMessage(error: unknown): string | null {
-  if (typeof error === "string" && error.trim()) {
-    return error;
-  }
-
-  if (error instanceof Error && error.message.trim()) {
-    return error.message;
-  }
-
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "message" in error &&
-    typeof error.message === "string" &&
-    error.message.trim()
-  ) {
-    return error.message;
-  }
-
-  return null;
-}
-
-function isTransportError(message: string): boolean {
-  const normalizedMessage = message.toLowerCase();
-  return ["failed to fetch", "load failed", "networkerror"].some((value) =>
-    normalizedMessage.includes(value),
-  );
+  return translated ?? fallback;
 }

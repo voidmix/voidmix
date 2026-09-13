@@ -1,137 +1,103 @@
-import { Plus } from "@phosphor-icons/react";
-import { useNavigate } from "@tanstack/react-router";
-import { useTranslations } from "@voidmix/i18n/client";
-import { Button } from "@voidmix/ui/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@voidmix/ui/components/ui/dialog";
-import { EmptyState } from "@voidmix/ui/empty-state";
-import { PageHeader } from "@voidmix/ui/page-header";
-import { useState } from "react";
-import { WorkspaceShell } from "./components/workspace-shell";
-import { ProjectCard } from "./components/project-card";
-import { useWorkspaceData } from "./workspace-data";
-import {
-  workspaceFieldClass,
-  workspaceInputClass,
-  workspaceProjectGridClass,
-} from "./workspace-styles";
+import { Link } from "@tanstack/react-router";
+import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
+
+import { useTranslations } from "../../i18n/client";
+import { createWebApiClient } from "../../lib/api-client";
+
+const api = createWebApiClient();
+type ErrorKey = "loadFailed" | "createFailed";
+const LOAD_FAILED: ErrorKey = "loadFailed";
+const CREATE_FAILED: ErrorKey = "createFailed";
 
 export function ProjectsPage() {
-  const t = useTranslations("workspaceUi");
-  const navigate = useNavigate();
-  const { source, snapshot } = useWorkspaceData();
-  const [query, setQuery] = useState("");
-  const [archived, setArchived] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [name, setName] = useState("");
-  const projects = snapshot.projects.filter(
-    (project) =>
-      (archived || project.status !== "archived") &&
-      project.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+  const t = useTranslations("projects");
+  const [projects, setProjects] = useState<Awaited<ReturnType<typeof api.projects.list>>["items"]>(
+    [],
   );
+  const [title, setTitle] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ErrorKey | null>(null);
+
+  useEffect(() => {
+    void api.projects
+      .list({})
+      .then((result) => {
+        setProjects(result.items);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(LOAD_FAILED);
+        setLoading(false);
+      });
+  }, []);
+
+  async function createProject(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!title.trim()) return;
+    try {
+      const project = await api.projects.create({ title: title.trim() });
+      setProjects((current) => [project, ...current]);
+      setTitle("");
+    } catch {
+      setError(CREATE_FAILED);
+    }
+  }
+
   return (
-    <WorkspaceShell title={t("projects")}>
-      <PageHeader
-        title={t("projects")}
-        description={t("projectDescription")}
-        action={
-          <Button onClick={() => setCreating(true)} variant="primary">
-            <Plus aria-hidden="true" />
-            {t("createProject")}
-          </Button>
-        }
-      />
-      <div className="my-[30px] flex items-center gap-4 max-[520px]:flex-col max-[520px]:items-start">
-        <input
-          className={`${workspaceInputClass} max-w-80`}
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          aria-label={t("searchProjects")}
-          placeholder={t("searchProjects")}
-        />
-        <label className="flex items-center gap-2 whitespace-nowrap text-xs text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={archived}
-            onChange={(event) => setArchived(event.target.checked)}
-          />
-          {t("archiveFilter")}
-        </label>
-      </div>
-      {projects.length ? (
-        <div className={workspaceProjectGridClass}>
-          {projects.map((project) => {
-            const tasks = snapshot.tasks.filter((task) => task.projectId === project.id);
-            return (
-              <ProjectCard
-                key={project.id}
-                project={{
-                  ...project,
-                  total: tasks.length,
-                  complete: tasks.filter((task) => task.status === "done").length,
-                  blocked: tasks.filter((task) => task.status === "blocked").length,
-                }}
-              />
-            );
-          })}
+    <main className="mx-auto max-w-5xl space-y-8 px-6 py-12">
+      <header className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Voidmix</p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t("description")}</p>
         </div>
-      ) : (
-        <EmptyState
-          title={t(query ? "noMatches" : "noProjects")}
-          description={t(query ? "noMatchesDetail" : "noProjectsDetail")}
-          action={
-            !query ? (
-              <Button onClick={() => setCreating(true)}>{t("createProject")}</Button>
-            ) : undefined
-          }
-        />
-      )}
-      <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent showCloseButton={false}>
-          <DialogTitle>{t("createProject")}</DialogTitle>
-          <DialogDescription>{t("sessionOnly")}</DialogDescription>
-          <form
-            className="grid gap-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (!name.trim()) return;
-              const project = source.createProject(name);
-              setCreating(false);
-              setName("");
-              void navigate({
-                to: "/projects/$projectId",
-                params: { projectId: project.id },
-                search: { tab: "overview", filter: "all" },
-              });
-            }}
+        <form className="flex gap-2" onSubmit={createProject}>
+          <input
+            className="h-10 rounded-md border bg-background px-3 text-sm"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder={t("titlePlaceholder")}
+          />
+          <button
+            className="h-10 rounded-md bg-primary px-4 text-sm text-primary-foreground"
+            type="submit"
           >
-            <label className={workspaceFieldClass}>
-              {t("name")}
-              <input
-                className={workspaceInputClass}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                maxLength={120}
-                required
-                autoFocus
-              />
-            </label>
-            <div className="flex justify-end gap-2">
-              <Button onClick={() => setCreating(false)} variant="ghost">
-                {t("cancel")}
-              </Button>
-              <Button type="submit" variant="primary" disabled={!name.trim()}>
-                {t("create")}
-              </Button>
+            {t("newProject")}
+          </button>
+        </form>
+      </header>
+      {error ? (
+        <p className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+          {t(error)}
+        </p>
+      ) : null}
+      {loading ? <p className="text-sm text-muted-foreground">{t("loading")}</p> : null}
+      {!loading && !projects.length ? (
+        <p className="rounded-lg border border-dashed p-8 text-sm text-muted-foreground">
+          {t("empty")}
+        </p>
+      ) : null}
+      <section className="grid gap-4 md:grid-cols-2" aria-label={t("projectList")}>
+        {projects.map((project) => (
+          <Link
+            key={project.id}
+            to="/projects/$projectId"
+            params={{ projectId: project.id }}
+            className="rounded-lg border p-5 transition-colors hover:bg-muted/50"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="font-medium">{project.title}</h2>
+              <span className="text-xs text-muted-foreground">
+                {project.stage.replace("_", " ")}
+              </span>
             </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </WorkspaceShell>
+            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+              {project.description ?? t("noDescription")}
+            </p>
+          </Link>
+        ))}
+      </section>
+    </main>
   );
 }

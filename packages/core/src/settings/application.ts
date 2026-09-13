@@ -14,7 +14,7 @@ import type {
 interface MailSettingsAdministrationDependencies {
   settings: SystemSettingsRepository;
   fallback: MailSettingsFallback;
-  sendTest?: (recipient: { email: string; name: string }) => Promise<void>;
+  sendTest?: (input: { email: string; name: string; locale?: string }) => Promise<void>;
   now?: () => Date;
   id?: () => string;
 }
@@ -58,10 +58,11 @@ export function createMailSettingsAdministration({
     async sendTest(input: {
       actorId: string;
       recipient: { email: string; name: string };
+      locale?: string;
     }): Promise<{ sent: true; recipient: string; occurredAt: Date }> {
       await requireReady();
       if (!sendTest) throw new Error("Mail test sender is not configured.");
-      await sendTest(input.recipient);
+      await sendTest({ ...input.recipient, ...(input.locale ? { locale: input.locale } : {}) });
       const occurredAt = now();
       await settings.appendMailTestAudit({
         id: id(),

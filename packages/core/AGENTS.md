@@ -41,8 +41,10 @@ transported or stored.
   deterministic — do not reach for `new Date()` or a UUID library inline.
 - `DomainError` is the common business-error base. Each bounded context owns a
   closed string-literal code union and may expose a context-specific subclass.
-  Add the corresponding explicit mapping in `@voidmix/api-runtime` whenever a
-  context adds a transport-visible error code.
+  Optional primitive `values` carry interpolation data for the transport error
+  envelope; human-readable messages remain diagnostics and are not a UI
+  localization source. Add the corresponding explicit mapping in
+  `apps/api/server/api` whenever a context adds a transport-visible error code.
 - `getX` returns `T | null` and never throws; mutators return the updated entity
   or `void`.
 - **Guard ordering in `updateStatus` is load-bearing**: not-found →
@@ -67,5 +69,5 @@ transported or stored.
 ```bash
 bun run --cwd packages/core check
 bun run --cwd packages/core test
-bun run --cwd packages/api-runtime test   # exercises usecases through the router
+bun run --cwd apps/api test   # exercises usecases through the router
 ```

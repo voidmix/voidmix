@@ -58,6 +58,41 @@ vi.mock("@voidmix/i18n/client", () => ({
       signInFallback: "Unable to sign in. Check your credentials and try again.",
       signingIn: "Signing in…",
       welcomeBack: "Welcome back",
+      passwordResetFailed: "Password reset failed",
+      passwordResetFallback: "Unable to reset your password. Try again.",
+      passwordResetUnavailable: "Password reset unavailable",
+      passwordResetUnavailableDescription:
+        "Password reset email requests are not available with the current system and mail configuration.",
+      passwordResetUnavailableBody:
+        "Existing reset links can still be used. Contact an administrator if you need access.",
+      passwordUpdated: "Password updated",
+      passwordUpdatedDescription: "Your password has been updated. You can now use it to sign in.",
+      resetLinkSentDescription: "We sent a reset link if an account exists for that email address.",
+      setNewPassword: "Set a new password",
+      resetYourPassword: "Reset your password",
+      newPassword: "New password",
+      chooseNewPassword: "Choose a new password with at least eight characters.",
+      sendResetDescription: "Enter your email and we will send you a password reset link.",
+      updatingPassword: "Updating password…",
+      sendingResetLink: "Sending reset link…",
+      verifyLinkInvalid: "This verification link is invalid or expired.",
+      emailVerificationFailed: "Email verification failed",
+      verificationWaitingDescription:
+        "Use the verification link we sent to finish creating your account.",
+      verifyingEmailDescription:
+        "We are confirming your email address. This should only take a moment.",
+      emailVerifiedDescription: "Your email address is verified. You can now sign in to Voidmix.",
+      verificationFailedDescription:
+        "We could not verify this email address with the supplied link.",
+      verificationFailed: "Verification failed",
+      verifyingEmail: "Verifying your email",
+      emailVerified: "Email verified",
+      homeLabel: "Voidmix home",
+      showPassword: "Show password",
+      hidePassword: "Hide password",
+      checkEmail: "Check your email",
+      updatePassword: "Update password",
+      sendResetLink: "Send reset link",
     })[key] ?? key,
 }));
 

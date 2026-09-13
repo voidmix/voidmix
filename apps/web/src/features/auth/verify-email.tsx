@@ -6,7 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { authClient } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useTranslations } from "../../i18n/client";
 
 import { notifyAuthFailure } from "./feedback";
 import { normalizeAuthRedirect } from "./route-search";
@@ -25,12 +25,13 @@ export function VerifyEmail({
   verificationFailed?: boolean;
 }) {
   const translateError = useTranslations("errors");
+  const t = useTranslations("auth");
   const next = normalizeAuthRedirect(redirectTo);
   const [status, setStatus] = useState<VerificationStatus>(
     token ? "verifying" : verified ? "verified" : verificationFailed ? "failed" : "waiting",
   );
   const [error, setError] = useState<string | null>(
-    verificationFailed ? "This verification link is invalid or expired." : null,
+    verificationFailed ? t("verifyLinkInvalid") : null,
   );
 
   useEffect(() => {
@@ -43,9 +44,9 @@ export function VerifyEmail({
           setError(
             notifyAuthFailure({
               translateError,
-              title: "Email verification failed",
+              title: t("emailVerificationFailed"),
               error: result.error,
-              fallback: "This verification link is invalid or expired.",
+              fallback: t("verifyLinkInvalid"),
             }),
           );
           setStatus("failed");
@@ -58,9 +59,9 @@ export function VerifyEmail({
         setError(
           notifyAuthFailure({
             translateError,
-            title: "Email verification failed",
+            title: t("emailVerificationFailed"),
             error: cause,
-            fallback: "This verification link is invalid or expired.",
+            fallback: t("verifyLinkInvalid"),
           }),
         );
         setStatus("failed");
@@ -69,24 +70,24 @@ export function VerifyEmail({
 
   const content = {
     waiting: {
-      description: "Use the verification link we sent to finish creating your account.",
+      description: t("verificationWaitingDescription"),
       icon: <CheckCircle aria-hidden="true" className="size-9 text-primary" />,
-      title: "Check your email",
+      title: t("checkEmail"),
     },
     verifying: {
-      description: "We are confirming your email address. This should only take a moment.",
+      description: t("verifyingEmailDescription"),
       icon: <CircleNotch aria-hidden="true" className="size-9 animate-spin text-primary" />,
-      title: "Verifying your email",
+      title: t("verifyingEmail"),
     },
     verified: {
-      description: "Your email address is verified. You can now sign in to Voidmix.",
+      description: t("emailVerifiedDescription"),
       icon: <CheckCircle aria-hidden="true" className="size-9 text-primary" />,
-      title: "Email verified",
+      title: t("emailVerified"),
     },
     failed: {
-      description: "We could not verify this email address with the supplied link.",
+      description: t("verificationFailedDescription"),
       icon: <WarningCircle aria-hidden="true" className="size-9 text-destructive" />,
-      title: "Verification failed",
+      title: t("verificationFailed"),
     },
   } satisfies Record<VerificationStatus, { description: string; icon: ReactNode; title: string }>;
 
@@ -104,7 +105,7 @@ export function VerifyEmail({
             render={<Link to="/login" {...(next ? { search: { redirect: next } } : {})} />}
             size="lg"
           >
-            Back to sign in
+            {t("backToSignIn")}
           </Button>
         ) : null}
       </div>

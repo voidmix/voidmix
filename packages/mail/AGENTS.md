@@ -38,6 +38,9 @@ scripts/         local deterministic email preview
   `MAIL_DEFAULT_LOCALE`, itself falling back to `en`. Omit `locale` rather than
   passing `undefined` — the fallback depends on the property being absent
   (ADR-0005).
+- The Admin `sendTest` input may carry a locale so operators can verify either
+  catalog. Better Auth callbacks derive the recipient locale from the triggering
+  request; mail sent without a request uses the configured default.
 
 ## Verification
 

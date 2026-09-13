@@ -8,89 +8,103 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * The shadcn `bpBA` preset verbatim (style nova, baseColor neutral, radius
- * small), with two deliberate departures noted at the lines that carry them:
- * the focus ring and the dark sidebar accent. The palette is intentionally
- * achromatic — there is no brand accent token.
+ * VoidMix shared visual language: Soft Signal.
+ *
+ * Surfaces stay quiet and easy to scan. Blue is the main action signal, while
+ * violet and cyan are reserved for collaboration and live system feedback.
+ * The same semantic names are used by Web and Desktop so a state keeps its
+ * meaning when the theme changes.
  */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  /*
-   * Darker than the preset's `oklch(0.708 0 0)`, which reaches only 2.58:1
-   * against white and so fails WCAG 1.4.11's 3:1 floor for focus indicators.
-   * This clears it at 4.67:1.
-   */
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.45rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #f7f9fc;
+  --foreground: #172033;
+  --card: #ffffff;
+  --card-foreground: #172033;
+  --popover: #ffffff;
+  --popover-foreground: #172033;
+  --primary: #5865f2;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1ff;
+  --secondary-foreground: #26315f;
+  --muted: #f1f4f8;
+  --muted-foreground: #5a667a;
+  --accent: #e7f8fb;
+  --accent-foreground: #14515d;
+  --destructive: #e45b6b;
+  --destructive-foreground: #ffffff;
+  --success: #20b486;
+  --success-foreground: #ffffff;
+  --warning: #e8a33d;
+  --warning-foreground: #4d330b;
+  --info: #4a8bea;
+  --info-foreground: #ffffff;
+  --border: #dce3ef;
+  --input: #d3dceb;
+  --ring: #5865f2;
+  --surface-subtle: #fbfcfe;
+  --surface-sunken: #eef2f7;
+  --shadow-soft-value: 0 2px 8px rgb(23 32 51 / 8%);
+  --shadow-popover-value: 0 8px 24px rgb(23 32 51 / 14%);
+  --chart-1: #5865f2;
+  --chart-2: #8b6cff;
+  --chart-3: #36c5d8;
+  --chart-4: #20b486;
+  --chart-5: #e8a33d;
+  --radius: 0.625rem;
+  --sidebar: #f1f4fa;
+  --sidebar-foreground: #172033;
+  --sidebar-primary: #5865f2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e7ebff;
+  --sidebar-accent-foreground: #26315f;
+  --sidebar-border: #dce3ef;
+  --sidebar-ring: #5865f2;
 }
 
 .dark,
 [data-theme="dark"] {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  /*
-   * The preset emits `oklch(0.488 0.243 264.376)` here — a blue-violet left
-   * over from the stock palette that contradicts its own neutral theme. Kept
-   * achromatic and aligned with `--primary` instead.
-   */
-  --sidebar-primary: oklch(0.922 0 0);
-  --sidebar-primary-foreground: oklch(0.205 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0b1020;
+  --foreground: #f7f9fc;
+  --card: #151d31;
+  --card-foreground: #f7f9fc;
+  --popover: #151d31;
+  --popover-foreground: #f7f9fc;
+  --primary: #7c88ff;
+  --primary-foreground: #0b1020;
+  --secondary: #202a44;
+  --secondary-foreground: #e9edff;
+  --muted: #1a2438;
+  --muted-foreground: #aab7cb;
+  --accent: #123840;
+  --accent-foreground: #8de5ef;
+  --destructive: #f27886;
+  --destructive-foreground: #28080e;
+  --success: #37d09d;
+  --success-foreground: #052a1f;
+  --warning: #f4bb62;
+  --warning-foreground: #352108;
+  --info: #78b2ff;
+  --info-foreground: #061b38;
+  --border: #2b3850;
+  --input: #33415d;
+  --ring: #7c88ff;
+  --surface-subtle: #11192b;
+  --surface-sunken: #080d19;
+  --shadow-soft-value: 0 2px 8px rgb(0 0 0 / 24%);
+  --shadow-popover-value: 0 8px 24px rgb(0 0 0 / 36%);
+  --chart-1: #7c88ff;
+  --chart-2: #b09cff;
+  --chart-3: #66dce8;
+  --chart-4: #37d09d;
+  --chart-5: #f4bb62;
+  --sidebar: #11192b;
+  --sidebar-foreground: #e9edff;
+  --sidebar-primary: #7c88ff;
+  --sidebar-primary-foreground: #0b1020;
+  --sidebar-accent: #202a44;
+  --sidebar-accent-foreground: #e9edff;
+  --sidebar-border: #2b3850;
+  --sidebar-ring: #7c88ff;
 }
 
 @theme inline {
@@ -111,9 +125,20 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-sunken: var(--surface-sunken);
+  --shadow-soft: var(--shadow-soft-value);
+  --shadow-popover: var(--shadow-popover-value);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);

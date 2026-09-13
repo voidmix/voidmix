@@ -1,4 +1,5 @@
 import { log } from "@voidmix/logger/client";
+import { readErrorCode } from "@voidmix/i18n";
 
 import type { AdminUsersClient, UserListInput, UserStatus } from "./types";
 
@@ -36,7 +37,7 @@ export function createFallbackUsersAdapter({
           logger.warn({ event: "admin.users.update.fallback", reason: "api_unavailable" });
           return updated;
         } catch (error) {
-          if (error instanceof Error && error.message === "User not found") {
+          if (readErrorCode(error) === "USER_NOT_FOUND") {
             logger.error({ event: "admin.users.update.failed", reason: "user_not_found" });
           }
           throw error;

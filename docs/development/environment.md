@@ -83,12 +83,11 @@ or secret state. Browser failures fail open for navigation only; the server
 still enforces every policy.
 
 Browser code may read only explicitly declared public values from `apps/web/src/env.ts`.
-Database, Auth, mail, origin, and server logger values are composed by
-`apps/web/server/env.ts` and never enter the browser module graph. Web uses
-relative same-origin paths for Better Auth and authenticated Admin requests.
-Auth cookies are HTTP-only and requests include credentials. Desktop keeps an
-optional absolute `VITE_API_URL` for the cloud host.
+Database, Auth, mail, and server logger values remain API-side and never enter
+the browser module graph. Web and Desktop use the explicit `VITE_API_URL` API
+origin for Better Auth and authenticated requests. Auth cookies are HTTP-only
+and requests include credentials.
 
-Local Web defaults `AUTH_URL` to `http://localhost:3000`; the standalone API
-defaults it to `http://localhost:3002`. Leave the shared `.env` value blank to
-use those host defaults, and set the public origin explicitly in production.
+Local Web defaults `VITE_API_URL` to `http://localhost:3002`; the standalone API
+defaults `AUTH_URL` to `http://localhost:3002`. Set both public origins
+explicitly in production.

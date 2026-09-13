@@ -9,6 +9,18 @@ describe("message catalog testing helpers", () => {
     ).toEqual(["count", "name"]);
   });
 
+  it("ignores select and plural branch labels", () => {
+    expect(
+      extractIcuArguments(
+        "{status, select, active {Active} suspended {Suspended} other {Unknown}} {count, plural, one {# file} other {# files}}",
+      ),
+    ).toEqual(["count", "status"]);
+  });
+
+  it("keeps arguments after ordinary apostrophes visible", () => {
+    expect(extractIcuArguments("Today's {date}")).toEqual(["date"]);
+  });
+
   it("reports missing keys, type changes, and ICU argument drift with paths", () => {
     expect(() =>
       assertMessageCatalogParity(
@@ -25,6 +37,17 @@ describe("message catalog testing helpers", () => {
       assertMessageCatalogParity(
         { home: { greeting: "Hi {name}", count: "{count, plural, one {# item} other {# items}}" } },
         { home: { greeting: "你好，{name}", count: "{count, plural, one {# 项} other {# 项}}" } },
+        "en",
+        "zh",
+      ),
+    ).not.toThrow();
+  });
+
+  it("accepts translated select branches with the same argument", () => {
+    expect(() =>
+      assertMessageCatalogParity(
+        { status: "{status, select, active {Active} other {Unknown}}" },
+        { status: "{status, select, active {启用} other {未知}}" },
         "en",
         "zh",
       ),

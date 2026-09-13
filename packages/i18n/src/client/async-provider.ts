@@ -12,7 +12,13 @@ import {
 
 import { IntlCatalogProvider, LocaleContextProvider } from "./runtime.js";
 import { SUPPORTED_LOCALES } from "../constants.js";
-import type { Locale, LocaleCatalogLoader, LocaleStorage, MessageCatalog } from "../types.js";
+import type {
+  IntlRuntimeOptions,
+  Locale,
+  LocaleCatalogLoader,
+  LocaleStorage,
+  MessageCatalog,
+} from "../types.js";
 
 export type AsyncI18nProviderProps = PropsWithChildren<{
   locale: Locale;
@@ -20,6 +26,8 @@ export type AsyncI18nProviderProps = PropsWithChildren<{
   loadCatalog: LocaleCatalogLoader;
   storage?: LocaleStorage;
   onLocaleChange?: (locale: Locale) => void | Promise<void>;
+  timeZone?: string;
+  formats?: IntlRuntimeOptions["formats"];
 }>;
 
 type AsyncLocaleCatalogOptions = Pick<
@@ -42,6 +50,8 @@ export function AsyncI18nProvider({
   loadCatalog,
   storage,
   onLocaleChange,
+  timeZone,
+  formats,
 }: AsyncI18nProviderProps) {
   const {
     locale: activeLocale,
@@ -57,10 +67,20 @@ export function AsyncI18nProvider({
 
   return createElement(
     LocaleContextProvider,
-    { locale: activeLocale, setLocale },
+    {
+      locale: activeLocale,
+      setLocale,
+      ...(timeZone ? { timeZone } : {}),
+      ...(formats ? { formats } : {}),
+    },
     createElement(
       IntlCatalogProvider,
-      { locale: activeLocale, messages: activeMessages },
+      {
+        locale: activeLocale,
+        messages: activeMessages,
+        ...(timeZone ? { timeZone } : {}),
+        ...(formats ? { formats } : {}),
+      },
       children,
     ),
   );
@@ -77,7 +97,19 @@ function useAsyncLocaleCatalog({
   const requestId = useRef(0);
   const activeRef = useRef(active);
   const propsRef = useRef({ locale, messages });
-  const catalogCache = useRef(new Map<Locale, Promise<MessageCatalog>>());
+  const catalogCache = useRef(
+    new Map<Locale, Promise<MessageCatalog>>([[locale, Promise.resolve(messages)]]),
+  );
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    // React StrictMode replays effects during development; a replay is still a
+    // live mount and must be allowed to commit catalog requests.
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      requestId.current += 1;
+    };
+  }, []);
   const propsChanged = propsRef.current.locale !== locale || propsRef.current.messages !== messages;
 
   useEffect(() => {
@@ -109,6 +141,7 @@ function useAsyncLocaleCatalog({
         setActive,
         storage,
         onLocaleChange,
+        mountedRef,
       });
     },
     [loadCatalog, locale, onLocaleChange, propsChanged, storage],
@@ -174,6 +207,7 @@ async function commitLocale({
   setActive,
   storage,
   onLocaleChange,
+  mountedRef,
 }: {
   currentRequestId: number;
   requestId: MutableRefObject<number>;
@@ -183,12 +217,17 @@ async function commitLocale({
   setActive: Dispatch<SetStateAction<ActiveCatalog>>;
   storage?: LocaleStorage | undefined;
   onLocaleChange?: ((locale: Locale) => void | Promise<void>) | undefined;
+  mountedRef: MutableRefObject<boolean>;
 }) {
-  if (currentRequestId !== requestId.current) return;
+  if (!mountedRef.current || currentRequestId !== requestId.current) return;
 
-  storage?.write(nextLocale);
+  try {
+    storage?.write(nextLocale);
+  } catch {
+    // Persistence failures must not prevent a locale transition.
+  }
   const nextActive = { locale: nextLocale, messages };
   activeRef.current = nextActive;
   setActive(nextActive);
-  await onLocaleChange?.(nextLocale);
+  if (mountedRef.current) await onLocaleChange?.(nextLocale);
 }

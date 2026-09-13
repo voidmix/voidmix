@@ -14,8 +14,17 @@ export { resolveLocale } from "./resolve.js";
 export { createTranslator, type CreateTranslatorOptions, type Translator } from "./translator.js";
 export {
   readErrorCode,
+  readErrorDetails,
   translateErrorCode,
   translateKnownErrorCode,
   type ErrorCodeMap,
+  type LocalizedErrorDetails,
 } from "./errors.js";
-export type { MessageCatalog, MessageTree, MessagesByLocale, TranslationValues } from "./types.js";
+export type {
+  IntlRuntimeOptions,
+  MessageCatalog,
+  MessageTree,
+  MessagesByLocale,
+  TranslationValue,
+  TranslationValues,
+} from "./types.js";

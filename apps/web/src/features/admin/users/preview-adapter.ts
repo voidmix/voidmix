@@ -1,4 +1,5 @@
 import type { AdminUser, AdminUsersClient, UserListInput } from "./types";
+import { LocalizedWebError } from "../../../i18n/error-message";
 
 export const seedUsers: readonly AdminUser[] = [
   {
@@ -7,8 +8,8 @@ export const seedUsers: readonly AdminUser[] = [
     email: "owner@voidmix.local",
     role: "owner",
     status: "active",
-    lastActive: "2 min ago",
-    joinedAt: "May 18, 2026",
+    lastActive: { kind: "relative", value: -2, unit: "minute" },
+    joinedAt: new Date("2026-05-18T00:00:00.000Z"),
   },
   {
     id: "admin-local",
@@ -16,8 +17,8 @@ export const seedUsers: readonly AdminUser[] = [
     email: "admin@voidmix.local",
     role: "admin",
     status: "active",
-    lastActive: "18 min ago",
-    joinedAt: "Jun 04, 2026",
+    lastActive: { kind: "relative", value: -18, unit: "minute" },
+    joinedAt: new Date("2026-06-04T00:00:00.000Z"),
   },
   {
     id: "user-local",
@@ -25,8 +26,8 @@ export const seedUsers: readonly AdminUser[] = [
     email: "user@voidmix.local",
     role: "user",
     status: "active",
-    lastActive: "1 hr ago",
-    joinedAt: "Jun 21, 2026",
+    lastActive: { kind: "relative", value: -1, unit: "hour" },
+    joinedAt: new Date("2026-06-21T00:00:00.000Z"),
   },
   {
     id: "usr_suspended",
@@ -34,8 +35,8 @@ export const seedUsers: readonly AdminUser[] = [
     email: "rei@monoform.jp",
     role: "user",
     status: "suspended",
-    lastActive: "9 days ago",
-    joinedAt: "Apr 07, 2026",
+    lastActive: { kind: "relative", value: -9, unit: "day" },
+    joinedAt: new Date("2026-04-07T00:00:00.000Z"),
   },
 ];
 
@@ -61,7 +62,7 @@ export function createPreviewUsersAdapter(
     },
     async updateUserStatus(input) {
       const user = users.find((candidate) => candidate.id === input.userId);
-      if (!user) throw new Error("User not found");
+      if (!user) throw new LocalizedWebError("USER_NOT_FOUND");
       user.status = input.status;
       return { ...user };
     },

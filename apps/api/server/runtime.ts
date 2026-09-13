@@ -1,4 +1,4 @@
-import { createApiRuntime, type ApiRuntime } from "@voidmix/api-runtime";
+import { createApiRuntime, type ApiRuntime } from "./api/index.js";
 import { configureLogger } from "@voidmix/logger";
 
 import { env } from "./env.js";

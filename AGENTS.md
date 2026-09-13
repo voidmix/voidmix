@@ -22,8 +22,8 @@ document is stale, then update the document in the same change.
 ## Repository shape (dependencies flow downward only)
 
 ```text
-apps        web, desktop, api, storybook    composition roots; never imported
-adapters    ai, api-runtime, cache, client, contracts, i18n, ui  surfaces apps are allowed to use
+apps        web, desktop, api, worker, storybook    composition roots; never imported
+adapters    ai, application, cache, client, contracts, i18n, ui    surfaces apps are allowed to use
 core        core, db, auth, mail        db implements interfaces owned by core
 foundation  env, logger, tsconfig       no dependency on anything above
 tooling     scripts, e2e                never imported by runtime code
@@ -41,14 +41,14 @@ or `packages/` without a `package.json`.
 - `@voidmix/core` stays independent of React, Hono, Nitro, and Drizzle.
 - `@voidmix/db` hides Drizzle implementation details behind repository
   interfaces owned by `@voidmix/core`.
-- `@voidmix/api-runtime` performs final authentication and authorization checks;
-  Web and the standalone API are hosting shells for that boundary.
+- `apps/api` performs final authentication and authorization checks; Web,
+  Desktop, and Worker consume its contracts or shared application layer.
 - Admin-specific routes, tables, filters, and layouts stay in
   `apps/web/src/features/admin`
   until another real consumer justifies extraction.
 - Runtime applications never import `@voidmix/scripts`.
-- Do not add `apps/worker`, a background daemon, or a shared package without a
-  concrete requirement and stable seam.
+- `apps/worker` is the dedicated Agent execution host. It may depend on
+  `@voidmix/application` and adapters, but never on Web/Desktop composition.
 
 ## Toolchain
 

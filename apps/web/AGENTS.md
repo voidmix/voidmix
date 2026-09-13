@@ -21,23 +21,15 @@ src/
     (app)/route.tsx  authenticated group layout and session gate
     (app)/(admin)/route.tsx  AdminShell layout within the authenticated group
     (app)/(admin)/admin.tsx  protected Admin user-directory mount at /admin
-    (app)/(admin)/admin/settings.tsx  mail settings mount at /admin/settings
-    (app)/(admin)/admin/settings/auth.tsx  auth policy at /admin/settings/auth
-  features/home/     home view data, components/, and feature CSS
-  features/projects/ preview data facade, project pages, shell, tasks and settings
-  features/pi/       project-bound preview conversations and cancellable runs
-  features/chat/     chat entry, fixtures, types, components/, and CSS
+  features/projects/ canonical project list and project detail views
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
   i18n/              catalog loaders, API error codes, recovery copy
 scripts/             read-only production bundle analysis
 tests/               shared Web test fixtures and cross-feature tests
 server/
-  env.ts             server-only API/Auth/Mail environment composition
-  app.ts             Nitro Web-format handler
-  runtime.ts         memoized shared API runtime
-  runtime.plugin.ts  Nitro startup and shutdown lifecycle
-  styles.css         global reset, token entry, and feature stylesheet imports
+  health.ts          Web liveness endpoint only
+
 tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ```
 
@@ -49,13 +41,7 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 
 ## Constraints
 
-- `/`, `/projects`, `/projects/$projectId`, and the project Pi route share the
-  Clean Signal preview shell. These public routes contain only explicitly
-  labelled sample data; they are not authorization gates for live project APIs.
-- `features/projects/workspace-data.tsx` owns data-source injection. Views use
-  its snapshot and operations rather than accessing sessionStorage or Pi SDKs.
-  Preview writes are tab-local; a live adapter must use `@voidmix/client`, never
-  `@voidmix/ai` or server imports. See [workspace preview](../../docs/development/workspace-preview.md).
+- `/projects` and `/projects/$projectId` are authenticated canonical project routes backed by `@voidmix/client`; they do not render preview or Workspace compatibility data.
 
 - File-based routing. Add `src/routes/<path>.tsx` exporting
   `export const Route = createFileRoute("/path")({ component: X })`. Server-only
@@ -84,29 +70,19 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   the facade hook.
 - `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
   import fails `check`.
-- Better Auth and `@voidmix/client` use same-origin `/api/auth/*` and `/rpc/*`
-  requests with credentials. Desktop remains the absolute-origin API consumer.
-- Nitro mounts `@voidmix/api-runtime` only at `/api/auth/**`, `/rpc/**`, and
-  `/health`; never add a catch-all Hono handler that can swallow TanStack routes.
-- `server/runtime.ts` owns one memoized runtime per process. The lifecycle plugin
-  initializes it at startup and closes it through Nitro's `close` hook.
+- Better Auth and `@voidmix/client` use the configured independent API origin
+  with credentials. Desktop remains an absolute-origin API consumer.
+- Web owns only the liveness `/health` route; never add a catch-all API handler
+  that can swallow TanStack routes.
+- Web does not initialize a database or API runtime.
 - `server/env.ts` is never imported by browser modules. Keep database, Auth, mail,
   and allowed-origin values on the server side of the Web bundle.
-- `(app)/route.tsx` is the established client-side session gate. It is
-  navigation aid, not authorization enforcement. There is still no loader,
-  `beforeLoad`, or server function precedent in this app.
-- `(app)/(admin)/route.tsx` owns the AdminShell layout. Keep the authenticated
-  group focused on session navigation and keep `/admin` page mounting and typed
-  settings adapters in the nested Admin group. Settings API failures are shown
-  directly; do not add a preview/fallback adapter for system configuration.
-- Authentication settings are read-only for `admin` and writable only for
-  `owner` in the UI. That role check controls presentation only; the API
-  permission remains the authoritative boundary.
-- Admin settings forms display effective values, sources, and safe inherited
-  previews. Untouched fields are omitted, clearing ordinary mail text schedules
-  `reset`, and secret inputs stay blank: blank retains while the explicit remove
-  action resets the database override.
-- Public Auth pages consume only `public.auth.capabilities.get`. Registration and
+- `(app)/route.tsx` uses the API-backed session gate as a navigation aid and
+  retains the client-side session gate for hydration and stale-cookie recovery.
+  It is navigation aid, not authorization enforcement; the API remains the
+  final authorization boundary.
+- `(app)/(admin)/route.tsx` owns the AdminShell layout. The canonical release exposes the user directory and audit views; system mail/auth settings routes are intentionally absent.
+- Public Auth pages consume only `auth.capabilities.get`. Registration and- Public Auth pages consume only `auth.capabilities.get`. Registration and
   tokenless reset entry points follow those booleans, an existing reset token
   remains usable, and capability-request failures fail open so the server remains
   the final policy boundary.

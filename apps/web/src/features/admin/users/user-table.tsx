@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import type { AdminUser } from "./types";
 import { UserRow } from "./user-row";
+import { useTranslations } from "../../../i18n/client";
 
 export function UserTable({
   users,
@@ -21,6 +22,7 @@ export function UserTable({
   pendingIds: ReadonlySet<string>;
 }) {
   const selectAllRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("admin");
   const selectedVisibleCount = users.filter((user) => selectedIds.has(user.id)).length;
   const allSelected = users.length > 0 && selectedVisibleCount === users.length;
   const someSelected = selectedVisibleCount > 0 && !allSelected;
@@ -36,7 +38,7 @@ export function UserTable({
           <tr>
             <th className="w-11 border-b py-3 pr-4 pl-5 text-left font-mono text-[0.65rem] font-semibold text-muted-foreground uppercase">
               <input
-                aria-label="Select all users"
+                aria-label={t("selectAllUsers")}
                 checked={allSelected}
                 className="size-3.5 accent-primary"
                 onChange={(event) => onSelectAll(event.currentTarget.checked)}
@@ -44,13 +46,13 @@ export function UserTable({
                 type="checkbox"
               />
             </th>
-            <TableHeading>User</TableHeading>
-            <TableHeading>Role</TableHeading>
-            <TableHeading>Status</TableHeading>
-            <TableHeading>Last active</TableHeading>
-            <TableHeading>Joined</TableHeading>
+            <TableHeading>{t("user")}</TableHeading>
+            <TableHeading>{t("role")}</TableHeading>
+            <TableHeading>{t("status")}</TableHeading>
+            <TableHeading>{t("lastActive")}</TableHeading>
+            <TableHeading>{t("joined")}</TableHeading>
             <TableHeading>
-              <span className="sr-only">Actions</span>
+              <span className="sr-only">{t("actions")}</span>
             </TableHeading>
           </tr>
         </thead>
@@ -68,10 +70,10 @@ export function UserTable({
         </tbody>
       </table>
       {isLoading ? (
-        <p className="m-0 px-5 py-8 text-sm text-muted-foreground">Loading directory…</p>
+        <p className="m-0 px-5 py-8 text-sm text-muted-foreground">{t("loadingDirectory")}</p>
       ) : null}
       {!isLoading && users.length === 0 ? (
-        <p className="m-0 px-5 py-8 text-sm text-muted-foreground">No users match this view.</p>
+        <p className="m-0 px-5 py-8 text-sm text-muted-foreground">{t("noUsers")}</p>
       ) : null}
     </div>
   );

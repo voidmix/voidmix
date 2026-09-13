@@ -15,6 +15,7 @@ function dependencies() {
     processEnv: { TEST_VALUE: "value" },
     repositoryRoot: "/repo",
     runCommand,
+    verifyI18n: vi.fn(async () => undefined),
     verifyPolicy: vi.fn(async () => undefined),
     verifyRuntimes: vi.fn(async (_options: { captureOutput: boolean }) => undefined),
   };
@@ -90,6 +91,8 @@ describe("repository workflows", () => {
 
     await runVerify(deps);
 
+    expect(deps.verifyI18n).toHaveBeenCalledOnce();
+
     expect(deps.runCommand.mock.calls.map(([command]) => command)).toEqual([
       ["vp", "fmt", "--check"],
       ["vp", "lint"],
@@ -149,6 +152,18 @@ describe("repository workflows", () => {
     });
 
     await expect(runVerify(deps)).rejects.toThrow("Policy: 1 errors");
+    expect(deps.runCommand).not.toHaveBeenCalled();
+    expect(deps.verifyRuntimes).not.toHaveBeenCalled();
+  });
+
+  it("checks i18n before repository policy", async () => {
+    const deps = dependencies();
+    deps.verifyI18n = vi.fn(async () => {
+      throw new Error("i18n: 1 errors, 0 warnings.");
+    });
+
+    await expect(runVerify(deps)).rejects.toThrow("i18n: 1 errors");
+    expect(deps.verifyPolicy).not.toHaveBeenCalled();
     expect(deps.runCommand).not.toHaveBeenCalled();
     expect(deps.verifyRuntimes).not.toHaveBeenCalled();
   });

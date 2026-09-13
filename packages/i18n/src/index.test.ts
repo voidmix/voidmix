@@ -28,8 +28,8 @@ describe("locale runtime", () => {
     expect(getLocaleCookie(cookie)).toBe("zh");
   });
 
-  it("reads the legacy locale cookie while preferring the unprefixed name", () => {
-    expect(getLocaleCookie("voidmix_locale=zh")).toBe("zh");
+  it("only reads the canonical locale cookie", () => {
+    expect(getLocaleCookie("voidmix_locale=zh")).toBeUndefined();
     expect(getLocaleCookie("voidmix_locale=zh; locale=en")).toBe("en");
   });
 

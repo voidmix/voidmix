@@ -1,37 +1,31 @@
-import { GearSix, SquaresFour, UsersThree } from "@phosphor-icons/react";
+import { SquaresFour, UsersThree } from "@phosphor-icons/react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 import { cn } from "@voidmix/ui/lib/utils";
+import { useTranslations } from "../../../i18n/client";
 
-export function AdminNavigation({ canManageSettings }: { canManageSettings: boolean }) {
+export function AdminNavigation() {
   const matchRoute = useMatchRoute();
+  const t = useTranslations("admin");
 
   return (
     <nav
-      aria-label="Admin navigation"
+      aria-label={t("navigation")}
       className="flex flex-col gap-1 max-[760px]:flex-row max-[760px]:justify-end"
     >
       <NavItem
         active={Boolean(matchRoute({ to: "/", fuzzy: false }))}
         icon={<SquaresFour weight="regular" />}
-        label="Overview"
+        label={t("overview")}
         to="/"
       />
       <NavItem
         active={Boolean(matchRoute({ to: "/admin", fuzzy: false }))}
         icon={<UsersThree weight="regular" />}
-        label="Users"
+        label={t("users")}
         to="/admin"
       />
-      {canManageSettings ? (
-        <NavItem
-          active={Boolean(matchRoute({ to: "/admin/settings", fuzzy: true }))}
-          icon={<GearSix weight="regular" />}
-          label="Settings"
-          to="/admin/settings"
-        />
-      ) : null}
     </nav>
   );
 }
@@ -44,7 +38,7 @@ function NavItem({
 }: {
   icon: ReactNode;
   label: string;
-  to: "/" | "/admin" | "/admin/settings" | "/admin/settings/auth";
+  to: "/" | "/admin";
   active?: boolean;
 }) {
   return (

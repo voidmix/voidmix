@@ -9,51 +9,76 @@ import {
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { cn } from "@voidmix/ui/lib/utils";
-import { useTranslations } from "@voidmix/i18n/client";
+import { useDesktopTranslations, useFormatter } from "../../i18n/client";
+import { formatActivityTime } from "./time";
 import { useState } from "react";
 
-const activityRows = [
+type ActivityRow = {
+  title: "campaignExports" | "brandArchive" | "productResearch" | "designSystem" | "teamPhotos";
+  detail:
+    | "campaignExportsDetail"
+    | "brandArchiveDetail"
+    | "productResearchDetail"
+    | "designSystemDetail"
+    | "teamPhotosDetail";
+  count?: number;
+  device?: string;
+  minutesAgo?: number;
+  hoursAgo?: number;
+  yesterday?: boolean;
+  icon: typeof Folder;
+  tone: string;
+};
+
+const activityRows: ActivityRow[] = [
   {
-    title: "Campaign exports",
-    detail: "Uploaded 18 files from Mac Studio",
-    time: "2 min",
+    title: "campaignExports",
+    detail: "campaignExportsDetail",
+    count: 18,
+    device: "Mac Studio",
+    minutesAgo: 2,
     icon: Folder,
     tone: "blue",
   },
   {
-    title: "Brand archive",
-    detail: "Created encrypted backup snapshot",
-    time: "24 min",
+    title: "brandArchive",
+    detail: "brandArchiveDetail",
+    minutesAgo: 24,
     icon: ShieldCheck,
     tone: "green",
   },
   {
-    title: "Product research",
-    detail: "Downloaded 4 files to Surface Laptop",
-    time: "1 hr",
+    title: "productResearch",
+    detail: "productResearchDetail",
+    count: 4,
+    device: "Surface Laptop",
+    hoursAgo: 1,
     icon: ArrowDown,
     tone: "violet",
   },
   {
-    title: "Design system",
-    detail: "Indexed 328 changed objects",
-    time: "3 hr",
+    title: "designSystem",
+    detail: "designSystemDetail",
+    count: 328,
+    hoursAgo: 3,
     icon: Database,
     tone: "gray",
   },
   {
-    title: "Team photos",
-    detail: "Uploaded from Alex’s iPhone",
-    time: "Yesterday",
+    title: "teamPhotos",
+    detail: "teamPhotosDetail",
+    device: "Alex's iPhone",
+    yesterday: true,
     icon: DeviceMobile,
     tone: "blue",
   },
-] as const;
+];
 
 const filters = ["all", "uploads", "downloads", "backups"] as const;
 
 export function ActivityPage() {
-  const t = useTranslations("activity");
+  const t = useDesktopTranslations("activity");
+  const formatter = useFormatter();
   const [filter, setFilter] = useState<(typeof filters)[number]>("all");
 
   return (
@@ -82,26 +107,43 @@ export function ActivityPage() {
       </div>
       <section className="activity-panel" aria-label={t("recent")}>
         <div className="activity-date">{t("today")}</div>
-        {activityRows.map(({ title, detail, time, icon: Icon, tone }) => (
-          <article className="activity-row" key={title}>
-            <span className={cn("activity-icon", tone)}>
-              <Icon size={16} />
-            </span>
-            <div>
-              <strong>{title}</strong>
-              <span>{detail}</span>
-            </div>
-            <time>{time}</time>
-            <Button
-              className="icon-button"
-              size="icon"
-              variant="ghost"
-              aria-label={t("moreOptions", { title })}
-            >
-              <DotsThree size={16} />
-            </Button>
-          </article>
-        ))}
+        {activityRows.map(
+          ({ title, detail, icon: Icon, tone, count, device, minutesAgo, hoursAgo, yesterday }) => (
+            <article className="activity-row" key={title}>
+              <span className={cn("activity-icon", tone)}>
+                <Icon size={16} />
+              </span>
+              <div>
+                <strong>{t(title)}</strong>
+                <span>
+                  {t(detail, {
+                    ...(count !== undefined ? { count } : {}),
+                    ...(device ? { device } : {}),
+                  })}
+                </span>
+              </div>
+              <time>
+                {formatActivityTime(
+                  formatter,
+                  {
+                    ...(minutesAgo !== undefined ? { minutesAgo } : {}),
+                    ...(hoursAgo !== undefined ? { hoursAgo } : {}),
+                    ...(yesterday !== undefined ? { yesterday } : {}),
+                  },
+                  t("yesterday"),
+                )}
+              </time>
+              <Button
+                className="icon-button"
+                size="icon"
+                variant="ghost"
+                aria-label={t("moreOptions", { title: t(title) })}
+              >
+                <DotsThree size={16} />
+              </Button>
+            </article>
+          ),
+        )}
       </section>
     </div>
   );

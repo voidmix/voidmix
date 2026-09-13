@@ -1,11 +1,9 @@
 import { createFormatter as createIntlFormatter } from "use-intl/core";
 
 import { formats } from "./formats.js";
-import type { Locale } from "./types.js";
+import type { IntlRuntimeOptions, Locale } from "./types.js";
 
-export type FormatterOptions = {
-  timeZone?: string;
-};
+export type FormatterOptions = IntlRuntimeOptions;
 
 export interface Formatter {
   dateTime(
@@ -31,7 +29,8 @@ const formatterCache = new Map<string, Formatter>();
 
 export function createFormatter(locale: Locale, options: FormatterOptions = {}): Formatter {
   const timeZone = options.timeZone ?? "UTC";
-  const cacheKey = `${locale}:${timeZone}`;
+  const runtimeFormats = options.formats ?? formats;
+  const cacheKey = `${locale}:${timeZone}:${runtimeFormats === formats ? "default" : JSON.stringify(runtimeFormats)}`;
   const cached = formatterCache.get(cacheKey);
   if (cached) return cached;
 
@@ -39,9 +38,9 @@ export function createFormatter(locale: Locale, options: FormatterOptions = {}):
     locale,
     timeZone,
     formats: {
-      dateTime: formats.dateTime,
-      list: formats.list,
-      number: formats.number,
+      dateTime: runtimeFormats.dateTime as never,
+      list: runtimeFormats.list as never,
+      number: runtimeFormats.number as never,
     },
   });
   const dateTime = intlFormatter.dateTime as unknown as (
@@ -61,7 +60,7 @@ export function createFormatter(locale: Locale, options: FormatterOptions = {}):
   ) =>
     new Intl.RelativeTimeFormat(
       locale,
-      typeof format === "string" ? formats.relativeTime[format] : format,
+      typeof format === "string" ? runtimeFormats.relativeTime[format] : format,
     );
 
   const formatter: Formatter = {

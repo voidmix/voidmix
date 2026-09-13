@@ -23,14 +23,14 @@ describe("web environment boundaries", () => {
     );
   });
 
-  it("does not expose a separate browser API origin", () => {
+  it("exposes the standalone API origin to the browser", () => {
     const env = createEnv({
       ...webEnv,
       isServer: false,
-      runtimeEnv: { NODE_ENV: "test" },
+      runtimeEnv: { NODE_ENV: "test", VITE_API_URL: "https://api.example.com" },
     });
 
-    expect(Object.keys(env)).not.toContain("VITE_API_URL");
+    expect(env.VITE_API_URL).toBe("https://api.example.com");
   });
 
   it("keeps server logger values out of the browser interface", () => {

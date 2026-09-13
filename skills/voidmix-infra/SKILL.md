@@ -72,7 +72,7 @@ things that mislead in the moment and belong to no single rule:
 
 ## Verification
 
-- API behavior changes: `bun run --cwd packages/api-runtime test`.
+- API behavior changes: `bun run --cwd apps/api/server/api test`.
 - Database changes: `bun run generate`, then `bun run --cwd packages/db check`
   and `bun run --cwd packages/db test`.
 - Route changes: build the owning app before checking it so generated route

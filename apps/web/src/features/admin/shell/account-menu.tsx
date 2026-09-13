@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import { LazyThemeMenuItems, loadThemeMenuItems } from "../../../components/theme-menu-lazy";
+import { useTranslations } from "../../../i18n/client";
 
 export function AccountMenu({
   name,
@@ -24,6 +25,7 @@ export function AccountMenu({
   onSignOut: () => Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("admin");
   const prefetchThemeMenu = () => {
     void loadThemeMenuItems().catch(() => undefined);
   };
@@ -41,7 +43,7 @@ export function AccountMenu({
       <DropdownMenuTrigger
         render={
           <Button
-            aria-label="Open account menu"
+            aria-label={t("openAccountMenu")}
             onFocus={prefetchThemeMenu}
             onPointerDown={prefetchThemeMenu}
             size="icon-sm"
@@ -55,14 +57,14 @@ export function AccountMenu({
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center gap-2">
             <span className="truncate text-foreground">{name}</span>
-            <DropdownMenuShortcut>{role ?? "User"}</DropdownMenuShortcut>
+            <DropdownMenuShortcut>{role ?? t("user")}</DropdownMenuShortcut>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Theme</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("theme")}</DropdownMenuLabel>
           {open ? (
             <Suspense fallback={null}>
               <LazyThemeMenuItems />
@@ -74,7 +76,7 @@ export function AccountMenu({
 
         <DropdownMenuItem variant="destructive" onClick={() => void onSignOut()}>
           <SignOut aria-hidden="true" />
-          Sign out
+          {t("signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

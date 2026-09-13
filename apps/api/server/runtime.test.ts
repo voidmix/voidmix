@@ -10,7 +10,7 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("@voidmix/api-runtime", () => ({
+vi.mock("./api/index.js", () => ({
   createApiRuntime: mocks.createApiRuntime,
 }));
 

@@ -2,11 +2,13 @@ import {
   HeadContent,
   Scripts,
   createRootRoute,
+  useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { AsyncI18nProvider, createBrowserLocaleStorage, useLocale } from "@voidmix/i18n/client";
+import type { Locale } from "@voidmix/i18n/types";
 import { AsyncToaster } from "@voidmix/ui/toast";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { Button } from "@voidmix/ui/components/ui/button";
 import { ThemeProvider, ThemeScript, type UserTheme } from "@voidmix/ui/theme";
@@ -15,6 +17,7 @@ import { loadWebMessages } from "../../i18n/messages";
 import { createRecoveryTranslator, readDocumentLocale } from "../../i18n/recovery-messages";
 import { getRequestPreferences } from "../lib/request-preferences";
 import { scheduleClientLogger } from "../lib/client-logger";
+import { localizedRouteHead } from "../i18n/route-meta";
 import {
   CHUNK_RECOVERY_STORAGE_KEY,
   createChunkRecoveryRecord,
@@ -27,51 +30,47 @@ export const Route = createRootRoute({
   loader: () => getRequestPreferences(),
   errorComponent: RootErrorPage,
   notFoundComponent: NotFoundPage,
-  head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1, viewport-fit=cover",
-      },
-      {
-        name: "theme-color",
-        content: "#ffffff",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        name: "theme-color",
-        content: "#171717",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        title: "Voidmix | Creative work, one live signal",
-      },
-      {
-        name: "description",
-        content:
-          "Voidmix keeps briefs, feedback, decisions, people, and delivery visible in one live creative workspace.",
-      },
-    ],
-    links: [
-      {
-        rel: "icon",
-        type: "image/png",
-        href: "/favicon.png",
-      },
-      {
-        rel: "manifest",
-        href: "/manifest.webmanifest",
-        type: "application/manifest+json",
-      },
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const localized = localizedRouteHead([{ loaderData }], "rootTitle", "rootDescription");
+    return {
+      meta: [
+        {
+          charSet: "utf-8",
+        },
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1, viewport-fit=cover",
+        },
+        {
+          name: "theme-color",
+          content: "#ffffff",
+          media: "(prefers-color-scheme: light)",
+        },
+        {
+          name: "theme-color",
+          content: "#171717",
+          media: "(prefers-color-scheme: dark)",
+        },
+        ...localized.meta,
+      ],
+      links: [
+        {
+          rel: "icon",
+          type: "image/png",
+          href: "/favicon.png",
+        },
+        {
+          rel: "manifest",
+          href: `/manifest.webmanifest?locale=${loaderData?.locale ?? "en"}`,
+          type: "application/manifest+json",
+        },
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+      ],
+    };
+  },
   shellComponent: RootDocument,
 });
 
@@ -181,13 +180,29 @@ function NotFoundPage() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   const { locale, messages, theme } = Route.useLoaderData();
+  const router = useRouter();
+  const storage = useMemo(() => createBrowserLocaleStorage(), []);
+  const refreshLocaleHead = useCallback(
+    (nextLocale: Locale) => {
+      // A blocked cookie write must not invalidate the root loader, otherwise
+      // the server's old locale would immediately replace the in-memory choice.
+      try {
+        if (storage.read() !== nextLocale) return;
+      } catch {
+        return;
+      }
+      return router.invalidate({ filter: (match) => match.routeId === Route.id });
+    },
+    [router, storage],
+  );
 
   return (
     <AsyncI18nProvider
       locale={locale}
       messages={messages}
       loadCatalog={loadWebMessages}
-      storage={createBrowserLocaleStorage()}
+      onLocaleChange={refreshLocaleHead}
+      storage={storage}
     >
       <LocalizedDocument theme={theme}>{children}</LocalizedDocument>
     </AsyncI18nProvider>

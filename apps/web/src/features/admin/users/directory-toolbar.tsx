@@ -17,6 +17,8 @@ import {
   InputGroupInput,
 } from "@voidmix/ui/components/ui/input-group";
 import type { UserRole, UserStatus } from "./types";
+import { useTranslations } from "../../../i18n/client";
+import { formatAdminRole } from "./display";
 
 export function DirectoryToolbar({
   query,
@@ -35,6 +37,7 @@ export function DirectoryToolbar({
   setRole: Dispatch<SetStateAction<UserRole | undefined>>;
   onExport: () => void;
 }) {
+  const t = useTranslations("admin");
   return (
     <div className="flex min-h-16 items-center gap-3 border-b px-4 max-[760px]:flex-wrap max-[760px]:items-stretch max-[760px]:py-3">
       <InputGroup className="max-w-sm max-[760px]:max-w-none max-[760px]:basis-full">
@@ -42,65 +45,61 @@ export function DirectoryToolbar({
           <MagnifyingGlass weight="regular" />
         </InputGroupAddon>
         <InputGroupInput
-          aria-label="Search users"
+          aria-label={t("searchUsers")}
           onChange={(event) => setQuery(event.currentTarget.value)}
-          placeholder="Search name or email..."
+          placeholder={t("searchNameEmail")}
           type="search"
           value={query}
         />
       </InputGroup>
-      <div aria-label="Filter by status" className="ml-auto flex gap-1 max-[760px]:ml-0">
+      <div aria-label={t("filterStatus")} className="ml-auto flex gap-1 max-[760px]:ml-0">
         <FilterButton active={status === undefined} onClick={() => setStatus(undefined)}>
-          All
+          {t("allStatuses")}
         </FilterButton>
         <FilterButton active={status === "active"} onClick={() => setStatus("active")}>
-          Active
+          {t("active")}
         </FilterButton>
         <FilterButton active={status === "suspended"} onClick={() => setStatus("suspended")}>
-          Suspended
+          {t("suspended")}
         </FilterButton>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
             <Button
-              aria-label="Filter by role"
+              aria-label={t("filterRole")}
               className="gap-1.5"
               size="sm"
               variant={role ? "secondary" : "outline"}
             >
               <FunnelSimple aria-hidden="true" weight="regular" />
-              {role ? roleLabel(role) : "Role"}
+              {role ? formatAdminRole(role, t) : t("role")}
               <CaretDown aria-hidden="true" className="size-3" weight="bold" />
             </Button>
           }
         />
         <DropdownMenuContent align="end" className="min-w-36">
           <DropdownMenuGroup>
-            <DropdownMenuLabel>Filter by role</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("filterRole")}</DropdownMenuLabel>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuRadioGroup
             onValueChange={(value) => setRole(value === "all" ? undefined : (value as UserRole))}
             value={role ?? "all"}
           >
-            <DropdownMenuRadioItem value="all">All roles</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="owner">Owner</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="admin">Admin</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="user">Member</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="all">{t("allRoles")}</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="owner">{t("owner")}</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="admin">{t("admin")}</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="user">{t("member")}</DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Button aria-label="Export visible users" onClick={onExport} size="sm" variant="outline">
+      <Button aria-label={t("exportVisible")} onClick={onExport} size="sm" variant="outline">
         <DownloadSimple aria-hidden="true" weight="regular" />
-        <span className="max-[480px]:hidden">Export</span>
+        <span className="max-[480px]:hidden">{t("export")}</span>
       </Button>
     </div>
   );
-}
-
-function roleLabel(role: UserRole) {
-  return role === "user" ? "Member" : role.charAt(0).toUpperCase() + role.slice(1);
 }
 
 function FilterButton({

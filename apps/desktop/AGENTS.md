@@ -14,20 +14,23 @@ src/
   routeTree.gen.ts  generated — do not edit
   routes/
     __root.tsx      static document shell, locale bootstrap, DesktopShell layout
-    index.tsx       overview route
+    index.tsx       Home/overview route
     activity.tsx    activity route
     devices.tsx     devices route
+    projects.tsx    projects list route
+    projects.$projectId.tsx project detail route
     settings.tsx    settings route
   styles.css        shared UI and Desktop stylesheet entry
   env.ts            desktop environment composition
   features/
     shell/           Tauri-aware desktop shell
     overview/        overview page composition
+    projects/        project list and detail composition
     activity/        activity page composition
     devices/         devices page composition
     settings/        settings page composition
   lib/cloud.ts      stable cloud facade and formatting helper
-  lib/cloud/        remote source, preview source, validation, and types
+  lib/cloud/        remote source, validation, and types
   lib/desktop.ts    Tauri bridge helpers
   i18n/             static catalogs and API error codes
 src-tauri/
@@ -52,7 +55,9 @@ src-tauri/
   refreshes it during `dev` or `build` and owns the Register footer.
 - `routes/__root.tsx` owns the static HTML document, stylesheet link, locale
   bootstrap, and DesktopShell layout. The build-time shell starts in English;
-  hydration reads localStorage and `navigator.language` before normal use.
+  hydration reads localStorage and `navigator.language`, then applies the
+  preference through the shared provider. Storage or document-sync failures do
+  not make the renderer unusable.
 - Desktop Start has no runtime server. RSC stays disabled, and Desktop route
   modules must not add server functions or server routes. Backend behavior
   remains behind `@voidmix/client` and the configured cloud origin.
@@ -68,12 +73,9 @@ src-tauri/
   Treat it as a security boundary and keep the allowlist minimal.
 - Keep credentials and service secrets out of the desktop client. It is a cloud
   client, not a second server runtime.
-- `VITE_API_URL` selects the cloud backend. Without it, or when the request
-  fails, `src/lib/cloud.ts` renders a deterministic preview snapshot so renderer
-  and Tauri work do not require a running API. Keep that fallback observable
-  rather than silent.
-- `lib/cloud/source.ts` selects between the remote and demo adapters; pages must
-  consume `loadCloudSnapshot()` and never implement transport or fallback logic.
+- `VITE_API_URL` selects the cloud backend. Project pages call the canonical account/project API and show an unavailable state when the API is absent.
+- Remote cloud adapters validate dates, counts, byte units, and job/device discriminants before data reaches a page.
+- Primary navigation uses Home, Projects, Activity, and Settings. Devices remains reachable from Settings and is not a primary destination. Project pages use `src/lib/project-studio.ts` for the shared canonical API client.
 - Closing the main window hides it instead of exiting; the tray menu shows,
   hides, or quits. `src-tauri/src/lib.rs` owns that behaviour and reports it to
   the renderer as `trayEnabled`, which is false in a plain browser preview.
@@ -89,6 +91,7 @@ src-tauri/
 bun run --cwd apps/desktop build          # refreshes routeTree.gen.ts and SPA shell
 bun run --cwd apps/desktop check          # runs both typecheck passes
 bun run --cwd apps/desktop test
+bun run i18n:check
 bun run desktop:build
 
 cd apps/desktop/src-tauri                 # for any Rust change

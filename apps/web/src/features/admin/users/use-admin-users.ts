@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import type { AdminUser, AdminUsersClient, UserRole, UserStatus } from "./client";
+import type { AdminUser, AdminUsersClient, AdminUsersError, UserRole, UserStatus } from "./client";
+
+const DIRECTORY_LOAD_ERROR: AdminUsersError = "directoryLoadFailed";
 
 export function useAdminUsers(client: AdminUsersClient) {
   const [users, setUsers] = useState<readonly AdminUser[]>([]);
@@ -7,7 +9,7 @@ export function useAdminUsers(client: AdminUsersClient) {
   const [status, setStatus] = useState<UserStatus | undefined>();
   const [role, setRole] = useState<UserRole | undefined>();
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AdminUsersError | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export function useAdminUsers(client: AdminUsersClient) {
       .catch(() => {
         if (isCurrent) {
           setUsers([]);
-          setError("The directory could not be loaded. Try again.");
+          setError(DIRECTORY_LOAD_ERROR);
           setIsLoading(false);
         }
       });

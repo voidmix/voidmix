@@ -15,15 +15,23 @@ deployment boundaries, and coding-agent guidance.
   auth, i18n, mail, env, DB, logger, UI, scripts, and TypeScript presets.
 - [Product design](./architecture/design.md) — brand posture, cross-surface
   intensity, visual vocabulary, and accessibility rules.
+- [VoidMix delivery goal](./architecture/voidmix-delivery-goal.md) — the
+  complete Pi-powered cross-platform product, visual, and acceptance target.
 - [Project Studio migration](./architecture/project-studio.md) — approved
   project-first product direction, current implementation audit, migration
   sequence, compatibility, and acceptance criteria.
+- [Account-first canonical architecture](./architecture/account-first-v2.md) —
+  the V2-only API, project ownership, permissions, Agent runs, and Organization
+  reservation.
 - [Toolchain](./architecture/tooling.md) — Bun catalogs, Vite+, TypeScript,
   shadcn/Base UI, and repository automation.
 - [Runtime and deployment](./architecture/deployment.md) — production runtimes,
   containers, Railway, PostgreSQL, and Tauri distribution.
 - [Decision records](./architecture/decisions/README.md) — decisions that
   constrain future work, and the conditions for revisiting them.
+- [Internationalization decisions](./architecture/decisions/0004-use-intl-static-catalogs.md)
+  — the `@voidmix/i18n` facade, `en`/`zh` catalogs, Web loading, and recipient
+  locale behavior.
 
 ## Development
 
@@ -37,6 +45,8 @@ deployment boundaries, and coding-agent guidance.
   route's initial client preloads and deferred interaction chunks.
 - [Workspace preview](./development/workspace-preview.md) — Clean Signal routes,
   preview data boundaries, project interactions, Pi states, and verification.
+- [Visual implementation audit](./development/visual-audit.md) — current UI
+  gaps and acceptance checks for the VoidMix visual target.
 - [File structure](./development/file-structure.md) — where a new file goes
   inside a workspace, and the conventions policy enforces.
 - [Coding agents](./development/agents.md) — read order, default decisions,

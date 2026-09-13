@@ -41,7 +41,9 @@ CI runs `bun run verify` and adds only what the command cannot contain: a
 those need a clean git tree; the three layer scripts, because `bun run test`
 passes whether or not their filters match anything; `test:coverage` for the
 uploaded artifact; and the E2E and Desktop jobs, which need a browser and other
-operating systems.
+operating systems. The CI generate step supplies a non-routable
+`DATABASE_URL`; Drizzle validates its configuration while loading it, but
+generation does not connect to PostgreSQL.
 
 `bun run test:e2e` starts the Web and Admin development servers itself.
 Install the local browser once with:

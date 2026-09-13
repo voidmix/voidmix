@@ -29,24 +29,26 @@ the same static catalogs through `@voidmix/i18n/server`. Web's catalog loading
 is defined by ADR-0007.
 
 Web resolves the unprefixed `locale` Cookie, then `Accept-Language`, then `en`,
-and persists changes in a one-year SameSite=Lax Cookie. It temporarily accepts
-the legacy `voidmix_locale` Cookie and removes it on the next language change.
-Desktop resolves
+and persists changes in a one-year SameSite=Lax Cookie. Desktop resolves
 `localStorage.voidmix_locale`, then `navigator.language`, then `en`. The shared
 locale provider updates its in-memory state and storage before invoking the
 document synchronization callback, so a callback failure cannot leave the UI
 and persisted locale out of sync. Web renders the document `lang` attribute
-from `useLocale()`; Desktop synchronizes the Vite document before the first
-render and after each switch.
+from `useLocale()`; Desktop starts with the deterministic English build shell,
+then reads its preference during hydration and synchronizes the document after
+each switch.
 
 Formatting uses the same `use-intl/core` formatter path for server and client
 helpers. The default timezone is `UTC` for deterministic SSR/hydration output;
-callers can request an explicit timezone through `createFormatter`.
+callers can request an explicit timezone or format definitions through
+`createFormatter` or the provider. Formatter instances are cached by locale,
+timezone, and effective format definitions.
 
-API boundaries return stable error codes and structured data; diagnostic
-messages remain server-side. Web and Desktop translate those codes from their
-local `errors` namespace. `@voidmix/core` and `@voidmix/contracts` do not
-depend on i18n.
+API boundaries return a stable transport code and a `data.error` envelope with
+the localizable detail code and optional primitive interpolation values;
+diagnostic messages remain server-side. Web and Desktop translate that envelope
+from their local `errors` namespace. `@voidmix/core` and `@voidmix/contracts`
+define the value shape but do not depend on i18n.
 
 Mail uses `input.locale` when supplied, otherwise `MAIL_DEFAULT_LOCALE`,
 falling back to `en`. Subject, preview, HTML, text, actions, and the HTML
@@ -59,9 +61,11 @@ falling back to `en`. Subject, preview, HTML, text, actions, and the HTML
 - Desktop and Mail continue to bundle their supported catalogs statically. Web
   accepts the extra async switching state in exchange for keeping the non-current
   locale out of the initial browser preload.
-- Catalog drift is checked by a shared recursive parity helper that compares
-  leaf keys, node types, and ICU argument names in every Web/Desktop/Mail
-  catalog pair rather than by a compiler-generated namespace registry.
+- Catalog drift and source boundaries are checked by `bun run i18n:check` (also
+  the first gate in `bun run verify`). The check compares recursive leaf keys,
+  node types, and ICU argument names in every Web/Desktop/Mail catalog pair,
+  and reports direct `use-intl` imports, missing surface facades, likely
+  hardcoded UI copy, and hardcoded formatting locales.
 - Root recovery pages keep their independent static copy so they remain
   renderable when an application chunk fails.
 
