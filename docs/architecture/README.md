@@ -3,7 +3,7 @@
 > Status: implemented scaffold, updated September 8, 2026.
 
 Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud Web
-application with an integrated operations console and Hono API, plus a Tauri
+application with an independent Hono API and operations console, plus a Tauri
 desktop client.
 
 ## Design goals
@@ -25,9 +25,9 @@ flowchart LR
   web["Web + Admin / TanStack Start"] --> client["@voidmix/client"]
   desktop["Desktop / Tauri 2"] --> client
   client --> rpc["oRPC contracts"]
-  rpc --> api["@voidmix/api-runtime"]
-  web --> api
-  apiHost["Standalone API compatibility host"] --> api
+  rpc --> api["apps/api"]
+  api --> application["@voidmix/application"]
+  worker["Worker"] --> application
   api --> logger["@voidmix/logger / Evlog"]
   api --> auth["Auth + RBAC"]
   api --> core["@voidmix/core"]
@@ -54,10 +54,10 @@ both in step with what Bun resolves. [Shared packages](./packages.md) and
 [applications](./applications.md) describe each one. Organisation _inside_ a
 workspace is covered by [file structure](../development/file-structure.md).
 
-A background worker is deferred until a real asynchronous job needs its own
-scheduling, retry, scaling, or deployment; until then no permanently running
-process is created for hypothetical work. `features`, `admin-ui`, and a generic
-`config` package are intentionally not standalone workspaces either.
+`apps/worker` owns durable Agent and outbox execution. API and Worker share
+application commands while remaining independently deployable. `features`,
+`admin-ui`, and a generic `config` package are intentionally not standalone
+workspaces either.
 
 Environment validation belongs to `@voidmix/env`; each application assembles its
 own application configuration.
@@ -70,12 +70,13 @@ apps/desktop  ─┴──> client ───> contracts
 
 apps/storybook ───> ui
 
-apps/web ─┐
-apps/api ─┴──> api-runtime ───> Hono + auth + core + db + contracts
-api-runtime ───> logger
+apps/web ───> client ───> contracts ───> apps/api
+apps/api ───> Hono + auth + application + core + db + contracts
+apps/api ───> logger
 apps/web/desktop ───> logger (Vite client integration)
 apps/api/web/desktop ───> env
-api-runtime ───> cache
+apps/api ───> cache
+apps/worker ───> application + db + ai
 packages/db/logger/scripts ───> env
 packages/db ───> core
 packages/scripts ───> db + core + logger
@@ -101,6 +102,7 @@ Rules:
 - [Shared packages](./packages.md)
 - [Product design](./design.md)
 - [Project Studio migration](./project-studio.md)
+- [Account-first V2](./account-first-v2.md)
 - [Toolchain](./tooling.md)
 - [Runtime and deployment](./deployment.md)
 - [Decision records](./decisions/README.md)

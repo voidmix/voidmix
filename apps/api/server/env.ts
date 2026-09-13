@@ -1,4 +1,4 @@
-import { apiRuntimeEnv } from "@voidmix/api-runtime/env";
+import { apiRuntimeEnv } from "./api/env.js";
 import { createEnv, type Preset, z } from "@voidmix/env";
 
 export const apiServerEnv = {

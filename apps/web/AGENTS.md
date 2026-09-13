@@ -33,11 +33,8 @@ src/
 scripts/             read-only production bundle analysis
 tests/               shared Web test fixtures and cross-feature tests
 server/
-  env.ts             server-only API/Auth/Mail environment composition
-  app.ts             Nitro Web-format handler
-  runtime.ts         memoized shared API runtime
-  runtime.plugin.ts  Nitro startup and shutdown lifecycle
-  styles.css         global reset, token entry, and feature stylesheet imports
+  health.ts          Web liveness endpoint only
+
 tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ```
 
@@ -84,18 +81,17 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   the facade hook.
 - `noUnusedLocals` and `noUnusedParameters` are enabled here, so an unused
   import fails `check`.
-- Better Auth and `@voidmix/client` use same-origin `/api/auth/*` and `/rpc/*`
-  requests with credentials. Desktop remains the absolute-origin API consumer.
-- Nitro mounts `@voidmix/api-runtime` only at `/api/auth/**`, `/rpc/**`, and
-  `/health`; never add a catch-all Hono handler that can swallow TanStack routes.
-- `server/runtime.ts` owns one memoized runtime per process. The lifecycle plugin
-  initializes it at startup and closes it through Nitro's `close` hook.
+- Better Auth and `@voidmix/client` use the configured independent API origin
+  with credentials. Desktop remains an absolute-origin API consumer.
+- Web owns only the liveness `/health` route; never add a catch-all API handler
+  that can swallow TanStack routes.
+- Web does not initialize a database or API runtime.
 - `server/env.ts` is never imported by browser modules. Keep database, Auth, mail,
   and allowed-origin values on the server side of the Web bundle.
-- `(app)/route.tsx` uses a server-side session-cookie check as an SSR navigation
-  aid and retains the client-side session gate for hydration and stale-cookie
-  recovery. It is navigation aid, not authorization enforcement; the API
-  runtime remains the final authorization boundary.
+- `(app)/route.tsx` uses the API-backed session gate as a navigation aid and
+  retains the client-side session gate for hydration and stale-cookie recovery.
+  It is navigation aid, not authorization enforcement; the API remains the
+  final authorization boundary.
 - `(app)/(admin)/route.tsx` owns the AdminShell layout. Keep the authenticated
   group focused on session navigation and keep `/admin` page mounting and typed
   settings adapters in the nested Admin group. Settings API failures are shown

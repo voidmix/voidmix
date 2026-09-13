@@ -29,7 +29,7 @@ was being discarded.
 `createMailer` renders with `input.locale ?? MAIL_DEFAULT_LOCALE`, so the
 environment variable becomes the fallback rather than the only source.
 
-`@voidmix/api-runtime` resolves that locale from the request Better Auth hands
+`apps/api/server/api` resolves that locale from the request Better Auth hands
 each callback and omits the property when there is no request — omission, not
 `undefined`, because `exactOptionalPropertyTypes` is on and the mailer's fallback
 depends on absence. The same optional locale is accepted by the Admin test-mail
@@ -48,7 +48,7 @@ already requires: a literal union in `@voidmix/core`, a `z.enum` in
 
 Mail matches the language of the request that caused it, for the three flows
 Better Auth triggers. Admin test mail uses the locale supplied by its request.
-`@voidmix/api-runtime` now depends on `@voidmix/i18n`, which is a same-tier
+`apps/api/server/api` now depends on `@voidmix/i18n`, which is a same-tier
 adapter dependency.
 
 Mail sent without a triggering request — a future scheduled or administrative
@@ -58,7 +58,7 @@ preference outranks the header yet.
 
 `packages/mail/src/service.test.ts` asserts a `zh` recipient receives the `zh`
 subject and `<html lang="zh">`, and that omitting the locale falls back to the
-configured default. `packages/api-runtime/src/auth/config.test.ts` asserts the
+configured default. `apps/api/server/api/auth/config.test.ts` asserts the
 locale is forwarded, and that the property is absent rather than `undefined` when
 none was resolved.
 

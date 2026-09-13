@@ -11,6 +11,9 @@ import {
 import type { ContractRouterClient } from "@orpc/contract";
 import { apiContract } from "@voidmix/contracts";
 
+export { parseApiProblemDetails } from "./errors.js";
+export type { ApiProblemDetails } from "@voidmix/contracts";
+
 export type ApiClient = ContractRouterClient<typeof apiContract>;
 
 export type ApiHeaders = Record<string, string | undefined>;

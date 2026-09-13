@@ -1,5 +1,6 @@
 import { createApiClient, type ApiClient } from "@voidmix/client";
 
+import { env } from "../../env";
 import { homeView, type ProjectStudioDataSource } from "./preview-adapter";
 import { LocalizedWebError } from "../../i18n/error-message";
 import type {
@@ -176,7 +177,12 @@ async function snapshotFromDto(
 export function createProjectStudioRemoteAdapter(
   options: CreateProjectStudioRemoteAdapterOptions = {},
 ): ProjectStudioDataSource {
-  const client = options.client ?? createApiClient();
+  const client =
+    options.client ??
+    createApiClient({
+      ...(env.VITE_API_URL ? { baseUrl: env.VITE_API_URL } : {}),
+      fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
+    });
   let snapshot = structuredClone(emptySnapshot);
   let persistenceWarning = false;
   let hydrated = false;

@@ -130,7 +130,7 @@ database `DATABASE_URL` points at.
 Web      http://localhost:3000
 Admin    http://localhost:3000/admin
 API      http://localhost:3000/rpc and http://localhost:3000/api/auth
-API compatibility host  http://localhost:3002
+API                     http://localhost:3002
 Desktop  TanStack Start SPA dev server on port 1420 when launched through Tauri
 ```
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { createApiClient } from "./index.js";
+import { createApiClient, parseApiProblemDetails } from "./index.js";
 
 describe("createApiClient", () => {
   it("creates a typed lazy client without making a request", () => {
@@ -55,5 +55,23 @@ describe("createApiClient", () => {
     await Promise.all(calls.map((call) => call.catch(() => undefined)));
 
     expect(methods).toEqual(["POST", "POST", "POST", "POST", "POST"]);
+  });
+
+  it("parses RFC 9457 details from an oRPC error", () => {
+    expect(
+      parseApiProblemDetails({
+        data: {
+          problem: {
+            type: "https://api.voidmix.dev/problems/PROJECT_ACCESS_DENIED",
+            title: "Project access denied",
+            status: 403,
+            code: "PROJECT_ACCESS_DENIED",
+            values: { projectId: "p1" },
+            fieldErrors: [],
+            requestId: "req-1",
+          },
+        },
+      }),
+    ).toMatchObject({ code: "PROJECT_ACCESS_DENIED", status: 403, requestId: "req-1" });
   });
 });

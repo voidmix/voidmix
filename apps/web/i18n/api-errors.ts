@@ -8,7 +8,7 @@ import type { WebTranslator } from "../src/i18n/client";
 
 /**
  * Every code the API can put on the wire, mapped to an `errors` message key.
- * `packages/api-runtime/src/runtime.ts` sends the code alone — the prose it used
+ * `apps/api/server/api/runtime.ts` sends the code alone — the prose it used
  * to send was removed on the understanding that clients translate the code, so a
  * code missing from this map costs the user the reason for the rejection.
  */

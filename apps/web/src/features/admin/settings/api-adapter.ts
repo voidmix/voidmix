@@ -1,4 +1,5 @@
 import { createApiClient, type ApiClient } from "@voidmix/client";
+import { env } from "../../../env";
 
 export type MailSettings = Awaited<ReturnType<ApiClient["admin"]["settings"]["mail"]["get"]>>;
 export type UpdateMailSettings = Parameters<ApiClient["admin"]["settings"]["mail"]["update"]>[0];
@@ -14,6 +15,7 @@ export interface AdminMailSettingsClient {
 
 function createConfiguredApiClient() {
   return createApiClient({
+    ...(env.VITE_API_URL ? { baseUrl: env.VITE_API_URL } : {}),
     fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
   });
 }

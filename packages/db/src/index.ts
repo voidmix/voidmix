@@ -1,5 +1,16 @@
 export { InMemoryBlobStorageRepository } from "./blob-memory.js";
 export { FileSystemBlobStorageRepository } from "./blob-filesystem.js";
+export { PostgresOutboxRepository } from "./outbox.js";
+export {
+  PostgresOrganizationMemberV2Repository,
+  PostgresProjectMemberV2Repository,
+  PostgresProjectTaskV2Repository,
+  PostgresProjectV2Repository,
+  PostgresReviewV2Repository,
+  PostgresFeedbackV2Repository,
+  PostgresAssetV2Repository,
+  PostgresAssetVersionV2Repository,
+} from "./v2.js";
 export {
   InMemoryAgentCommandRepository,
   InMemoryAgentLeaseRepository,
@@ -53,6 +64,24 @@ export {
 } from "./postgres.js";
 export {
   auditEvents,
+  organizationMembers,
+  organizationMembershipStatusEnum,
+  organizationRoleEnum,
+  organizations,
+  outboxEvents,
+  v2ProjectMemberRoleEnum,
+  v2ProjectMemberStatusEnum,
+  v2ProjectMembers,
+  v2Projects,
+  v2ProjectTasks,
+  v2Assets,
+  v2AssetVersions,
+  v2Reviews,
+  v2Feedback,
+  v2Activities,
+  v2AgentRuns,
+  v2ReviewStatusEnum,
+  v2AgentRunStatusEnum,
   agentLeases,
   agentRuns,
   agentSteps,

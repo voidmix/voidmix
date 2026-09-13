@@ -38,7 +38,7 @@ browser composition root for authentication and Admin operations.
   override instead of persisting the fallback. Public Auth pages consume a
   separate three-boolean capability view and fail open when it cannot be loaded,
   while
-  `@voidmix/api-runtime` remains authoritative for authentication,
+  `apps/api/server/api` remains authoritative for authentication,
   authorization, suspended users, and audit rules.
 - Admin-specific adapters, tables, filters, and layouts stay isolated under
   `apps/web/src/features/admin`; fusion removes a deployment unit without
@@ -52,15 +52,11 @@ browser composition root for authentication and Admin operations.
   loader map dynamically imports the other locale on language switch; feature
   components select namespaces through the facade. Recovery pages retain their
   independent static copy.
-- Mounts `@voidmix/api-runtime` at `/api/auth/*`, `/rpc/*`, and `/health`
-  through explicit Nitro Web-format routes.
-- Uses the shared typed client with same-origin cookie requests.
-- The initial live Project Studio slice exposes project and task reads/writes
-  through the shared client. Preview routes continue using the injected v2
-  preview source until the authenticated live route switch is enabled; Review,
-  Blob, and durable Pi capabilities remain separate rollout work.
-- Requires `DATABASE_URL` and the server Auth environment at startup. Mail may
-  be configured later through Admin or supplied through compatibility variables.
+- Calls the standalone API origin through the shared typed client with
+  credentialed cookie requests; it does not mount API handlers.
+- Project and task data use the standalone API origin through the shared client.
+  Preview routes remain explicitly labelled while live resource rollout continues.
+- The API owns `DATABASE_URL`, Auth, mail, Redis, and persistence composition.
 
 ## Desktop
 
@@ -89,12 +85,25 @@ browser composition root for authentication and Admin operations.
   quit the application.
 - The first release targets macOS and Windows.
 - The first version is cloud-backed and does not provide offline sync.
-- `src/lib/cloud/source.ts` selects the remote or deterministic demo source;
-  page components do not own transport, validation, or fallback behavior.
+- `src/lib/project-studio.ts` uses the account-first V2 Project procedures for
+  authenticated project listing, creation, and detail reads; page components
+  do not own transport or validation. Preview data remains only for an
+  unconfigured API URL.
 
-The native seam lives in `apps/desktop/src-tauri/src/lib.rs`. A separate
-background agent/process is intentionally deferred until a real requirement
-justifies its lifecycle and resource cost.
+The native seam lives in `apps/desktop/src-tauri/src/lib.rs`. Desktop accesses
+Agent capabilities through the API and does not embed the server-side AI
+adapter.
+
+## Worker
+
+`apps/worker` is the durable execution host for Agent and outbox work.
+
+- Claims outbox events with PostgreSQL leases and dispatches them through an
+  injected application handler.
+- Shares application commands with the API without importing HTTP sessions or
+  UI state.
+- Stops claiming on shutdown; unacknowledged work remains reclaimable after its
+  lease expires.
 
 ## Storybook
 
@@ -108,11 +117,11 @@ justifies its lifecycle and resource cost.
 - Provides a Light/Dark toolbar backed by `@voidmix/ui`'s `ThemeProvider`.
 - Is not a production runtime or deployment target.
 
-## API compatibility host
+## API application
 
-`apps/api` is a temporary standalone Nitro deployment shell for
-`@voidmix/api-runtime`. Web is the default API host; the compatibility service
-retains port 3002 and the same endpoint paths for external migrations.
+`apps/api` is the standalone Nitro deployment and the only HTTP composition
+root. Its internal `server/api` modules own Hono, oRPC, Auth, and persistence
+composition; Web does not host API routes.
 
 - Development runs on port `3002`.
 - Production emits Nitro's Node output under `.output/server/`.
@@ -125,6 +134,9 @@ Current procedures:
 
 ```text
 health
+account.profile.get
+v2.projects.list / get / create
+v2.projects.tasks.list / create / update
 public.auth.capabilities.get
 workspace.assets.create
 workspace.assets.get
@@ -155,9 +167,9 @@ activity.list
 pi.sessions.create / get / cancel / retry
 ```
 
-`GET /health` is available on both Web and the compatibility service. The
+`GET /health` is available on the standalone API and Web liveness shell. The
 runtime requires `DATABASE_URL`; the seeded in-memory repository is reserved
-for direct `@voidmix/api-runtime` tests that inject it explicitly.
+for direct `apps/api/server/api` tests that inject it explicitly.
 
 The oRPC beta transport uses GET for read-only procedures and POST for every
 mutation, including asset commits, conflict resolution, Agent transitions, and
@@ -173,7 +185,9 @@ The API emits one Evlog wide event per HTTP/oRPC operation. Hono instruments
 non-RPC routes, while the oRPC adapter records procedures and errors for
 `/rpc/**` without double-logging the request.
 
-Better Auth is mounted at `/api/auth/*` with credentialed CORS. Admin uses the
+Better Auth is mounted at `/api/auth/*` with credentialed CORS. Production
+sessions use parent-domain, HTTP-only, Secure, SameSite=None cookies so Web and
+Desktop can reuse the API session. Admin uses the
 HTTP-only cookie session; the public Web app remains unauthenticated. Auth email
 verification, password reset, and welcome messages are sent through the typed
 `@voidmix/mail` service. Database mail settings override environment fallbacks

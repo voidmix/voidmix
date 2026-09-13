@@ -36,6 +36,23 @@ export default defineConfig({
   ],
   webServer: [
     {
+      command: "bun run --cwd apps/api dev -- --host 127.0.0.1",
+      cwd: repositoryRoot,
+      env: {
+        VOIDMIX_REPOSITORY_ENV: repositoryRoot,
+        ALLOWED_ORIGINS: webUrl,
+        AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
+        AUTH_URL: "http://127.0.0.1:3002",
+        DATABASE_URL:
+          process.env.DATABASE_URL ?? "postgres://voidmix:e2e@example.invalid:5432/voidmix",
+        NODE_ENV: "test",
+        NITRO_PORT: "3002",
+      },
+      url: "http://127.0.0.1:3002/health",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+    {
       command: "bun run --cwd apps/web dev -- --host 127.0.0.1",
       cwd: repositoryRoot,
       env: {
@@ -43,6 +60,7 @@ export default defineConfig({
         ALLOWED_ORIGINS: webUrl,
         AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
         AUTH_URL: webUrl,
+        VITE_API_URL: "http://127.0.0.1:3002",
         DATABASE_URL:
           process.env.DATABASE_URL ?? "postgres://voidmix:e2e@example.invalid:5432/voidmix",
         NODE_ENV: "test",

@@ -13,6 +13,14 @@ Settings DTOs model effective values, sources, inherited safe values, and
 optional per-field mutations. The public Auth capability DTO intentionally
 contains only three booleans.
 
+## `@voidmix/application`
+
+The application command/query layer shared by the API and Agent Worker. It
+coordinates V2 Project ports from `@voidmix/core`, resolves personal and
+Organization capabilities, and never imports Hono, Drizzle, React, or an AI
+provider. Persistence, transactions, outbox delivery, and provider lifecycle
+remain adapter responsibilities.
+
 ## `@voidmix/ai`
 
 The server-side AI adapter for Pi. It owns provider lifecycle, SDK-specific
@@ -25,16 +33,16 @@ sessions, or exposes Pi SDK types to API and Web consumers.
 
 The transport adapter. `createApiClient({ baseUrl?, headers, fetch })` returns a
 typed client generated from the shared contract. Web omits `baseUrl` for
-same-origin `/rpc`; Desktop supplies an absolute cloud origin.
+an absolute API origin and sends credentialed requests.
 
-## `@voidmix/api-runtime`
+## API server modules (`apps/api/server/api`)
 
-The server-side transport and composition adapter shared by Web and the
-temporary standalone API host. It owns Hono routes, oRPC handlers, Better Auth
-session resolution, permission enforcement, CORS, mail composition, dynamic
-authentication-policy enforcement, and the single pooled database runtime. It
-exports process-scoped `ApiModules`, request-scoped Auth context types, factories,
-and an environment preset, but owns no Nitro listener or process lifecycle.
+The internal transport and composition modules of the standalone API app. They
+own Hono routes, oRPC handlers, Better Auth session resolution, permission
+enforcement, CORS, mail composition, dynamic authentication-policy enforcement,
+and the pooled database runtime. They export process-scoped `ApiModules`,
+request-scoped Auth context types, factories, and an environment preset, but do
+not own the Nitro listener or process lifecycle.
 Hono resolves one application session per RPC request; oRPC permission middleware
 injects a non-null principal into protected handlers. Better Auth database IDs are
 generated as UUID v7 values so
@@ -58,13 +66,12 @@ public barrel is organized into bounded contexts:
   protection.
 - `settings` owns typed mail/Auth policy, source and inheritance rules, and
   public Auth capability derivation.
-- `workspace` owns membership lookup and actor-plus-workspace read/write
-  access (`owner`/`editor` write, `viewer` read).
-- `projects` owns the project/task port and application facade, including
-  Project Studio stage/archive lifecycle rules, progress calculation, and
-  compatibility mapping for the legacy status values. The first runtime
-  service persists Projects and Tasks; Review, Blob, Activity, and durable Pi
-  repositories remain separate follow-up seams.
+- `projects` owns the account-first V2 Project scope, ProjectMember roles,
+  lifecycle, and centralized capability evaluator. V2 resources are modeled
+  independently of Workspace and Project Studio.
+- `v2-resources` defines the stable Task, Asset, Review, Activity, and AgentRun
+  records that application commands will persist and expose through V2
+  contracts.
 - `assets` owns canonical paths, immutable versions, heads, idempotency, and
   sync conflict rules. Version insertion and head movement use an atomic
   repository command.
@@ -88,7 +95,7 @@ vocabulary does not implicitly grant it to Admin or Owner.
 Authentication policy has separate permissions: Admin and Owner can read it,
 while only Owner can update it.
 
-`@voidmix/api-runtime` owns the Better Auth adapter and production cookie
+`apps/api/server/api` owns the Better Auth adapter and production cookie
 session resolver. The development header resolver remains available for
 injected tests and local preview only; the oRPC router and core services do
 not depend on the provider.
@@ -148,7 +155,7 @@ const env = createEnv({
 The database adapter package.
 
 - Drizzle PostgreSQL schema lives in `src/schema.ts`.
-- `PostgresUserRepository`, `PostgresSystemSettingsRepository`, workspace
+- `PostgresUserRepository`, V2 organization/project repositories, workspace
   membership, asset, and Agent repositories are the production adapters;
   matching in-memory adapters support development/tests.
 - `createPostgresAssetRepositories` and
@@ -161,11 +168,11 @@ The database adapter package.
   provide the Agent aggregate's atomic commands. Run rows serialize leases and
   step sequence allocation, and expected-state predicates reject stale
   transitions without overwriting other fields.
-- `PostgresProjectRepository` and `InMemoryProjectRepository` persist the
-  Project Studio Project/Task slice, including Workspace tenancy, stage/archive
-  fields, deadlines, covers, thumbnails, and deterministic ordering. The
-  generated migration is additive; run `bun run db:migrate` against a configured
-  PostgreSQL database before using the live slice.
+- `PostgresProjectV2Repository` persists account-first personal and
+  Organization-scoped Projects. V2 tables for Tasks, Assets, Reviews,
+  Feedback, Activity, and AgentRuns carry Project ownership directly. The
+  generated migrations are additive while the V2 vertical slices are wired;
+  run `bun run db:migrate` against PostgreSQL before using them.
 - `system_settings` stores typed ordinary configuration keys and
   `system_secrets` stores write-only secret values. Both record the updater and
   timestamp.

@@ -14,6 +14,20 @@ export const apiErrorDataSchema = z.object({ error: apiErrorEnvelopeSchema });
 export type ApiErrorCode = z.infer<typeof apiErrorCodeSchema>;
 export type ApiErrorData = z.infer<typeof apiErrorDataSchema>;
 
+/** RFC 9457-compatible details carried by API and oRPC error responses. */
+export const apiProblemDetailsSchema = z.object({
+  type: z.url(),
+  title: z.string().min(1),
+  status: z.number().int().min(400).max(599),
+  code: apiErrorCodeSchema,
+  values: apiErrorValuesSchema.default({}),
+  fieldErrors: z
+    .array(z.object({ field: z.string().min(1), message: z.string().min(1) }))
+    .default([]),
+  requestId: z.string().min(1),
+});
+export type ApiProblemDetails = z.infer<typeof apiProblemDetailsSchema>;
+
 export const roleSchema = z.enum(["user", "admin", "owner"]);
 export const userStatusSchema = z.enum(["active", "suspended"]);
 
@@ -526,6 +540,235 @@ const updateAuthSettings = oc.input(updateAuthSettingsSchema).output(authSetting
 const getPublicAuthCapabilities = oc.input(z.object({})).output(publicAuthCapabilitiesSchema);
 const getAccountProfile = oc.input(z.object({})).output(accountProfileSchema);
 
+// V2 contracts are account-first. Project scope is the only ownership input;
+// the API never accepts a client-supplied workspace or authorization context.
+export const projectScopeV2Schema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("personal") }),
+  z.object({ type: z.literal("organization"), organizationId: z.string().trim().min(1) }),
+]);
+export const projectStageV2Schema = z.enum(["draft", "in_progress", "review", "delivered"]);
+export const projectMemberRoleV2Schema = z.enum(["editor", "commenter", "viewer"]);
+export const organizationRoleV2Schema = z.enum(["owner", "admin", "editor", "viewer"]);
+export const projectV2Schema = z
+  .object({
+    id: z.string().min(1),
+    createdByUserId: z.string().min(1),
+    personalOwnerId: z.string().min(1).nullable(),
+    organizationId: z.string().min(1).nullable(),
+    title: z.string().min(1),
+    description: z.string().nullable(),
+    stage: projectStageV2Schema,
+    archived: z.boolean(),
+    deadline: z.date().nullable(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+  })
+  .superRefine((value, context) => {
+    if ((value.personalOwnerId === null) === (value.organizationId === null)) {
+      context.addIssue({
+        code: "custom",
+        path: ["personalOwnerId"],
+        message: "Exactly one project ownership scope is required.",
+      });
+    }
+  });
+export const projectMemberV2Schema = z.object({
+  projectId: z.string().min(1),
+  userId: z.string().min(1),
+  role: projectMemberRoleV2Schema,
+  status: z.enum(["active", "removed"]),
+});
+export const organizationMemberV2Schema = z.object({
+  organizationId: z.string().min(1),
+  userId: z.string().min(1),
+  role: organizationRoleV2Schema,
+  status: z.enum(["active", "removed"]),
+});
+export const projectCapabilityV2Schema = z.enum([
+  "project.read",
+  "project.comment",
+  "project.write",
+  "project.manage",
+]);
+export const projectTaskStatusV2Schema = z.enum(["todo", "in_progress", "blocked", "done"]);
+export const projectTaskV2Schema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  createdByUserId: z.string().min(1),
+  title: z.string().min(1),
+  status: projectTaskStatusV2Schema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export const reviewStatusV2Schema = z.enum(["open", "approved", "rejected"]);
+export const reviewV2Schema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  assetVersionId: z.string().min(1).nullable(),
+  createdByUserId: z.string().min(1),
+  status: reviewStatusV2Schema,
+  title: z.string().min(1),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export const feedbackV2Schema = z.object({
+  id: z.string().min(1),
+  reviewId: z.string().min(1),
+  projectId: z.string().min(1),
+  authorId: z.string().min(1),
+  body: z.string().min(1),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export const assetV2Schema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  createdByUserId: z.string().min(1),
+  name: z.string().min(1),
+  archived: z.boolean(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export const assetVersionV2Schema = z.object({
+  id: z.string().min(1),
+  assetId: z.string().min(1),
+  projectId: z.string().min(1),
+  createdByUserId: z.string().min(1),
+  objectKey: z.string().min(1),
+  byteSize: z.number().int().nonnegative(),
+  mediaType: z.string().min(1),
+  checksum: z.string().min(1),
+  createdAt: z.date(),
+});
+
+const v2ProjectPage = createCursorPageSchema(projectV2Schema);
+const v2ListProjects = oc.input(z.object({})).output(v2ProjectPage);
+const v2GetProject = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(
+    z.object({ project: projectV2Schema, access: z.enum(["read", "comment", "write", "manage"]) }),
+  );
+const v2CreateProject = oc
+  .input(
+    z.object({
+      scope: projectScopeV2Schema,
+      title: z.string().trim().min(1).max(500),
+      description: z.string().max(10_000).nullable().optional(),
+    }),
+  )
+  .output(projectV2Schema);
+const v2UpdateProject = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      title: z.string().trim().min(1).max(500).optional(),
+      description: z.string().max(10_000).nullable().optional(),
+      stage: projectStageV2Schema.optional(),
+      deadline: z.date().nullable().optional(),
+    }),
+  )
+  .output(projectV2Schema);
+const v2ArchiveProject = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(projectV2Schema);
+const v2RestoreProject = v2ArchiveProject;
+const v2DeleteProject = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(z.object({ deleted: z.literal(true) }));
+const v2ListReviews = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(z.object({ items: z.array(reviewV2Schema), nextCursor: z.string().nullable() }));
+const v2CreateReview = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      assetVersionId: z.string().min(1).nullable(),
+      title: z.string().trim().min(1).max(500),
+    }),
+  )
+  .output(reviewV2Schema);
+const v2UpdateReview = oc
+  .input(z.object({ reviewId: z.string().min(1), status: reviewStatusV2Schema }))
+  .output(reviewV2Schema);
+const v2ListFeedback = oc
+  .input(z.object({ reviewId: z.string().min(1) }))
+  .output(z.object({ items: z.array(feedbackV2Schema), nextCursor: z.string().nullable() }));
+const v2CreateFeedback = oc
+  .input(z.object({ reviewId: z.string().min(1), body: z.string().trim().min(1).max(10_000) }))
+  .output(feedbackV2Schema);
+const v2ListAssets = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(z.object({ items: z.array(assetV2Schema), nextCursor: z.string().nullable() }));
+const v2CreateAsset = oc
+  .input(z.object({ projectId: z.string().min(1), name: z.string().trim().min(1).max(500) }))
+  .output(assetV2Schema);
+const v2ListAssetVersions = oc
+  .input(z.object({ assetId: z.string().min(1) }))
+  .output(z.object({ items: z.array(assetVersionV2Schema), nextCursor: z.string().nullable() }));
+const v2CreateAssetUpload = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      byteSize: z.number().int().nonnegative(),
+      contentType: z.string().min(1),
+      expectedHash: z.string().regex(/^[a-f0-9]{64}$/),
+    }),
+  )
+  .output(
+    z.object({
+      id: z.string(),
+      workspaceId: z.string(),
+      actorId: z.string(),
+      byteSize: z.number(),
+      contentType: z.string(),
+      expectedHash: z.string(),
+      expiresAt: z.date(),
+    }),
+  );
+const v2CompleteAssetUpload = oc
+  .input(
+    z.object({
+      assetId: z.string().min(1),
+      uploadId: z.string().min(1),
+      byteSize: z.number().int().nonnegative(),
+      contentType: z.string().min(1),
+      checksum: z.string().regex(/^[a-f0-9]{64}$/),
+      body: z.string().optional(),
+    }),
+  )
+  .output(assetVersionV2Schema);
+const v2ListProjectTasks = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(z.object({ items: z.array(projectTaskV2Schema), nextCursor: z.string().nullable() }));
+const v2CreateProjectTask = oc
+  .input(z.object({ projectId: z.string().min(1), title: z.string().trim().min(1).max(500) }))
+  .output(projectTaskV2Schema);
+const v2UpdateProjectTask = oc
+  .input(
+    z.object({
+      taskId: z.string().min(1),
+      title: z.string().trim().min(1).max(500).optional(),
+      status: projectTaskStatusV2Schema.optional(),
+    }),
+  )
+  .output(projectTaskV2Schema);
+const v2ListProjectMembers = oc
+  .input(z.object({ projectId: z.string().min(1) }))
+  .output(z.object({ items: z.array(projectMemberV2Schema), nextCursor: z.string().nullable() }));
+const v2AddProjectMember = oc
+  .input(
+    z.object({
+      projectId: z.string().min(1),
+      userId: z.string().trim().min(1),
+      role: projectMemberRoleV2Schema,
+    }),
+  )
+  .output(projectMemberV2Schema);
+const v2UpdateProjectMember = v2AddProjectMember;
+const v2RemoveProjectMember = oc
+  .input(z.object({ projectId: z.string().min(1), userId: z.string().trim().min(1) }))
+  .output(projectMemberV2Schema);
+
 const getStudioSnapshot = oc.input(z.object({})).output(studioSnapshotSchema);
 
 const listProjects = oc
@@ -913,6 +1156,43 @@ export const apiContract = {
   account: {
     profile: { get: getAccountProfile },
   },
+  v2: {
+    projects: {
+      list: v2ListProjects,
+      get: v2GetProject,
+      create: v2CreateProject,
+      update: v2UpdateProject,
+      archive: v2ArchiveProject,
+      restore: v2RestoreProject,
+      delete: v2DeleteProject,
+      tasks: {
+        list: v2ListProjectTasks,
+        create: v2CreateProjectTask,
+        update: v2UpdateProjectTask,
+      },
+      members: {
+        list: v2ListProjectMembers,
+        add: v2AddProjectMember,
+        update: v2UpdateProjectMember,
+        remove: v2RemoveProjectMember,
+      },
+      reviews: {
+        list: v2ListReviews,
+        create: v2CreateReview,
+        update: v2UpdateReview,
+        feedback: {
+          list: v2ListFeedback,
+          create: v2CreateFeedback,
+        },
+      },
+      assets: {
+        list: v2ListAssets,
+        create: v2CreateAsset,
+        versions: { list: v2ListAssetVersions },
+        upload: { create: v2CreateAssetUpload, complete: v2CompleteAssetUpload },
+      },
+    },
+  },
   studio: {
     snapshot: { get: getStudioSnapshot },
   },
@@ -1063,3 +1343,9 @@ export type PiSessionDetailDto = z.infer<typeof piSessionDetailSchema>;
 export type PiSessionEventDto = z.infer<typeof piSessionEventSchema>;
 export type LibrarySearchResultDto = z.infer<typeof librarySearchResultSchema>;
 export type StudioSnapshotDto = z.infer<typeof studioSnapshotSchema>;
+
+export type ProjectScopeV2Dto = z.infer<typeof projectScopeV2Schema>;
+export type ProjectV2Dto = z.infer<typeof projectV2Schema>;
+export type ProjectMemberV2Dto = z.infer<typeof projectMemberV2Schema>;
+export type OrganizationMemberV2Dto = z.infer<typeof organizationMemberV2Schema>;
+export type ProjectCapabilityV2Dto = z.infer<typeof projectCapabilityV2Schema>;

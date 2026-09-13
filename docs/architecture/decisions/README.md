@@ -36,6 +36,7 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 - [ADR-0007: Web locale catalogs load by locale](./0007-web-locale-catalog-loading.md)
 - [ADR-0008: Keep domain contexts in one core package until stable consumers exist](./0008-domain-contexts-stay-in-core.md)
 - [ADR-0009: Pi SDK as the VoidMix Agent runtime](./0009-pi-as-agent-runtime.md)
+- [ADR-0010: Account-first Project V2](./0010-account-first-project-v2.md)
 
 The supported renderer and Mail locales are `en` and `zh`. Catalog parity and
 source-boundary checks run with `bun run i18n:check` and are the first gate of

@@ -12,7 +12,7 @@ when exposing new data to Web's public or Admin features.
 - Repository _implementations_ live in **both** `packages/db/src/postgres.ts` and
   `packages/db/src/memory.ts`.
 - Handlers, production wiring, and the injected development fallback live in
-  `packages/api-runtime/src/`. Web and `apps/api` are Nitro hosting shells only.
+  `apps/api/server/api/src/`. Web is a page/SSR shell; `apps/api` is the HTTP composition root.
 - `packages/client/src/index.ts` remains fully generic
   (`ContractRouterClient<typeof apiContract>`) — do not add procedure-specific
   client methods. It may be edited for protocol upgrades, transport wiring, or
@@ -33,11 +33,11 @@ when exposing new data to Web's public or Admin features.
    fails. `InMemoryUserRepository` must clone on read _and_ write so tests cannot
    mutate stored state.
 4. **Handler** — add at the matching path inside `os.router({ ... })`. Nothing
-   else registers it; `packages/api-runtime/src/app.ts` mounts the whole router in one
+   else registers it; `apps/api/server/api/src/app.ts` mounts the whole router in one
    `RPCHandler` at `/rpc/*`. New `DomainError` code → add a `case` to
    `mapDomainError`.
 5. **Test** — copy the `setup()` idiom from
-   `packages/api-runtime/src/app.integration.test.ts`.
+   `apps/api/server/api/src/app.integration.test.ts`.
 
 ## Rules
 
@@ -77,11 +77,10 @@ when exposing new data to Web's public or Admin features.
   `@voidmix/core`, `@voidmix/contracts`, and `@voidmix/db`, plus a generated
   migration.
 - New request header → also add it to `allowHeaders` in
-  `packages/api-runtime/src/app.ts`.
+  `apps/api/server/api/src/app.ts`.
   Existing latent bug worth not replicating: `x-voidmix-display-name` is read in
-  `packages/api-runtime/src/session.ts` but missing from that list.
-- Web uses the same-origin `/rpc` transport; Desktop provides an absolute
-  `VITE_API_URL`. Authenticated browser requests include credentials; never
+  `apps/api/server/api/src/session.ts` but missing from that list.
+- Web and Desktop provide an absolute `VITE_API_URL` for the standalone API origin. Authenticated browser requests include credentials; never
   restore actor identity headers as a production authentication mechanism.
 - Web's `(app)/route.tsx` session gate is navigation assistance only. Per
   `AGENTS.md`, the API performs the final check; a client-side guard never
@@ -90,7 +89,7 @@ when exposing new data to Web's public or Admin features.
 ## Verification
 
 ```bash
-bun run --cwd packages/api-runtime test    # narrowest
+bun run --cwd apps/api/server/api test    # narrowest
 bun run check                  # tsc --noEmit per workspace
 ```
 

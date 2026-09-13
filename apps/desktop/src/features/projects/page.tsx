@@ -5,13 +5,20 @@ import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { StatusBadge } from "@voidmix/ui/status-badge";
-import { loadProjects, type PreviewProject, type StudioProject } from "../../lib/project-studio";
+import {
+  createProject,
+  loadProjects,
+  type PreviewProject,
+  type StudioProject,
+} from "../../lib/project-studio";
 
 type Project = StudioProject | PreviewProject;
 
 export function ProjectsPage() {
   const t = useDesktopTranslations("projects");
   const formatter = useFormatter();
+  const [creating, setCreating] = useState(false);
+  const [title, setTitle] = useState("");
   const [result, setResult] = useState<{
     status: "loading" | "preview" | "loaded" | "unavailable";
     data: Project[];
@@ -28,7 +35,7 @@ export function ProjectsPage() {
         title={t("title")}
         description={t("description")}
         action={
-          <Button className="primary-button" variant="primary">
+          <Button className="primary-button" variant="primary" onClick={() => setCreating(true)}>
             <Plus size={15} />
             {t("newProject")}
           </Button>
@@ -43,6 +50,40 @@ export function ProjectsPage() {
               ? t("cloudData")
               : t("unavailable")}
       </div>
+      {creating ? (
+        <form
+          className="project-create-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void createProject(title)
+              .then((project) => {
+                setResult((current) => ({
+                  status: "loaded",
+                  data: [project, ...current.data.filter((item) => item.id !== project.id)],
+                }));
+                setTitle("");
+                setCreating(false);
+              })
+              .catch(() => setResult((current) => ({ ...current, status: "unavailable" })));
+          }}
+        >
+          <label>
+            {t("title")}
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              required
+              autoFocus
+            />
+          </label>
+          <Button type="submit" variant="primary" disabled={!title.trim()}>
+            {t("newProject")}
+          </Button>
+          <Button type="button" variant="ghost" onClick={() => setCreating(false)}>
+            {t("backToProjects")}
+          </Button>
+        </form>
+      ) : null}
       {result.status === "unavailable" ? (
         <p className="empty-copy">{t("unavailableDescription")}</p>
       ) : (

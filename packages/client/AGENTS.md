@@ -4,7 +4,7 @@
 
 The transport adapter. `createApiClient({ baseUrl?, headers, fetch })` returns a
 typed client generated from the shared contract. Omitting `baseUrl` uses the
-browser's same-origin `/rpc`; external consumers provide an absolute origin.
+Web and Desktop provide an absolute API origin and send credentialed requests.
 
 ## Interface
 
@@ -29,7 +29,7 @@ browser's same-origin `/rpc`; external consumers provide an absolute origin.
   appear on `createApiClient(...)` automatically because the type is derived from
   `@voidmix/contracts`. If you find yourself adding a per-procedure method here,
   the change belongs in `@voidmix/contracts` instead.
-- `fetch` is injectable and that is load-bearing: `@voidmix/api-runtime`'s integration test
+- `fetch` is injectable and that is load-bearing: `apps/api/server/api`'s integration test
   passes the Hono app directly (`fetch: async (input, init) => app.fetch(new Request(input, init))`)
   to exercise the whole stack in-process with no network.
 - Procedures are never zero-arg. `client.health({})` needs the explicit `{}`.
@@ -43,5 +43,5 @@ browser's same-origin `/rpc`; external consumers provide an absolute origin.
 ```bash
 bun run --cwd packages/client check
 bun run --cwd packages/client test
-bun run --cwd packages/api-runtime test:integration   # real in-process exercise
+bun run --cwd apps/api test:integration   # real in-process exercise
 ```

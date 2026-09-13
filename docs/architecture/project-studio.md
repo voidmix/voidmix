@@ -541,7 +541,7 @@ bun run db:migrate
 bun run db:seed
 bun run --cwd packages/db check
 bun run --cwd packages/db test
-bun run --cwd packages/api-runtime test
+bun run --cwd apps/api test
 ```
 
 The run must use an explicit `DATABASE_URL` and record the PostgreSQL version,

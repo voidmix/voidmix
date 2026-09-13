@@ -1,4 +1,5 @@
 import { createApiClient, type ApiClient } from "@voidmix/client";
+import { env } from "../../../env";
 
 export type AuthSettings = Awaited<ReturnType<ApiClient["admin"]["settings"]["auth"]["get"]>>;
 export type UpdateAuthSettings = Parameters<ApiClient["admin"]["settings"]["auth"]["update"]>[0];
@@ -10,6 +11,7 @@ export interface AdminAuthSettingsClient {
 
 function createConfiguredApiClient() {
   return createApiClient({
+    ...(env.VITE_API_URL ? { baseUrl: env.VITE_API_URL } : {}),
     fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
   });
 }

@@ -1,6 +1,6 @@
 import { UsersThree, ShareNetwork, FileText, UserMinus } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { createApiClient, type ApiClient } from "@voidmix/client";
+import { createWebApiClient, type ApiClient } from "../../lib/api-client";
 import { useTranslations } from "../../i18n/client";
 import { ProjectStudioShell } from "../projects/components/studio-shell";
 import { useProjectStudioData } from "../projects/studio-data";
@@ -19,7 +19,7 @@ export function CollaborationPage() {
   const loadDetail = () => {
     if (!projectId) return;
     setLoading(true);
-    void createApiClient()
+    void createWebApiClient()
       .projects.get({ projectId })
       .then(setDetail)
       .catch(() => setDetail(null))
@@ -29,7 +29,7 @@ export function CollaborationPage() {
     if (!projectId) return;
     let active = true;
     setLoading(true);
-    void createApiClient()
+    void createWebApiClient()
       .projects.get({ projectId })
       .then((v) => active && setDetail(v))
       .catch(() => active && setDetail(null))
@@ -119,7 +119,7 @@ export function CollaborationPage() {
                           | "commenter"
                           | "viewer";
                         setMutating(m.userId);
-                        void createApiClient()
+                        void createWebApiClient()
                           .projects.members.update({ projectId, userId: m.userId, role })
                           .then(loadDetail)
                           .finally(() => setMutating(null));
@@ -139,7 +139,7 @@ export function CollaborationPage() {
                       disabled={mutating === m.userId || m.role === "owner"}
                       onClick={() => {
                         setMutating(m.userId);
-                        void createApiClient()
+                        void createWebApiClient()
                           .projects.members.remove({ projectId, userId: m.userId })
                           .then(loadDetail)
                           .finally(() => setMutating(null));

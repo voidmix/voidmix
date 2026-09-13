@@ -105,7 +105,7 @@ function getTaskSummary(
   if (isPreviewProject(project)) {
     return t("taskProgress", { completed: project.taskCount, total: project.taskTotal });
   }
-  return Array.isArray(project.tasks)
+  return "tasks" in project && Array.isArray(project.tasks)
     ? t("taskCount", { count: project.tasks.length })
     : t("noTasks");
 }

@@ -2,7 +2,7 @@ import { Clock, PaperPlaneTilt, PlugsConnected, Plus, Pause, Play } from "@phosp
 import { useEffect, useState } from "react";
 import { ProjectStudioShell } from "../projects/components/studio-shell";
 import { useTranslations } from "../../i18n/client";
-import { createApiClient } from "@voidmix/client";
+import { createWebApiClient } from "../../lib/api-client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { studioInputClass } from "../projects/studio-styles";
@@ -30,7 +30,7 @@ export function ControlPage() {
 
   const loadTasks = async () => {
     try {
-      const c = createApiClient();
+      const c = createWebApiClient();
       const snapshot = await c.studio.snapshot.get({});
       const id = snapshot.account.workspaceIds[0];
       setWorkspaceId(id ?? null);
@@ -53,7 +53,7 @@ export function ControlPage() {
     if (!instruction.trim()) return;
     setState("sending");
     try {
-      const c = createApiClient();
+      const c = createWebApiClient();
       const id = workspaceId ?? (await c.studio.snapshot.get({})).account.workspaceIds[0];
       if (!id) {
         setState("unavailable");
@@ -75,7 +75,7 @@ export function ControlPage() {
     if (!workspaceId || !taskName.trim() || !taskInstruction.trim()) return;
     setTaskState("saving");
     try {
-      const created = await createApiClient().scheduled.tasks.create({
+      const created = await createWebApiClient().scheduled.tasks.create({
         workspaceId,
         name: taskName.trim(),
         instruction: taskInstruction.trim(),
@@ -94,7 +94,7 @@ export function ControlPage() {
   const toggleTask = async (task: ScheduledTaskDto) => {
     setTaskState("saving");
     try {
-      const updated = await createApiClient().scheduled.tasks.update({
+      const updated = await createWebApiClient().scheduled.tasks.update({
         taskId: task.id,
         status: task.status === "active" ? "paused" : "active",
       });

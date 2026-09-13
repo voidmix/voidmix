@@ -4,14 +4,14 @@
 
 ```text
 web       Node container
-api       Temporary standalone compatibility container
+api       Standalone API container
 postgres  independent service
 desktop   macOS and Windows installers
 ```
 
-Web is the primary deployment and includes public pages, Auth, Admin, Hono, and
-oRPC. The standalone API remains independently deployable during migration.
-Desktop consumes either origin and is distributed through Tauri installers.
+API is the primary HTTP deployment and includes Auth, Admin, Hono, and oRPC.
+Web serves pages and SSR and calls the independent API origin.
+Desktop consumes the API origin and is distributed through Tauri installers.
 
 ## Local PostgreSQL
 
@@ -22,7 +22,7 @@ bun run db:seed
 bun run db:studio
 ```
 
-Every host of `@voidmix/api-runtime`, including Web, requires `DATABASE_URL`.
+The API and Worker require `DATABASE_URL`; Web does not initialize a database.
 `REDIS_URL` is optional; when present, both hosts share the configured Redis
 namespace for Better Auth secondary storage and the short-lived Auth policy cache.
 
@@ -40,13 +40,13 @@ workspace packages and `bun.lock`. Select the matching nested `railway.toml` as
 the service config path.
 
 - Web serves Nitro's `.output/server/index.mjs` on Railway's `PORT` and exposes
-  `/health`, `/api/auth/*`, and `/rpc/*` on the same origin.
-- API starts through `apps/api/scripts/start.mjs` and preserves the same API
-  paths on its compatibility origin.
+  page routes plus `/health`.
+- API starts through `apps/api/scripts/start.mjs` and exposes `/api/auth/*`,
+  `/rpc/*`, and `/health` on its own origin.
 - Both hosts require production values for database, Auth, and allowed external
-  origins. Mail can come from Admin-managed database settings or compatibility
-  environment variables; missing mail does not prevent startup. Browser clients
-  do not require an API build-time URL.
+  origins. Mail can come from Admin-managed database settings or environment
+  fallbacks; missing mail does not prevent startup. Web builds require
+  `VITE_API_URL` pointing at the API origin.
 
 Production startup does not use the private `vmx` CLI. Railway and other
 platforms inject values through `process.env`; a `/app/.env` file is optional,
@@ -55,14 +55,14 @@ missing optional files do not produce startup warnings. `.dockerignore`
 excludes local `.env` and `.env.local` files from image build contexts.
 
 Remaining `VITE_*` logging values are compiled into browser bundles. A runtime
-`/app/.env` mount cannot change them. Auth and Admin transport use relative
-same-origin URLs and read no server origin from the browser bundle.
+`/app/.env` mount cannot change them. Auth and Admin transport use the configured
+API origin with credentialed cookies.
 
 The shared API environment schema requires `DATABASE_URL` during startup. The
 in-memory repository remains available only to direct `createApiApp` tests that
 inject it explicitly; it is not a runtime fallback.
 
-Web and API compatibility hosts explicitly select Nitro's `node-server` preset
+Web and API hosts explicitly select Nitro's `node-server` preset
 and emit self-contained Node server bundles. Explicitly selecting the preset
 prevents a deployment-level `NITRO_PRESET` value from emitting a Bun server
 that cannot run in the Node 24 runtime. Runtime stages copy generated artifacts

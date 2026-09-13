@@ -1,4 +1,4 @@
-import { createApiClient, type ApiClient } from "@voidmix/client";
+import { createWebApiClient, type ApiClient } from "../../lib/api-client";
 import { useEffect, useState } from "react";
 
 export type PublicAuthCapabilities = Awaited<
@@ -16,7 +16,7 @@ const failOpenCapabilities: PublicAuthCapabilities = {
 };
 
 function createConfiguredApiClient() {
-  return createApiClient({
+  return createWebApiClient({
     fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
   });
 }

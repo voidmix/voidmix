@@ -7,7 +7,7 @@
     "dev": "vmx env -- vp dev",
     "build": "bun run check && vmx env -- vp build",
     "preview": "vmx env -- vp preview",
-    "check": "bun run typecheck && bun run typecheck:node && tsc --noEmit -p tsconfig.runner.json",
+    "check": "bun run typecheck && bun run typecheck:node",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
     "test": "vp test --run",
@@ -17,8 +17,7 @@
     "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "pi:runner": "bun run src-tauri/pi-runner.ts"
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@phosphor-icons/react": "catalog:frontend",
@@ -26,7 +25,6 @@
     "@tanstack/react-start": "catalog:",
     "@tauri-apps/api": "catalog:frontend",
     "@tauri-apps/plugin-opener": "catalog:frontend",
-    "@voidmix/ai": "workspace:*",
     "@voidmix/client": "workspace:*",
     "@voidmix/env": "workspace:*",
     "@voidmix/i18n": "workspace:*",

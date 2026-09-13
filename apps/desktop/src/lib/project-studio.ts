@@ -2,8 +2,10 @@ import { createApiClient, type ApiClient } from "@voidmix/client";
 import { env } from "../env";
 import { getDesktopLocaleHeaders } from "../i18n/client";
 
-export type StudioProject = Awaited<ReturnType<ApiClient["projects"]["list"]>>["items"][number];
-export type StudioDetail = Awaited<ReturnType<ApiClient["projects"]["get"]>>;
+export type StudioProject = Awaited<
+  ReturnType<ApiClient["v2"]["projects"]["list"]>
+>["items"][number];
+export type StudioDetail = Awaited<ReturnType<ApiClient["v2"]["projects"]["get"]>>["project"];
 export type StudioLibrary = Awaited<ReturnType<ApiClient["library"]["search"]>>;
 export type StudioLoad<T> =
   | { status: "preview"; data: T }
@@ -111,7 +113,7 @@ export async function loadProjects(): Promise<
 > {
   if (!env.VITE_API_URL) return { status: "preview", data: previewProjects };
   try {
-    const result = await getClient().projects.list({ limit: 100 });
+    const result = await getClient().v2.projects.list({});
     return { status: "loaded", data: result.items };
   } catch {
     return { status: "unavailable", data: null };
@@ -127,10 +129,19 @@ export async function loadProject(
       data: previewProjects.find((project) => project.id === projectId) ?? null,
     };
   try {
-    return { status: "loaded", data: await getClient().projects.get({ projectId }) };
+    const result = await getClient().v2.projects.get({ projectId });
+    return { status: "loaded", data: result.project };
   } catch {
     return { status: "unavailable", data: null };
   }
+}
+
+export async function createProject(title: string): Promise<StudioProject> {
+  return getClient().v2.projects.create({
+    scope: { type: "personal" },
+    title: title.trim(),
+    description: null,
+  });
 }
 
 export async function loadLibrary(): Promise<StudioLoad<StudioLibrary | readonly PreviewAsset[]>> {

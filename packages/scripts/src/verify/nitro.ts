@@ -41,7 +41,7 @@ const defaultTargets: readonly NitroRuntimeTarget[] = [
     name: "Web",
     probes: [{ expectedText: "Ask Voidmix", pathname: "/" }, { pathname: "/health" }],
   },
-  { directory: "apps/api", name: "API compatibility host", probes: [{ pathname: "/health" }] },
+  { directory: "apps/api", name: "API", probes: [{ pathname: "/health" }] },
 ];
 
 const nitroProbe = [
