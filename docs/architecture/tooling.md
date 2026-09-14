@@ -18,12 +18,12 @@ real compatibility tests and benchmarks justify a change.
 
 The root `package.json` centralizes versions with Bun catalogs:
 
-| Catalog            | Scope                               | Representative dependencies                                                                                                                 |
-| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `catalog:`         | Shared runtime and contracts        | React, TanStack Router/Start, oRPC, Better Auth, `use-intl`, UUID, Zod, Evlog                                                               |
-| `catalog:backend`  | Server and data tooling             | Hono, Nitro, Drizzle, PostgreSQL, Redis, Nanoid                                                                                             |
-| `catalog:frontend` | UI, email, and native surfaces      | Base UI, Phosphor Icons, Tailwind CSS, CVA, `cn`, Tauri, Resend                                                                             |
-| `catalog:tooling`  | Build, test, and repository tooling | Vite+, Vite alias, TypeScript, Storybook, `esbuild`, `jiti`, React types/plugin, Oxc transform, Citty, Dotenvx, Vitest coverage, Playwright |
+| Catalog            | Scope                               | Representative dependencies                                                                                                                       |
+| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `catalog:`         | Shared runtime and contracts        | React, TanStack Router/Start, oRPC, Better Auth, `use-intl`, UUID, Zod, Evlog                                                                     |
+| `catalog:backend`  | Server and data tooling             | Hono, Nitro, Drizzle, PostgreSQL, Redis, Nanoid                                                                                                   |
+| `catalog:frontend` | UI, email, and native surfaces      | Base UI, Phosphor Icons, Tailwind CSS, CVA, `cn`, Tauri, Resend                                                                                   |
+| `catalog:tooling`  | Build, test, and repository tooling | Vite+, Vite alias, TypeScript, Storybook, Knip, `esbuild`, `jiti`, React types/plugin, Oxc transform, Citty, Dotenvx, Vitest coverage, Playwright |
 
 Vitest itself is absent from the catalogs because Vite+ bundles the runner;
 `@vitest/coverage-v8` remains explicit so its version can track that bundled
@@ -88,7 +88,16 @@ manager to install:
 bun run lint         vp lint          Oxlint, type-aware, with the vite-plus plugin
 bun run format       vp fmt --check   fail on unformatted files
 bun run format:fix   vp fmt           rewrite files in place
+bun run knip:report  knip             report unused files, exports, dependencies, and duplicates
 ```
+
+`bun run knip:report` is intentionally outside `verify` while the monorepo's
+framework entrypoints and public package exports are being classified. The
+configuration keeps explicit Nitro, Tauri, Worker, Storybook and mail-script
+entries visible to the scan and excludes generated output plus the
+environment-validating Drizzle config. Once that baseline is clean, dependency
+and duplicate-export findings can be promoted to the verification gate
+independently.
 
 `check` stays `vp run -r check` — per-workspace typecheck scripts. Desktop
 and Mail typecheck their statically imported JSON catalogs directly, while Web

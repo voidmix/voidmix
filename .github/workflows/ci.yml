@@ -17,6 +17,9 @@ jobs:
         with:
           bun-version: 1.4.0
       - run: bun install --frozen-lockfile
+      # Advisory until framework entrypoints and public exports are fully
+      # classified in knip.json; the command always emits its report.
+      - run: bun run knip:report
       # The same command a contributor runs before opening a pull request:
       # policy, format, lint, per-workspace checks, tests, builds, and the Nitro
       # runtime probe. CI adds only what needs a clean git tree, a browser, or

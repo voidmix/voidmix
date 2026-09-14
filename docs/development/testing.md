@@ -36,7 +36,16 @@ Two commands stay outside `verify` on purpose. `bun run test:e2e` needs a
 Playwright browser, and `bun run doctor` asserts machine prerequisites, which is
 not something CI can assert about itself.
 
-CI runs `bun run verify` and adds only what the command cannot contain: a
+`bun run knip:report` is also a separate advisory check. Knip finds unused
+files, exports, dependencies, and duplicate exports across the workspace graph.
+Its first reports are not a release gate because Nitro/Tauri entrypoints,
+dynamic imports, package public exports, and environment-backed build configs
+need explicit classification in [`knip.json`](../../knip.json). Once that
+baseline is clean, dependency and duplicate-export findings can be promoted to
+the verification gate independently.
+
+CI runs `bun run knip:report` and `bun run verify`, then adds only what the
+verification command cannot contain: a
 `git diff --exit-code` after the build and after `bun run generate`, because
 those need a clean git tree; the three layer scripts, because `bun run test`
 passes whether or not their filters match anything; `test:coverage` for the
