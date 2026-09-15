@@ -1,0 +1,197 @@
+.env.example
+  s_dc197fef672c08::t_dd95273ebadede 6
+AGENTS.md
+  s_dc197fef672c08::t_3523c78e2976ba 25-26,44-45,50-51
+README.md
+  s_dc197fef672c08::t_d08c618b212893 10,33-34,39,56-58,82-85,129-130
+apps/api/AGENTS.md
+  s_dc197fef672c08::t_027dab02cb7c89 5,11-12,22-23,27,32
+apps/api/package.json
+  s_dc197fef672c08::t_66fee23983be6f 18-26,28-34,38
+apps/api/server/api/app.integration.test.ts
+  s_dc197fef672c08::t_b8b66980989496 259,262-266
+apps/api/server/api/app.ts
+  s_dc197fef672c08::t_66337cf97944dc 25,78-93,167-172,203-211,222-231
+apps/api/server/api/auth/config.ts
+  s_dc197fef672c08::t_25e2c5523529bf 125-126
+apps/api/server/api/env.ts
+  s_dc197fef672c08::t_3724f2f57eb8f4 16
+apps/api/server/api/modules.ts
+  s_dc197fef672c08::t_47f87c13f0d87b 39,202-203,230,267
+apps/api/server/api/problem.ts
+  s_dc197fef672c08::t_2780f7cb0641cf 1-18,20-26,28,30-33
+apps/api/server/api/runtime.test.ts
+  s_dc197fef672c08::t_147593770a7df0 22,25
+apps/api/server/api/runtime.ts
+  s_dc197fef672c08::t_d20837ca756ec8 20-28,30,42,135-147,214,219,222,230,234,237,242,249,252-254
+apps/api/server/env.ts
+  s_dc197fef672c08::t_ac02061659bb8c 1
+apps/api/server/runtime.test.ts
+  s_dc197fef672c08::t_ed2cfcd9682550 13
+apps/api/server/runtime.ts
+  s_dc197fef672c08::t_67d8544e17fe3c 1
+apps/desktop/package.json
+  s_dc197fef672c08::t_fff1266ffb2606 10,20
+apps/desktop/src/features/projects/detail-page.tsx
+  s_dc197fef672c08::t_180affbd67d735 108
+apps/desktop/src/features/projects/page.tsx
+  s_dc197fef672c08::t_577f6744e31a22 8-13,20-21,38,53-86
+apps/web/AGENTS.md
+  s_dc197fef672c08::t_674b2591af2d29 36-37,84-88,91-94
+apps/web/i18n/api-errors.ts
+  s_dc197fef672c08::t_db0ea959c9cc52 11
+apps/web/server/health.ts
+  s_dc197fef672c08::t_ffa5ac418fb5d5 2-3
+apps/web/src/env.test.ts
+  s_dc197fef672c08::t_3a21a9b59e3c0f 26,30,33
+apps/web/src/env.ts
+  s_dc197fef672c08::t_d5fe7d6e0e3a96 1,8-10
+apps/web/src/features/admin/users/api-adapter.ts
+  s_dc197fef672c08::t_5b4106735630d6 3,30
+apps/web/src/features/auth/capabilities.ts
+  s_dc197fef672c08::t_76ae34188ddc24 1,19
+apps/web/src/lib/api-client.ts
+  s_dc197fef672c08::t_2f3165696ac67b 1-13,15
+apps/web/src/lib/auth-client.ts
+  s_dc197fef672c08::t_ee00f4dfdec327 3-4,6
+apps/web/vite.config.ts
+  s_dc197fef672c08::t_3e46e1daec8a78 19
+apps/worker/AGENTS.md
+  s_dc197fef672c08::t_1a17ecee8d6d04 1,5-6,10-13,17-20,24-28,33-34
+apps/worker/package.json
+  s_dc197fef672c08::t_245d17e66de513 2,7,18,22
+apps/worker/src/index.test.ts
+  s_dc197fef672c08::t_37bd8cd2ca2a65 2,4-20,22-23,25-54
+apps/worker/src/index.ts
+  s_dc197fef672c08::t_991d177adceec3 1-48
+apps/worker/src/runtime.ts
+  s_dc197fef672c08::t_7a6608be32705d 1-35
+apps/worker/tsconfig.json
+  s_dc197fef672c08::t_5ab3ebbf5f82d7 3
+bun.lock
+  s_3585bb3a4cc90e::t_43e8b7502825da 22-30,32,34-38,42,137-152,175-176,1283,1319-1320
+docs/architecture/README.md
+  s_dc197fef672c08::t_fd99802e306f99 6,28-30,57-60,73-75,78-79,105
+docs/architecture/account-first-v2.md
+  s_dc197fef672c08::t_93995efa748a87 1-31
+docs/architecture/applications.md
+  s_dc197fef672c08::t_88957e47dee4d0 41,55-59,88-91,93-106,120,122-124,137-139,170,172,188-190
+docs/architecture/decisions/0005-recipient-locale-on-mail-inputs.md
+  s_dc197fef672c08::t_fc44b94a90c954 32,51,61
+docs/architecture/decisions/0010-account-first-project-v2.md
+  s_dc197fef672c08::t_b823959a53fb93 1-37
+docs/architecture/decisions/README.md
+  s_dc197fef672c08::t_59182c12eba727 39
+docs/architecture/deployment.md
+  s_dc197fef672c08::t_6226857deca813 7,12-14,25,43-45,47-49,58-59,65
+docs/architecture/packages.md
+  s_dc197fef672c08::t_6305d7bb244bf8 16-23,36,38,40-45,69-74,98,158,171-175
+docs/architecture/project-studio.md
+  s_dc197fef672c08::t_2163bb56052907 544
+docs/development/environment.md
+  s_dc197fef672c08::t_efbcc4db822da7 86-89,91-93
+docs/development/getting-started.md
+  s_dc197fef672c08::t_68b35f3c8d172e 133
+e2e/playwright.config.ts
+  s_dc197fef672c08::t_4a69436e5e756c 38-54,63
+packages/application/AGENTS.md
+  s_dc197fef672c08::t_b41d0e1d66d7f2 1-37
+packages/application/package.json
+  s_dc197fef672c08::t_9bfa927f88efb3 1-25
+packages/application/src/index.test.ts
+  s_dc197fef672c08::t_7f5e965d21c1ca 1-387
+packages/application/src/index.ts
+  s_dc197fef672c08::t_6a2e161860477d 1-581
+packages/application/tsconfig.json
+  s_dc197fef672c08::t_839c0ffadbe67d 2-3
+packages/application/vitest.config.ts
+  s_dc197fef672c08::t_bdf7be111b2f44 1,3-7,9
+packages/auth/AGENTS.md
+  s_dc197fef672c08::t_e3ac08d5dbfde0 18,38,40,47
+packages/client/AGENTS.md
+  s_dc197fef672c08::t_b79164ecad38f2 7,32,46
+packages/client/src/errors.ts
+  s_dc197fef672c08::t_15a5de17684fee 1-15
+packages/client/src/index.test.ts
+  s_dc197fef672c08::t_18ad09c2fb7dde 3,59-76
+packages/client/src/index.ts
+  s_dc197fef672c08::t_bb7df1ea9b233d 14-16
+packages/contracts/AGENTS.md
+  s_dc197fef672c08::t_d6ca8f20ea049b 40,66
+packages/contracts/src/index.test.ts
+  s_dc197fef672c08::t_6fb4633fea74e4 19-20,310-314,323-362
+packages/contracts/src/index.ts
+  s_dc197fef672c08::t_70b974d12ff484 17-30,543-771,1159-1195,1346-1351
+packages/core/AGENTS.md
+  s_dc197fef672c08::t_15f07d8b8b8007 47,72
+packages/core/src/agents/outbox.ts
+  s_dc197fef672c08::t_57fb59c813fe39 1-4,7-10
+packages/core/src/index.ts
+  s_dc197fef672c08::t_21f2fcd79b5e55 2-3
+packages/core/src/projects/index.ts
+  s_dc197fef672c08::t_12c9379dbd0acb 3
+packages/core/src/projects/v2.test.ts
+  s_dc197fef672c08::t_a1349766107154 1-60
+packages/core/src/projects/v2.ts
+  s_dc197fef672c08::t_9aa13498ebcbc7 1-219
+packages/core/src/v2-resources.ts
+  s_dc197fef672c08::t_4ee0973554dd10 1-182
+packages/db/drizzle/20260912230259_tiny_winter_soldier/migration.sql
+  s_dc197fef672c08::t_b8eed91cdc9eb0 1-39
+packages/db/drizzle/20260912230259_tiny_winter_soldier/snapshot.json
+  s_dc197fef672c08::t_990dc04508c795 1-5765
+packages/db/drizzle/20260912230500_talented_gabe_jones/migration.sql
+  s_dc197fef672c08::t_153cd432556d83 1-49
+packages/db/drizzle/20260912230500_talented_gabe_jones/snapshot.json
+  s_dc197fef672c08::t_c95d241345f8a8 1-6423
+packages/db/drizzle/20260912232601_loud_lenny_balinger/migration.sql
+  s_dc197fef672c08::t_1a0e630ac45523 1
+packages/db/drizzle/20260912232601_loud_lenny_balinger/snapshot.json
+  s_dc197fef672c08::t_6f3139137c97b6 1-6436
+packages/db/drizzle/20260912235426_overjoyed_jigsaw/migration.sql
+  s_dc197fef672c08::t_7ce872e3890259 1-91
+packages/db/drizzle/20260912235426_overjoyed_jigsaw/snapshot.json
+  s_dc197fef672c08::t_8d1769419748e6 1-7640
+packages/db/src/index.ts
+  s_dc197fef672c08::t_1ea198a3985397 3-13,67-84
+packages/db/src/outbox.ts
+  s_dc197fef672c08::t_a03eb59d2c1a30 1-54
+packages/db/src/schema.ts
+  s_dc197fef672c08::t_85a4377057ac5f 4,63-71,101-116,142-405,763-783,970-980,991,1008-1011,1051-1073,1090-1189
+packages/db/src/v2.ts
+  s_dc197fef672c08::t_764f8923407c52 1-430
+packages/logger/AGENTS.md
+  s_dc197fef672c08::t_38e76769da0788 50
+packages/scripts/src/verify/nitro.ts
+  s_dc197fef672c08::t_170e7853d0c503 44
+skills/voidmix-infra/SKILL.md
+  s_dc197fef672c08::t_706a3c6a280929 75
+skills/voidmix-infra/references/orpc-procedures.md
+  s_dc197fef672c08::t_bb0daf0cec1ca2 15,36,40,80,82-83,92
+skills/voidmix-infra/references/tanstack.md
+  s_dc197fef672c08::t_a910af7f61d686 40,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c43bbb27ae0ba92417bed3366ec33cbbf94b90ec",
+  "prompts": {},
+  "sessions": {
+    "s_3585bb3a4cc90e": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a097c5-27a8-7c61-80d9-56aa4d2b471f",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_dc197fef672c08": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a096ae-3cc9-73f0-a2a5-5ab90676fcd8",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
