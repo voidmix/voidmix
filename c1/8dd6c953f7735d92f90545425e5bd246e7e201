@@ -1,0 +1,35 @@
+apps/api/server/api/modules.ts
+  s_dc197fef672c08::t_471c7f84cb9860 39,204,232,270
+apps/api/server/api/runtime.ts
+  s_dc197fef672c08::t_889decadd3ac94 29,31,135-147,149-152
+packages/application/src/agent-v2.test.ts
+  s_dc197fef672c08::t_26be8d23d9d659 1-59
+packages/application/src/agent-v2.ts
+  s_dc197fef672c08::t_d0a74a2a870d0b 1-93
+packages/application/src/index.ts
+  s_dc197fef672c08::t_edefdd9dae7865 31-32
+packages/contracts/src/index.ts
+  s_dc197fef672c08::t_caddf4c3d07d04 643-663,761-772,1227-1232
+packages/core/src/v2-resources.ts
+  s_dc197fef672c08::t_a2db7fc81cd361 166-185
+packages/db/src/index.ts
+  s_dc197fef672c08::t_c4c90877efb9e6 13
+packages/db/src/v2.ts
+  s_dc197fef672c08::t_2114c05317c005 18-19,29,38-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c18dd6c953f7735d92f90545425e5bd246e7e201",
+  "prompts": {},
+  "sessions": {
+    "s_dc197fef672c08": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a096ae-3cc9-73f0-a2a5-5ab90676fcd8",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
