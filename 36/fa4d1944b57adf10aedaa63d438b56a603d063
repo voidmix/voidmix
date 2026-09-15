@@ -1,0 +1,25 @@
+DESIGN.md
+  s_dc197fef672c08::t_7d388e0ce5303c 8,14-15
+docs/architecture/design.md
+  s_dc197fef672c08::t_e70363ad724b30 25-35,38
+packages/ui/src/status-badge.tsx
+  s_dc197fef672c08::t_0842ea0ff6c492 16-18,22-29
+packages/ui/src/styles/globals.css
+  s_dc197fef672c08::t_eb9a81274bfcda 11-16,19-61,66-107,128-134,138-141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "36fa4d1944b57adf10aedaa63d438b56a603d063",
+  "prompts": {},
+  "sessions": {
+    "s_dc197fef672c08": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a096ae-3cc9-73f0-a2a5-5ab90676fcd8",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
