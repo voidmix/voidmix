@@ -1,0 +1,20 @@
+packages/contracts/src/index.test.ts
+  s_c6c5778bbf9e40::t_d1bec436b8a28a 164-173
+  s_c6c5778bbf9e40::t_50c22df26c0c4f 174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "9080cf8f7f8c1da3f0c0e2a9aaa5fe489a5d440f",
+  "prompts": {},
+  "sessions": {
+    "s_c6c5778bbf9e40": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0136e404-a627-4d15-b369-9492058f5159",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
