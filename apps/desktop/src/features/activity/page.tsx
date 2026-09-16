@@ -94,14 +94,10 @@ export function ActivityPage() {
   return (
     <div className="page">
       <PageHeader
-        className="page-header"
+        className="mb-7"
         title={t("title")}
         description={t("description")}
-        action={
-          <Button className="secondary-button" variant="secondary">
-            {t("exportLog")}
-          </Button>
-        }
+        action={<Button variant="secondary">{t("exportLog")}</Button>}
       />
       <div className="filter-row" role="toolbar" aria-label={t("filters")}>
         {filters.map((item) => (
@@ -145,7 +141,6 @@ export function ActivityPage() {
                 )}
               </time>
               <Button
-                className="icon-button"
                 size="icon"
                 variant="ghost"
                 aria-label={t("moreOptions", { title: t(title) })}

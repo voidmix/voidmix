@@ -9,8 +9,8 @@ search parameters. `/projects/$projectId/pi/$sessionId` is a standalone,
 project-bound conversation. Invalid project/session URLs show recovery links.
 
 Web owns `ProjectCard`, `TaskList`, `ActivityList`, and `RunTimeline`. Shared UI
-owns only `PageHeader`, `EmptyState`, `StatusBadge`, and `CommandInput`, each
-with an explicit package subpath. The existing chat route and its local-chat
+owns only `PageHeader`, `EmptyState`, and `StatusBadge` for these product
+patterns; primitive controls use explicit package subpaths. The existing chat route and its local-chat
 compatibility components keep their route and storage responsibilities while
 message records use locale-neutral metadata: user text stays verbatim, and
 deterministic preview responses persist a catalog key with an English fallback.

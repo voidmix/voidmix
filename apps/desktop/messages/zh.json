@@ -156,7 +156,7 @@
     "tasks": "任务",
     "draft": "草稿",
     "in_progress": "进行中",
-    "review": "评审",
+    "review": "审核中",
     "delivered": "已交付",
     "loading": "正在加载项目…",
     "previewData": "预览数据",
@@ -175,7 +175,9 @@
     "brandCampaignDescription": "让下一次活动明确体现我们的风格。",
     "soundDesignTitle": "Northstar / 声音设计",
     "soundDesignDescription": "为发布项目打造声音识别。",
-    "percentComplete": "已完成 {percent}%"
+    "percentComplete": "已完成 {percent}%",
+    "empty": "暂无项目",
+    "emptyDescription": "创建项目以开始工作。"
   },
   "library": {
     "title": "素材库",

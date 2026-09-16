@@ -2,6 +2,9 @@ import { ArrowUpRight, Plus } from "@phosphor-icons/react";
 import { getRouteApi, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { Field, FieldLabel } from "@voidmix/ui/components/ui/field";
+import { Input } from "@voidmix/ui/components/ui/input";
+import { StatusBadge } from "@voidmix/ui/status-badge";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { useDesktopTranslations } from "../../i18n/client";
 import { createProject } from "../../lib/projects";
@@ -37,6 +40,7 @@ export function ProjectsPage() {
   return (
     <div className="page projects-page">
       <PageHeader
+        className="mb-7"
         title={t("title")}
         description={t("description")}
         action={
@@ -54,16 +58,17 @@ export function ProjectsPage() {
             void submitProject();
           }}
         >
-          <label>
-            {t("title")}
-            <input
+          <Field data-disabled={saving}>
+            <FieldLabel htmlFor="desktop-project-title">{t("title")}</FieldLabel>
+            <Input
+              id="desktop-project-title"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               required
               autoFocus
               disabled={saving}
             />
-          </label>
+          </Field>
           <Button type="submit" disabled={!title.trim() || saving}>
             {t("newProject")}
           </Button>
@@ -77,9 +82,25 @@ export function ProjectsPage() {
         {projects.map((project) => (
           <article className="project-card" key={project.id}>
             <div className="project-card-topline">
-              <span>{project.stage.replace("_", " ")}</span>
+              <StatusBadge
+                label={t(
+                  project.stage === "draft"
+                    ? "draft"
+                    : project.stage === "in_progress"
+                      ? "in_progress"
+                      : project.stage === "review"
+                        ? "review"
+                        : "delivered",
+                )}
+                tone={
+                  project.stage === "delivered"
+                    ? "complete"
+                    : project.stage === "draft"
+                      ? "neutral"
+                      : "active"
+                }
+              />
               <Link
-                className="icon-button"
                 to="/projects/$projectId"
                 params={{ projectId: project.id }}
                 aria-label={t("openProject", { title: project.title })}

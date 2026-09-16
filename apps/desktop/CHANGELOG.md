@@ -30,6 +30,8 @@ user can observe them.
 
 ### Changed
 
+- Settings toggles now use the shared accessible UI control, and project, device,
+  activity, and overview actions use the shared button styles consistently.
 - Theme, sync pause, and settings preferences now survive navigation and
   application restarts. Existing saved theme choices are preserved.
 - Page navigation now loads data through TanStack Start routes, with loading

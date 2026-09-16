@@ -28,11 +28,6 @@ export default defineConfig({
       testMatch: /admin\.spec\.ts/,
       use: { baseURL: webUrl },
     },
-    {
-      name: "project-studio",
-      testMatch: /project-studio\.spec\.ts/,
-      use: { baseURL: webUrl },
-    },
   ],
   webServer: [
     {

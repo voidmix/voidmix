@@ -54,7 +54,10 @@ operating systems. The CI generate step supplies a non-routable
 `DATABASE_URL`; Drizzle validates its configuration while loading it, but
 generation does not connect to PostgreSQL.
 
-`bun run test:e2e` starts the Web and Admin development servers itself.
+`bun run test:e2e` starts the Web and API development servers itself.
+It runs the `web` and `admin` projects. The retired Project Studio suite and its
+mock API fixture have been removed; Web still checks the sign-in redirect for
+unauthenticated access to `/projects`.
 Install the local browser once with:
 
 ```bash

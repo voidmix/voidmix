@@ -51,6 +51,8 @@ deployment boundaries, and coding-agent guidance.
   inside a workspace, and the conventions policy enforces.
 - [Abstraction ablation](./development/abstraction-ablation.md) — measured
   removals, preserved behavior, and a rejected guard-removal experiment.
+- [UI Kit ablation](./development/ui-ablation.md) — shared UI extraction,
+  removed styling indirection, and retained abstractions.
 - [Coding agents](./development/agents.md) — read order, default decisions,
   verification checklist, and skill governance for Codex and Claude Code.
 

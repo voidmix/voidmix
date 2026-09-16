@@ -825,6 +825,16 @@
     "noDescription": "暂无描述",
     "tasks": "任务",
     "taskPlaceholder": "添加任务",
-    "addTask": "添加"
+    "addTask": "添加",
+    "saving": "保存中…",
+    "retry": "重试",
+    "emptyTasks": "暂无任务",
+    "draft": "草稿",
+    "inProgress": "进行中",
+    "review": "审核中",
+    "delivered": "已交付",
+    "todo": "待办",
+    "blocked": "已阻塞",
+    "done": "已完成"
   }
 }

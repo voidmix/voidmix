@@ -31,7 +31,7 @@ function WindowActions() {
   return (
     <div className="window-actions">
       {message ? <span className="window-message">{message}</span> : null}
-      <Button className="icon-button" size="icon" variant="ghost" aria-label={t("notifications")}>
+      <Button size="icon" variant="ghost" aria-label={t("notifications")}>
         <Bell size={16} weight="regular" />
         <span className="notification-dot" />
       </Button>

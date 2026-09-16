@@ -1,14 +1,16 @@
 import { Link } from "@tanstack/react-router";
-import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Button } from "@voidmix/ui/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
+import { Input } from "@voidmix/ui/components/ui/input";
+import { EmptyState } from "@voidmix/ui/empty-state";
+import { PageHeader } from "@voidmix/ui/page-header";
+import { SectionHeading } from "@voidmix/ui/section-heading";
+import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useTranslations } from "../../i18n/client";
 import { createWebApiClient } from "../../lib/api-client";
 
 const api = createWebApiClient();
-type ErrorKey = "loadFailed" | "taskFailed";
-const LOAD_FAILED: ErrorKey = "loadFailed";
-const TASK_FAILED: ErrorKey = "taskFailed";
 
 export function ProjectPage({ projectId }: { projectId: string }) {
   const t = useTranslations("projects");
@@ -17,86 +19,166 @@ export function ProjectPage({ projectId }: { projectId: string }) {
     [],
   );
   const [taskTitle, setTaskTitle] = useState("");
-  const [error, setError] = useState<ErrorKey | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [taskFailed, setTaskFailed] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const submitting = useRef(false);
+  const [revision, setRevision] = useState(0);
+  const activeProject = useRef(projectId);
+  activeProject.current = projectId;
+
   useEffect(() => {
+    let active = true;
+    setResult(null);
+    setTasks([]);
+    setTaskTitle("");
+    setTaskFailed(false);
+    setLoadFailed(false);
     void Promise.all([api.projects.get({ projectId }), api.projects.tasks.list({ projectId })])
       .then(([projectResponse, taskResponse]) => {
+        if (!active) return;
         setResult(projectResponse);
         setTasks(taskResponse.items);
       })
-      .catch(() => setError(LOAD_FAILED));
-  }, [projectId]);
+      .catch(() => {
+        if (active) setLoadFailed(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [projectId, revision]);
+
   async function createTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!taskTitle.trim()) return;
+    if (!taskTitle.trim() || submitting.current) return;
+    submitting.current = true;
+    setSaving(true);
+    setTaskFailed(false);
     try {
       const task = await api.projects.tasks.create({ projectId, title: taskTitle.trim() });
+      if (activeProject.current !== projectId) return;
       setTasks((current) => [...current, task]);
       setTaskTitle("");
     } catch {
-      setError(TASK_FAILED);
+      if (activeProject.current === projectId) setTaskFailed(true);
+    } finally {
+      submitting.current = false;
+      setSaving(false);
     }
   }
-  if (error)
-    return (
-      <main className="mx-auto max-w-4xl px-6 py-12">
-        <p className="text-sm text-destructive">{t(error)}</p>
-      </main>
-    );
-  if (!result)
-    return (
-      <main className="mx-auto max-w-4xl px-6 py-12">
-        <p className="text-sm text-muted-foreground">{t("loading")}</p>
-      </main>
-    );
+
   return (
-    <main className="mx-auto max-w-4xl space-y-8 px-6 py-12">
-      <Link className="text-sm text-muted-foreground hover:text-foreground" to="/projects">
+    <main className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-12">
+      <Button
+        nativeButton={false}
+        render={<Link to="/projects" />}
+        variant="link"
+        className="w-fit"
+      >
         ← {t("title")}
-      </Link>
-      <header className="border-b pb-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-semibold tracking-tight">{result.project.title}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {result.project.description ?? t("noDescription")}
-            </p>
-          </div>
-          <span className="rounded-full border px-3 py-1 text-xs">
-            {result.project.stage.replace("_", " ")}
-          </span>
+      </Button>
+      {loadFailed ? (
+        <div className="flex items-center gap-3">
+          <p role="alert">{t("loadFailed")}</p>
+          <Button variant="outline" onClick={() => setRevision((value) => value + 1)}>
+            {t("retry")}
+          </Button>
         </div>
-      </header>
-      <section className="space-y-4" aria-labelledby="tasks-heading">
-        <div className="flex items-center justify-between">
-          <h2 id="tasks-heading" className="text-xl font-medium">
-            {t("tasks")}
-          </h2>
-          <span className="text-sm text-muted-foreground">{tasks.length}</span>
-        </div>
-        <form className="flex gap-2" onSubmit={createTask}>
-          <input
-            className="h-10 flex-1 rounded-md border bg-background px-3 text-sm"
-            value={taskTitle}
-            onChange={(event) => setTaskTitle(event.target.value)}
-            placeholder={t("taskPlaceholder")}
+      ) : !result ? (
+        <p role="status" className="text-sm text-muted-foreground">
+          {t("loading")}
+        </p>
+      ) : (
+        <>
+          <PageHeader
+            title={result.project.title}
+            description={result.project.description ?? t("noDescription")}
+            action={
+              <StatusBadge
+                label={t(
+                  result.project.stage === "draft"
+                    ? "draft"
+                    : result.project.stage === "in_progress"
+                      ? "inProgress"
+                      : result.project.stage === "review"
+                        ? "review"
+                        : "delivered",
+                )}
+                tone={
+                  result.project.stage === "delivered"
+                    ? "complete"
+                    : result.project.stage === "draft"
+                      ? "neutral"
+                      : "active"
+                }
+              />
+            }
           />
-          <button
-            className="h-10 rounded-md bg-primary px-4 text-sm text-primary-foreground"
-            type="submit"
-          >
-            {t("addTask")}
-          </button>
-        </form>
-        <ul className="divide-y rounded-lg border">
-          {tasks.map((task) => (
-            <li key={task.id} className="flex items-center justify-between p-4 text-sm">
-              <span>{task.title}</span>
-              <span className="text-xs text-muted-foreground">{task.status.replace("_", " ")}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+          <section className="flex flex-col gap-4" aria-labelledby="tasks-heading">
+            <SectionHeading
+              titleId="tasks-heading"
+              title={t("tasks")}
+              action={<span className="text-sm text-muted-foreground">{tasks.length}</span>}
+            />
+            <form onSubmit={createTask} aria-busy={saving}>
+              <FieldGroup>
+                <Field data-disabled={saving}>
+                  <FieldLabel htmlFor="task-title">{t("taskPlaceholder")}</FieldLabel>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Input
+                      id="task-title"
+                      className="min-w-0 flex-1 basis-48"
+                      value={taskTitle}
+                      required
+                      disabled={saving}
+                      aria-describedby={taskFailed ? "task-create-error" : undefined}
+                      onChange={(event) => setTaskTitle(event.target.value)}
+                      placeholder={t("taskPlaceholder")}
+                    />
+                    <Button type="submit" disabled={saving || !taskTitle.trim()}>
+                      {saving ? t("saving") : t("addTask")}
+                    </Button>
+                  </div>
+                  {taskFailed ? (
+                    <FieldError id="task-create-error">{t("taskFailed")}</FieldError>
+                  ) : null}
+                </Field>
+              </FieldGroup>
+            </form>
+            {!tasks.length ? (
+              <EmptyState title={t("emptyTasks")} description={t("taskPlaceholder")} />
+            ) : (
+              <ul className="divide-y rounded-lg border">
+                {tasks.map((task) => (
+                  <li key={task.id} className="flex items-center justify-between gap-3 p-4 text-sm">
+                    <span className="min-w-0 [overflow-wrap:anywhere]">{task.title}</span>
+                    <StatusBadge
+                      label={t(
+                        task.status === "todo"
+                          ? "todo"
+                          : task.status === "in_progress"
+                            ? "inProgress"
+                            : task.status === "blocked"
+                              ? "blocked"
+                              : "done",
+                      )}
+                      tone={
+                        task.status === "done"
+                          ? "complete"
+                          : task.status === "blocked"
+                            ? "blocked"
+                            : task.status === "in_progress"
+                              ? "active"
+                              : "neutral"
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      )}
     </main>
   );
 }

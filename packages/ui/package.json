@@ -13,7 +13,6 @@
     "./section-heading": "./src/section-heading.tsx",
     "./empty-state": "./src/empty-state.tsx",
     "./status-badge": "./src/status-badge.tsx",
-    "./command-input": "./src/command-input.tsx",
     ".": "./src/index.ts",
     "./avatar": "./src/avatar.tsx",
     "./logo": "./src/logo.tsx",

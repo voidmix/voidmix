@@ -1,60 +1,21 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { CommandInput } from "./command-input";
 import { EmptyState } from "./empty-state";
 import { StatusBadge } from "./status-badge";
 import { SectionHeading } from "./section-heading";
+import { Switch } from "./components/ui/switch";
 
 describe("workspace primitives", () => {
-  it("disables empty input and exposes the submit action", () => {
+  it("supports labelled switch state changes and disabled state", () => {
+    const onCheckedChange = vi.fn();
     render(
-      <CommandInput
-        value=""
-        onChange={() => {}}
-        onSubmit={() => {}}
-        label="Goal"
-        placeholder="Describe a goal"
-        submitLabel="Continue"
-      />,
+      <Switch aria-label="Sync automatically" checked={false} onCheckedChange={onCheckedChange} />,
     );
-    expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
-  });
-  it("submits a trimmed goal using the keyboard shortcut", () => {
-    const submit = vi.fn();
-    render(
-      <CommandInput
-        value="  Launch  "
-        onChange={() => {}}
-        onSubmit={submit}
-        label="Goal"
-        placeholder="Describe a goal"
-        submitLabel="Continue"
-      />,
-    );
-    fireEvent.keyDown(screen.getByRole("textbox", { name: "Goal" }), {
-      key: "Enter",
-      ctrlKey: true,
-    });
-    expect(submit).toHaveBeenCalledWith("Launch");
-  });
-  it("does not submit while IME composition is active", () => {
-    const submit = vi.fn();
-    render(
-      <CommandInput
-        value="目标"
-        onChange={() => {}}
-        onSubmit={submit}
-        label="Goal"
-        placeholder="Describe a goal"
-        submitLabel="Continue"
-      />,
-    );
-    fireEvent.keyDown(screen.getByRole("textbox", { name: "Goal" }), {
-      key: "Enter",
-      ctrlKey: true,
-      isComposing: true,
-    });
-    expect(submit).not.toHaveBeenCalled();
+    const control = screen.getByRole("switch", { name: "Sync automatically" });
+    expect(control).not.toBeChecked();
+    fireEvent.click(control);
+    expect(onCheckedChange).toHaveBeenCalledWith(true, expect.anything());
+    expect(control).not.toBeDisabled();
   });
   it("communicates state with text and provides an actionable empty state", () => {
     render(

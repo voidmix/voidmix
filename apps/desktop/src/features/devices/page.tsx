@@ -16,11 +16,11 @@ export function DevicesPage() {
   return (
     <div className="page">
       <PageHeader
-        className="page-header"
+        className="mb-7"
         title={t("title")}
         description={t("description")}
         action={
-          <Button className="primary-button" variant="primary">
+          <Button variant="primary">
             <Sparkle size={14} /> {t("pair")}
           </Button>
         }
@@ -51,12 +51,7 @@ export function DevicesPage() {
                 <span>{t("synced")}</span>
                 <strong>{formatBytes(device.syncedBytes, formatter)}</strong>
               </div>
-              <Button
-                className="icon-button"
-                size="icon"
-                variant="ghost"
-                aria-label={t("remove", { name: device.name })}
-              >
+              <Button size="icon" variant="ghost" aria-label={t("remove", { name: device.name })}>
                 <X size={16} />
               </Button>
             </article>

@@ -1,14 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Button } from "@voidmix/ui/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
+import { Input } from "@voidmix/ui/components/ui/input";
+import { EmptyState } from "@voidmix/ui/empty-state";
+import { PageHeader } from "@voidmix/ui/page-header";
+import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useTranslations } from "../../i18n/client";
 import { createWebApiClient } from "../../lib/api-client";
 
 const api = createWebApiClient();
-type ErrorKey = "loadFailed" | "createFailed";
-const LOAD_FAILED: ErrorKey = "loadFailed";
-const CREATE_FAILED: ErrorKey = "createFailed";
 
 export function ProjectsPage() {
   const t = useTranslations("projects");
@@ -17,82 +18,128 @@ export function ProjectsPage() {
   );
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<ErrorKey | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [createFailed, setCreateFailed] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const submitting = useRef(false);
+  const [revision, setRevision] = useState(0);
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setLoadFailed(false);
     void api.projects
       .list({})
       .then((result) => {
-        setProjects(result.items);
-        setLoading(false);
+        if (active) setProjects(result.items);
       })
       .catch(() => {
-        setError(LOAD_FAILED);
-        setLoading(false);
+        if (active) setLoadFailed(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
       });
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [revision]);
 
   async function createProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || submitting.current) return;
+    submitting.current = true;
+    setSaving(true);
+    setCreateFailed(false);
     try {
       const project = await api.projects.create({ title: title.trim() });
       setProjects((current) => [project, ...current]);
       setTitle("");
     } catch {
-      setError(CREATE_FAILED);
+      setCreateFailed(true);
+    } finally {
+      submitting.current = false;
+      setSaving(false);
     }
   }
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 px-6 py-12">
-      <header className="flex items-end justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Voidmix</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight">{t("title")}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{t("description")}</p>
+    <main className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-12">
+      <PageHeader title={t("title")} description={t("description")} />
+      <form onSubmit={createProject} aria-busy={saving}>
+        <FieldGroup className="gap-3">
+          <Field data-disabled={saving}>
+            <FieldLabel htmlFor="project-title">{t("titlePlaceholder")}</FieldLabel>
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                id="project-title"
+                className="min-w-0 flex-1 basis-48"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                required
+                disabled={saving}
+                aria-describedby={createFailed ? "project-create-error" : undefined}
+                placeholder={t("titlePlaceholder")}
+              />
+              <Button type="submit" disabled={saving || !title.trim()}>
+                {saving ? t("saving") : t("newProject")}
+              </Button>
+            </div>
+            {createFailed ? (
+              <FieldError id="project-create-error">{t("createFailed")}</FieldError>
+            ) : null}
+          </Field>
+        </FieldGroup>
+      </form>
+      {loadFailed ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <p role="alert">{t("loadFailed")}</p>
+          <Button variant="outline" onClick={() => setRevision((value) => value + 1)}>
+            {t("retry")}
+          </Button>
         </div>
-        <form className="flex gap-2" onSubmit={createProject}>
-          <input
-            className="h-10 rounded-md border bg-background px-3 text-sm"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder={t("titlePlaceholder")}
-          />
-          <button
-            className="h-10 rounded-md bg-primary px-4 text-sm text-primary-foreground"
-            type="submit"
-          >
-            {t("newProject")}
-          </button>
-        </form>
-      </header>
-      {error ? (
-        <p className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-          {t(error)}
+      ) : null}
+      {loading ? (
+        <p role="status" className="text-sm text-muted-foreground">
+          {t("loading")}
         </p>
       ) : null}
-      {loading ? <p className="text-sm text-muted-foreground">{t("loading")}</p> : null}
-      {!loading && !projects.length ? (
-        <p className="rounded-lg border border-dashed p-8 text-sm text-muted-foreground">
-          {t("empty")}
-        </p>
+      {!loading && !loadFailed && !projects.length ? (
+        <EmptyState title={t("empty")} description={t("description")} />
       ) : null}
-      <section className="grid gap-4 md:grid-cols-2" aria-label={t("projectList")}>
+      <section
+        className="grid gap-4 md:grid-cols-2"
+        aria-label={t("projectList")}
+        aria-busy={loading}
+      >
         {projects.map((project) => (
           <Link
             key={project.id}
             to="/projects/$projectId"
             params={{ projectId: project.id }}
-            className="rounded-lg border p-5 transition-colors hover:bg-muted/50"
+            className="min-w-0 rounded-lg border p-5 transition-colors hover:bg-muted/50"
           >
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="font-medium">{project.title}</h2>
-              <span className="text-xs text-muted-foreground">
-                {project.stage.replace("_", " ")}
-              </span>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="min-w-0 font-medium [overflow-wrap:anywhere]">{project.title}</h2>
+              <StatusBadge
+                label={t(
+                  project.stage === "draft"
+                    ? "draft"
+                    : project.stage === "in_progress"
+                      ? "inProgress"
+                      : project.stage === "review"
+                        ? "review"
+                        : "delivered",
+                )}
+                tone={
+                  project.stage === "delivered"
+                    ? "complete"
+                    : project.stage === "draft"
+                      ? "neutral"
+                      : "active"
+                }
+              />
             </div>
-            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground [overflow-wrap:anywhere]">
               {project.description ?? t("noDescription")}
             </p>
           </Link>

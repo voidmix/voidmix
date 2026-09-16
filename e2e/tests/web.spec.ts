@@ -8,7 +8,7 @@ test("renders the public workspace home", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Start free/i })).toBeVisible();
 });
 
-test("redirects unauthenticated Project Studio routes to sign in", async ({ page }) => {
+test("redirects unauthenticated project access to sign in", async ({ page }) => {
   await page.goto("/projects");
 
   await expect(page).toHaveURL(/\/login\?redirect=%2Fprojects/);

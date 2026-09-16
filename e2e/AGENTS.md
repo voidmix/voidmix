@@ -9,7 +9,7 @@ private workspace that is deliberately separate from Vitest.
 
 ```text
 playwright.config.ts   projects, baseURLs, and the webServer definitions
-tests/web.spec.ts      Web smoke project
+tests/web.spec.ts      Web home and unauthenticated project-access smoke tests
 tests/admin.spec.ts    Admin smoke project
 ```
 

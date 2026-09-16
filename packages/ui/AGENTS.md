@@ -16,7 +16,7 @@ Page layout and product-specific composition stay in the owning application.
 | `./styles.css`                                        | what applications import: the shared base-nova tokens |
 | `./styles/globals.css`                                | the shadcn-owned Tailwind entry and oklch token block |
 | `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives |
-| `./command-input`, `./status-badge`                   | Labelled command form and text-based status           |
+| `./status-badge` and `./components/ui/switch`         | Text status and accessible boolean control            |
 | `./lib/*`                                             | `cn` and CVA helpers                                  |
 
 ## Ownership

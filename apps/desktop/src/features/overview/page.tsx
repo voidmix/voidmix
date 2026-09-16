@@ -94,7 +94,7 @@ function SyncQueue({ jobs }: { jobs: SyncJob[] }) {
   return (
     <section className="work-panel queue-panel" aria-labelledby="queue-title">
       <SectionHeading
-        className="section-heading"
+        className="mb-[18px]"
         title={t("transferQueue")}
         titleId="queue-title"
         description={t("queueDescription")}
@@ -145,17 +145,12 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
   return (
     <section className="work-panel storage-panel" aria-labelledby="storage-title">
       <SectionHeading
-        className="section-heading"
+        className="mb-[18px]"
         title={t("storage")}
         titleId="storage-title"
         description={t("storageDescription", { percent: usedPercent })}
         action={
-          <Button
-            className="icon-button"
-            size="icon"
-            variant="ghost"
-            aria-label={t("storageOptions")}
-          >
+          <Button size="icon" variant="ghost" aria-label={t("storageOptions")}>
             <DotsThree size={16} />
           </Button>
         }
@@ -181,7 +176,7 @@ function StoragePanel({ snapshot }: { snapshot: CloudSnapshot }) {
           </div>
         ))}
       </div>
-      <Button className="secondary-button full-width" variant="secondary">
+      <Button className="w-full" variant="secondary">
         {t("manageStorage")}
       </Button>
     </section>
@@ -238,7 +233,7 @@ export function OverviewPage() {
   return (
     <div className="page overview-page">
       <PageHeader
-        className="page-header"
+        className="mb-7"
         title={t("title")}
         description={t("description")}
         action={
@@ -252,7 +247,6 @@ export function OverviewPage() {
                   : t("previewData")}
             </span>
             <Button
-              className="secondary-button"
               variant="secondary"
               onClick={() => void router.invalidate({ filter: (match) => match.routeId === "/" })}
               disabled={loading}
@@ -260,11 +254,7 @@ export function OverviewPage() {
               <ArrowsClockwise size={14} className={loading ? "rotating" : ""} />
               {t("refresh")}
             </Button>
-            <Button
-              className="primary-button"
-              variant="primary"
-              onClick={() => togglePreference("syncPaused")}
-            >
+            <Button variant="primary" onClick={() => togglePreference("syncPaused")}>
               {paused ? <Play size={14} /> : <Pause size={14} />}
               {paused ? t("resumeSync") : t("pauseSync")}
             </Button>

@@ -825,6 +825,16 @@
     "noDescription": "No description yet.",
     "tasks": "Tasks",
     "taskPlaceholder": "Add a task",
-    "addTask": "Add"
+    "addTask": "Add",
+    "saving": "Saving…",
+    "retry": "Retry",
+    "emptyTasks": "No tasks yet",
+    "draft": "Draft",
+    "inProgress": "In progress",
+    "review": "In review",
+    "delivered": "Delivered",
+    "todo": "To do",
+    "blocked": "Blocked",
+    "done": "Done"
   }
 }

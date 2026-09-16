@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { Field, FieldLabel } from "@voidmix/ui/components/ui/field";
+import { Input } from "@voidmix/ui/components/ui/input";
+import { Switch } from "@voidmix/ui/components/ui/switch";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { useDesktopTranslations } from "../../i18n/client";
-import { cn } from "@voidmix/ui/lib/utils";
 import { useState } from "react";
 import { useDesktopPreferences, type DesktopToggle } from "../../lib/preferences";
 import { authorizeProjectFolder, type PiRuntimeStatus } from "../../lib/pi";
@@ -42,16 +44,11 @@ function SettingToggle({
         <strong>{label}</strong>
         <p>{description}</p>
       </div>
-      <Button
-        className={cn("toggle", enabled && "enabled")}
-        variant="ghost"
-        role="switch"
+      <Switch
         aria-label={label}
-        aria-checked={enabled}
-        onClick={() => togglePreference(preference)}
-      >
-        <span />
-      </Button>
+        checked={enabled}
+        onCheckedChange={() => togglePreference(preference)}
+      />
     </div>
   );
 }
@@ -65,7 +62,7 @@ export function SettingsPage() {
 
   return (
     <div className="page settings-page">
-      <PageHeader className="page-header" title={t("title")} description={t("description")} />
+      <PageHeader className="mb-7" title={t("title")} description={t("description")} />
       <section className="settings-section">
         <h2>{t("theme")}</h2>
         <div className="settings-list">
@@ -74,7 +71,7 @@ export function SettingsPage() {
               <strong>{theme === "dark" ? t("darkTheme") : t("lightTheme")}</strong>
               <p>{t("theme")}</p>
             </div>
-            <Button className="secondary-button" variant="outline" onClick={toggleTheme}>
+            <Button variant="outline" onClick={toggleTheme}>
               {theme === "dark" ? t("lightTheme") : t("darkTheme")}
             </Button>
           </div>
@@ -89,13 +86,18 @@ export function SettingsPage() {
               <p>{folderStatus?.authorizedProject ?? t("projectFolderDescription")}</p>
             </div>
             <div className="flex gap-2">
-              <input
-                className="h-10 min-w-0 rounded-lg border border-border bg-background px-3 text-sm"
-                value={folder}
-                onChange={(event) => setFolder(event.target.value)}
-                placeholder={t("projectFolderPlaceholder")}
-                aria-label={t("projectFolder")}
-              />
+              <Field>
+                <FieldLabel className="sr-only" htmlFor="project-folder">
+                  {t("projectFolder")}
+                </FieldLabel>
+                <Input
+                  id="project-folder"
+                  className="h-10 min-w-0"
+                  value={folder}
+                  onChange={(event) => setFolder(event.target.value)}
+                  placeholder={t("projectFolderPlaceholder")}
+                />
+              </Field>
               <Button
                 variant="outline"
                 disabled={!folder.trim()}
@@ -127,7 +129,10 @@ export function SettingsPage() {
       ))}
       <section className="settings-section">
         <h2>{t("devices")}</h2>
-        <Link className="secondary-button settings-device-link" to="/devices">
+        <Link
+          className="inline-flex min-h-8 items-center rounded-lg border border-border px-3 text-sm text-primary hover:bg-muted"
+          to="/devices"
+        >
           {t("manageDevices")}
         </Link>
       </section>
