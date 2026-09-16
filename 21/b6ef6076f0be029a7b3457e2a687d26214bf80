@@ -1,0 +1,20 @@
+packages/application/src/index.ts
+  s_c6c5778bbf9e40::t_cfd3d8d07936e1 405,545,569
+  s_c6c5778bbf9e40::t_4112eee91233a0 134-135,171-232,262-266,289,304,309-315,326-327,341-346,351-361,377-382,391-396,406-409,412,424-429,441-446,458-463,470,475-485,497-502,512-513,520-521,524-528,540,546-550,561-562,588-589,616-621
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "21b6ef6076f0be029a7b3457e2a687d26214bf80",
+  "prompts": {},
+  "sessions": {
+    "s_c6c5778bbf9e40": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0136e404-a627-4d15-b369-9492058f5159",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
