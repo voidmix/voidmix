@@ -1,0 +1,25 @@
+packages/db/src/schema.ts
+  s_c6c5778bbf9e40::t_bd27d2254be765 386
+packages/db/drizzle/20260916083925_slippery_hellfire_club/migration.sql
+  s_c6c5778bbf9e40::t_09bbfd96a6b27b 1-41
+packages/db/drizzle/20260916083925_slippery_hellfire_club/snapshot.json
+  s_c6c5778bbf9e40::t_09bbfd96a6b27b 1-4092
+packages/db/src/postgres.ts
+  s_c6c5778bbf9e40::t_69c126960b3ec1 22-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2c0803b1780306b24d351bacfc39096f17719dac",
+  "prompts": {},
+  "sessions": {
+    "s_c6c5778bbf9e40": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0136e404-a627-4d15-b369-9492058f5159",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
