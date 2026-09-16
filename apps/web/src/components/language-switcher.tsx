@@ -1,4 +1,5 @@
 import { Globe } from "@phosphor-icons/react";
+import { useHydrated } from "@tanstack/react-router";
 import { useLocale, useSetLocale, useTranslations, type WebNamespaceKey } from "../i18n/client";
 import type { Locale } from "@voidmix/i18n/types";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -14,6 +15,7 @@ function preloadLanguageMenu() {
 }
 
 export function LanguageSwitcher() {
+  const hydrated = useHydrated();
   const locale = useLocale();
   const setLocale = useSetLocale();
   const t = useTranslations("common");
@@ -35,7 +37,7 @@ export function LanguageSwitcher() {
       aria-label={`${t("language")}: ${currentLabel}`}
       aria-expanded={open}
       aria-haspopup="menu"
-      disabled={pending}
+      disabled={!hydrated || pending}
       onClick={onClick}
       onFocus={preloadLanguageMenu}
       onPointerDown={preloadLanguageMenu}

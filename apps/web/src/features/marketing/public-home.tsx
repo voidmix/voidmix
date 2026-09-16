@@ -12,6 +12,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { useTranslations } from "../../i18n/client";
+import { LanguageSwitcher } from "../../components/language-switcher";
 
 const capabilityKeys = [
   ["capabilitySite", Globe],
@@ -63,6 +64,7 @@ export function PublicHome() {
             </a>
           </div>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <Link
               to="/login"
               className="hidden px-3 py-2 text-sm text-slate-600 hover:text-[#5865f2] sm:inline"

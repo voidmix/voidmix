@@ -8,6 +8,30 @@ test("renders the public workspace home", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Start free/i })).toBeVisible();
 });
 
+for (const width of [390, 1440]) {
+  test(`switches and remembers the home language at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: "Language: English" }).click();
+    await page.getByRole("menuitemradio", { name: "简体中文" }).click();
+
+    await expect(page.locator("html")).toHaveAttribute("lang", "zh");
+    await expect(
+      page.getByRole("heading", { name: "用自然语言，生成并完成你的下一个应用" }),
+    ).toBeVisible();
+
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("lang", "zh");
+    await page.getByRole("button", { name: "语言: 简体中文" }).click();
+    await page.getByRole("menuitemradio", { name: "英语" }).click();
+
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.getByRole("heading", { name: /Generate and ship/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Language: English" })).toBeVisible();
+  });
+}
+
 test("redirects unauthenticated project access to sign in", async ({ page }) => {
   await page.goto("/projects");
 

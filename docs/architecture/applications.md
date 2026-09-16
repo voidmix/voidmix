@@ -15,14 +15,13 @@ browser composition root for authentication and Admin operations.
   VoidMix name, launch scope, theme, and shared 512×512 brand mark for
   install-capable browsers.
 - Route files declare URLs and may compose a small number of feature entrypoints;
-  the home route directly mounts the home navbar and chat shell.
+  the home route mounts the public marketing page and its navigation.
 - Feature roots keep components, state, data, fixtures, tests, and styles;
   larger features place internal presentation components under a local
   `components/` directory.
-- The home prompt is implemented by the feature-local chat shell under
-  `apps/web/src/features/chat/`. Its preview starts with an empty composer and
-  creates deterministic local responses after submission; it does not call the
-  API.
+- Home navigation offers English/Simplified Chinese switching at desktop and
+  mobile widths. The menu loads on interaction, and the root i18n provider keeps
+  the chosen locale across reloads using the existing locale Cookie.
 - Authentication pages are grouped under `(auth)/route.tsx` and expose public
   `/login`, `/signup`, `/reset-password`, and `/verify-email` URLs. Login and
   signup validate an internal `redirect` search parameter so protected

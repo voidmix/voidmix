@@ -96,6 +96,9 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - Keep menu-heavy secondary interactions out of the home route's initial client
   path. Language, theme, and Composer attachment menus preload on focus or
   pointer interaction and load their Base UI menu implementation on demand.
+- The home navigation uses `LanguageSwitcher` on desktop and mobile. Its trigger
+  stays disabled until hydration so an early click cannot be lost; language
+  persistence remains owned by the root i18n provider.
 - Web feature code uses `@voidmix/ui/toast` for Toast notifications. The bridge
   loads `@voidmix/ui/components/ui/toast` on the first `toast.add()` call and
   the root's `AsyncToaster` mounts its UI only after that module is ready. Do not
