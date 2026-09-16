@@ -22,7 +22,7 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { SectionHeading } from "@voidmix/ui/section-heading";
 import { cn } from "@voidmix/ui/lib/utils";
-import { useState } from "react";
+import { useDesktopPreferences } from "../../lib/preferences";
 import type { CSSProperties } from "react";
 import { formatBytes, type CloudSnapshot, type SyncJob } from "../../lib/cloud";
 
@@ -232,7 +232,8 @@ export function OverviewPage() {
   const { snapshot, source } = route.useLoaderData();
   const loading = route.useMatch({ select: (match) => Boolean(match.isFetching) });
   const router = useRouter();
-  const [paused, setPaused] = useState(false);
+  const paused = useDesktopPreferences((state) => state.syncPaused);
+  const togglePreference = useDesktopPreferences((state) => state.togglePreference);
 
   return (
     <div className="page overview-page">
@@ -262,7 +263,7 @@ export function OverviewPage() {
             <Button
               className="primary-button"
               variant="primary"
-              onClick={() => setPaused((value) => !value)}
+              onClick={() => togglePreference("syncPaused")}
             >
               {paused ? <Play size={14} /> : <Pause size={14} />}
               {paused ? t("resumeSync") : t("pauseSync")}

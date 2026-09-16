@@ -30,6 +30,8 @@ user can observe them.
 
 ### Changed
 
+- Theme, sync pause, and settings preferences now survive navigation and
+  application restarts. Existing saved theme choices are preserved.
 - Page navigation now loads data through TanStack Start routes, with loading
   feedback and retry controls. Creating a project refreshes the project list.
 - Activity filters are preserved when refreshing or using back and forward.
@@ -44,6 +46,8 @@ the version in the three manifests is a placeholder rather than a shipped build.
 
 ### Fixed
 
+- The titlebar and settings theme controls now stay synchronized. Switching
+  language no longer resets settings toggles.
 - Opening a project now displays its detail page instead of leaving the list
   visible. Missing projects show a dedicated message and a link back.
 - Rapidly switching projects cancels obsolete requests and keeps the latest

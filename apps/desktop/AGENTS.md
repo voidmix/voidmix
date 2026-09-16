@@ -33,6 +33,7 @@ src/
   lib/cloud.ts      stable cloud facade and formatting helper
   lib/cloud/        remote normalization, source selection, and types
   lib/desktop.ts    Tauri bridge helpers
+  lib/preferences.ts persisted Zustand store for renderer preferences
   router.integration.test.tsx route rendering, loading, refresh, and history tests
   i18n/             static catalogs and API error codes
 src-tauri/
@@ -63,6 +64,13 @@ src-tauri/
   `Outlet` for both the list and `/projects/$projectId`. Activity filters are
   validated URL search parameters.
 - Shared pending and retry UI lives in `features/shell/route-state.tsx`.
+- `lib/preferences.ts` owns theme, sync pause, and settings toggles in one
+  Zustand store. Subscribe with selectors so unrelated preferences do not
+  rerender every consumer. Remote data stays in route loaders and form drafts
+  stay local to the page.
+- The preference store skips automatic hydration for the Start shell. Restore it
+  after mounting, validate persisted fields, and preserve the previous theme
+  key when migrating. Storage failures must leave in-memory controls usable.
 - **`routeTree.gen.ts` is generated; never hand-edit it.** The Start Vite plugin
   refreshes it during `dev` or `build` and owns the Register footer.
 - `routes/__root.tsx` owns the static HTML document, stylesheet link, locale

@@ -77,6 +77,13 @@ browser composition root for authentication and Admin operations.
 - Project creation and overview refresh invalidate the owning route. Route
   cancellation reaches the API transport, and late responses cannot replace
   a newer navigation. Activity filters live in validated URL search parameters.
+- Zustand owns renderer preferences shared across pages: theme, sync pause, and
+  the five settings toggles. Each control subscribes to the value it uses;
+  transient form fields remain local and remote data remains in route loaders.
+  The shell restores preferences after hydration so the prerendered document
+  starts deterministically. Persistence validates saved values, migrates the
+  previous theme key, and tolerates unavailable localStorage. These values are
+  renderer preferences; saving a toggle does not itself configure an OS service.
 - Owns no Start server functions or server routes. Runtime data continues to
   come from the cloud API through `@voidmix/client`.
 - Rust owns tray behavior, notifications, window lifecycle, and native

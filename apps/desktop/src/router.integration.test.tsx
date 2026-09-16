@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import { messages } from "./i18n/messages";
 import { demoCloudSnapshot } from "./lib/cloud/demo";
 import { getRouter } from "./router";
+import { useDesktopPreferences } from "./lib/preferences";
 import { Route as rootRoute } from "./routes/__root";
 
 const loaders = vi.hoisted(() => ({
@@ -58,6 +59,8 @@ function renderRoute(path: string) {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  useDesktopPreferences.setState(useDesktopPreferences.getInitialState(), true);
+  localStorage.clear();
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
   loaders.loadProjects.mockResolvedValue({ status: "loaded", data: [] });
   loaders.loadProject.mockResolvedValue({
@@ -73,6 +76,47 @@ afterEach(() => {
 });
 
 describe("Desktop Start routes", () => {
+  it("keeps titlebar and settings theme controls synchronized", async () => {
+    renderRoute("/settings");
+    await screen.findByRole("heading", { name: "Settings" });
+    fireEvent.click(screen.getAllByRole("button", { name: "Light" })[1]!);
+    await waitFor(() => expect(screen.getAllByRole("button", { name: "Dark" })).toHaveLength(2));
+    expect(document.documentElement.dataset.theme).toBe("light");
+    fireEvent.click(screen.getAllByRole("button", { name: "Dark" })[0]!);
+    expect(screen.getAllByRole("button", { name: "Light" })).toHaveLength(2);
+    expect(document.documentElement.dataset.theme).toBe("dark");
+  });
+
+  it("keeps settings after switching language and leaving the page", async () => {
+    const router = renderRoute("/settings");
+    const setting = await screen.findByRole("switch", {
+      name: messages.en.settings.startWithSystem,
+    });
+    fireEvent.click(setting);
+    fireEvent.click(screen.getByRole("button", { name: "Simplified Chinese" }));
+    expect(
+      (
+        await screen.findByRole("switch", { name: messages.zh.settings.startWithSystem })
+      ).getAttribute("aria-checked"),
+    ).toBe("true");
+    await act(() => router.navigate({ to: "/" }));
+    await act(() => router.navigate({ to: "/settings" }));
+    expect(
+      (
+        await screen.findByRole("switch", { name: messages.zh.settings.startWithSystem })
+      ).getAttribute("aria-checked"),
+    ).toBe("true");
+  });
+
+  it("keeps the sync pause preference after returning to the overview", async () => {
+    const router = renderRoute("/");
+    fireEvent.click(await screen.findByRole("button", { name: "Pause sync" }));
+    await act(() => router.navigate({ to: "/settings" }));
+    await act(() => router.navigate({ to: "/" }));
+    expect(await screen.findByRole("button", { name: "Resume sync" })).toBeDefined();
+    expect(useDesktopPreferences.getState().syncPaused).toBe(true);
+  });
+
   it("opens project details without rendering the project list over them", async () => {
     renderRoute("/projects/project-1");
 

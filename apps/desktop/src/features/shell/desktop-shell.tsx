@@ -12,7 +12,7 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
-import { applyDesktopTheme, readDesktopTheme } from "../../lib/theme";
+import { useDesktopPreferences } from "../../lib/preferences";
 import { AccountControl } from "./account-control";
 import { useDesktopTranslations, useLocale, useSetLocale } from "../../i18n/client";
 
@@ -58,7 +58,8 @@ export function DesktopShell() {
     { to: "/activity", label: t("activity"), icon: Pulse },
     { to: "/settings", label: t("settings"), icon: Gear },
   ] as const;
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const theme = useDesktopPreferences((state) => state.theme);
+  const toggleTheme = useDesktopPreferences((state) => state.toggleTheme);
   const [runtime, setRuntime] = useState<DesktopRuntime>({
     appVersion: "0.1.0",
     platform: "browser",
@@ -66,11 +67,16 @@ export function DesktopShell() {
   });
 
   useEffect(() => {
-    const initialTheme = readDesktopTheme();
-    setTheme(initialTheme);
-    applyDesktopTheme(initialTheme);
+    void useDesktopPreferences.persist.rehydrate();
     void getDesktopRuntime().then(setRuntime);
   }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.classList.toggle("dark", theme === "dark");
+    root.style.colorScheme = theme;
+  }, [theme]);
 
   return (
     <div className="desktop-shell">
@@ -120,11 +126,7 @@ export function DesktopShell() {
           <Button
             className="window-hide"
             variant="ghost"
-            onClick={() => {
-              const nextTheme = theme === "dark" ? "light" : "dark";
-              setTheme(nextTheme);
-              applyDesktopTheme(nextTheme);
-            }}
+            onClick={toggleTheme}
             aria-label={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
             title={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
           >

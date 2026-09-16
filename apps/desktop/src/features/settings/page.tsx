@@ -3,20 +3,39 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { useDesktopTranslations } from "../../i18n/client";
 import { cn } from "@voidmix/ui/lib/utils";
-import { useMemo, useState } from "react";
-import { applyDesktopTheme, readDesktopTheme, type DesktopTheme } from "../../lib/theme";
+import { useState } from "react";
+import { useDesktopPreferences, type DesktopToggle } from "../../lib/preferences";
 import { authorizeProjectFolder, type PiRuntimeStatus } from "../../lib/pi";
+
+const sections = [
+  {
+    title: "syncBehavior",
+    settings: [
+      ["startWithSystem", "startWithSystemDescription"],
+      ["meteredNetworks", "meteredNetworksDescription"],
+      ["automaticDownloads", "automaticDownloadsDescription"],
+    ],
+  },
+  {
+    title: "notifications",
+    settings: [
+      ["transferSummaries", "transferSummariesDescription"],
+      ["workspaceChanges", "workspaceChangesDescription"],
+    ],
+  },
+] as const;
 
 function SettingToggle({
   label,
   description,
-  initial = true,
+  preference,
 }: {
   label: string;
   description: string;
-  initial?: boolean;
+  preference: DesktopToggle;
 }) {
-  const [enabled, setEnabled] = useState(initial);
+  const enabled = useDesktopPreferences((state) => state[preference]);
+  const togglePreference = useDesktopPreferences((state) => state.togglePreference);
   return (
     <div className="setting-row">
       <div>
@@ -27,8 +46,9 @@ function SettingToggle({
         className={cn("toggle", enabled && "enabled")}
         variant="ghost"
         role="switch"
+        aria-label={label}
         aria-checked={enabled}
-        onClick={() => setEnabled((value) => !value)}
+        onClick={() => togglePreference(preference)}
       >
         <span />
       </Button>
@@ -38,36 +58,10 @@ function SettingToggle({
 
 export function SettingsPage() {
   const t = useDesktopTranslations("settings");
-  const [theme, setTheme] = useState<DesktopTheme>(() => readDesktopTheme());
+  const theme = useDesktopPreferences((state) => state.theme);
+  const toggleTheme = useDesktopPreferences((state) => state.toggleTheme);
   const [folder, setFolder] = useState("");
   const [folderStatus, setFolderStatus] = useState<PiRuntimeStatus | null>(null);
-
-  function toggleTheme() {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    applyDesktopTheme(nextTheme);
-  }
-
-  const sections = useMemo(
-    () => [
-      {
-        title: t("syncBehavior"),
-        settings: [
-          [t("startWithSystem"), t("startWithSystemDescription"), false] as const,
-          [t("meteredNetworks"), t("meteredNetworksDescription"), false] as const,
-          [t("automaticDownloads"), t("automaticDownloadsDescription"), true] as const,
-        ],
-      },
-      {
-        title: t("notifications"),
-        settings: [
-          [t("transferSummaries"), t("transferSummariesDescription"), true] as const,
-          [t("workspaceChanges"), t("workspaceChangesDescription"), true] as const,
-        ],
-      },
-    ],
-    [t],
-  );
 
   return (
     <div className="page settings-page">
@@ -118,14 +112,14 @@ export function SettingsPage() {
       </section>
       {sections.map((section) => (
         <section className="settings-section" key={section.title}>
-          <h2>{section.title}</h2>
+          <h2>{t(section.title)}</h2>
           <div className="settings-list">
-            {section.settings.map(([label, description, initial]) => (
+            {section.settings.map(([preference, description]) => (
               <SettingToggle
-                key={label}
-                label={label}
-                description={description}
-                initial={initial}
+                key={preference}
+                label={t(preference)}
+                description={t(description)}
+                preference={preference}
               />
             ))}
           </div>

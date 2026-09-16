@@ -31,7 +31,8 @@
     "@voidmix/logger": "workspace:*",
     "@voidmix/ui": "workspace:*",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "zustand": "catalog:frontend"
   },
   "devDependencies": {
     "@tauri-apps/cli": "catalog:frontend",
