@@ -1,0 +1,29 @@
+packages/scripts/src/i18n/catalog.ts
+  s_c6c5778bbf9e40::t_310de3cbe7f3d9 1-277
+packages/scripts/src/i18n/types.ts
+  s_c6c5778bbf9e40::t_a8bd4cf0444c66 1-59
+packages/scripts/src/i18n/checks.ts
+  s_c6c5778bbf9e40::t_7d35a26cbeb519 2-6,8-25,27-30
+  s_c6c5778bbf9e40::t_488b765376cffa 26
+packages/scripts/src/i18n/source-checks.ts
+  s_c6c5778bbf9e40::t_041f1c3d471440 1-492
+packages/scripts/src/i18n/source-scan.ts
+  s_c6c5778bbf9e40::t_cdef95170dc277 1-86,88-698
+  s_c6c5778bbf9e40::t_33d813843a3047 87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b0dccb09689ce3267244b2004faed0689e7d06e3",
+  "prompts": {},
+  "sessions": {
+    "s_c6c5778bbf9e40": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0136e404-a627-4d15-b369-9492058f5159",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
