@@ -14,22 +14,27 @@ function getClient(): ApiClient {
   });
 }
 
-export async function loadProjects(): Promise<StudioLoad<StudioProject[]>> {
+export async function loadProjects(signal?: AbortSignal): Promise<StudioLoad<StudioProject[]>> {
   if (!env.VITE_API_URL) return { status: "unavailable", data: null };
   try {
-    const result = await getClient().projects.list({});
+    const result = await getClient().projects.list({}, { signal });
     return { status: "loaded", data: result.items };
   } catch {
+    signal?.throwIfAborted();
     return { status: "unavailable", data: null };
   }
 }
 
-export async function loadProject(projectId: string): Promise<StudioLoad<StudioDetail | null>> {
+export async function loadProject(
+  projectId: string,
+  signal?: AbortSignal,
+): Promise<StudioLoad<StudioDetail | null>> {
   if (!env.VITE_API_URL) return { status: "unavailable", data: null };
   try {
-    const result = await getClient().projects.get({ projectId });
+    const result = await getClient().projects.get({ projectId }, { signal });
     return { status: "loaded", data: result.project };
   } catch {
+    signal?.throwIfAborted();
     return { status: "unavailable", data: null };
   }
 }

@@ -28,7 +28,9 @@
     "accountLoading": "正在加载账号…",
     "previewAccount": "预览账号",
     "signedOut": "尚未登录",
-    "accountUnavailable": "无法加载账号"
+    "accountUnavailable": "无法加载账号",
+    "loading": "正在加载…",
+    "retry": "重试"
   },
   "overview": {
     "title": "你的工作室正在运转",

@@ -25,7 +25,7 @@
       ]
     },
     "apps/desktop": {
-      "entry": ["src/App.tsx", "src/router.tsx"]
+      "entry": ["src/router.tsx"]
     },
     "apps/web": {
       "entry": ["scripts/analyze-bundle.ts", "server/health.ts", "src/router.tsx"]

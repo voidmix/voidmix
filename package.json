@@ -71,7 +71,6 @@
         "citty": "^0.2.2",
         "oxc-transform-react": "^0.150.0",
         "storybook": "10.6.0",
-        "type-fest": "^5.9.0",
         "taze": "^21.1.0",
         "typescript": "7.0.2",
         "vite": "npm:@voidzero-dev/vite-plus-core@0.3.2",

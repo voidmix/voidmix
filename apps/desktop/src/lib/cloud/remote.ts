@@ -1,7 +1,6 @@
 import { createApiClient } from "@voidmix/client";
 import { getDesktopLocaleHeaders } from "../../i18n/client";
 import type { CloudSnapshot } from "./types";
-import { isCloudSnapshot } from "./validation";
 
 export type RemoteSnapshotResult =
   | { kind: "loaded"; snapshot: CloudSnapshot }
@@ -11,9 +10,13 @@ export type RemoteSnapshotResult =
 
 type SnapshotDetail = CloudSnapshot["jobs"][number]["detail"];
 
-export async function fetchRemoteSnapshot(apiUrl: string): Promise<RemoteSnapshotResult> {
+export async function fetchRemoteSnapshot(
+  apiUrl: string,
+  signal?: AbortSignal,
+): Promise<RemoteSnapshotResult> {
   const baseUrl = apiUrl.replace(/\/$/, "");
   const controller = new AbortController();
+  const requestSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
   const timer = globalThis.setTimeout(() => controller.abort(), 3500);
 
   try {
@@ -25,22 +28,24 @@ export async function fetchRemoteSnapshot(apiUrl: string): Promise<RemoteSnapsho
     }
 
     try {
-      await client.health({});
+      await client.health({}, { signal: requestSignal });
     } catch {
+      signal?.throwIfAborted();
       return { kind: "health_check_failed" };
     }
 
     try {
       const response = await fetch(`${baseUrl}/desktop/overview`, {
         headers: { ...getDesktopLocaleHeaders(), accept: "application/json" },
-        signal: controller.signal,
+        signal: requestSignal,
       });
       if (!response.ok) throw new Error(`Cloud API returned ${response.status}`);
       const data: unknown = await response.json();
       const snapshot = normalizeSnapshot(data);
-      if (!snapshot || !isCloudSnapshot(snapshot)) return { kind: "invalid_snapshot" };
+      if (!snapshot) return { kind: "invalid_snapshot" };
       return { kind: "loaded", snapshot };
     } catch {
+      signal?.throwIfAborted();
       return { kind: "overview_unavailable" };
     }
   } finally {

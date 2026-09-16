@@ -28,7 +28,9 @@
     "accountLoading": "Loading account…",
     "previewAccount": "Preview account",
     "signedOut": "Not signed in",
-    "accountUnavailable": "Account unavailable"
+    "accountUnavailable": "Account unavailable",
+    "loading": "Loading…",
+    "retry": "Try again"
   },
   "overview": {
     "title": "Your studio is in motion",

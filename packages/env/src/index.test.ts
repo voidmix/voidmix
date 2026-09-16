@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, expectTypeOf, it } from "vite-plus/test";
 
 import { createEnv, defineEnv, EnvError, z, type Preset } from "./index.js";
 import { runtimeEnv } from "./runtime.js";
@@ -83,5 +83,86 @@ describe("env", () => {
     circular.extends.push(circular);
 
     expect(() => createEnv({ isServer: true, extends: [circular] })).toThrow(EnvError);
+  });
+
+  it("applies defaults to blank input and validates the default before transforming", () => {
+    const env = defineEnv({
+      server: { PORT: z.string().default("3002").transform(Number) },
+      runtimeEnv: { PORT: " " },
+    });
+    expect(env.PORT).toBe(3002);
+    expectTypeOf(env.PORT).toEqualTypeOf<number>();
+
+    expect(() =>
+      defineEnv({
+        server: { PORT: z.number().positive().default(-1) },
+        runtimeEnv: {},
+      }),
+    ).toThrow(EnvError);
+  });
+
+  it("keeps later preset overrides and their inferred types", () => {
+    const base = { server: { PORT: z.string(), OPTIONAL: z.string().optional() } } as const;
+    const override = { extends: [base], server: { PORT: z.coerce.number() } } as const;
+    const env = createEnv({
+      extends: [base, override],
+      runtimeEnv: { PORT: "3002" },
+    });
+    expect(env.PORT).toBe(3002);
+    expect(env.OPTIONAL).toBeUndefined();
+    expectTypeOf(env.PORT).toEqualTypeOf<number>();
+    expectTypeOf(env.OPTIONAL).toEqualTypeOf<string | undefined>();
+  });
+
+  it("reports all invalid keys without including environment values", () => {
+    const invalidSecret = "sensitive-invalid-value";
+    let failure: unknown;
+    try {
+      defineEnv({
+        server: { PORT: z.coerce.number(), SECRET: z.string().min(50) },
+        runtimeEnv: { PORT: "not-a-number", SECRET: invalidSecret },
+      });
+    } catch (error) {
+      failure = error;
+    }
+    expect(failure).toBeInstanceOf(EnvError);
+    expect((failure as Error).message).toContain("PORT:");
+    expect((failure as Error).message).toContain("SECRET:");
+    expect((failure as Error).message).not.toContain(invalidSecret);
+  });
+
+  it("preserves inherited public values while excluding secrets from browser enumeration", () => {
+    const preset = {
+      shared: { MODE: z.literal("test") },
+      clientPrefix: "VITE_",
+      client: { VITE_ORIGIN: z.url() },
+      server: { SECRET: z.string() },
+    } as const satisfies Preset;
+    const env = createEnv({
+      extends: [preset],
+      isServer: false,
+      runtimeEnv: { MODE: "test", VITE_ORIGIN: "https://example.test", SECRET: "private" },
+    });
+    expect(env.MODE).toBe("test");
+    expect(env.VITE_ORIGIN).toBe("https://example.test");
+    expect(Object.keys(env)).toEqual(["MODE", "VITE_ORIGIN"]);
+    expect(() => env.SECRET).toThrow(EnvError);
+  });
+
+  it("enforces public prefixes in types and rejects invalid access at runtime", () => {
+    const env = createEnv({
+      isServer: false,
+      client: {
+        // @ts-expect-error Public variables must use the VITE_ prefix.
+        SECRET: z.string().default("private"),
+      },
+      server: {
+        // @ts-expect-error Server variables cannot use the public prefix.
+        VITE_SECRET: z.string().default("private"),
+      },
+      runtimeEnv: {},
+    });
+    expect(() => env.SECRET).toThrow(EnvError);
+    expect(() => env.VITE_SECRET).toThrow(EnvError);
   });
 });

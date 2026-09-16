@@ -1,12 +1,5 @@
 import z from "zod";
 
-import {
-  dictionaryToStandardSchema,
-  ensureSynchronous,
-  getDefaultDictionary,
-  type StandardSchemaDictionary,
-  type StandardSchemaV1,
-} from "./standard.js";
 import type {
   ClientFormat,
   DefineEnv,
@@ -30,7 +23,7 @@ type ClientAccessDescriptor = {
 
 type CompiledPresetContext = {
   clientAccess: readonly ClientAccessDescriptor[];
-  schema: StandardSchemaDictionary;
+  schema: z.ZodRawShape;
   sharedKeys: ReadonlySet<string>;
 };
 
@@ -63,7 +56,7 @@ function normalizeEnv(values: RuntimeEnv): RuntimeEnv {
   );
 }
 
-function getCombinedSchema(preset: RuntimePreset, isServer: boolean): StandardSchemaDictionary {
+function getCombinedSchema(preset: RuntimePreset, isServer: boolean): z.ZodRawShape {
   return {
     ...preset.shared,
     ...(isServer ? preset.server : undefined),
@@ -87,7 +80,7 @@ function visitPresetTree(
 }
 
 function compilePresetContext(options: RuntimePreset, isServer: boolean): CompiledPresetContext {
-  const schema: StandardSchemaDictionary = {};
+  const schema: Record<string, z.ZodType> = {};
   const sharedKeys = new Set<string>();
   const clientAccess: ClientAccessDescriptor[] = [];
 
@@ -110,14 +103,10 @@ export class EnvError extends Error {
   }
 }
 
-const issuePath = (issue: StandardSchemaV1.Issue): string => {
-  const [first] = issue.path ?? [];
-  if (typeof first === "object" && first && "key" in first) return String(first.key);
-  return first === undefined ? "unknown" : String(first);
-};
-
-function reportInvalidEnv(issues: StandardSchemaV1.FailureResult["issues"]): never {
-  const details = issues.map((issue) => `${issuePath(issue)}: ${issue.message}`).join("\n");
+function reportInvalidEnv(issues: readonly z.core.$ZodIssue[]): never {
+  const details = issues
+    .map((issue) => `${String(issue.path[0] ?? "unknown")}: ${issue.message}`)
+    .join("\n");
   throw new EnvError(`Invalid environment variables:\n${details}`);
 }
 
@@ -165,22 +154,22 @@ export function defineEnv<
   const context = compilePresetContext(options as RuntimePreset, isServer);
   const finalSchema =
     options.transform?.(context.schema as never, isServer) ??
-    (dictionaryToStandardSchema(context.schema) as Final);
-  const defaults = getDefaultDictionary(context.schema);
+    (z.object(context.schema) as unknown as Final);
   const runtimeValues = normalizeEnv(options.runtimeEnv ?? getProcessEnv());
   const declaredValues = Object.fromEntries(
-    Object.keys(context.schema).map((key) => [
+    Object.entries(context.schema).map(([key, schema]) => [
       key,
-      runtimeValues[key] === undefined ? defaults[key] : runtimeValues[key],
+      runtimeValues[key] === undefined && schema instanceof z.ZodDefault
+        ? schema.def.defaultValue
+        : runtimeValues[key],
     ]),
   );
 
   let values: object = declaredValues;
   if (!options.skip) {
-    const result = finalSchema["~standard"].validate(declaredValues);
-    ensureSynchronous(result, "Environment validation must be synchronous.");
-    if (result.issues) return (options.onError ?? reportInvalidEnv)(result.issues);
-    values = result.value;
+    const result = finalSchema.safeParse(declaredValues);
+    if (!result.success) return (options.onError ?? reportInvalidEnv)(result.error.issues);
+    values = result.data;
   }
 
   return createEnvProxy({
@@ -213,7 +202,6 @@ export function createEnv<
   Final extends Schema = FinalSchema<Shared, Server, Client, Extends>,
 >(options: CreateEnvOptions<Shared, Server, Client, Extends, Final>): DefineEnv<Final> {
   const client = typeof options.client === "object" ? options.client : {};
-  const server = typeof options.server === "object" ? options.server : {};
   const isServer = options.isServer ?? detectIsServer();
   const processEnv = getProcessEnv();
   const metaEnv = getImportMetaEnv();
@@ -239,8 +227,6 @@ export function createEnv<
 
   return defineEnv<typeof CLIENT_PREFIX, Shared, Server, Client, Extends, Final>({
     ...options,
-    client,
-    server,
     isServer,
     runtimeEnv,
     clientPrefix: CLIENT_PREFIX,

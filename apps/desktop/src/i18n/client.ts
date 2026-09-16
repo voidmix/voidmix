@@ -50,6 +50,8 @@ const namespaceKeys = {
     "previewAccount",
     "signedOut",
     "accountUnavailable",
+    "loading",
+    "retry",
   ],
   overview: [
     "title",

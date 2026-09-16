@@ -30,6 +30,9 @@ user can observe them.
 
 ### Changed
 
+- Page navigation now loads data through TanStack Start routes, with loading
+  feedback and retry controls. Creating a project refreshes the project list.
+- Activity filters are preserved when refreshing or using back and forward.
 - Renamed the desktop application from Voidmix Cloud/Voidmix Field to VoidMix.
 - Primary navigation now follows Home, Projects, Library, Activity, and Settings;
   Devices is managed from Settings.
@@ -38,3 +41,10 @@ user can observe them.
 
 `0.1.0` has not been released; there are no tags and CI has no release job, so
 the version in the three manifests is a placeholder rather than a shipped build.
+
+### Fixed
+
+- Opening a project now displays its detail page instead of leaving the list
+  visible. Missing projects show a dedicated message and a link back.
+- Rapidly switching projects cancels obsolete requests and keeps the latest
+  project's data visible.

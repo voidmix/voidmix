@@ -11,8 +11,16 @@ hash. Corrections live here instead.
 `apps/web` uses parenthesized `(auth)`, `(app)`, and nested `(admin)` route-group
 directories, with `route.tsx` as each group layout. `(app)/route.tsx` contains
 the Better Auth client session gate, while `(app)/(admin)/route.tsx` owns the
-AdminShell layout. Web still has no loader, `beforeLoad`, or server-function
-precedent. `apps/desktop` uses code-based routing and is not the model for Web.
+AdminShell layout. Both applications use Start file routes. Desktop uses SPA
+mode with client-only route loaders and lazy feature pages; it is not a model
+for Web server functions or SSR data access.
+
+Desktop routes use directories for URL segments, with `route.tsx` for a segment
+or layout, `index.tsx` for its exact page, and `$param.tsx` for dynamic children.
+The `/projects/` list lives in `projects/index.tsx`; `projects/route.tsx` must
+render an `Outlet` so both the list and `projects/$projectId.tsx` can render.
+Keep remote loaders `ssr: false` so static shell generation makes no cloud calls.
+Use `getRouteApi` in lazy feature pages and `router.invalidate` after mutations.
 
 ## Correction 1: use `.validator()`, not `.inputValidator()`
 

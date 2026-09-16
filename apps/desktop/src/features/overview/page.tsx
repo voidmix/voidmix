@@ -14,7 +14,7 @@ import {
   Play,
   WifiHigh,
 } from "@phosphor-icons/react";
-import { Link } from "@tanstack/react-router";
+import { getRouteApi, Link, useRouter } from "@tanstack/react-router";
 import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { formatCloudTime } from "../../i18n/time";
 import { formatJobDetail } from "./job-detail";
@@ -22,15 +22,11 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { SectionHeading } from "@voidmix/ui/section-heading";
 import { cn } from "@voidmix/ui/lib/utils";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import type { CSSProperties } from "react";
-import {
-  demoCloudSnapshot,
-  formatBytes,
-  loadCloudSnapshot,
-  type CloudSnapshot,
-  type SyncJob,
-} from "../../lib/cloud";
+import { formatBytes, type CloudSnapshot, type SyncJob } from "../../lib/cloud";
+
+const route = getRouteApi("/");
 
 function SyncState({ paused, pending }: { paused: boolean; pending: number }) {
   const t = useDesktopTranslations("overview");
@@ -233,22 +229,10 @@ function DeviceStrip({ snapshot }: { snapshot: CloudSnapshot }) {
 export function OverviewPage() {
   const t = useDesktopTranslations("overview");
   const formatter = useFormatter();
-  const [snapshot, setSnapshot] = useState<CloudSnapshot>(demoCloudSnapshot);
-  const [source, setSource] = useState<"cloud" | "connected" | "demo">("demo");
-  const [loading, setLoading] = useState(false);
+  const { snapshot, source } = route.useLoaderData();
+  const loading = route.useMatch({ select: (match) => Boolean(match.isFetching) });
+  const router = useRouter();
   const [paused, setPaused] = useState(false);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    const result = await loadCloudSnapshot();
-    setSnapshot(result.snapshot);
-    setSource(result.source);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
 
   return (
     <div className="page overview-page">
@@ -269,7 +253,7 @@ export function OverviewPage() {
             <Button
               className="secondary-button"
               variant="secondary"
-              onClick={() => void refresh()}
+              onClick={() => void router.invalidate({ filter: (match) => match.routeId === "/" })}
               disabled={loading}
             >
               <ArrowsClockwise size={14} className={loading ? "rotating" : ""} />

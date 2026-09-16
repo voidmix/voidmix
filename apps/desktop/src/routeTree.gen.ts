@@ -10,67 +10,75 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ActivityRouteImport } from './routes/activity'
-import { Route as DevicesRouteImport } from './routes/devices'
-import { Route as ProjectsRouteImport } from './routes/projects'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
+import { Route as ActivityRouteRouteImport } from './routes/activity/route'
+import { Route as DevicesRouteRouteImport } from './routes/devices/route'
+import { Route as ProjectsRouteRouteImport } from './routes/projects/route'
+import { Route as SettingsRouteRouteImport } from './routes/settings/route'
+import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
+import { Route as ProjectsProjectIdRouteImport } from './routes/projects/$projectId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ActivityRoute = ActivityRouteImport.update({
+const ActivityRouteRoute = ActivityRouteRouteImport.update({
   id: '/activity',
   path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DevicesRoute = DevicesRouteImport.update({
+const DevicesRouteRoute = DevicesRouteRouteImport.update({
   id: '/devices',
   path: '/devices',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsRoute = ProjectsRouteImport.update({
+const ProjectsRouteRoute = ProjectsRouteRouteImport.update({
   id: '/projects',
   path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsRoute = SettingsRouteImport.update({
+const SettingsRouteRoute = SettingsRouteRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjectsRouteRoute,
+} as any)
 const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
   id: '/$projectId',
   path: '/$projectId',
-  getParentRoute: () => ProjectsRoute,
+  getParentRoute: () => ProjectsRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/devices': typeof DevicesRoute
-  '/projects': typeof ProjectsRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/activity': typeof ActivityRouteRoute
+  '/devices': typeof DevicesRouteRoute
+  '/projects': typeof ProjectsRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/devices': typeof DevicesRoute
-  '/projects': typeof ProjectsRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/activity': typeof ActivityRouteRoute
+  '/devices': typeof DevicesRouteRoute
+  '/settings': typeof SettingsRouteRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects': typeof ProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/devices': typeof DevicesRoute
-  '/projects': typeof ProjectsRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/activity': typeof ActivityRouteRoute
+  '/devices': typeof DevicesRouteRoute
+  '/projects': typeof ProjectsRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects/': typeof ProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,14 +89,15 @@ export interface FileRouteTypes {
     | '/projects'
     | '/settings'
     | '/projects/$projectId'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/activity'
     | '/devices'
-    | '/projects'
     | '/settings'
     | '/projects/$projectId'
+    | '/projects'
   id:
     | '__root__'
     | '/'
@@ -97,14 +106,15 @@ export interface FileRouteTypes {
     | '/projects'
     | '/settings'
     | '/projects/$projectId'
+    | '/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ActivityRoute: typeof ActivityRoute
-  DevicesRoute: typeof DevicesRoute
-  ProjectsRoute: typeof ProjectsRouteWithChildren
-  SettingsRoute: typeof SettingsRoute
+  ActivityRouteRoute: typeof ActivityRouteRoute
+  DevicesRouteRoute: typeof DevicesRouteRoute
+  ProjectsRouteRoute: typeof ProjectsRouteRouteWithChildren
+  SettingsRouteRoute: typeof SettingsRouteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -120,58 +130,67 @@ declare module '@tanstack/react-router' {
       id: '/activity'
       path: '/activity'
       fullPath: '/activity'
-      preLoaderRoute: typeof ActivityRouteImport
+      preLoaderRoute: typeof ActivityRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/devices': {
       id: '/devices'
       path: '/devices'
       fullPath: '/devices'
-      preLoaderRoute: typeof DevicesRouteImport
+      preLoaderRoute: typeof DevicesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
       id: '/projects'
       path: '/projects'
       fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsRouteImport
+      preLoaderRoute: typeof ProjectsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
       id: '/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
+      preLoaderRoute: typeof SettingsRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/projects/': {
+      id: '/projects/'
+      path: '/'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof ProjectsRouteRoute
     }
     '/projects/$projectId': {
       id: '/projects/$projectId'
       path: '/$projectId'
       fullPath: '/projects/$projectId'
       preLoaderRoute: typeof ProjectsProjectIdRouteImport
-      parentRoute: typeof ProjectsRoute
+      parentRoute: typeof ProjectsRouteRoute
     }
   }
 }
 
-interface ProjectsRouteChildren {
+interface ProjectsRouteRouteChildren {
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
 
-const ProjectsRouteChildren: ProjectsRouteChildren = {
+const ProjectsRouteRouteChildren: ProjectsRouteRouteChildren = {
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
 }
 
-const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
-  ProjectsRouteChildren,
+const ProjectsRouteRouteWithChildren = ProjectsRouteRoute._addFileChildren(
+  ProjectsRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ActivityRoute: ActivityRoute,
-  DevicesRoute: DevicesRoute,
-  ProjectsRoute: ProjectsRouteWithChildren,
-  SettingsRoute: SettingsRoute,
+  ActivityRouteRoute: ActivityRouteRoute,
+  DevicesRouteRoute: DevicesRouteRoute,
+  ProjectsRouteRoute: ProjectsRouteRouteWithChildren,
+  SettingsRouteRoute: SettingsRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

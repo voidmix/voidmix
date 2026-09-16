@@ -132,6 +132,9 @@ The environment seam exposes `createEnv`, `defineEnv`, `Preset`, and
 
 - It validates values supplied by the runtime; it does not read `.env` files.
 - Packages declare owned variables through local presets.
+- Preset fields and final transforms use Zod directly. There is no independent
+  schema-provider protocol or dictionary parser; Zod owns parsing and output
+  inference.
 - Applications compose package presets with application-specific server,
   client, and shared variables.
 - `VITE_` variables are statically constrained for browser use.

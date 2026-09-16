@@ -35,12 +35,14 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "catalog:frontend",
+    "@testing-library/react": "catalog:tooling",
     "@types/node": "catalog:tooling",
     "@types/react": "catalog:tooling",
     "@types/react-dom": "catalog:tooling",
     "@vitejs/plugin-react": "catalog:tooling",
     "@vitest/coverage-v8": "catalog:tooling",
     "@voidmix/tsconfig": "workspace:*",
+    "jsdom": "catalog:tooling",
     "typescript": "catalog:tooling",
     "vite": "catalog:tooling",
     "vite-plus": "catalog:tooling"

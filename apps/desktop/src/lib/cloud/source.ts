@@ -9,12 +9,20 @@ export interface CloudLoadResult {
   source: "cloud" | "connected" | "demo";
 }
 
-export type RemoteSnapshotLoader = (apiUrl: string) => Promise<RemoteSnapshotResult>;
+export type RemoteSnapshotLoader = (
+  apiUrl: string,
+  signal?: AbortSignal,
+) => Promise<RemoteSnapshotResult>;
 
-export async function selectCloudSnapshot(
+export async function selectCloudSnapshot({
   apiUrl = env.VITE_API_URL,
-  loadRemote: RemoteSnapshotLoader = fetchRemoteSnapshot,
-): Promise<CloudLoadResult> {
+  loadRemote = fetchRemoteSnapshot,
+  signal,
+}: {
+  apiUrl?: string;
+  loadRemote?: RemoteSnapshotLoader;
+  signal?: AbortSignal;
+} = {}): Promise<CloudLoadResult> {
   if (!apiUrl) {
     log.warn({
       event: "desktop.cloud.snapshot.fallback",
@@ -24,7 +32,7 @@ export async function selectCloudSnapshot(
     return { snapshot: demoCloudSnapshot, source: "demo" };
   }
 
-  const result = await loadRemote(apiUrl);
+  const result = await loadRemote(apiUrl, signal);
   switch (result.kind) {
     case "loaded":
       log.info({

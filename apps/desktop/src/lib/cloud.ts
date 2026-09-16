@@ -1,7 +1,6 @@
 import { selectCloudSnapshot } from "./cloud/source";
 import type { Formatter } from "@voidmix/i18n";
 export { demoCloudSnapshot } from "./cloud/demo";
-export { isCloudSnapshot } from "./cloud/validation";
 export type { CloudDevice, CloudSnapshot, SyncJob } from "./cloud/types";
 
 export function formatBytes(value: number, formatter?: Pick<Formatter, "number">): string {

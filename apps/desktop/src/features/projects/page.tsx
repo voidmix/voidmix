@@ -1,30 +1,46 @@
 import { ArrowUpRight, Plus } from "@phosphor-icons/react";
-import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { getRouteApi, Link, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { useDesktopTranslations } from "../../i18n/client";
-import { createProject, loadProjects, type StudioProject } from "../../lib/projects";
+import { createProject } from "../../lib/projects";
+
+const route = getRouteApi("/projects/");
 
 export function ProjectsPage() {
   const t = useDesktopTranslations("projects");
-  const [projects, setProjects] = useState<StudioProject[]>([]);
+  const errors = useDesktopTranslations("errors");
+  const router = useRouter();
+  const result = route.useLoaderData();
+  const projects = result.data ?? [];
   const [title, setTitle] = useState("");
-  const [status, setStatus] = useState<"loading" | "loaded" | "unavailable">("loading");
   const [creating, setCreating] = useState(false);
-  useEffect(() => {
-    void loadProjects().then((result) => {
-      setStatus(result.status);
-      if (result.data) setProjects(result.data);
-    });
-  }, []);
+  const [saving, setSaving] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  async function submitProject() {
+    if (!title.trim() || saving) return;
+    setSaving(true);
+    setFailed(false);
+    try {
+      await createProject(title);
+      await router.invalidate({ filter: (match) => match.routeId === "/projects/", sync: true });
+      setTitle("");
+      setCreating(false);
+    } catch {
+      setFailed(true);
+    } finally {
+      setSaving(false);
+    }
+  }
   return (
     <div className="page projects-page">
       <PageHeader
         title={t("title")}
         description={t("description")}
         action={
-          <Button onClick={() => setCreating(true)}>
+          <Button onClick={() => setCreating(true)} disabled={result.status === "unavailable"}>
             <Plus size={15} />
             {t("newProject")}
           </Button>
@@ -35,11 +51,7 @@ export function ProjectsPage() {
           className="project-create-form"
           onSubmit={(event) => {
             event.preventDefault();
-            void createProject(title).then((project) => {
-              setProjects((current) => [project, ...current]);
-              setTitle("");
-              setCreating(false);
-            });
+            void submitProject();
           }}
         >
           <label>
@@ -49,15 +61,16 @@ export function ProjectsPage() {
               onChange={(event) => setTitle(event.target.value)}
               required
               autoFocus
+              disabled={saving}
             />
           </label>
-          <Button type="submit" disabled={!title.trim()}>
+          <Button type="submit" disabled={!title.trim() || saving}>
             {t("newProject")}
           </Button>
+          {failed ? <p role="alert">{errors("unknown")}</p> : null}
         </form>
       ) : null}
-      {status === "loading" ? <p className="empty-copy">{t("loading")}</p> : null}
-      {status === "unavailable" ? (
+      {result.status === "unavailable" ? (
         <p className="empty-copy">{t("unavailableDescription")}</p>
       ) : null}
       <div className="project-grid" aria-label={t("projectList")}>

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
 import { fetchRemoteSnapshot, normalizeSnapshot } from "./remote";
+import { demoCloudSnapshot } from "./demo";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -9,6 +10,78 @@ afterEach(() => {
 });
 
 describe("remote cloud snapshot adapter", () => {
+  it("cancels the in-flight request when its route is left", async () => {
+    const fetch = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const request = new Request(input, init);
+      return new Promise<Response>((_resolve, reject) => {
+        request.signal.addEventListener("abort", () => reject(request.signal.reason), {
+          once: true,
+        });
+      });
+    });
+    vi.stubGlobal("fetch", fetch);
+    const controller = new AbortController();
+    const reason = new Error("Route left");
+    const result = fetchRemoteSnapshot("https://api.example.test", controller.signal);
+    const rejected = expect(result).rejects.toBe(reason);
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
+    controller.abort(reason);
+    await rejected;
+  });
+
+  it("accepts the deterministic preview shape without losing canonical values", () => {
+    const snapshot = normalizeSnapshot(demoCloudSnapshot);
+    expect(snapshot).toMatchObject({
+      lastChecked: demoCloudSnapshot.lastChecked,
+      lastBackup: demoCloudSnapshot.lastBackup,
+      storage: demoCloudSnapshot.storage,
+      devices: demoCloudSnapshot.devices,
+    });
+    expect(snapshot?.jobs).toHaveLength(demoCloudSnapshot.jobs.length);
+  });
+
+  it("rejects incomplete API responses", () => {
+    expect(normalizeSnapshot({ fileCount: 1, pendingItems: 0, jobs: [], devices: [] })).toBeNull();
+    expect(normalizeSnapshot(null)).toBeNull();
+  });
+
+  it.each([
+    ["lastChecked", new Date(NaN)],
+    ["lastBackup", "invalid-date"],
+    ["pendingItems", -1],
+    ["fileCount", 0.5],
+    ["newThisWeek", Number.MAX_SAFE_INTEGER + 1],
+    ["storage.total", 0],
+    ["storage.used", Infinity],
+    ["storage.projects", -1],
+    ["storage.media", NaN],
+    ["storage.archives", "1"],
+    ["jobs.0.id", ""],
+    ["jobs.0.name", ""],
+    ["jobs.0.kind", "unknown"],
+    ["jobs.0.status", "unknown"],
+    ["jobs.0.progress", 101],
+    ["jobs.0.progress", -1],
+    ["jobs.0.detail.kind", "unknown"],
+    ["jobs.0.detail.count", -1],
+    ["jobs.0.detail.sizeBytes", -1],
+    ["devices.0.id", ""],
+    ["devices.0.name", ""],
+    ["devices.0.platform", ""],
+    ["devices.0.kind", "unknown"],
+    ["devices.0.online", "true"],
+    ["devices.0.lastSeen", new Date(NaN)],
+    ["devices.0.syncedBytes", -1],
+  ] as const)("rejects malformed %s at the normalization boundary", (path, value) => {
+    const snapshot = structuredClone(demoCloudSnapshot);
+    const keys = path.split(".");
+    const field = keys.pop()!;
+    let target = snapshot as unknown as Record<string, unknown>;
+    for (const key of keys) target = target[key] as Record<string, unknown>;
+    target[field] = value;
+    expect(normalizeSnapshot(snapshot)).toBeNull();
+  });
+
   it("normalizes legacy display strings into locale-neutral data", async () => {
     const fetch = vi.fn(async (input: RequestInfo | URL) => {
       const url = new URL(

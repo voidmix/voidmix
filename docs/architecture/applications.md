@@ -71,24 +71,31 @@ browser composition root for authentication and Admin operations.
   synchronously against the statically mounted catalog.
 - Uses lazy route components so feature code remains separate from the shell
   and shared static catalog.
-- Desktop navigation now exposes Home, Projects, Library, Activity, and
-  Settings. Devices remains available from Settings, and Project/Library
-  screens currently use labelled deterministic preview content while their live
-  Project Studio adapter is rolled out.
+- Desktop navigation exposes Home, Projects, Activity, and Settings. Devices
+  remains available from Settings. Home, Devices, and Project pages read data
+  through client-only route loaders, with shared pending and retry states.
+- Project creation and overview refresh invalidate the owning route. Route
+  cancellation reaches the API transport, and late responses cannot replace
+  a newer navigation. Activity filters live in validated URL search parameters.
 - Owns no Start server functions or server routes. Runtime data continues to
   come from the cloud API through `@voidmix/client`.
 - Rust owns tray behavior, notifications, window lifecycle, and native
   commands.
-- The renderer mounts feature pages directly from `src/features/`; `App.tsx` is
-  only a compatibility export surface.
+- The renderer mounts feature pages directly from `src/features/`; it has no
+  compatibility page barrel.
 - Closing the main window hides it to the tray; the tray can show, hide, or
   quit the application.
 - The first release targets macOS and Windows.
 - The first version is cloud-backed and does not provide offline sync.
-- `src/lib/project-studio.ts` uses the account-first V2 Project procedures for
+- `src/lib/projects.ts` uses the account-first V2 Project procedures for
   authenticated project listing, creation, and detail reads; page components
-  do not own transport or validation. Preview data remains only for an
-  unconfigured API URL.
+  do not own transport or validation. Project pages show unavailable states when
+  the API is absent; overview and device data retain their existing preview fallback.
+- Routes use directories for URL segments: `route.tsx` defines the segment,
+  `index.tsx` its index page, and `$projectId.tsx` the dynamic child. The
+  `projects/route.tsx` layout renders an `Outlet` for the list and detail views.
+  Missing projects have a route-specific
+  not-found page with a link back to the list.
 
 The native seam lives in `apps/desktop/src-tauri/src/lib.rs`. Desktop accesses
 Agent capabilities through the API and does not embed the server-side AI

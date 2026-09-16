@@ -88,6 +88,13 @@ file-based route groups use parenthesized directories such as `(auth)` and
 `(app)`; a `route.tsx` inside the directory defines the group layout without
 adding the group name to the URL.
 
+Desktop routes use directories instead of dotted filenames to represent URL
+nesting. For example, `routes/projects/route.tsx` owns the segment layout,
+`routes/projects/index.tsx` owns the list, and `routes/projects/$projectId.tsx`
+owns a project detail. A segment layout must render `Outlet` for its children;
+the list belongs in the index so it cannot hide a detail route. Root
+`__root.tsx` and `index.tsx` remain at the top of `routes/`.
+
 Promote a component to `packages/ui` when a second application needs it — not
 before. A component used by two features in the same app moves up to that app,
 not to the shared package.

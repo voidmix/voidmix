@@ -49,6 +49,8 @@ deployment boundaries, and coding-agent guidance.
   gaps and acceptance checks for the VoidMix visual target.
 - [File structure](./development/file-structure.md) — where a new file goes
   inside a workspace, and the conventions policy enforces.
+- [Abstraction ablation](./development/abstraction-ablation.md) — measured
+  removals, preserved behavior, and a rejected guard-removal experiment.
 - [Coding agents](./development/agents.md) — read order, default decisions,
   verification checklist, and skill governance for Codex and Claude Code.
 

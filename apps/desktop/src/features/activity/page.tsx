@@ -9,11 +9,14 @@ import {
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { cn } from "@voidmix/ui/lib/utils";
+import { getRouteApi } from "@tanstack/react-router";
 import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { formatActivityTime } from "./time";
-import { useState } from "react";
+
+const route = getRouteApi("/activity");
 
 type ActivityRow = {
+  category: "uploads" | "downloads" | "backups" | "index";
   title: "campaignExports" | "brandArchive" | "productResearch" | "designSystem" | "teamPhotos";
   detail:
     | "campaignExportsDetail"
@@ -33,6 +36,7 @@ type ActivityRow = {
 const activityRows: ActivityRow[] = [
   {
     title: "campaignExports",
+    category: "uploads",
     detail: "campaignExportsDetail",
     count: 18,
     device: "Mac Studio",
@@ -42,6 +46,7 @@ const activityRows: ActivityRow[] = [
   },
   {
     title: "brandArchive",
+    category: "backups",
     detail: "brandArchiveDetail",
     minutesAgo: 24,
     icon: ShieldCheck,
@@ -49,6 +54,7 @@ const activityRows: ActivityRow[] = [
   },
   {
     title: "productResearch",
+    category: "downloads",
     detail: "productResearchDetail",
     count: 4,
     device: "Surface Laptop",
@@ -58,6 +64,7 @@ const activityRows: ActivityRow[] = [
   },
   {
     title: "designSystem",
+    category: "index",
     detail: "designSystemDetail",
     count: 328,
     hoursAgo: 3,
@@ -66,6 +73,7 @@ const activityRows: ActivityRow[] = [
   },
   {
     title: "teamPhotos",
+    category: "uploads",
     detail: "teamPhotosDetail",
     device: "Alex's iPhone",
     yesterday: true,
@@ -79,7 +87,9 @@ const filters = ["all", "uploads", "downloads", "backups"] as const;
 export function ActivityPage() {
   const t = useDesktopTranslations("activity");
   const formatter = useFormatter();
-  const [filter, setFilter] = useState<(typeof filters)[number]>("all");
+  const { filter } = route.useSearch();
+  const navigate = route.useNavigate();
+  const rows = activityRows.filter((row) => filter === "all" || row.category === filter);
 
   return (
     <div className="page">
@@ -99,7 +109,8 @@ export function ActivityPage() {
             className={cn("filter-chip", filter === item && "active")}
             variant="ghost"
             key={item}
-            onClick={() => setFilter(item)}
+            aria-pressed={filter === item}
+            onClick={() => void navigate({ search: { filter: item } })}
           >
             {t(item)}
           </Button>
@@ -107,7 +118,7 @@ export function ActivityPage() {
       </div>
       <section className="activity-panel" aria-label={t("recent")}>
         <div className="activity-date">{t("today")}</div>
-        {activityRows.map(
+        {rows.map(
           ({ title, detail, icon: Icon, tone, count, device, minutesAgo, hoursAgo, yesterday }) => (
             <article className="activity-row" key={title}>
               <span className={cn("activity-icon", tone)}>

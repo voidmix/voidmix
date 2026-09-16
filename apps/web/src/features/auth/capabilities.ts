@@ -3,41 +3,23 @@ import { useEffect, useState } from "react";
 
 export type PublicAuthCapabilities = Awaited<ReturnType<ApiClient["auth"]["capabilities"]["get"]>>;
 
-export interface PublicAuthCapabilitiesClient {
-  get(): Promise<PublicAuthCapabilities>;
-}
-
 const failOpenCapabilities: PublicAuthCapabilities = {
   registrationAvailable: true,
   verificationEmailRequestAvailable: true,
   passwordResetRequestAvailable: true,
 };
 
-function createConfiguredApiClient() {
-  return createWebApiClient({
-    fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
-  });
-}
-
-export function createPublicAuthCapabilitiesAdapter(
-  api: ApiClient = createConfiguredApiClient(),
-): PublicAuthCapabilitiesClient {
-  return {
-    get: () => api.auth.capabilities.get({}),
-  };
-}
-
-export const publicAuthCapabilitiesClient = createPublicAuthCapabilitiesAdapter();
+const api = createWebApiClient();
+const loadCapabilities = () => api.auth.capabilities.get({});
 
 export function useAuthCapabilities(
-  client: PublicAuthCapabilitiesClient = publicAuthCapabilitiesClient,
+  load: () => Promise<PublicAuthCapabilities> = loadCapabilities,
 ): PublicAuthCapabilities {
   const [capabilities, setCapabilities] = useState(failOpenCapabilities);
 
   useEffect(() => {
     let active = true;
-    void client
-      .get()
+    void load()
       .then((next) => {
         if (active) setCapabilities(next);
       })
@@ -47,7 +29,7 @@ export function useAuthCapabilities(
     return () => {
       active = false;
     };
-  }, [client]);
+  }, [load]);
 
   return capabilities;
 }

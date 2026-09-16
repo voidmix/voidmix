@@ -16,6 +16,8 @@ package-owned variable sets into application-level environments.
 
 - Own preset definition, preset composition, validation ordering, and the
   server/client/shared split.
+- Preset fields and final transforms use Zod schemas directly; Zod owns parsing
+  and output inference.
 - Own no variable. Packages declare the variables they own through a local
   preset; applications compose those presets and add their own.
 
@@ -33,7 +35,7 @@ package-owned variable sets into application-level environments.
 - Preset composition detects circular `extends` graphs and must keep doing so.
 - **Tests must supply `runtimeEnv` or explicit stubs** rather than reading a
   developer's environment. Unit tests deliberately run outside the env runner.
-- Depend only on `zod` and `type-fest`.
+- Depend only on `zod`.
 
 ## Verification
 

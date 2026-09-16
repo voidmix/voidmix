@@ -1,14 +1,18 @@
 import { DeviceMobile, Laptop, Monitor, Sparkle, X } from "@phosphor-icons/react";
+import { getRouteApi } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { formatCloudTime } from "../../i18n/time";
-import { demoCloudSnapshot, formatBytes } from "../../lib/cloud";
+import { formatBytes } from "../../lib/cloud";
+
+const route = getRouteApi("/devices");
 
 export function DevicesPage() {
   const t = useDesktopTranslations("devices");
   const formatter = useFormatter();
-  const devices = demoCloudSnapshot.devices;
+  const { snapshot } = route.useLoaderData();
+  const devices = snapshot.devices;
   return (
     <div className="page">
       <PageHeader
