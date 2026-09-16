@@ -1,9 +1,4 @@
 {
   "extends": "@voidmix/tsconfig/react-library.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "compilerOptions": {
-    "paths": {
-      "@voidmix/ui/*": ["./src/*"]
-    }
-  }
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

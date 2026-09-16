@@ -1,6 +1,6 @@
 import type { ComponentProps, MouseEvent } from "react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "#lib/utils";
 import { Input } from "./input";
 
 export type InputGroupAddonAlign = "inline-start" | "inline-end" | "block-start" | "block-end";

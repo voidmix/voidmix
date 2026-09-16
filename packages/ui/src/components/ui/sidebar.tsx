@@ -4,21 +4,21 @@ import * as React from "react";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@voidmix/ui/lib/utils";
+import { cn } from "#lib/utils";
 
-import { useIsMobile } from "@voidmix/ui/hooks/use-mobile";
-import { Button } from "@voidmix/ui/components/ui/button";
-import { Input } from "@voidmix/ui/components/ui/input";
-import { Separator } from "@voidmix/ui/components/ui/separator";
+import { useIsMobile } from "#hooks/use-mobile";
+import { Button } from "#components/ui/button";
+import { Input } from "#components/ui/input";
+import { Separator } from "#components/ui/separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@voidmix/ui/components/ui/sheet";
-import { Skeleton } from "@voidmix/ui/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@voidmix/ui/components/ui/tooltip";
+} from "#components/ui/sheet";
+import { Skeleton } from "#components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "#components/ui/tooltip";
 import { SidebarIcon } from "@phosphor-icons/react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";

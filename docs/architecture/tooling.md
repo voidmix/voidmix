@@ -78,6 +78,22 @@ Shared presets do not define `include`, `exclude`, `rootDir`, `outDir`, `paths`,
 or workspace references. Full TypeScript Project References are deferred until
 editor or full-repository type checking becomes measurably slow.
 
+### Package-local imports
+
+`@voidmix/ui` defines `#lib/*`, `#hooks/*`, and `#components/*` in its own
+`package.json#imports` for deep internal imports and package self-references.
+Nearby relative imports remain valid. Other workspaces consume the existing
+`@voidmix/ui/...` public exports; private aliases do not cross package boundaries
+or inherit from the root manifest.
+
+The mappings target `.ts`/`.tsx` source files, matching this package's source
+exports. The shared `moduleResolution: "Bundler"` preset resolves them without
+duplicate `tsconfig.paths` entries. `packages/ui/components.json` uses the same
+aliases, and the current shadcn CLI resolves component destination directories
+from the import mappings. Check `resolvedPaths` with
+`bunx shadcn@latest info --cwd packages/ui --json` when changing them, then run
+the UI component tests and `bun run verify` to cover consuming builds.
+
 ## Linting and formatting
 
 Oxlint and Oxfmt ship inside Vite+ and are configured in the root

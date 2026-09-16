@@ -43,7 +43,10 @@ Page layout and product-specific composition stay in the owning application.
   - hand-written primitives are flat kebab-case files in `src/` (for example
     `avatar.tsx` and `logo.tsx`);
   - shadcn-generated components live directly in `src/components/ui/` and are
-    imported through `@voidmix/ui/components/ui/<name>`.
+    imported by consumers through `@voidmix/ui/components/ui/<name>`.
+- Use package-local `imports` aliases (`#lib/*`, `#hooks/*`, `#components/*`)
+  for deep internal imports and package self-references. Nearby relative imports
+  remain valid; consumers continue to use the public `exports` paths.
 - **`bun run shadcn:update` passes `--overwrite`.** `src/components/ui/button.tsx`
   carries the repository's `primary`/`secondary`/`danger` variants and a
   `type="button"` default; its size names stay aligned with base-nova. Diff
@@ -63,14 +66,11 @@ Page layout and product-specific composition stay in the owning application.
   tests need the file-level `/** @vitest-environment jsdom */` directive.
 - Running `shadcn add` from an application writes into that app's `@/components`,
   not here. Reusable primitives belong in this package.
-- **`tsconfig.json` maps `@voidmix/ui/*` to `./src/*` for the shadcn CLI alone.**
-  Its resolver needs a directory and the export map deliberately offers no
-  barrel, so without that entry every `shadcn` command — including
-  `shadcn:update` — fails with `Could not resolve the following aliases`.
-  Generated files import `@voidmix/ui/lib/utils`, which the export map resolves
-  at runtime. Do not restate it as `@/*`: this package ships raw source, so a
-  consuming bundler would not resolve it. TypeScript 7 removed `baseUrl`, so
-  `paths` stands alone.
+- Keep `components.json` aliases aligned with `package.json#imports` so shadcn
+  generates package-local imports. The current CLI resolves these mappings
+  directly; no duplicate `tsconfig.paths` entries are needed. Verify its
+  `resolvedPaths` with `bunx shadcn@latest info --cwd packages/ui --json` after
+  changing aliases; components must still land in `src/components/ui/`.
 
 ## Verification
 

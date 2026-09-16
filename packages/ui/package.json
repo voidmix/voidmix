@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*.ts",
+    "#hooks/*": "./src/hooks/*.ts",
+    "#components/*": "./src/components/*.tsx"
+  },
   "exports": {
     "./page-header": "./src/page-header.tsx",
     "./section-heading": "./src/section-heading.tsx",

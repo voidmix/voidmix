@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 
-import { Avatar as BaseAvatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
+import { Avatar as BaseAvatar, AvatarFallback, AvatarImage } from "#components/ui/avatar";
 
 export interface AvatarProps extends ComponentPropsWithoutRef<"span"> {
   name: string;
