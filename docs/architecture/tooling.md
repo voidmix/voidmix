@@ -162,11 +162,27 @@ bun run skills:update   update installed repository skills non-interactively
 ```
 
 The update command scans all workspaces and Bun catalogs in `minor` mode. It
-includes exact pins, but deliberately excludes Bun/Node runtime versions and
+includes exact pins, but deliberately excludes Bun/Node runtime versions,
+Drizzle Kit/ORM RC builds (whose hash suffixes do not sort chronologically), and
 `@vitest/coverage-v8`, whose version must keep matching the Vitest that the
 pinned Vite+ release bundles — nothing else pins that Vitest now, so a Vite+
 upgrade has to move coverage with it. Major upgrades and toolchain exceptions
 remain manual decisions.
+
+When updating all dependencies, check the existing pre-release channels as well:
+oRPC uses `beta`, and Drizzle Kit/ORM use the same `rc5` build. Their `latest`
+tags still point to older stable lines, so a stable-only scan misses updates.
+Update Drizzle manually from `rc5`; the generic semver scan can recommend an
+older build when its hash happens to sort higher.
+Vite+ `0.3.2` still bundles Vitest `4.1.11`; keep `@vitest/coverage-v8` at
+`4.1.11` rather than independently upgrading it to Vitest 5.
+
+Refresh a cross-platform lockfile with `bun install --lockfile-only --os '*' --cpu '*'`,
+then install locally with `bun install --frozen-lockfile`. This keeps the optional
+native packages required by Linux CI and Windows Desktop builds in the lockfile.
+Update Desktop's Rust dependency resolution with `cargo update` in
+`apps/desktop/src-tauri`, followed by the native checks in
+[Testing and verification](../development/testing.md).
 
 The Bun commands are explicit maintenance operations rather than part of
 `doctor` or `verify`. `deps:dedupe` may rewrite only Bun's lockfile; its

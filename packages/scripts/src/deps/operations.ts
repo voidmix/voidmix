@@ -10,6 +10,11 @@ const tazeOptions = [
   "vitest@4",
   "--exclude",
   "@vitest/coverage-v8@4",
+  // RC build hashes do not sort by release date; update both from the rc5 tag.
+  "--exclude",
+  "drizzle-kit",
+  "--exclude",
+  "drizzle-orm",
   "--exclude",
   "bun",
   "--exclude",

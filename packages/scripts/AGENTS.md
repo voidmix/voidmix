@@ -61,6 +61,8 @@ Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skill
   `runPolicy` and manifest-rule interfaces when splitting internals.
 - Dependency maintenance is explicit: `vmx deps dedupe` may rewrite `bun.lock`,
   `vmx deps dedupe --check` is read-only, and `vmx deps audit` is read-only.
+- Dependency check/update excludes Drizzle RC builds because hash suffixes do
+  not sort chronologically. Update Kit and ORM together from the `rc5` tag.
 - Never print secret values loaded by the env runner.
 
 ## Verification

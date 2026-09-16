@@ -49,6 +49,6 @@
     "vite": "catalog:tooling"
   },
   "peerDependencies": {
-    "react": "^19.2.0"
+    "react": "^19.3.0"
   }
 }
