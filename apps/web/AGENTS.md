@@ -99,6 +99,8 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
 - The home navigation uses `LanguageSwitcher` on desktop and mobile. Its trigger
   stays disabled until hydration so an early click cannot be lost; language
   persistence remains owned by the root i18n provider.
+  Language names use fixed native labels (`English`, `简体中文`); only the
+  surrounding control copy is translated.
 - Web feature code uses `@voidmix/ui/toast` for Toast notifications. The bridge
   loads `@voidmix/ui/components/ui/toast` on the first `toast.add()` call and
   the root's `AsyncToaster` mounts its UI only after that module is ready. Do not

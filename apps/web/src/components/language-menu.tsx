@@ -7,7 +7,7 @@ import {
 } from "@voidmix/ui/components/ui/dropdown-menu";
 import type { Locale } from "@voidmix/i18n/types";
 import type { ReactElement } from "react";
-import { useTranslations, type WebNamespaceKey } from "../i18n/client";
+import { languageLabels } from "./language-options";
 
 export interface LanguageMenuProps {
   locale: Locale;
@@ -18,14 +18,6 @@ export interface LanguageMenuProps {
   trigger: ReactElement;
 }
 
-const languageOptions: ReadonlyArray<{
-  labelKey: Extract<WebNamespaceKey<"common">, "english" | "chinese">;
-  value: Locale;
-}> = [
-  { labelKey: "english", value: "en" },
-  { labelKey: "chinese", value: "zh" },
-];
-
 export function LanguageMenu({
   locale,
   onLocaleChange,
@@ -34,7 +26,6 @@ export function LanguageMenu({
   pending,
   trigger,
 }: LanguageMenuProps) {
-  const t = useTranslations("common");
   return (
     <DropdownMenu onOpenChange={onOpenChange} open={open}>
       <DropdownMenuTrigger render={trigger} />
@@ -45,9 +36,9 @@ export function LanguageMenu({
           }}
           value={locale}
         >
-          {languageOptions.map((option) => (
-            <DropdownMenuRadioItem disabled={pending} key={option.value} value={option.value}>
-              {t(option.labelKey)}
+          {Object.entries(languageLabels).map(([value, label]) => (
+            <DropdownMenuRadioItem disabled={pending} key={value} value={value} lang={value}>
+              {label}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

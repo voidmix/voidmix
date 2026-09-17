@@ -24,7 +24,7 @@ for (const width of [390, 1440]) {
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("lang", "zh");
     await page.getByRole("button", { name: "语言: 简体中文" }).click();
-    await page.getByRole("menuitemradio", { name: "英语" }).click();
+    await page.getByRole("menuitemradio", { name: "English" }).click();
 
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(page.getByRole("heading", { name: /Generate and ship/i })).toBeVisible();

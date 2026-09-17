@@ -1,9 +1,10 @@
 import { Globe } from "@phosphor-icons/react";
 import { useHydrated } from "@tanstack/react-router";
-import { useLocale, useSetLocale, useTranslations, type WebNamespaceKey } from "../i18n/client";
+import { useLocale, useSetLocale, useTranslations } from "../i18n/client";
 import type { Locale } from "@voidmix/i18n/types";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { lazy, Suspense, useState } from "react";
+import { languageLabels } from "./language-options";
 
 const LazyLanguageMenu = lazy(async () => {
   const module = await import("./language-menu");
@@ -22,10 +23,7 @@ export function LanguageSwitcher() {
   const [pending, setPending] = useState(false);
   const [open, setOpen] = useState(false);
   const [menuReady, setMenuReady] = useState(false);
-  const currentLabelKey: Extract<WebNamespaceKey<"common">, "english" | "chinese"> = locale === "zh"
-    ? "chinese"
-    : "english";
-  const currentLabel = t(currentLabelKey);
+  const currentLabel = languageLabels[locale];
 
   const openMenu = () => {
     setOpen(true);
