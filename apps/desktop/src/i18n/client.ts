@@ -37,8 +37,6 @@ const namespaceKeys = {
     "offline",
     "today",
     "language",
-    "english",
-    "chinese",
     "desktopReady",
     "browserPreview",
     "trayMessage",

@@ -93,7 +93,7 @@ describe("Desktop Start routes", () => {
       name: messages.en.settings.startWithSystem,
     });
     fireEvent.click(setting);
-    fireEvent.click(screen.getByRole("button", { name: "Simplified Chinese" }));
+    fireEvent.click(screen.getByRole("button", { name: "简体中文" }));
     expect(
       (
         await screen.findByRole("switch", { name: messages.zh.settings.startWithSystem })

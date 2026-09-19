@@ -17,7 +17,7 @@ Shared locale negotiation, React runtime helpers, Intl formatting, and the
 
 ## Ownership
 
-- Own locale normalization, Cookie/localStorage adapters, runtime providers,
+- Own locale normalization, supported-locale metadata, Cookie/localStorage adapters, runtime providers,
   formatters, and the `use-intl` integration.
 - Locale changes update in-memory state and persistence before the optional
   document synchronization callback; callback failures do not roll back locale.

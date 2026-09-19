@@ -5,9 +5,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@voidmix/ui/components/ui/dropdown-menu";
+import { LOCALE_OPTIONS } from "@voidmix/i18n";
 import type { Locale } from "@voidmix/i18n/types";
 import type { ReactElement } from "react";
-import { languageLabels } from "./language-options";
 
 export interface LanguageMenuProps {
   locale: Locale;
@@ -36,9 +36,14 @@ export function LanguageMenu({
           }}
           value={locale}
         >
-          {Object.entries(languageLabels).map(([value, label]) => (
-            <DropdownMenuRadioItem disabled={pending} key={value} value={value} lang={value}>
-              {label}
+          {LOCALE_OPTIONS.map((option) => (
+            <DropdownMenuRadioItem
+              disabled={pending}
+              key={option.value}
+              lang={option.value}
+              value={option.value}
+            >
+              {option.nativeName}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

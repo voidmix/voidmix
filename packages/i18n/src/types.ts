@@ -1,7 +1,8 @@
-import type { SUPPORTED_LOCALES } from "./constants.js";
+import type { LOCALE_OPTIONS, SUPPORTED_LOCALES } from "./constants.js";
 import type { formats } from "./formats.js";
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
+export type LocaleOption = (typeof LOCALE_OPTIONS)[number];
 
 export type MessageTree = {
   readonly [key: string]: string | MessageTree;

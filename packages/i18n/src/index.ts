@@ -2,6 +2,7 @@ export {
   DEFAULT_LOCALE,
   LOCALE_COOKIE_MAX_AGE_SECONDS,
   LOCALE_COOKIE_NAME,
+  LOCALE_OPTIONS,
   LOCALE_STORAGE_KEY,
   SUPPORTED_LOCALES,
 } from "./constants.js";
@@ -22,6 +23,7 @@ export {
 } from "./errors.js";
 export type {
   IntlRuntimeOptions,
+  LocaleOption,
   MessageCatalog,
   MessageTree,
   MessagesByLocale,

@@ -7,9 +7,16 @@ import {
   parseAcceptLanguage,
   resolveLocale,
   serializeLocaleCookie,
+  LOCALE_OPTIONS,
 } from "./index.js";
 
 describe("locale runtime", () => {
+  it("exposes native names for every supported locale", () => {
+    expect(LOCALE_OPTIONS).toEqual([
+      { value: "en", nativeName: "English" },
+      { value: "zh", nativeName: "简体中文" },
+    ]);
+  });
   it("normalizes regional locale tags", () => {
     expect(normalizeLocale("en-US")).toBe("en");
     expect(normalizeLocale("zh-Hans-CN")).toBe("zh");

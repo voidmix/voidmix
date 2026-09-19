@@ -16,8 +16,6 @@
     "offline": "Offline",
     "today": "Today",
     "language": "Language",
-    "english": "English",
-    "chinese": "Simplified Chinese",
     "desktopReady": "Desktop shell ready",
     "browserPreview": "Browser preview",
     "trayMessage": "Tray controls are available in the desktop build.",

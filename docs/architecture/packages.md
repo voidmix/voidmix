@@ -115,7 +115,7 @@ using the logger transport. The package exposes only server-side mail interfaces
 ## `@voidmix/i18n`
 
 The locale and translation facade shared by renderer and server packages. It
-owns `en`/`zh` normalization, Accept-Language and Cookie parsing, browser and
+owns the supported locale list and native language metadata, `en`/`zh` normalization, Accept-Language and Cookie parsing, browser and
 Desktop storage adapters, Intl formatters, the synchronous and asynchronous
 React providers, and the internal `use-intl` integration. Applications and
 Mail own their catalog files.

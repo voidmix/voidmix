@@ -7,6 +7,7 @@ import {
   MagnifyingGlass,
   Pulse,
 } from "@phosphor-icons/react";
+import { LOCALE_OPTIONS } from "@voidmix/i18n";
 import { Link, Outlet } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
@@ -138,7 +139,7 @@ export function DesktopShell() {
             onClick={() => void setLocale(locale === "en" ? "zh" : "en").catch(() => undefined)}
             title={t("language")}
           >
-            {t(locale === "en" ? "chinese" : "english")}
+            {LOCALE_OPTIONS.find((option) => option.value !== locale)?.nativeName}
           </Button>
           <WindowActions />
         </header>
