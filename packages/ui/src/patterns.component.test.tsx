@@ -5,7 +5,7 @@ import { StatusBadge } from "./status-badge";
 import { SectionHeading } from "./section-heading";
 import { Switch } from "./components/ui/switch";
 
-describe("workspace primitives", () => {
+describe("shared UI patterns", () => {
   it("supports labelled switch state changes and disabled state", () => {
     const onCheckedChange = vi.fn();
     render(
@@ -20,7 +20,7 @@ describe("workspace primitives", () => {
   it("communicates state with text and provides an actionable empty state", () => {
     render(
       <>
-        <StatusBadge label="Blocked" tone="blocked" />
+        <StatusBadge label="Blocked" tone="danger" />
         <EmptyState
           title="Start a project"
           description="Keep your work together"
@@ -30,8 +30,11 @@ describe("workspace primitives", () => {
     );
     expect(screen.getByText("Blocked")).toBeVisible();
     expect(screen.getByRole("button", { name: "Create project" })).toBeVisible();
-    expect(screen.getByText("Blocked")).toHaveClass("text-foreground");
-    expect(screen.getByText("Blocked").firstElementChild).toHaveClass("text-destructive");
+    expect(screen.getByText("Blocked")).toHaveAttribute("data-slot", "badge");
+    expect(screen.getByText("Blocked").querySelector("svg")).toHaveAttribute(
+      "data-icon",
+      "inline-start",
+    );
   });
   it("renders a labelled section with optional description and action", () => {
     render(

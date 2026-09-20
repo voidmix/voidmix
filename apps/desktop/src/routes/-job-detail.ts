@@ -1,6 +1,6 @@
 import type { Formatter } from "@voidmix/i18n";
 
-import { formatBytes, type SyncJob } from "../../lib/cloud";
+import { formatBytes, type SyncJob } from "../lib/cloud";
 
 type JobDetailKey = "jobFiles" | "jobFilesWithSize" | "jobObjects" | "jobObjectsWithSize";
 type JobDetailTranslator = (key: JobDetailKey, values: Record<string, unknown>) => string;

@@ -12,7 +12,7 @@ hash. Corrections live here instead.
 directories, with `route.tsx` as each group layout. `(app)/route.tsx` contains
 the Better Auth client session gate, while `(app)/(admin)/route.tsx` owns the
 AdminShell layout. Both applications use Start file routes. Desktop uses SPA
-mode with client-only route loaders and lazy feature pages; it is not a model
+mode with client-only route loaders and automatically split route pages; it is not a model
 for Web server functions or SSR data access.
 
 Desktop routes use directories for URL segments, with `route.tsx` for a segment
@@ -20,7 +20,11 @@ or layout, `index.tsx` for its exact page, and `$param.tsx` for dynamic children
 The `/projects/` list lives in `projects/index.tsx`; `projects/route.tsx` must
 render an `Outlet` so both the list and `projects/$projectId.tsx` can render.
 Keep remote loaders `ssr: false` so static shell generation makes no cloud calls.
-Use `getRouteApi` in lazy feature pages and `router.invalidate` after mutations.
+Use `Route` hooks in colocated pages and `router.invalidate` after mutations.
+Reserve `getRouteApi` for components kept outside their route file. Keep local
+helpers/tests under the `-` ignore prefix so the generator does not treat them
+as routes. Start's plugin splits module-private route components automatically;
+verify the emitted component chunks when removing manual lazy imports.
 
 ## Correction 1: use `.validator()`, not `.inputValidator()`
 

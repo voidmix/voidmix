@@ -14,8 +14,9 @@ browser composition root for authentication and Admin operations.
 - Serves `/manifest.webmanifest` through a TanStack Start server route with the
   VoidMix name, launch scope, theme, and shared 512×512 brand mark for
   install-capable browsers.
-- Route files declare URLs and may compose a small number of feature entrypoints;
-  the home route mounts the public marketing page and its navigation.
+- Route files declare URLs and own single-route pages, including the canonical
+  project list/detail. Shared Auth and Admin features remain separate; the home
+  route mounts the public marketing page and its navigation.
 - Feature roots keep components, state, data, fixtures, tests, and styles;
   larger features place internal presentation components under a local
   `components/` directory.
@@ -68,8 +69,8 @@ browser composition root for authentication and Admin operations.
 - Resolves locale from localStorage, `navigator.language`, then English after
   hydrating the deterministic English build-time shell, and switches
   synchronously against the statically mounted catalog.
-- Uses lazy route components so feature code remains separate from the shell
-  and shared static catalog.
+- Uses Start's automatic route component splitting so page code loads separately
+  from the shell and shared static catalog.
 - Desktop navigation exposes Home, Projects, Activity, and Settings. Devices
   remains available from Settings. Home, Devices, and Project pages read data
   through client-only route loaders, with shared pending and retry states.
@@ -87,8 +88,10 @@ browser composition root for authentication and Admin operations.
   come from the cloud API through `@voidmix/client`.
 - Rust owns tray behavior, notifications, window lifecycle, and native
   commands.
-- The renderer mounts feature pages directly from `src/features/`; it has no
-  compatibility page barrel.
+- Single-route pages live beside their route declarations; route-only formatting
+  helpers and tests use the ignored `-` prefix. The shared Desktop shell remains
+  in `src/features/shell/`. See
+  [ADR-0011](./decisions/0011-colocate-single-route-pages.md).
 - Closing the main window hides it to the tray; the tray can show, hide, or
   quit the application.
 - The first release targets macOS and Windows.

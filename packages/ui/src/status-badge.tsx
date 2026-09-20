@@ -1,35 +1,40 @@
+import { CheckCircle, Circle, Info, WarningCircle } from "@phosphor-icons/react";
+
+import { Badge, type BadgeProps } from "./components/ui/badge";
 import { cn } from "./lib/utils";
 
-export function StatusBadge({
-  label,
-  tone = "neutral",
-  className,
-}: {
+export type StatusTone = "neutral" | "info" | "warning" | "success" | "danger";
+
+export interface StatusBadgeProps {
   label: string;
-  tone?: "neutral" | "active" | "blocked" | "complete";
+  tone?: StatusTone;
   className?: string;
-}) {
+}
+
+const toneConfig: Record<
+  StatusTone,
+  { icon: typeof Circle; variant: NonNullable<BadgeProps["variant"]>; iconClassName?: string }
+> = {
+  neutral: { icon: Circle, variant: "outline" },
+  info: { icon: Info, variant: "secondary", iconClassName: "text-info" },
+  warning: { icon: WarningCircle, variant: "secondary", iconClassName: "text-warning" },
+  success: { icon: CheckCircle, variant: "secondary", iconClassName: "text-success" },
+  danger: { icon: WarningCircle, variant: "destructive" },
+};
+
+export function StatusBadge({ label, tone = "neutral", className }: StatusBadgeProps) {
+  const config = toneConfig[tone];
+  const Icon = config.icon;
+
   return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground",
-        tone === "active" && "bg-info/10",
-        tone === "blocked" && "bg-destructive/10",
-        tone === "complete" && "bg-success/10",
-        className,
-      )}
-    >
-      <span
+    <Badge className={cn("shrink-0", className)} variant={config.variant}>
+      <Icon
         aria-hidden="true"
-        className={cn(
-          tone === "active" && "text-info",
-          tone === "blocked" && "text-destructive",
-          tone === "complete" && "text-success",
-        )}
-      >
-        {tone === "complete" ? "✓" : tone === "blocked" ? "!" : tone === "active" ? "◐" : "○"}
-      </span>
+        className={config.iconClassName}
+        data-icon="inline-start"
+        weight="bold"
+      />
       {label}
-    </span>
+    </Badge>
   );
 }

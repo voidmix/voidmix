@@ -21,7 +21,8 @@ src/
     (app)/route.tsx  authenticated group layout and session gate
     (app)/(admin)/route.tsx  AdminShell layout within the authenticated group
     (app)/(admin)/admin.tsx  protected Admin user-directory mount at /admin
-  features/projects/ canonical project list and project detail views
+    (app)/projects.index.tsx canonical project list route and page
+    (app)/projects.$projectId.tsx canonical project detail route and page
   features/auth/     Better Auth forms
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
   i18n/              catalog loaders, API error codes, recovery copy
@@ -47,9 +48,13 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   `export const Route = createFileRoute("/path")({ component: X })`. Server-only
   endpoints may use `server.handlers` and omit `component`. The route tree
   regenerates on the next `dev` or `build`.
-- Route modules stay thin: route declaration, route-level layout, and composition
-  of a small number of feature entrypoints. Feature components, state, static
-  view data, and business behavior belong under `src/features/<feature>/`.
+- Single-route pages live in their route files, including local form state and
+  page composition. Keep page components module-private so Start can split them
+  automatically. Colocate route-only helpers/tests with the `-` ignore prefix.
+  Shared features and Admin composition stay under `src/features/<feature>/`.
+  See [ADR-0011](../../docs/architecture/decisions/0011-colocate-single-route-pages.md).
+- Keep the project detail component keyed by `projectId` so navigating between
+  projects resets drafts and pending form state.
 - Keep feature view data, fixtures, types, tests, and styles at the feature root.
   Once a feature has more than about three internal presentation components,
   place those components in a feature-local `components/` directory.

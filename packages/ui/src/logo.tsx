@@ -1,6 +1,7 @@
 import type { ComponentPropsWithoutRef } from "react";
 
 import markUrl from "./assets/voidmix-mark.webp?url";
+import { cn } from "./lib/utils";
 
 export interface LogoProps extends ComponentPropsWithoutRef<"span"> {
   label?: string;
@@ -9,9 +10,7 @@ export interface LogoProps extends ComponentPropsWithoutRef<"span"> {
 export function Logo({ label = "Voidmix", className, ...props }: LogoProps) {
   return (
     <span
-      className={["inline-flex items-center gap-2 font-semibold tracking-tight", className]
-        .filter(Boolean)
-        .join(" ")}
+      className={cn("inline-flex items-center gap-2 font-semibold tracking-tight", className)}
       data-slot="logo"
       {...props}
     >

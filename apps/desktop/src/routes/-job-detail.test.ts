@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { formatJobDetail } from "./job-detail";
+import { formatJobDetail } from "./-job-detail";
 
 describe("overview job detail formatting", () => {
   const formatter = { number: (value: number) => String(value) };

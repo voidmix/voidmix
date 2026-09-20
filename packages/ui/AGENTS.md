@@ -16,7 +16,7 @@ Page layout and product-specific composition stay in the owning application.
 | `./styles.css`                                        | what applications import: the shared base-nova tokens |
 | `./styles/globals.css`                                | the shadcn-owned Tailwind entry and oklch token block |
 | `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives |
-| `./status-badge` and `./components/ui/switch`         | Text status and accessible boolean control            |
+| `./status-badge` and `./components/ui/switch`         | Visual status tones and accessible boolean control    |
 | `./lib/*`                                             | `cn` and CVA helpers                                  |
 
 ## Ownership
@@ -28,6 +28,9 @@ Page layout and product-specific composition stay in the owning application.
 - Own the lazy Toast manager bridge so renderer applications can defer the Toast
   implementation until the first notification without duplicating lifecycle
   logic.
+- Keep shared patterns business-neutral. Applications map domain states such as
+  `in_progress` or `blocked` to `StatusBadge`'s visual tones (`info`, `warning`,
+  `success`, or `danger`) before rendering them.
 - Own no page layout, route tree, or application navigation.
 - Keep project cards, task lists, activity entries and Pi run timelines in Web:
   their domain-specific props are not part of this primitive package.

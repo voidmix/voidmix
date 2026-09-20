@@ -57,8 +57,8 @@ type belongs beside the thing it describes until a second consumer exists.
 
 ```text
 apps/<name>/
-  src/routes/         route modules only: metadata, validation, loaders, layouts, mounting
-  src/features/<f>/   the implementation a route mounts
+  src/routes/         route declarations, single-route pages, and local helpers
+  src/features/<f>/   shared features and application-specific Admin composition
   src/env.ts          browser-safe app environment composition
   server/             Nitro host wiring and server-only environment composition
   src/router.tsx      router construction and type registration
@@ -66,9 +66,26 @@ apps/<name>/
   AGENTS.md
 ```
 
-**A route file is not a component library.** It declares the route and may
-compose a small number of feature entrypoints with route-level layout. Feature
-components, hooks, state, fixtures, and the browser-side API facade live under
+**A page used by one route belongs with that route.** Define its component in
+the route file along with metadata, validation, and loaders. Local form state
+and page composition can stay there. Keep page components module-private and
+use `Route.useParams`, `Route.useSearch`, and `Route.useLoaderData` directly.
+TanStack Start automatically splits route components; an extra `page.tsx` and
+hand-written lazy import are not required for lazy loading.
+
+Extract substantial internals when they have a useful interface. Route-only
+helpers, components, and tests can sit beside the route with a `-` prefix:
+
+```text
+src/routes/projects/
+  route.tsx            layout with Outlet
+  index.tsx            list route and page
+  $projectId.tsx       detail route and page
+  -components/         optional route-local components, ignored by the router
+```
+
+Do not create those extra directories until they are needed. Features shared
+across routes, plus Admin's existing adapters and composition, remain under
 `src/features/<feature>/`:
 
 ```text
@@ -79,9 +96,9 @@ src/features/users/
   components/           only once the feature has more than about three components
 ```
 
-Feature roots keep view data, fixtures, types, tests, styles, and any substantial
-feature entrypoint. Do not add a `page.tsx` that only wraps two feature
-components; let the route compose them directly. When a feature grows beyond
+Feature roots keep their shared components, view data, fixtures, types, tests,
+and styles. Do not add a `page.tsx` that only wraps two feature components;
+let the route compose them directly. When a feature grows beyond
 about three internal presentation components, move those components into its
 local `components/` directory without adding a barrel export. TanStack
 file-based route groups use parenthesized directories such as `(auth)` and
@@ -99,11 +116,13 @@ Promote a component to `packages/ui` when a second application needs it — not
 before. A component used by two features in the same app moves up to that app,
 not to the shared package.
 
-Route modules should not own page fixtures, transport clients, fallback policy,
-local state, or large presentation trees. Keep those behind feature-local
-interfaces so a route change only changes composition. When a feature has more
-than one data source, keep the source adapters beside the feature and expose one
-small facade to the route or feature entrypoint.
+Keep transport configuration, persistence, and fallback policy behind existing
+client/data interfaces. Moving a page beside its route does not move backend
+business rules into the renderer. A page can call an API facade and own local
+interaction state. When a feature has more than one data source, keep the source
+adapters behind one small facade. Preserve keyed page components when changing
+route parameters must reset their state. See
+[ADR-0011](../architecture/decisions/0011-colocate-single-route-pages.md).
 
 ## Tests
 

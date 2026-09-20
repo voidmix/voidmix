@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { formatActivityTime } from "./time";
+import { formatActivityTime } from "./-time";
 
 describe("activity time formatting", () => {
   const formatter = {

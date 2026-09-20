@@ -4,7 +4,7 @@ import { Button } from "@voidmix/ui/components/ui/button";
 import { StatusBadge } from "@voidmix/ui/status-badge";
 
 const meta = {
-  title: "Workspace/States",
+  title: "Patterns/States",
   component: EmptyState,
   tags: ["autodocs"],
 } satisfies Meta<typeof EmptyState>;
@@ -28,9 +28,9 @@ export const Statuses: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">
       <StatusBadge label="Queued" />
-      <StatusBadge label="Running" tone="active" />
-      <StatusBadge label="Blocked" tone="blocked" />
-      <StatusBadge label="Complete" tone="complete" />
+      <StatusBadge label="Running" tone="info" />
+      <StatusBadge label="Blocked" tone="danger" />
+      <StatusBadge label="Complete" tone="success" />
     </div>
   ),
 };

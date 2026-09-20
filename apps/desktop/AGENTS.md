@@ -13,23 +13,20 @@ src/
   routeTree.gen.ts  generated — do not edit
   routes/
     __root.tsx      static document shell, locale bootstrap, DesktopShell layout
-    index.tsx       Home/overview route
-    activity/route.tsx activity route
-    devices/route.tsx devices route
+    index.tsx       Home/overview route and page
+    -job-detail.ts  route-local job detail formatting
+    activity/route.tsx activity route and page
+    activity/-time.ts route-local relative time formatting
+    devices/route.tsx devices route and page
     projects/
       route.tsx    project layout with Outlet
-      index.tsx    projects list index route
-      $projectId.tsx project detail route
-    settings/route.tsx settings route
+      index.tsx    projects list index route and page
+      $projectId.tsx project detail route, page, and not-found view
+    settings/route.tsx settings route and page
   styles.css        shared UI and Desktop stylesheet entry
   env.ts            desktop environment composition
   features/
     shell/           Tauri-aware desktop shell
-    overview/        overview page composition
-    projects/        project list and detail composition
-    activity/        activity page composition
-    devices/         devices page composition
-    settings/        settings page composition
   lib/cloud.ts      stable cloud facade and formatting helper
   lib/cloud/        remote normalization, source selection, and types
   lib/desktop.ts    Tauri bridge helpers
@@ -51,14 +48,17 @@ src-tauri/
 
 ## Constraints
 
-- This app uses TanStack Start file routing in **SPA mode**. Route modules stay
-  thin and lazy-load page entrypoints directly from `src/features/<feature>/`.
-  There is no application-wide page barrel.
+- This app uses TanStack Start file routing in **SPA mode**. Single-route pages
+  live in their route files as module-private components; Start automatically
+  code-splits them. Use `Route` hooks for typed loader data and search params.
+  Colocate route-only helpers/tests with the `-` ignore prefix. Shared features
+  remain under `src/features/`; there is no application-wide page barrel.
+  See [ADR-0011](../../docs/architecture/decisions/0011-colocate-single-route-pages.md).
 - Organize URL segments as directories. Use `route.tsx` for the segment route
   or layout, `index.tsx` for its exact page, and `$param.tsx` for dynamic children;
   do not encode nesting in dotted route filenames.
 - Home, Devices, and Project routes load API data in client-only route loaders.
-  Feature pages read typed loader data; refresh and successful mutations invalidate
+  Pages read typed loader data; refresh and successful mutations invalidate
   the owning route. Pass the route abort signal through API requests.
 - Keep `/projects/` in `projects/index.tsx`; `projects/route.tsx` renders an
   `Outlet` for both the list and `/projects/$projectId`. Activity filters are

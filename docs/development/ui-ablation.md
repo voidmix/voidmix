@@ -22,6 +22,7 @@
 - `@voidmix/ui` 新增 Base UI `Switch`，支持受控 `checked`、`onCheckedChange`、`disabled`、标签和小尺寸变体。
 - Desktop 设置使用 `Switch`；偏好存储和切换逻辑仍属于 Desktop。
 - Web 项目列表和详情使用公共 `Input`、`Button`、`EmptyState`、`StatusBadge`。
+- `StatusBadge` 只接受通用视觉 tone，并组合共享 `Badge` 与 Phosphor 图标；项目和任务状态由应用 feature 映射到视觉 tone。
 - `PageHeader`、`SectionHeading` 的内部排版不再由 Desktop 旧 CSS 覆盖，页面间距由调用处负责。
 - Storybook 新增 Switch 的默认、选中、禁用和交互状态。
 
