@@ -25,7 +25,7 @@ document is stale, then update the document in the same change.
 apps        web, desktop, api, worker, storybook    composition roots; never imported
 adapters    ai, application, cache, client, contracts, i18n, ui    surfaces apps are allowed to use
 core        core, db, auth, mail        db implements interfaces owned by core
-foundation  shared, env, logger, tsconfig    no dependency on anything above
+foundation  shared, tsconfig                no dependency on anything above
 tooling     scripts, e2e                never imported by runtime code
 ```
 
@@ -101,7 +101,8 @@ conventions, the two file layouts, and the accessibility requirements.
 
 ## Logging, security, and data
 
-- Use `@voidmix/logger` instead of application-local logger configuration.
+- Use `@voidmix/shared/logger` instead of application-local logger configuration.
+- Import environment APIs from `@voidmix/shared/env` and its explicit subpaths.
 - Keep operational logs separate from durable Admin audit records.
 - Never log credentials, cookies, authorization headers, passwords, secrets,
   tokens, or API keys.

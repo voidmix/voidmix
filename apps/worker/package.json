@@ -18,8 +18,7 @@
     "@voidmix/application": "workspace:*",
     "@voidmix/core": "workspace:*",
     "@voidmix/db": "workspace:*",
-    "@voidmix/env": "workspace:*",
-    "@voidmix/logger": "workspace:*"
+    "@voidmix/shared": "workspace:*"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",

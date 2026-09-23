@@ -1,4 +1,4 @@
-import { configureLogger, logger } from "@voidmix/logger";
+import { configureLogger, logger } from "@voidmix/shared/logger";
 
 import type { ScriptsEnvironment } from "../env.js";
 

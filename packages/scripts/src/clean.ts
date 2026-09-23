@@ -1,4 +1,4 @@
-import { lstat, readdir, rm } from "node:fs/promises";
+import { lstat, readdir, rm, rmdir } from "node:fs/promises";
 import { join } from "node:path";
 
 const rootArtifacts = [
@@ -55,7 +55,11 @@ export async function cleanRepository(
   const candidates = [
     ...rootArtifacts.map((path) => join(repositoryRoot, path)),
     ...workspaceRoots.flatMap((workspaceRoot) =>
-      workspaceArtifacts.map((path) => join(workspaceRoot, path)),
+      workspaceArtifacts
+        .filter(
+          (path) => !(path === "dist" && workspaceRoot === join(repositoryRoot, "packages/shared")),
+        )
+        .map((path) => join(workspaceRoot, path)),
     ),
     join(repositoryRoot, "apps/desktop/src-tauri/target"),
     join(repositoryRoot, "apps/desktop/src-tauri/gen/schemas"),
@@ -77,6 +81,14 @@ export async function cleanRepository(
     if (!(await pathExists(path))) continue;
     await rm(path, { force: true, recursive: true });
     removed.push(path.slice(repositoryRoot.length + 1));
+  }
+
+  const tauriGeneratedRoot = join(repositoryRoot, "apps/desktop/src-tauri/gen");
+  try {
+    await rmdir(tauriGeneratedRoot);
+    removed.push(tauriGeneratedRoot.slice(repositoryRoot.length + 1));
+  } catch (error) {
+    if (!isMissingPathError(error) && !isDirectoryNotEmptyError(error)) throw error;
   }
 
   return removed;
@@ -131,4 +143,8 @@ async function pathExists(path: string): Promise<boolean> {
 
 function isMissingPathError(error: unknown): boolean {
   return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+function isDirectoryNotEmptyError(error: unknown): boolean {
+  return error instanceof Error && "code" in error && error.code === "ENOTEMPTY";
 }

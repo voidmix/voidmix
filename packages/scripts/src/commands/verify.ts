@@ -46,6 +46,13 @@ export async function runVerify(
     });
   }
 
+  dependencies.log("info", "verify.task.started", { task: "shared:build" });
+  await dependencies.runCommand(["vp", "run", "@voidmix/shared#build"], {
+    captureOutput,
+    cwd: dependencies.repositoryRoot,
+    env: dependencies.processEnv,
+  });
+
   for (const task of ["check", "test", "build"] as const) {
     dependencies.log("info", "verify.task.started", { task });
     await dependencies.runCommand(["vp", "run", "-r", task], {
@@ -65,7 +72,8 @@ export async function runVerify(
 export const verifyCommand = defineCommand({
   meta: {
     name: "verify",
-    description: "Run every repository gate: policy, format, lint, checks, tests, builds, runtimes",
+    description:
+      "Run every repository gate: policy, format, lint, shared build, checks, tests, builds, runtimes",
   },
   args: {
     verbose: {

@@ -18,7 +18,7 @@ import {
 import { createAgentRunApplication, createProjectApplication } from "@voidmix/application";
 import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
 import type { AuthSettings, MailSettingsFallback } from "@voidmix/core";
-import { createLoggerConfig, type EvlogConfig } from "@voidmix/logger";
+import { createLoggerConfig, type EvlogConfig } from "@voidmix/shared/logger";
 import { getMailEnv } from "@voidmix/mail/env";
 import { createMailer } from "@voidmix/mail/server";
 

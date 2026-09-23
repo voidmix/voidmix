@@ -59,14 +59,28 @@ policy cache; Admin settings views and mail secrets remain database-backed.
 
 ## `@voidmix/shared`
 
-The zero-dependency foundation shared by domain and adapter packages. It owns
+The foundation shared by domain and adapter packages. It owns
 the framework-independent `DomainError` envelope, setting source and mutation
 value types, and injectable clock/ID interfaces with their default
 implementations. Core re-exports these primitives for compatibility, while DB
 consumes them directly so the dependency seam remains explicit.
 
-It does not import authentication, persistence, transport, UI, or runtime
-libraries.
+The package also owns two framework-oriented subpath families while keeping
+those dependencies isolated from the root and from each other:
+
+- `@voidmix/shared/env` and `@voidmix/shared/env/runtime` compose and validate
+  caller-supplied environment values. Applications still own their variables;
+  this package never reads `.env` files. Blank strings normalize to `undefined`,
+  defaults apply before validation, and browser access rejects server values.
+- `@voidmix/shared/logger` and its `client`, `env`, `hono`, `orpc`, and `vite`
+  subpaths configure Evlog, provide the central redaction policy, and expose
+  optional surface adapters. Operational logs remain separate from durable
+  audit records.
+
+Public subpaths resolve to ESM and declaration files built in `dist/`. Zod and
+Evlog are runtime dependencies; Hono, oRPC, and Vite are optional adapter peers.
+The source remains the target for tests and type checks. Installation builds the
+initial output, while the root development and verification commands refresh it.
 
 ## `@voidmix/core`
 
@@ -136,34 +150,6 @@ loader or generated runtime output. Web uses the async provider with its own
 explicit locale-to-import map; Desktop and Mail remain synchronous. Domain and
 contracts remain independent of i18n.
 
-## `@voidmix/env`
-
-The environment seam exposes `createEnv`, `defineEnv`, `Preset`, and
-`runtimeEnv`.
-
-- It validates values supplied by the runtime; it does not read `.env` files.
-- Packages declare owned variables through local presets.
-- Preset fields and final transforms use Zod directly. There is no independent
-  schema-provider protocol or dictionary parser; Zod owns parsing and output
-  inference.
-- Applications compose package presets with application-specific server,
-  client, and shared variables.
-- `VITE_` variables are statically constrained for browser use.
-- Blank strings normalize to `undefined`; defaults apply before validation.
-- Preset composition detects circular `extends` graphs.
-- Callers should not scatter direct `process.env` or `import.meta.env` reads.
-
-Representative composition:
-
-```ts
-const env = createEnv({
-  extends: [runtimeEnv, loggerEnv, databaseEnv],
-  server: {
-    ALLOWED_ORIGINS: z.string().default("http://localhost:3000"),
-  },
-});
-```
-
 ## `@voidmix/db`
 
 The database adapter package.
@@ -208,26 +194,6 @@ The database adapter package.
 Authentication policy is read for every registration, verification-email,
 password-reset, and welcome-email decision. It is not cached for the process
 lifetime, so Owner changes apply without a restart.
-
-## `@voidmix/logger`
-
-The observability seam wraps Evlog so services share naming, environment
-detection, minimum levels, event shape, and redaction policy.
-
-- Node services call `configureLogger({ service })` once during startup.
-- Jobs and lifecycle hooks create a scoped wide event with
-  `logger({ operation })` and emit it after enrichment.
-- Hono and oRPC adapters produce one event with duration, request ID, actor,
-  authorization result, outcome, and status.
-- Scripts use the same structured event shape.
-- Tooling can provide an explicit `runtimeEnv` when logger configuration must
-  use a copied child environment instead of global `process.env`.
-- Web and Desktop use the Vite client integration.
-- Authorization headers, cookies, passwords, secrets, tokens, and API keys are
-  redacted by default.
-
-Operational logs and Admin audit records are separate concepts. Logs are
-observability data; audit rows are durable product records.
 
 ## `@voidmix/ui`
 

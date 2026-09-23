@@ -1,7 +1,7 @@
 import { hasPermission, type Permission } from "@voidmix/auth";
 import { apiContract } from "@voidmix/contracts";
 import { implement } from "@orpc/server";
-import { evlog as orpcEvlog } from "@voidmix/logger/orpc";
+import { evlog as orpcEvlog } from "@voidmix/shared/logger/orpc";
 
 import type { ApiContext, CreateApiRouterOptions } from "./api-types.js";
 import { createApiError, mapDomainError } from "./canonical-errors.js";

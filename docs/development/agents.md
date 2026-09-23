@@ -65,7 +65,7 @@ Above all, prefer the existing local pattern over a new abstraction.
 - Call `requirePermission` at the top of every protected API handler. It is not
   middleware, and omitting it makes the procedure public with no failing test.
 - Write audit rows from `@voidmix/core` only, never from a handler, and never
-  mix them with `@voidmix/logger` operational events.
+  mix them with `@voidmix/shared/logger` operational events.
 - Prefer a narrower `AGENTS.md` over a broader one: if a rule only holds inside
   one workspace, it belongs to that workspace's file.
 - When a choice would relax a stated constraint, stop and write an

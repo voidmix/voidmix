@@ -54,7 +54,7 @@ transported or stored.
   The no-op check comes _after_ the guards, and audit is appended only on a real
   state transition.
 - Audit rows are initiated **here and only here**, in the same logical operation as
-  the mutation. They are durable product records, distinct from `@voidmix/logger`
+  the mutation. They are durable product records, distinct from `@voidmix/shared/logger`
   operational events. Never append audit from a handler.
 - Authentication settings normalize email domains to lowercase exact domains,
   reject invalid domains, and cap the allowlist at 100 entries. An empty list

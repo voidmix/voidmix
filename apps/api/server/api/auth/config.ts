@@ -4,7 +4,7 @@ import { authAccounts, authSessions, authVerifications, users } from "@voidmix/d
 import type { AuthSettings } from "@voidmix/core";
 import { resolveRequestLocaleHint } from "@voidmix/i18n/server";
 import type { Locale } from "@voidmix/i18n/types";
-import { logger } from "@voidmix/logger";
+import { logger } from "@voidmix/shared/logger";
 import type { Mailer } from "@voidmix/mail/types";
 import type { SecondaryStorage } from "better-auth/db";
 import { v7 as uuidv7 } from "uuid";

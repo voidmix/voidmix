@@ -1,4 +1,4 @@
-import { log } from "@voidmix/logger/client";
+import { log } from "@voidmix/shared/logger/client";
 import { readErrorCode } from "@voidmix/i18n";
 
 import type { AdminUsersClient, UserListInput, UserStatus } from "./types";

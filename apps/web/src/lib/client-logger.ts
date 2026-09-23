@@ -1,13 +1,13 @@
-import type { ClientLoggerOptions } from "@voidmix/logger/client";
+import type { ClientLoggerOptions } from "@voidmix/shared/logger/client";
 
 type IdleCallback = (deadline: { didTimeout: boolean; timeRemaining: () => number }) => void;
 type LoggerLoader = () => Promise<
-  Pick<typeof import("@voidmix/logger/client"), "initClientLogger">
+  Pick<typeof import("@voidmix/shared/logger/client"), "initClientLogger">
 >;
 
 let loggerScheduled = false;
 
-const defaultLoader: LoggerLoader = () => import("@voidmix/logger/client");
+const defaultLoader: LoggerLoader = () => import("@voidmix/shared/logger/client");
 
 export function scheduleClientLogger(
   options: ClientLoggerOptions,

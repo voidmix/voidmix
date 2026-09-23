@@ -27,7 +27,7 @@ measure the size of those slices, not performance or overall repository quality.
 | Browser environment access guard     | Temporarily remove the guard and run the existing browser-access test. It fails because accessing a server variable no longer throws. Restore the guard.                                                                                                | No retained change   | Reject removal |
 
 The four retained removals reduce their implementation from 994 to 644 lines
-(350 lines, about 35%). Three implementation files disappear. `@voidmix/env`
+(350 lines, about 35%). Three implementation files disappear. `@voidmix/shared/env`
 also loses its direct `type-fest` dependency and the repository's unused catalog
 entry; other tools may still require that package transitively.
 
@@ -56,7 +56,7 @@ an error`. The guard is restored in the final implementation.
 Run the focused suites with:
 
 ```bash
-bun run --cwd packages/env test
+bun run --cwd packages/shared test
 bun run --cwd apps/web test capabilities
 bun run --cwd apps/desktop test
 ```

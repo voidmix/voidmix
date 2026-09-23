@@ -17,7 +17,7 @@
     "build": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@voidmix/env": "workspace:*",
+    "@voidmix/shared": "workspace:*",
     "ioredis": "catalog:backend"
   },
   "devDependencies": {

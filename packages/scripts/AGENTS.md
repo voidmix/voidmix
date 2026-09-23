@@ -46,7 +46,7 @@ Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skill
   policy, and the shared contextual action creates that context and registers its
   logger before invoking the operation.
 - Commands must support non-interactive CI execution, explicit exit codes, and
-  structured logging via `@voidmix/logger`.
+  structured logging via `@voidmix/shared/logger`.
 - **Destructive database operations are restricted to development and test.**
   `database/policy.ts` owns that gate; do not bypass it.
 - `vmx env -- <command>` uses the Dotenvx programming API directly, loads

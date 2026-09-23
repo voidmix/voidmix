@@ -1,5 +1,5 @@
-import { createEnv, type Preset, z } from "@voidmix/env";
-import { runtimeEnv } from "@voidmix/env/runtime";
+import { createEnv, type Preset, z } from "@voidmix/shared/env";
+import { runtimeEnv } from "@voidmix/shared/env/runtime";
 import { resolveConfiguredLocale } from "@voidmix/i18n/server";
 
 export const mailEnv = {

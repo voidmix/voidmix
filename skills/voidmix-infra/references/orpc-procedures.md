@@ -60,7 +60,7 @@ when exposing new data to Web's public or Admin features.
 - Audit rows are written **from `packages/core` only**, via
   `users.appendAudit(...)`, in the same logical operation as the mutation and
   only on a real state change. Never from a handler. They are durable product
-  records, distinct from `@voidmix/logger` operational events.
+  records, distinct from `@voidmix/shared/logger` operational events.
 - Enrich the current wide event with `context.log?.set({ actor, target, outcome })`
   — one event per request, not multiple log lines.
 - Procedures are never zero-arg: `client.health({})` needs the explicit `{}`.

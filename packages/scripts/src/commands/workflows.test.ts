@@ -96,6 +96,7 @@ describe("repository workflows", () => {
     expect(deps.runCommand.mock.calls.map(([command]) => command)).toEqual([
       ["vp", "fmt", "--check"],
       ["vp", "lint"],
+      ["vp", "run", "@voidmix/shared#build"],
       ["vp", "run", "-r", "check"],
       ["vp", "run", "-r", "test"],
       ["vp", "run", "-r", "build"],
@@ -105,9 +106,11 @@ describe("repository workflows", () => {
       deps.processEnv,
       deps.processEnv,
       deps.processEnv,
+      deps.processEnv,
       { ...deps.processEnv, NITRO_PRESET: "bun" },
     ]);
     expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual([
+      true,
       true,
       true,
       true,
@@ -123,6 +126,7 @@ describe("repository workflows", () => {
     await runVerify(deps, { verbose: true });
 
     expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual([
+      false,
       false,
       false,
       false,

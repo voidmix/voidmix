@@ -17,7 +17,7 @@ vi.mock("@voidmix/client", () => ({
   createApiClient: vi.fn(() => mocks.api),
 }));
 
-vi.mock("@voidmix/logger/client", () => ({
+vi.mock("@voidmix/shared/logger/client", () => ({
   log: {
     error: mocks.error,
     warn: mocks.warn,

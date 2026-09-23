@@ -1,5 +1,5 @@
 import { createApiRuntime, type ApiRuntime } from "./api/index.js";
-import { configureLogger } from "@voidmix/logger";
+import { configureLogger } from "@voidmix/shared/logger";
 
 import { env } from "./env.js";
 

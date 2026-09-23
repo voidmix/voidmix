@@ -41,8 +41,7 @@
     "@dotenvx/dotenvx": "catalog:tooling",
     "@voidmix/core": "workspace:*",
     "@voidmix/db": "workspace:*",
-    "@voidmix/env": "workspace:*",
-    "@voidmix/logger": "workspace:*",
+    "@voidmix/shared": "workspace:*",
     "citty": "catalog:tooling",
     "uuid": "catalog:"
   },

@@ -38,6 +38,7 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 - [ADR-0009: Pi SDK as the VoidMix Agent runtime](./0009-pi-as-agent-runtime.md)
 - [ADR-0010: Account-first Project V2](./0010-account-first-project-v2.md)
 - [ADR-0011: Colocate single-route pages with their routes](./0011-colocate-single-route-pages.md)
+- [ADR-0012: Merge environment and logging into the shared foundation](./0012-shared-environment-and-logging.md)
 
 The supported renderer and Mail locales are `en` and `zh`. Catalog parity and
 source-boundary checks run with `bun run i18n:check` and are the first gate of

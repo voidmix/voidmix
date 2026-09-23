@@ -1,6 +1,6 @@
-import { createEnv, type Preset, z } from "@voidmix/env";
-import { runtimeEnv } from "@voidmix/env/runtime";
-import { loggerEnv } from "@voidmix/logger/env";
+import { createEnv, type Preset, z } from "@voidmix/shared/env";
+import { runtimeEnv } from "@voidmix/shared/env/runtime";
+import { loggerEnv } from "@voidmix/shared/logger/env";
 
 export const desktopEnv = {
   id: "desktop",

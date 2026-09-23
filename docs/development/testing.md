@@ -16,6 +16,12 @@ do not flood the terminal or an agent context. If a gate fails, `vmx` reports a
 sanitized tail of that command's output. Use `bun run verify --verbose` when
 interactive debugging needs the full live output.
 
+Installation builds `@voidmix/shared` once because its public exports resolve
+from `packages/shared/dist`. The root `dev` command runs the shared pack watcher
+alongside applications. `verify` and focused consumer checks must build shared
+first after editing its source; for example run
+`bun run --cwd packages/shared build` before a workspace's `check` or `test`.
+
 | Stage   | Command           | Why it is at this position                     |
 | ------- | ----------------- | ---------------------------------------------- |
 | policy  | in-process        | milliseconds, and its failures are structural  |

@@ -47,6 +47,7 @@ describe("cleanRepository", () => {
       "apps/web/src/routeTree.gen.ts",
       "apps/web/node_modules/example/package.json",
       "packages/db/drizzle/20260815142252_unusual_leech/migration.sql",
+      "packages/shared/dist/index.js",
     ];
 
     await Promise.all(
@@ -62,6 +63,7 @@ describe("cleanRepository", () => {
     for (const path of removedPaths) {
       expect(existsSync(join(repositoryRoot, path))).toBe(false);
     }
+    expect(existsSync(join(repositoryRoot, "apps/desktop/src-tauri/gen"))).toBe(false);
     for (const path of preservedPaths) {
       expect(existsSync(join(repositoryRoot, path))).toBe(true);
     }
@@ -87,6 +89,7 @@ describe("cleanRepository", () => {
         "apps/web/node_modules/.vite",
         "packages/core/coverage",
         "apps/desktop/src-tauri/gen/schemas",
+        "apps/desktop/src-tauri/gen",
         "apps/desktop/src-tauri/target",
       ].sort(),
     );

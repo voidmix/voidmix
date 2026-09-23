@@ -9,9 +9,9 @@ import {
   ResponseHeadersHandlerPlugin,
   TimeoutHandlerPlugin,
 } from "@orpc/server/plugins";
-import { createLoggerConfig, toMiddlewareOptions, type EvlogConfig } from "@voidmix/logger";
-import { evlog as honoEvlog, type EvlogVariables } from "@voidmix/logger/hono";
-import { withEvlog } from "@voidmix/logger/orpc";
+import { createLoggerConfig, toMiddlewareOptions, type EvlogConfig } from "@voidmix/shared/logger";
+import { evlog as honoEvlog, type EvlogVariables } from "@voidmix/shared/logger/hono";
+import { withEvlog } from "@voidmix/shared/logger/orpc";
 import { resolveRequestLocaleHint } from "@voidmix/i18n/server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";

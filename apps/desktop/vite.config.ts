@@ -2,7 +2,7 @@ import type { ViteUserConfig } from "vite-plus";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import evlog from "@voidmix/logger/vite";
+import evlog from "@voidmix/shared/logger/vite";
 
 const host = process.env.TAURI_DEV_HOST;
 const isDevelopment = process.env.NODE_ENV !== "production";

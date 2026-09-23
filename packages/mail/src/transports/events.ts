@@ -1,4 +1,4 @@
-import { logger } from "@voidmix/logger";
+import { logger } from "@voidmix/shared/logger";
 
 import type { MailDeliveryRecorder } from "../types.js";
 

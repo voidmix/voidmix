@@ -13,7 +13,30 @@ describe("logger", () => {
     expect(config.service).toBe("logger-test");
     expect(config.environment).toBe("test");
     expect(config.redact).toMatchObject({
-      paths: expect.arrayContaining(["token", "**.authorization"]),
+      paths: expect.arrayContaining([
+        "authorization",
+        "cookie",
+        "set-cookie",
+        "password",
+        "passwordHash",
+        "secret",
+        "token",
+        "accessToken",
+        "refreshToken",
+        "sessionToken",
+        "apiKey",
+        "**.authorization",
+        "**.cookie",
+        "**.set-cookie",
+        "**.password",
+        "**.passwordHash",
+        "**.secret",
+        "**.token",
+        "**.accessToken",
+        "**.refreshToken",
+        "**.sessionToken",
+        "**.apiKey",
+      ]),
     });
   });
 

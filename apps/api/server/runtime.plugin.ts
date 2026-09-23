@@ -1,4 +1,4 @@
-import { logger } from "@voidmix/logger";
+import { logger } from "@voidmix/shared/logger";
 import { definePlugin } from "nitro";
 
 import { closeApiRuntime, getApiRuntime } from "./runtime.js";

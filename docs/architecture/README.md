@@ -28,7 +28,7 @@ flowchart LR
   rpc --> api["apps/api"]
   api --> application["@voidmix/application"]
   worker["Worker"] --> application
-  api --> logger["@voidmix/logger / Evlog"]
+  api --> shared["@voidmix/shared: env + logger"]
   api --> auth["Auth + RBAC"]
   api --> core["@voidmix/core"]
   api --> db["Repository adapter"]
@@ -59,8 +59,9 @@ application commands while remaining independently deployable. `features`,
 `admin-ui`, and a generic `config` package are intentionally not standalone
 workspaces either.
 
-Environment validation belongs to `@voidmix/env`; each application assembles its
-own application configuration.
+Environment validation belongs to `@voidmix/shared/env`; each application
+assembles and validates its own configuration. Environment and logger APIs are
+subpaths of the shared foundation package.
 
 ## Dependency direction
 
@@ -72,15 +73,15 @@ apps/storybook ───> ui
 
 apps/web ───> client ───> contracts ───> apps/api
 apps/api ───> Hono + auth + application + core + db + contracts
-apps/api ───> logger
-apps/web/desktop ───> logger (Vite client integration)
-apps/api/web/desktop ───> env
+apps/api ───> shared/env + shared/logger + Hono/oRPC adapters
+apps/web/desktop ───> shared/env + shared/logger (Vite client integration)
+apps/worker ───> shared/env + shared/logger
 apps/api ───> cache
 apps/worker ───> application + db + ai
-packages/db/logger/scripts ───> env
+packages/db/mail/cache/scripts ───> shared/env + shared/logger
 packages/db ───> core
 packages/core/db ───> shared
-packages/scripts ───> db + core + logger
+packages/scripts ───> db + core + shared
 packages/core ───> auth
 ```
 

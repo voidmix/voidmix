@@ -1,4 +1,4 @@
-import { createEnv } from "@voidmix/env";
+import { createEnv } from "@voidmix/shared/env";
 import { describe, expect, it } from "vite-plus/test";
 
 import { webEnv } from "./env";

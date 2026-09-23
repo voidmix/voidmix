@@ -8,17 +8,17 @@
       "e2e"
     ],
     "catalog": {
-      "@orpc/client": "2.0.0-beta.36",
-      "@orpc/contract": "2.0.0-beta.36",
-      "@orpc/server": "2.0.0-beta.36",
+      "@orpc/client": "2.0.0-beta.40",
+      "@orpc/contract": "2.0.0-beta.40",
+      "@orpc/server": "2.0.0-beta.40",
       "@earendil-works/pi-coding-agent": "0.85.1",
       "@better-auth/drizzle-adapter": "^1.7.5",
       "better-auth": "^1.7.5",
       "evlog": "^2.29.0",
-      "use-intl": "^4.14.5",
-      "@tanstack/react-router": "^1.170.36",
+      "use-intl": "^4.14.6",
+      "@tanstack/react-router": "^1.170.39",
       "@tanstack/react-store": "^0.11.1",
-      "@tanstack/react-start": "^1.168.54",
+      "@tanstack/react-start": "^1.168.58",
       "react": "^19.3.0",
       "react-dom": "^19.3.0",
       "zod": "^4.6.5",
@@ -39,10 +39,10 @@
         "@phosphor-icons/react": "^2.1.10",
         "@tailwindcss/vite": "^4.3.3",
         "@tauri-apps/api": "^2.11.1",
-        "@tauri-apps/cli": "^2.11.4",
+        "@tauri-apps/cli": "^2.11.5",
         "@tauri-apps/plugin-opener": "^2.5.5",
         "class-variance-authority": "^0.7.1",
-        "cn": "0.3.0",
+        "cn": "0.3.3",
         "react-email": "^6.9.5",
         "resend": "^6.28.1",
         "tailwindcss": "^4.3.3",
@@ -50,7 +50,7 @@
         "zustand": "^5.0.15"
       },
       "tooling": {
-        "@dotenvx/dotenvx": "^2.26.1",
+        "@dotenvx/dotenvx": "^2.30.0",
         "@playwright/test": "^1.63.0",
         "@storybook/addon-a11y": "10.6.0",
         "@storybook/addon-docs": "10.6.0",
@@ -59,13 +59,13 @@
         "@testing-library/react": "^16.3.3",
         "@testing-library/user-event": "^14.6.7",
         "@vitest/coverage-v8": "4.1.11",
-        "knip": "^6.36.0",
+        "knip": "^6.38.0",
         "esbuild": "^0.28.2",
-        "jsdom": "^30.0.1",
+        "jsdom": "^30.1.1",
         "jiti": "^2.7.0",
         "lightningcss": "1.33.0",
-        "@tanstack/router-cli": "1.167.36",
-        "@types/node": "^26.6.1",
+        "@tanstack/router-cli": "1.167.38",
+        "@types/node": "^26.6.2",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.1",
@@ -74,8 +74,8 @@
         "storybook": "10.6.0",
         "taze": "^21.1.0",
         "typescript": "7.0.2",
-        "vite": "npm:@voidzero-dev/vite-plus-core@0.3.2",
-        "vite-plus": "0.3.2"
+        "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3",
+        "vite-plus": "0.3.3"
       }
     }
   },
@@ -94,7 +94,7 @@
     "deps:dedupe": "vmx deps dedupe",
     "deps:dedupe:check": "vmx deps dedupe --check",
     "deps:audit": "vmx deps audit",
-    "dev": "vp run --filter './apps/*' --parallel dev",
+    "dev": "vp run --filter './apps/*' --filter './packages/shared' --parallel dev",
     "build": "vp run -r --cache build",
     "check": "vp run -r check",
     "lint": "vp lint",
@@ -118,7 +118,8 @@
     "storybook": "bun run --cwd apps/storybook dev",
     "storybook:build": "bun run --cwd apps/storybook build",
     "verify": "vmx verify",
-    "shadcn:update": "vmx shadcn update"
+    "shadcn:update": "vmx shadcn update",
+    "postinstall": "bun run --cwd packages/shared build"
   },
   "devDependencies": {
     "@tailwindcss/vite": "catalog:frontend",
@@ -135,7 +136,7 @@
     "esbuild": "catalog:tooling",
     "jiti": "catalog:tooling",
     "lightningcss": "catalog:tooling",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.2"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3"
   },
   "devEngines": {
     "packageManager": {

@@ -18,9 +18,8 @@
     "preview:email": "bun scripts/preview.ts"
   },
   "dependencies": {
-    "@voidmix/env": "workspace:*",
     "@voidmix/i18n": "workspace:*",
-    "@voidmix/logger": "workspace:*",
+    "@voidmix/shared": "workspace:*",
     "react": "catalog:",
     "react-email": "catalog:frontend",
     "resend": "catalog:frontend"

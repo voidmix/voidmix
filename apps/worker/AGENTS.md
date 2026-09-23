@@ -17,7 +17,7 @@ long-running work and is never imported by Web, Desktop, or shared packages.
 - Claim durable work using a lease and dispatch it to application commands and
   the server-side AI adapter.
 - Keep cancellation, retry, and reconnect state in the durable AgentRun model.
-- Emit structured lifecycle logs through `@voidmix/logger`.
+- Emit structured lifecycle logs through `@voidmix/shared/logger`.
 
 ## Constraints
 

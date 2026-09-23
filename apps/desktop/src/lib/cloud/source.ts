@@ -1,4 +1,4 @@
-import { log } from "@voidmix/logger/client";
+import { log } from "@voidmix/shared/logger/client";
 import { env } from "../../env.js";
 import { demoCloudSnapshot } from "./demo";
 import { fetchRemoteSnapshot, type RemoteSnapshotResult } from "./remote";
