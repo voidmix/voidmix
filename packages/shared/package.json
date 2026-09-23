@@ -1,5 +1,5 @@
 {
-  "name": "@voidmix/core",
+  "name": "@voidmix/shared",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,10 +14,6 @@
     "test:component": "vp test --run --passWithNoTests component.test",
     "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
     "build": "tsc --noEmit -p tsconfig.json"
-  },
-  "dependencies": {
-    "@voidmix/auth": "workspace:*",
-    "@voidmix/shared": "workspace:*"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",

@@ -21,6 +21,7 @@
   "dependencies": {
     "@voidmix/core": "workspace:*",
     "@voidmix/env": "workspace:*",
+    "@voidmix/shared": "workspace:*",
     "drizzle-orm": "catalog:backend",
     "postgres": "catalog:backend"
   },

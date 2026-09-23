@@ -1,10 +1,5 @@
 import type { AuditEvent } from "../identity/model.js";
-import type {
-  InheritedSetting,
-  SettingSource,
-  UpdateSecret,
-  UpdateSetting,
-} from "../shared/types.js";
+import type { InheritedSetting, SettingSource, UpdateSecret, UpdateSetting } from "@voidmix/shared";
 
 export interface MailRuntimeSettings {
   enabled: boolean;

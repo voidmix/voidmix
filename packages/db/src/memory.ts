@@ -25,7 +25,6 @@ import type {
   ProjectRepository,
   ProjectTask,
   SystemSettingsRepository,
-  UpdateSetting,
   UpdateAuthSettingsInput,
   UpdateMailSettingsInput,
   User,
@@ -36,10 +35,10 @@ import type {
   WorkspaceMembership,
   WorkspaceMembershipRepository,
 } from "@voidmix/core";
+import { defaultClock, defaultIdGenerator } from "@voidmix/shared";
+import type { UpdateSetting } from "@voidmix/shared";
 import {
   createDefaultAuthSettings,
-  defaultClock,
-  defaultIdGenerator,
   isTerminalRunStatus,
   projectLifecycle,
   projectStageFromStatus,

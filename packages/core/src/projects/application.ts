@@ -7,7 +7,7 @@ import {
   type ProjectStatus,
   type ProjectTaskStatus,
 } from "./model.js";
-import { defaultClock } from "../shared/types.js";
+import { defaultClock } from "@voidmix/shared";
 
 export function createProjectAdministration(options: {
   projects: ProjectRepository;

@@ -1,4 +1,4 @@
-import { DomainError } from "../shared/errors.js";
+import { DomainError } from "@voidmix/shared";
 
 export const scheduledTaskStatuses = ["active", "paused"] as const;
 export type ScheduledTaskStatus = (typeof scheduledTaskStatuses)[number];

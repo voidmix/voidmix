@@ -1,5 +1,5 @@
-import { DomainError } from "../shared/errors.js";
-import { defaultClock, defaultIdGenerator } from "../shared/types.js";
+import { DomainError } from "@voidmix/shared";
+import { defaultClock, defaultIdGenerator } from "@voidmix/shared";
 
 /**
  * Domain model for workspace assets and their immutable versions.

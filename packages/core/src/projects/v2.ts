@@ -1,4 +1,4 @@
-import { DomainError } from "../shared/errors.js";
+import { DomainError } from "@voidmix/shared";
 
 /** The canonical V2 project lifecycle. */
 export const projectStagesV2 = ["draft", "in_progress", "review", "delivered"] as const;

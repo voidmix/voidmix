@@ -1,4 +1,4 @@
-import { DomainError } from "../shared/errors.js";
+import { DomainError } from "@voidmix/shared";
 import type { AgentRunStatus } from "../agents/index.js";
 import type { ProjectMemberRepository } from "./members.js";
 

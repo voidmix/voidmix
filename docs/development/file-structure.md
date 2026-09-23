@@ -42,13 +42,18 @@ packages/core/src/
   projects/   project/task ports and facade
   assets/     immutable versions and sync conflicts
   agents/     runs, steps, leases, and tool capabilities
-  shared/     small cross-context value types and errors
+
+packages/shared/
+  src/        framework-independent errors, value types, and injected defaults
 ```
 
 Keep the package root as the only public barrel. A context belongs here when it
 contains a framework-independent rule or port; an application feature remains
 under `apps/*/src/features/` and owns presentation, transport facades, and
 fallback data.
+
+The small cross-context primitives used by both Core and adapters live in
+`@voidmix/shared`; do not recreate them inside a domain context.
 
 Do not add a `src/types.ts`, `src/utils.ts`, or `src/constants.ts` by reflex. A
 type belongs beside the thing it describes until a second consumer exists.

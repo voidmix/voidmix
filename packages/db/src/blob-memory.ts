@@ -1,5 +1,6 @@
 import type { BlobDownload, BlobStorageRepository, BlobUpload } from "@voidmix/core";
-import { AssetDomainError, defaultClock, defaultIdGenerator } from "@voidmix/core";
+import { AssetDomainError } from "@voidmix/core";
+import { defaultClock, defaultIdGenerator } from "@voidmix/shared";
 import { createHash } from "node:crypto";
 
 export class InMemoryBlobStorageRepository implements BlobStorageRepository {

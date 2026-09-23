@@ -237,6 +237,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@voidmix/auth": "workspace:*",
+        "@voidmix/shared": "workspace:*",
       },
       "devDependencies": {
         "@vitest/coverage-v8": "catalog:tooling",
@@ -249,6 +250,7 @@
       "dependencies": {
         "@voidmix/core": "workspace:*",
         "@voidmix/env": "workspace:*",
+        "@voidmix/shared": "workspace:*",
         "drizzle-orm": "catalog:backend",
         "postgres": "catalog:backend",
       },
@@ -339,6 +341,14 @@
         "citty": "catalog:tooling",
         "uuid": "catalog:",
       },
+      "devDependencies": {
+        "@vitest/coverage-v8": "catalog:tooling",
+        "@voidmix/tsconfig": "workspace:*",
+      },
+    },
+    "packages/shared": {
+      "name": "@voidmix/shared",
+      "version": "0.0.0",
       "devDependencies": {
         "@vitest/coverage-v8": "catalog:tooling",
         "@voidmix/tsconfig": "workspace:*",
@@ -1311,6 +1321,8 @@
     "@voidmix/mail": ["@voidmix/mail@workspace:packages/mail"],
 
     "@voidmix/scripts": ["@voidmix/scripts@workspace:packages/scripts"],
+
+    "@voidmix/shared": ["@voidmix/shared@workspace:packages/shared"],
 
     "@voidmix/storybook": ["@voidmix/storybook@workspace:apps/storybook"],
 

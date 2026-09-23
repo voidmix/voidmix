@@ -32,8 +32,10 @@ transported or stored.
 
 ## Constraints
 
-- **The only dependency is `@voidmix/auth`.** No React, Hono, Nitro, Drizzle,
+- **Runtime dependencies are `@voidmix/auth` and `@voidmix/shared`.** No React, Hono, Nitro, Drizzle,
   Zod, or oRPC. `lib: ["ES2022"]` means there are no DOM types either.
+- Shared primitives are owned by `@voidmix/shared` and re-exported here for
+  compatibility.
 - Entities are plain `interface`s with no methods and no classes.
 - Usecases are factory functions returning an object literal
   (`createUserAdministration({ users, now, id })`), not classes.

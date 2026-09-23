@@ -1,5 +1,5 @@
-import { DomainError } from "../shared/errors.js";
-import { defaultClock } from "../shared/types.js";
+import { DomainError } from "@voidmix/shared";
+import { defaultClock } from "@voidmix/shared";
 
 /** Legacy project values retained at the repository boundary during migration. */
 export const projectStatuses = ["active", "paused", "completed", "archived"] as const;

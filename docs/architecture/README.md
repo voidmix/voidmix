@@ -79,6 +79,7 @@ apps/api ───> cache
 apps/worker ───> application + db + ai
 packages/db/logger/scripts ───> env
 packages/db ───> core
+packages/core/db ───> shared
 packages/scripts ───> db + core + logger
 packages/core ───> auth
 ```

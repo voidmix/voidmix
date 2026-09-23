@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { BlobDownload, BlobStorageRepository, BlobUpload } from "@voidmix/core";
-import { AssetDomainError, defaultClock, defaultIdGenerator } from "@voidmix/core";
+import { AssetDomainError } from "@voidmix/core";
+import { defaultClock, defaultIdGenerator } from "@voidmix/shared";
 
 const MAX_BLOB_SIZE = 10 * 1024 * 1024;
 

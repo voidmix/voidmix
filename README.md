@@ -47,6 +47,7 @@ packages/i18n       use-intl facade, locale adapters, and formatting
 packages/mail       Typed auth email templates and transports
 packages/env        Runtime-aware environment presets
 packages/db         Drizzle schema and repository adapters
+packages/shared     Framework-independent errors and injection primitives
 packages/logger     Evlog configuration and runtime adapters
 packages/scripts    Repository automation CLI
 packages/tsconfig   Shared TypeScript presets

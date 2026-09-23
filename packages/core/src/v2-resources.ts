@@ -1,4 +1,4 @@
-import { DomainError } from "./shared/errors.js";
+import { DomainError } from "@voidmix/shared";
 
 export const taskStatusesV2 = ["todo", "in_progress", "blocked", "done"] as const;
 export type TaskStatusV2 = (typeof taskStatusesV2)[number];

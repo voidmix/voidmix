@@ -57,6 +57,17 @@ silently replaced by an in-memory fallback. API runtime uses it for Better Auth
 session/rate-limit/verification secondary storage and for a short-lived Auth
 policy cache; Admin settings views and mail secrets remain database-backed.
 
+## `@voidmix/shared`
+
+The zero-dependency foundation shared by domain and adapter packages. It owns
+the framework-independent `DomainError` envelope, setting source and mutation
+value types, and injectable clock/ID interfaces with their default
+implementations. Core re-exports these primitives for compatibility, while DB
+consumes them directly so the dependency seam remains explicit.
+
+It does not import authentication, persistence, transport, UI, or runtime
+libraries.
+
 ## `@voidmix/core`
 
 Framework-independent business rules and repository interfaces. Its single

@@ -1,4 +1,4 @@
-import { DomainError } from "../shared/errors.js";
+import { DomainError } from "@voidmix/shared";
 
 export const workspaceMembershipRoles = ["owner", "editor", "viewer"] as const;
 export type WorkspaceMembershipRole = (typeof workspaceMembershipRoles)[number];

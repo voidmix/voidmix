@@ -25,11 +25,10 @@ import type {
   ProjectMember,
   ProjectMemberRepository,
 } from "@voidmix/core";
+import { defaultClock, defaultIdGenerator } from "@voidmix/shared";
 import {
   assertFeedbackStatusTransition,
   assertReviewStatusTransition,
-  defaultClock,
-  defaultIdGenerator,
   ProjectStudioDomainError,
 } from "@voidmix/core";
 

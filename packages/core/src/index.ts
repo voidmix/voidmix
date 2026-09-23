@@ -7,5 +7,5 @@ export * from "./projects/index.js";
 export * from "./project-studio/index.js";
 export * from "./scheduled-tasks/index.js";
 export * from "./settings/index.js";
-export * from "./shared/index.js";
+export * from "@voidmix/shared";
 export * from "./workspace/index.js";
