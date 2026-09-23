@@ -1,0 +1,79 @@
+AGENTS.md
+  s_3bf6498855fd13::t_58fe15bdefaed7 28
+README.md
+  s_3bf6498855fd13::t_f62e289c879054 50
+bun.lock
+  s_3bf6498855fd13::t_2acfa196727737 240,253,349-356,1325-1326
+docs/architecture/README.md
+  s_3bf6498855fd13::t_9bc6dfcaeeedee 82
+docs/architecture/packages.md
+  s_3bf6498855fd13::t_280759500725dd 60-70
+docs/development/file-structure.md
+  s_3bf6498855fd13::t_e53bc998076c55 45-47,55-57
+packages/core/package.json
+  s_3bf6498855fd13::t_928b68a174442b 19-20
+packages/core/src/agents/index.ts
+  s_3bf6498855fd13::t_3e7d288ab5fbda 1-2
+packages/core/src/assets/index.ts
+  s_3bf6498855fd13::t_0c7d020442b569 1-2
+packages/core/src/identity/application.ts
+  s_3bf6498855fd13::t_8cebd8f1bc837a 1-2
+packages/core/src/index.ts
+  s_3bf6498855fd13::t_ac1a1d971a3a47 10
+packages/core/src/project-studio/model.ts
+  s_3bf6498855fd13::t_adf085bd2f0410 1
+packages/core/src/projects/application.ts
+  s_3bf6498855fd13::t_20e4cd48528997 10
+packages/core/src/projects/model.ts
+  s_3bf6498855fd13::t_bbbc71268c599f 1-2
+packages/core/src/projects/v2.ts
+  s_3bf6498855fd13::t_1f749101936de1 1
+packages/core/src/scheduled-tasks/index.ts
+  s_3bf6498855fd13::t_3a89e0abff5eb8 1
+packages/core/src/settings/application.ts
+  s_3bf6498855fd13::t_b5793c61dad3d7 1-2
+packages/core/src/settings/model.ts
+  s_3bf6498855fd13::t_fd3abd855719d0 2
+packages/core/src/v2-resources.ts
+  s_3bf6498855fd13::t_ec0dd331a4a0d3 1
+packages/core/src/workspace/model.ts
+  s_3bf6498855fd13::t_7532b0018092df 1
+packages/db/package.json
+  s_3bf6498855fd13::t_597d167d85cfd4 24
+packages/db/src/blob-filesystem.ts
+  s_3bf6498855fd13::t_329b10071de776 5-6
+packages/db/src/blob-memory.ts
+  s_3bf6498855fd13::t_12488a92dbaa27 2-3
+packages/db/src/memory.ts
+  s_3bf6498855fd13::t_50e8cdf51b3a1c 38-39
+packages/db/src/postgres.ts
+  s_3bf6498855fd13::t_b67d179008700a 65-66
+packages/db/src/project-studio-memory.ts
+  s_3bf6498855fd13::t_1c6e074c2524e0 28
+packages/shared/AGENTS.md
+  s_3bf6498855fd13::t_c0b732715be65e 1-39
+packages/shared/package.json
+  s_3bf6498855fd13::t_46ce949d244513 1-22
+packages/shared/src/index.test.ts
+  s_3bf6498855fd13::t_6a812e27394d91 1-24
+packages/shared/tsconfig.json
+  s_3bf6498855fd13::t_4fac86bb874de1 1-4
+packages/shared/vitest.config.ts
+  s_3bf6498855fd13::t_7cd4094a81d98e 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7e4be70034ec898d0b3a9f72721dbf94d8cd4d9e",
+  "prompts": {},
+  "sessions": {
+    "s_3bf6498855fd13": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c1d4-87be-7921-9af1-a2f5b17e676c",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
