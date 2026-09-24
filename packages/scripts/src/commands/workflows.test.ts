@@ -99,7 +99,17 @@ describe("repository workflows", () => {
       ["vp", "run", "@voidmix/shared#build"],
       ["vp", "run", "-r", "check"],
       ["vp", "run", "-r", "test"],
-      ["vp", "run", "-r", "build"],
+      [
+        "vp",
+        "run",
+        "--filter",
+        "./apps/*",
+        "--filter",
+        "./packages/*",
+        "--filter",
+        "!@voidmix/shared",
+        "build",
+      ],
     ]);
     expect(deps.runCommand.mock.calls.map(([, options]) => options.env)).toEqual([
       deps.processEnv,

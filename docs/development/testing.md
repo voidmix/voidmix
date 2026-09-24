@@ -22,15 +22,16 @@ alongside applications. `verify` and focused consumer checks must build shared
 first after editing its source; for example run
 `bun run --cwd packages/shared build` before a workspace's `check` or `test`.
 
-| Stage   | Command           | Why it is at this position                     |
-| ------- | ----------------- | ---------------------------------------------- |
-| policy  | in-process        | milliseconds, and its failures are structural  |
-| format  | `vp fmt --check`  | under a second over the whole repository       |
-| lint    | `vp lint`         | seconds, type-aware                            |
-| check   | `vp run -r check` | per-workspace `tsc --noEmit`                   |
-| test    | `vp run -r test`  | every workspace's Vitest suite                 |
-| build   | `vp run -r build` | with `NITRO_PRESET=bun` (see below)            |
-| runtime | in-process        | starts each built server and requires HTTP 200 |
+| Stage        | Command                                                                                | Why it is at this position                                           |
+| ------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| policy       | in-process                                                                             | milliseconds, and its failures are structural                        |
+| format       | `vp fmt --check`                                                                       | under a second over the whole repository                             |
+| lint         | `vp lint`                                                                              | seconds, type-aware                                                  |
+| shared build | `vp run @voidmix/shared#build`                                                         | refreshes the public ESM and declaration output before consumers run |
+| check        | `vp run -r check`                                                                      | per-workspace `tsc --noEmit`                                         |
+| test         | `vp run -r test`                                                                       | every workspace's Vitest suite                                       |
+| build        | `vp run --filter './apps/*' --filter './packages/*' --filter '!@voidmix/shared' build` | with `NITRO_PRESET=bun`; shared was built in the preceding stage     |
+| runtime      | in-process                                                                             | starts each built server and requires HTTP 200                       |
 
 Nothing else needs to be run in sequence. The remaining scripts narrow a failure
 down: `bun run policy` prints each finding with a `Fix:` line and

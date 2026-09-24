@@ -55,14 +55,29 @@ export async function runVerify(
 
   for (const task of ["check", "test", "build"] as const) {
     dependencies.log("info", "verify.task.started", { task });
-    await dependencies.runCommand(["vp", "run", "-r", task], {
-      captureOutput,
-      cwd: dependencies.repositoryRoot,
-      env:
-        task === "build"
-          ? { ...dependencies.processEnv, NITRO_PRESET: "bun" }
-          : dependencies.processEnv,
-    });
+    await dependencies.runCommand(
+      task === "build"
+        ? [
+            "vp",
+            "run",
+            "--filter",
+            "./apps/*",
+            "--filter",
+            "./packages/*",
+            "--filter",
+            "!@voidmix/shared",
+            task,
+          ]
+        : ["vp", "run", "-r", task],
+      {
+        captureOutput,
+        cwd: dependencies.repositoryRoot,
+        env:
+          task === "build"
+            ? { ...dependencies.processEnv, NITRO_PRESET: "bun" }
+            : dependencies.processEnv,
+      },
+    );
   }
   dependencies.log("info", "verify.task.started", { task: "runtime" });
   await dependencies.verifyRuntimes({ captureOutput });
