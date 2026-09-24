@@ -1,0 +1,25 @@
+docs/development/testing.md
+  s_3bf6498855fd13::t_d77d963883552c 25-34
+packages/scripts/src/commands/verify.ts
+  s_3bf6498855fd13::t_395a0eaca1ecfc 58-80
+packages/scripts/src/commands/workflows.test.ts
+  s_3bf6498855fd13::t_62dfc38d6ca26a 102-112
+packages/shared/src/index.test.ts
+  s_3bf6498855fd13::t_b431d96c2a507d 25-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bf512e2efe80be6ba507d289817424bba655a127",
+  "prompts": {},
+  "sessions": {
+    "s_3bf6498855fd13": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c1d4-87be-7921-9af1-a2f5b17e676c",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
