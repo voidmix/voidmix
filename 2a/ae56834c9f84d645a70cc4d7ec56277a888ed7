@@ -1,0 +1,119 @@
+apps/desktop/package.json
+  s_42000bd424f7f1::t_da7ee154cfc012 33
+apps/desktop/src-tauri/capabilities/default.json
+  s_42000bd424f7f1::t_676fd53affa506 6
+apps/desktop/src-tauri/src/folder.rs
+  s_42000bd424f7f1::t_baac80878172b2 1-3,5-7,10-16,19-21,24-47
+apps/desktop/src-tauri/src/lib.rs
+  s_42000bd424f7f1::t_fe4a03d2c19a25 1-2,7,94,102
+apps/desktop/src/App.css
+  s_42000bd424f7f1::t_c3b108cb5cf1af 1-4
+apps/desktop/src/i18n/client.ts
+  s_42000bd424f7f1::t_b3197c1e723bce 23-26
+apps/desktop/src/i18n/time.test.ts
+  s_42000bd424f7f1::t_f654921012aeb4 21-26,28-31
+apps/desktop/src/lib/cloud/remote.test.ts
+  s_42000bd424f7f1::t_4731e66d615330 6-32,113-114,127,133-134,136-138,156-157,161-162,173,176,178-179,186,188,211-212,229,241,244,251-271
+apps/desktop/src/lib/cloud/remote.ts
+  s_42000bd424f7f1::t_88085b6f5aee45 1,12-41,72-75,107-146,185-186,189-191,193-202
+apps/desktop/src/lib/folder.test.ts
+  s_42000bd424f7f1::t_4982f2ec6ed9fa 1-3,5-11,16,18-25
+apps/desktop/src/lib/folder.ts
+  s_42000bd424f7f1::t_ea2d1593ddfe4c 4,11,13
+apps/desktop/src/routes/projects/$projectId.tsx
+  s_42000bd424f7f1::t_82fe89d8001349 36
+apps/desktop/src/routes/projects/index.tsx
+  s_42000bd424f7f1::t_4c8ec370de993b 90
+apps/desktop/src/routes/settings/route.tsx
+  s_42000bd424f7f1::t_faf41252639023 10
+apps/desktop/src/styles/devices-activity.css
+  s_42000bd424f7f1::t_2713437c8601cf 1-229
+apps/desktop/src/styles/overview.css
+  s_42000bd424f7f1::t_44be5807568a32 1-275
+apps/desktop/src/styles/projects-settings.css
+  s_42000bd424f7f1::t_ceb26ce15f08c1 1-103
+apps/desktop/src/styles/shell.css
+  s_42000bd424f7f1::t_79168defee9084 1-294
+apps/web/i18n/api-errors.ts
+  s_42000bd424f7f1::t_4fa16ec28d06e1 1
+apps/web/package.json
+  s_42000bd424f7f1::t_7d3568f796eb53 29
+apps/web/src/env.test.ts
+  s_42000bd424f7f1::t_a4c8f195283d0d 6-9,12-15,27,33-36
+apps/web/src/features/admin/users/directory.test.tsx
+  s_42000bd424f7f1::t_67687962589808 14-28
+apps/web/src/features/auth/auth-flows/component.test.tsx
+  s_42000bd424f7f1::t_c01de6375517f7 6,34-42,78-88,90-93,95,101,108,138
+apps/web/src/features/auth/auth-form.tsx
+  s_42000bd424f7f1::t_0d4160ef9f15bd 1,6,10-11,32-39,44-51,53,77,79,97,99,104,106,115-117,119-121,123-133
+apps/web/src/features/auth/auth-input.tsx
+  s_42000bd424f7f1::t_9e3411f5edb1a8 1-3,5-9,11-14
+apps/web/src/features/auth/auth-link.tsx
+  s_42000bd424f7f1::t_b3f4476d08fe65 1-9,12-28,31
+apps/web/src/features/auth/feedback.test.ts
+  s_42000bd424f7f1::t_591102774b108f 7-17,19-23,25-30
+apps/web/src/features/auth/reset-password.tsx
+  s_42000bd424f7f1::t_218f40590ea733 1,4,12-13,24-28,32-42,50,52,71,73,83,85,104-113
+apps/web/src/features/auth/submission.ts
+  s_42000bd424f7f1::t_6bec845693a5b5 1-3,5,7-19,21-29,31-35
+apps/web/src/features/auth/verify-email.tsx
+  s_42000bd424f7f1::t_44f333b46f49f9 1,11,40-42,47,52-55,89,91
+apps/web/src/features/projects/create-title-form.component.test.tsx
+  s_42000bd424f7f1::t_178c8098fe03cd 1-51
+apps/web/src/features/projects/create-title-form.tsx
+  s_42000bd424f7f1::t_d6feb6b3aa3dfe 1-68
+apps/web/src/features/projects/project-status.tsx
+  s_42000bd424f7f1::t_52f2e90700da52 1-4,6-11,13-14,16
+apps/web/src/i18n/client.ts
+  s_42000bd424f7f1::t_4da63ef95de23d 7,29
+apps/web/src/i18n/error-message.ts
+  s_42000bd424f7f1::t_ab0bbfcad4a24a 1
+apps/web/src/lib/chunk-recovery.test.ts
+  s_42000bd424f7f1::t_3c8fdd20e5cc33 19-27,30-33
+apps/web/src/routes/(app)/projects.$projectId.tsx
+  s_42000bd424f7f1::t_4e9de547dce7ff 1-2,4,50-52,81,89,98
+apps/web/src/routes/(app)/projects.index.tsx
+  s_42000bd424f7f1::t_0f578eb769ec7c 1-2,4,44-46,52,83
+apps/web/src/routes/-__root.test.ts
+  s_42000bd424f7f1::t_d1be6ad096de27 8-38
+e2e/playwright.config.ts
+  s_42000bd424f7f1::t_ac0a62fdad6885 5-30,38,40-42,44
+e2e/tests/desktop.spec.ts
+  s_42000bd424f7f1::t_864c54405eb68e 1-24
+packages/ui/shadcn-components.json
+  s_42000bd424f7f1::t_688abd21357e3d 2
+packages/ui/src/components/component.test.tsx
+  s_42000bd424f7f1::t_2fc33450469da7 79
+packages/ui/src/components/ui/avatar.tsx
+  s_42000bd424f7f1::t_497e10eb64d13c 1,26-30,32-36,38
+packages/ui/src/components/ui/card.tsx
+  s_42000bd424f7f1::t_a263dcc509d2b9 1,24-28,30,32,34-38,40
+packages/ui/src/components/ui/dropdown-menu.tsx
+  s_42000bd424f7f1::t_3d95b5ac0ef40c 1,5,128-132,134-138
+packages/ui/src/components/ui/field.tsx
+  s_42000bd424f7f1::t_7bdb7a4d5fecb4 1-2,10-14,45-49,51-52,61,66
+packages/ui/src/components/ui/input-group.tsx
+  s_42000bd424f7f1::t_2eb9c6636e05ec 1,54-58
+packages/ui/src/components/ui/label.tsx
+  s_42000bd424f7f1::t_6873e7a58047f2 1,3-7
+packages/ui/src/components/ui/toast.tsx
+  s_42000bd424f7f1::t_e73f6f8aa194d9 1,28-66,105-111,113-115,122
+packages/ui/src/lib/styled-slot.ts
+  s_42000bd424f7f1::t_76508985e78110 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2aae56834c9f84d645a70cc4d7ec56277a888ed7",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
