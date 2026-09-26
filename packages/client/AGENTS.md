@@ -3,8 +3,8 @@
 ## Purpose
 
 The transport adapter. `createApiClient({ baseUrl?, headers, fetch })` returns a
-typed client generated from the shared contract. Omitting `baseUrl` uses the
-Web and Desktop provide an absolute API origin and send credentialed requests.
+typed client generated from the shared contract. Web and Desktop provide an
+absolute API origin and send credentialed requests.
 
 ## Interface
 
@@ -19,9 +19,8 @@ Web and Desktop provide an absolute API origin and send credentialed requests.
 - Keep that policy limited to safe read batching/deduplication and mutation
   safety; the client type remains `ContractRouterClient<typeof apiContract>` —
   **fully generic**.
-- Mutation procedure names (`create`, `update`, `updateStatus`, `sendTest`,
-  `commitVersion`, `resolveConflict`, `transition`, `acquireLease`, and
-  `heartbeat`) must use POST. Keep the client and API handler lists in sync.
+- `@voidmix/contracts` owns `isMutationProcedure` in `methods.ts`. Client and API both
+  consume it so safe-read batching and mutation POST routing cannot diverge.
 
 ## Constraints
 

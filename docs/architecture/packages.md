@@ -9,9 +9,10 @@ here.
 
 The runtime contract seam. It contains Zod schemas, DTOs, and the oRPC contract
 tree, but performs no network calls and exposes no database implementation.
-Settings DTOs model effective values, sources, inherited safe values, and
-optional per-field mutations. The public Auth capability DTO intentionally
-contains only three booleans.
+Domain modules compose into one explicit contract tree. Shared helpers own
+resource fields, cursor envelopes and validated procedures; `methods.ts` owns
+HTTP method classification for both API and client. The public Auth capability
+DTO contains only three booleans; settings administration RPCs are retired.
 
 ## `@voidmix/application`
 
@@ -25,15 +26,15 @@ remain adapter responsibilities.
 
 The server-side AI adapter for Pi. It owns provider lifecycle, SDK-specific
 session management, project tool registration, and conversion to stable
-Voidmix run events. It receives domain repositories and authenticated context
+Voidmix run events. It receives canonical `ProjectApplication` commands and authenticated context
 through dependency injection, never creates database connections, reads HTTP
 sessions, or exposes Pi SDK types to API and Web consumers.
 
 ## `@voidmix/client`
 
 The transport adapter. `createApiClient({ baseUrl?, headers, fetch })` returns a
-typed client generated from the shared contract. Web omits `baseUrl` for
-an absolute API origin and sends credentialed requests.
+typed client generated from the shared contract. Web and Desktop provide
+an absolute API origin and send credentialed requests.
 
 ## API server modules (`apps/api/server/api`)
 
@@ -50,12 +51,11 @@ new records retain time-ordered locality while remaining globally unique.
 
 ## `@voidmix/cache`
 
-The optional server-side Redis cache adapter. It exposes a Laravel-like cache
-facade with seconds-based TTLs, atomic add/pull/counter operations, prefix-scoped
-flush, and a raw-string Better Auth secondary-storage adapter. Redis is never
-silently replaced by an in-memory fallback. API runtime uses it for Better Auth
-session/rate-limit/verification secondary storage and for a short-lived Auth
-policy cache; Admin settings views and mail secrets remain database-backed.
+The optional server-side Redis adapter provides JSON `remember` with TTLs and
+raw-string Better Auth secondary storage. Atomic token consumption and rate
+increments stay in Redis Lua scripts. API uses it for sessions, verification,
+rate limits and a short-lived Auth policy cache. It has no fallback store and
+no unused generic add/pull/flush facade. Mail configuration remains database-backed.
 
 ## `@voidmix/shared`
 
@@ -97,11 +97,10 @@ public barrel is organized into bounded contexts:
 - `v2-resources` defines the stable Task, Asset, Review, Activity, and AgentRun
   records that application commands will persist and expose through V2
   contracts.
-- `assets` owns canonical paths, immutable versions, heads, idempotency, and
-  sync conflict rules. Version insertion and head movement use an atomic
-  repository command.
-- `agents` owns run/step state transitions, leases, scoped tool capabilities,
-  and the atomic command ports required by concurrent workers.
+- `assets` retains the blob upload/download port and errors used by V2.
+- `agents/outbox.ts` defines durable dispatch ports; Agent cancellation invariants
+  live with V2 resources. Retired Workspace, Project Studio, scheduled-task,
+  asset-sync and legacy Agent implementations are removed.
 
 These contexts remain one package until a second independent server consumer
 creates a stable extraction seam. UI features under `apps/*/src/features` are
@@ -117,8 +116,8 @@ session types, and `hasPermission`.
 The role grants are explicit permission allowlists; adding a permission to the
 vocabulary does not implicitly grant it to Admin or Owner.
 
-Authentication policy has separate permissions: Admin and Owner can read it,
-while only Owner can update it.
+The retired settings administration permissions are removed. Authentication
+policy still controls registration and mail through API runtime guards.
 
 `apps/api/server/api` owns the Better Auth adapter and production cookie
 session resolver. The development header resolver remains available for
@@ -127,8 +126,9 @@ not depend on the provider.
 
 ## `@voidmix/mail`
 
-Typed auth mail delivery for verification, password reset, welcome, and
-administrator test emails.
+Typed auth mail delivery for verification, password reset and welcome emails.
+Verification and reset share a link template; typed senders share current
+configuration resolution and delivery. The unused Admin test-mail method is removed.
 Its JSON catalogs are rendered through the server-only `@voidmix/i18n`
 translator using `MAIL_DEFAULT_LOCALE`, which falls back to English.
 React Email templates always provide HTML and plain-text output. Resend is the
@@ -154,25 +154,15 @@ contracts remain independent of i18n.
 
 The database adapter package.
 
-- Drizzle PostgreSQL schema lives in `src/schema.ts`.
-- `PostgresUserRepository`, V2 organization/project repositories, workspace
-  membership, asset, and Agent repositories are the production adapters;
-  matching in-memory adapters support development/tests.
-- `createPostgresAssetRepositories` and
-  `createInMemoryAssetRepositories` expose the complete asset adapter graph;
-  path creation is unique and atomic, while `commitVersion` performs version
-  insertion, idempotent replay, and head CAS in one transaction/critical
-  section. Sync conflict resolution also changes `open` to `resolved` with a
-  compare-and-set.
-- `PostgresAgentCommandRepository` and `createInMemoryAgentRepositories`
-  provide the Agent aggregate's atomic commands. Run rows serialize leases and
-  step sequence allocation, and expected-state predicates reject stale
-  transitions without overwriting other fields.
-- `PostgresProjectV2Repository` persists account-first personal and
-  Organization-scoped Projects. V2 tables for Tasks, Assets, Reviews,
-  Feedback, Activity, and AgentRuns carry Project ownership directly. The
-  generated migrations are additive while the V2 vertical slices are wired;
-  run `bun run db:migrate` against PostgreSQL before using them.
+- Drizzle PostgreSQL schema lives in domain modules under `src/schema/`,
+  exposed by the small `src/schema.ts` entrypoint.
+- Identity, settings and V2 adapters live in separate domain directories, exposed
+  by small compatibility entrypoints. Persisted legacy table definitions and all
+  migration history remain intact even though their runtime adapters are gone.
+- V2 Project, organization membership, Task, Asset, Review, Feedback, Activity,
+  AgentRun and outbox adapters implement Core ports. Queued Agent creation and
+  its outbox event use the same PostgreSQL transaction.
+- Blob storage remains available in memory and on the filesystem.
 - `system_settings` stores typed ordinary configuration keys and
   `system_secrets` stores write-only secret values. Both record the updater and
   timestamp.
@@ -182,7 +172,7 @@ The database adapter package.
   these fixed keys.
 - Resolution is field-scoped. Database values override mail environment/default
   fallbacks; Auth values override built-in defaults. Omitted mutations retain a
-  row, `set`/`replace` upsert it, and `reset` deletes it. Admin views include
+  row, `set`/`replace` upsert it, and `reset` deletes it. Repository views include
   sources and safe inherited previews, while runtime resolvers omit that
   presentation metadata and retain server-only secret material.
 - Audit targets distinguish `user` from `system_setting`. `actor_id` always
@@ -191,9 +181,10 @@ The database adapter package.
 - SQL migrations live under `drizzle/`.
 - Database tables and Drizzle details are not exposed to frontend apps.
 
-Authentication policy is read for every registration, verification-email,
-password-reset, and welcome-email decision. It is not cached for the process
-lifetime, so Owner changes apply without a restart.
+`settings/reader.ts`, `values.ts` and `mutations.ts` share decoding, inheritance
+and redacted audit semantics across memory and PostgreSQL. Authentication reads
+policy at each decision, optionally through the short-lived Redis cache. Mail
+resolves current configuration on each delivery; no process-lifetime cache exists.
 
 ## `@voidmix/ui`
 
@@ -205,11 +196,13 @@ Shared visual primitives and design-system utilities:
 - Tailwind CSS v4 variables and theme tokens.
 - SSR-safe `ThemeProvider`, `ThemeScript`, and `useTheme` for light, dark, and
   system themes.
-- Base-nova `Button`, `Badge`, `Avatar`, `Card`, `DropdownMenu`, `Menubar`, and
-  `Separator` components, plus the product-specific `Logo`.
+- Base-nova `Button`, `Badge`, `Avatar`, `Card`, `DropdownMenu`, and
+  form components, plus the product-specific `Logo`.
 - A lazy Toast manager bridge exposed through `@voidmix/ui/toast`; it loads the
   concrete Toast implementation only when the first notification is added.
-- `cn` and CVA helpers for composition.
+- `cn`, CVA and `styledSlot` helpers for composition. Unconsumed Sidebar,
+  Menubar, Sheet, Dialog, Tooltip, Skeleton and Separator trees are removed
+  together with exclusive dependencies and regeneration entries.
 - Shared base-nova semantic colors, focus, radius, and motion tokens from
   `packages/ui/src/styles/globals.css`.
 
@@ -249,7 +242,12 @@ layout and the conventions new modules must follow.
 Policy orchestration lives in `src/policy/checks.ts`, while workspace, manifest,
 documentation, skill, and TypeScript rules live in injected modules under
 `src/policy/checks/` and `src/policy/manifests/`. Splitting those rule domains
-must not change `runPolicy` or its finding output.
+must not change `runPolicy` or its finding output. Findings, strict JSON parsing,
+file traversal and CLI context setup use shared owner-local helpers.
+
+The i18n checker separates catalog comparison, source inspection and reporting.
+`oxc-parser` owns JSX/TypeScript syntax; FormatJS through the i18n testing subpath
+owns ICU syntax, including plural/select branches and apostrophe quoting.
 
 ## `@voidmix/tsconfig`
 

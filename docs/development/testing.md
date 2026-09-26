@@ -24,6 +24,7 @@ first after editing its source; for example run
 
 | Stage        | Command                                                                                | Why it is at this position                                           |
 | ------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| i18n         | in-process                                                                             | validates catalogs and authored JSX before build work                |
 | policy       | in-process                                                                             | milliseconds, and its failures are structural                        |
 | format       | `vp fmt --check`                                                                       | under a second over the whole repository                             |
 | lint         | `vp lint`                                                                              | seconds, type-aware                                                  |
@@ -61,8 +62,9 @@ operating systems. The CI generate step supplies a non-routable
 `DATABASE_URL`; Drizzle validates its configuration while loading it, but
 generation does not connect to PostgreSQL.
 
-`bun run test:e2e` starts the Web and API development servers itself.
-It runs the `web` and `admin` projects. The retired Project Studio suite and its
+`bun run test:e2e` starts API, Web and Desktop preview servers itself.
+It runs the `web`, `admin` and `desktop` projects. Set `VOIDMIX_E2E_PORT` to
+choose the Web port (default 3000); Desktop uses +1 and API +2. The retired Project Studio suite and its
 mock API fixture have been removed; Web still checks the sign-in redirect for
 unauthenticated access to `/projects`.
 Install the local browser once with:
@@ -97,6 +99,8 @@ supplies a non-routable database URL and exercises no database query.
 ## Vite+/Vitest configuration boundary
 
 Every application and test-bearing package owns a separate `vitest.config.ts`.
+They share runner-only defaults through root `test.config.ts`; each workspace
+keeps its own discovery, environment and setup overrides.
 The test command is `vp test --run`, which reads that file; the application
 `vite.config.ts` is reserved for `dev`, `build`, and SSR. Unit tests therefore
 do not load TanStack Start, Nitro, React, Tailwind, or evlog application
@@ -128,7 +132,7 @@ bunx vp test --run
 ```
 
 Do not rely on a globally installed `vp` binary. Even when its version matches
-the repository's `0.3.2`, its global install directory is a different physical
+the repository's version, its global install directory is a different physical
 dependency tree from the workspace's `vite-plus/test` import. That splits the
 runner from the test API and can fail before the first test with
 `Cannot read properties of undefined (reading 'config')`. Workspace scripts are
@@ -172,12 +176,10 @@ green. The four layer scripts are byte-identical in every workspace that owns a
 itself lives in `packages/scripts/src/policy/manifests.ts`. Change it there, then
 run `bun run policy` for the paste-ready fix in each workspace.
 
-Node workspaces use the Node test environment. `packages/ui` is the only
-workspace that uses `jsdom`; its setup is local to the package so DOM globals
-do not leak into server, desktop, or library type checks. E2E tests live in the
-private `@voidmix/e2e` workspace and use separate Playwright projects for the
-public Web surface and protected Admin routes. Both run against the integrated
-Web server on port `3000`, which the config reuses during local iteration.
+Node workspaces use the Node test environment. DOM workspaces and individual
+component/integration files opt into jsdom with local setup, keeping globals out
+of server and library checks. E2E uses separate Web, Admin and Desktop projects;
+Web/Admin target the Web server, while Desktop targets its own browser preview.
 
 Run a single browser project or inspect its report with:
 
@@ -195,11 +197,9 @@ bun run --cwd e2e test:report
   belong to Web's generated route tree.
 - Ordinary users cannot access protected Admin procedures.
 - Admin writes produce audit records and enforce self/final-admin protections.
-- Mail settings enforce separate read, ordinary-write, secret-write, and test
-  permissions; read responses and audit metadata never expose the API key.
-- Auth settings reject ordinary users, allow Admin and Owner reads, and reserve
-  writes for Owner. Tests cover dynamic registration/domain/email-policy guards,
-  per-field set/reset/default restoration, redacted audits, and no-op updates.
+- Settings administration RPCs are retired. Adapter tests still cover partial
+  mutations, inherited defaults, secret redaction, no-op auditing and parity.
+  API tests preserve dynamic registration/domain/email-policy guards.
 - The unauthenticated Auth capability procedure returns only three booleans;
   public registration and tokenless reset UI follows them, fails open on request
   failure, and keeps existing reset-token flows usable.
@@ -212,5 +212,5 @@ bun run --cwd e2e test:report
 - CI builds Web/API on Linux and Desktop packages on macOS and Windows.
 - CI runs each Vitest layer separately and uploads workspace coverage reports as
   an artifact without enforcing a minimum threshold.
-- CI runs public Web and protected Admin-route Playwright smoke tests in a separate Linux E2E job after
-  installing Chromium.
+- CI runs Web, Admin and Desktop Playwright smoke tests in a separate Linux
+  E2E job after installing Chromium.

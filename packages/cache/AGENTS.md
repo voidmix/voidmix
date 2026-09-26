@@ -3,7 +3,7 @@
 ## Purpose
 
 The server-side Redis cache adapter shared by API runtimes. It provides a
-Laravel-like cache facade and Better Auth secondary-storage compatibility.
+JSON `remember` operation and Better Auth secondary-storage compatibility.
 
 ## Interface
 
@@ -29,8 +29,8 @@ Laravel-like cache facade and Better Auth secondary-storage compatibility.
 - Owned ioredis connections require RESP3 with native reply mapping. New Redis
   commands must model their RESP3 return shape at the `RedisClientLike` boundary.
 - `getAndDelete` and secondary-storage `increment` retain Redis atomicity.
-- `flush` is limited to this package's generic cache namespace and never uses
-  `FLUSHDB`.
+- Generic cache and Better Auth keys have separate namespaces. `remember` does
+  not lock resolvers; simultaneous misses can resolve independently.
 - Redis errors are propagated to callers.
 
 ## Verification

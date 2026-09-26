@@ -120,12 +120,13 @@ one command for everything else:
 bun run verify
 ```
 
-`verify` is the whole gate: policy, format, lint, per-workspace checks, tests,
+`verify` is the whole gate: i18n, policy, format, lint, per-workspace checks, tests,
 builds, and the Nitro runtime probe, cheapest first. The other scripts exist to
 narrow a failure down, not to be run in sequence:
 
 | verify fails at  | iterate with                                           |
 | ---------------- | ------------------------------------------------------ |
+| i18n             | `bun run i18n:check`                                   |
 | policy           | `bun run policy:fix`, then read what it could not fix  |
 | format or lint   | `bun run format:fix`, then `bun run lint`              |
 | check or test    | that workspace's own command, named in its `AGENTS.md` |
