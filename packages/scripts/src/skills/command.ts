@@ -1,17 +1,12 @@
 import { defineCommand } from "citty";
 
-import { runContextualAction } from "../runtime/action.js";
+import { contextualCommand } from "../runtime/command.js";
 
-const updateCommand = defineCommand({
+const updateCommand = contextualCommand("skills update", "process", {
   meta: { name: "update", description: "Update installed repository skills" },
-  async run() {
-    await runContextualAction("skills update", "process", async (context) => {
-      const [{ runCommand }, { runSkillsUpdate }] = await Promise.all([
-        import("../runtime/process.js"),
-        import("./operations.js"),
-      ]);
-      await runSkillsUpdate({ ...context, runCommand });
-    });
+  async run(context) {
+    const { runSkillsUpdate } = await import("./operations.js");
+    await runSkillsUpdate(context);
   },
 });
 

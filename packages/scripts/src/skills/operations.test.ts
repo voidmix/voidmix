@@ -1,17 +1,12 @@
-import { describe, expect, it, vi } from "vite-plus/test";
+import { processDependencies } from "../test-fixtures.js";
+import { describe, expect, it } from "vite-plus/test";
 
 import { runSkillsUpdate } from "./operations.js";
 
 describe("skills maintenance", () => {
   it("runs the repository skill updater non-interactively", async () => {
-    const log = vi.fn();
-    const runCommand = vi.fn(async () => undefined);
-    const dependencies = {
-      log,
-      processEnv: { TEST_VALUE: "value" },
-      repositoryRoot: "/repo",
-      runCommand,
-    };
+    const dependencies = processDependencies();
+    const { log, runCommand } = dependencies;
 
     await runSkillsUpdate(dependencies);
 

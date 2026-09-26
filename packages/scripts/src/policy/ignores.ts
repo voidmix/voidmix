@@ -1,14 +1,11 @@
+import { findingFor } from "./findings.js";
 import type { PolicyFinding } from "./checks.js";
 
 /** A workspace pattern that matches at any depth instead of at the workspace root. */
-function anchorFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "ignore.anchor", location, message, fix, severity: "error" };
-}
+const anchorFinding = findingFor("ignore.anchor");
 
 /** A workspace pattern the root `.gitignore` already applies everywhere. */
-function duplicateFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "ignore.duplicate", location, message, fix, severity: "error" };
-}
+const duplicateFinding = findingFor("ignore.duplicate");
 
 /**
  * Extracts the effective patterns from a `.gitignore`, dropping comments and
@@ -78,34 +75,28 @@ export function validateWorkspaceIgnore(
   rootPatterns: readonly string[],
 ): PolicyFinding[] {
   const root = new Set(rootPatterns);
-  const findings: PolicyFinding[] = [];
-
-  for (const pattern of parseIgnorePatterns(content)) {
+  return parseIgnorePatterns(content).flatMap((pattern) => {
     switch (classify(pattern, root)) {
       case "duplicate":
-        findings.push(
+        return [
           duplicateFinding(
             location,
             `repeats ${pattern} from the root .gitignore`,
             `delete ${pattern} from ${location}; the root already applies it everywhere`,
           ),
-        );
-        break;
+        ];
       case "unanchored":
-        findings.push(
+        return [
           anchorFinding(
             location,
             `${pattern} is not anchored to the workspace root`,
             `write /${pattern} in ${location} so it cannot match a nested source directory`,
           ),
-        );
-        break;
+        ];
       case "keep":
-        break;
+        return [];
     }
-  }
-
-  return findings;
+  });
 }
 
 /**

@@ -1,56 +1,33 @@
+import { processDependencies } from "../test-fixtures.js";
 import { describe, expect, it, vi } from "vite-plus/test";
 
-import { runAudit, runDedupe, type DependencyMaintenanceDependencies } from "./operations.js";
-
-function dependencies() {
-  const log = vi.fn();
-  const runCommand = vi.fn(async () => undefined);
-  const deps: DependencyMaintenanceDependencies = {
-    log,
-    runCommand,
-    processEnv: { TEST_VALUE: "value" },
-    repositoryRoot: "/repo",
-  };
-  return { deps, log, runCommand };
-}
+import { runAudit, runDedupe } from "./operations.js";
 
 describe("dependency maintenance", () => {
-  it("runs Bun dedupe with the repository environment", async () => {
-    const { deps, log, runCommand } = dependencies();
-    await runDedupe(deps);
-
-    expect(runCommand).toHaveBeenCalledWith(["bun", "dedupe"], {
+  it.each([
+    ["dedupe", runDedupe, ["bun", "dedupe"], [{ check: false }]],
+    ["audit", runAudit, ["bun", "audit"], []],
+    [
+      "dedupe check",
+      (deps: ReturnType<typeof processDependencies>) => runDedupe(deps, { check: true }),
+      ["bun", "dedupe", "--check"],
+      [{ check: true }],
+    ],
+  ] as const)("runs %s with the repository environment", async (name, run, command, data) => {
+    const deps = processDependencies();
+    await run(deps);
+    expect(deps.runCommand).toHaveBeenCalledWith(command, {
       cwd: "/repo",
       env: deps.processEnv,
     });
-    expect(log).toHaveBeenNthCalledWith(1, "info", "deps.dedupe.started", { check: false });
-    expect(log).toHaveBeenNthCalledWith(2, "info", "deps.dedupe.completed", { check: false });
-  });
-
-  it("checks dedupe without changing the lockfile", async () => {
-    const { deps, runCommand } = dependencies();
-    await runDedupe(deps, { check: true });
-
-    expect(runCommand).toHaveBeenCalledWith(["bun", "dedupe", "--check"], {
-      cwd: "/repo",
-      env: deps.processEnv,
-    });
-  });
-
-  it("runs the read-only Bun security audit", async () => {
-    const { deps, log, runCommand } = dependencies();
-    await runAudit(deps);
-
-    expect(runCommand).toHaveBeenCalledWith(["bun", "audit"], {
-      cwd: "/repo",
-      env: deps.processEnv,
-    });
-    expect(log).toHaveBeenNthCalledWith(1, "info", "deps.audit.started");
-    expect(log).toHaveBeenNthCalledWith(2, "info", "deps.audit.completed");
+    const event = name === "audit" ? "audit" : "dedupe";
+    expect(deps.log).toHaveBeenNthCalledWith(1, "info", `deps.${event}.started`, ...data);
+    expect(deps.log).toHaveBeenNthCalledWith(2, "info", `deps.${event}.completed`, ...data);
   });
 
   it("does not log completion when Bun fails", async () => {
-    const { deps, log } = dependencies();
+    const deps = processDependencies();
+    const { log } = deps;
     deps.runCommand = vi.fn(async () => {
       throw new Error("bun failed");
     });

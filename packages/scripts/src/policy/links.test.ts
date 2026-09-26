@@ -3,25 +3,21 @@ import { describe, expect, it } from "vite-plus/test";
 import { collectRelativeLinks, reachableFrom } from "./links.js";
 
 describe("collectRelativeLinks", () => {
-  it("resolves a sibling link relative to the file's directory", () => {
-    const links = collectRelativeLinks("docs/development/agents.md", "See [testing](testing.md).");
-
-    expect(links).toEqual([{ target: "testing.md", resolved: "docs/development/testing.md" }]);
-  });
-
-  it("resolves parent traversal", () => {
-    const links = collectRelativeLinks(
+  it.each([
+    ["sibling", "docs/development/agents.md", "testing.md", "docs/development/testing.md"],
+    [
+      "parent traversal",
       "packages/db/AGENTS.md",
-      "See [tooling](../../docs/architecture/tooling.md).",
-    );
-
-    expect(links[0]?.resolved).toBe("docs/architecture/tooling.md");
-  });
-
-  it("resolves a root-relative link", () => {
-    const links = collectRelativeLinks("docs/README.md", "See [root](/AGENTS.md).");
-
-    expect(links[0]?.resolved).toBe("AGENTS.md");
+      "../../docs/architecture/tooling.md",
+      "docs/architecture/tooling.md",
+    ],
+    ["root relative", "docs/README.md", "/AGENTS.md", "AGENTS.md"],
+    ["fragment", "AGENTS.md", "docs/x.md#a-section", "docs/x.md"],
+    ["titled", "AGENTS.md", 'docs/x.md "A title"', "docs/x.md"],
+  ])("resolves %s links", (_name, file, target, resolved) => {
+    expect(collectRelativeLinks(file, `See [testing](${target}).`)).toEqual([
+      { target: target.split(' "')[0], resolved },
+    ]);
   });
 
   it("ignores external and in-page targets", () => {
@@ -36,12 +32,6 @@ describe("collectRelativeLinks", () => {
     expect(collectRelativeLinks("README.md", content)).toEqual([]);
   });
 
-  it("strips fragments and queries before resolving", () => {
-    const links = collectRelativeLinks("AGENTS.md", "See [testing](docs/x.md#a-section).");
-
-    expect(links).toEqual([{ target: "docs/x.md#a-section", resolved: "docs/x.md" }]);
-  });
-
   it("deduplicates repeated targets", () => {
     const links = collectRelativeLinks("AGENTS.md", "[a](docs/x.md) and [b](docs/x.md)");
 
@@ -50,12 +40,6 @@ describe("collectRelativeLinks", () => {
 
   it("ignores a link whose target is only a fragment of the current file", () => {
     expect(collectRelativeLinks("AGENTS.md", "[a](#)")).toEqual([]);
-  });
-
-  it("handles a titled link", () => {
-    const links = collectRelativeLinks("AGENTS.md", '[a](docs/x.md "A title")');
-
-    expect(links[0]?.resolved).toBe("docs/x.md");
   });
 });
 

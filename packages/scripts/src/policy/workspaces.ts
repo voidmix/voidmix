@@ -1,16 +1,13 @@
+import { findingFor, collectFindings } from "./findings.js";
 import type { PolicyFinding } from "./checks.js";
 
 const shapeHeading = /^##\s+Repository shape\b.*$/m;
 
 /** A workspace listing disagrees with what Bun resolves. */
-function listingFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "workspace.listing", location, message, fix, severity: "error" };
-}
+const listingFinding = findingFor("workspace.listing");
 
 /** A directory exists that is not, and cannot be, a workspace. */
-function directoryFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "workspace.directory", location, message, fix, severity: "error" };
-}
+const directoryFinding = findingFor("workspace.directory");
 
 /**
  * Reports directories under the workspace globs that hold no `package.json`.
@@ -156,7 +153,7 @@ export function validateWorkspaceInventory(
   members: readonly string[],
   rootAgents: string,
 ): PolicyFinding[] {
-  const findings: PolicyFinding[] = [];
+  const { findings, report } = collectFindings(listingFinding);
   const declared = new Set(parseDeclaredWorkspaces(rootAgents));
 
   if (declared.size === 0) {
@@ -173,24 +170,20 @@ export function validateWorkspaceInventory(
 
   for (const [name, member] of actual) {
     if (!declared.has(name)) {
-      findings.push(
-        listingFinding(
-          "AGENTS.md",
-          `workspace ${member} is not listed in Repository shape`,
-          `add ${name} to the matching group in the Repository shape fence`,
-        ),
+      report(
+        "AGENTS.md",
+        `workspace ${member} is not listed in Repository shape`,
+        `add ${name} to the matching group in the Repository shape fence`,
       );
     }
   }
 
   for (const name of declared) {
     if (!actual.has(name)) {
-      findings.push(
-        listingFinding(
-          "AGENTS.md",
-          `Repository shape lists ${name}, which is not a workspace`,
-          `remove ${name} from the Repository shape fence, or give it a package.json`,
-        ),
+      report(
+        "AGENTS.md",
+        `Repository shape lists ${name}, which is not a workspace`,
+        `remove ${name} from the Repository shape fence, or give it a package.json`,
       );
     }
   }

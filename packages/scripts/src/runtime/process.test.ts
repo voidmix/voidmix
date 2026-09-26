@@ -1,9 +1,10 @@
+import { temporaryRepository } from "../test-fixtures.js";
 import { EventEmitter } from "node:events";
-import { mkdtemp, realpath, rm } from "node:fs/promises";
+import { realpath } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { describe, expect, it, vi } from "vite-plus/test";
 
 import {
   forwardProcessSignals,
@@ -13,16 +14,9 @@ import {
   summarizeProcessOutput,
 } from "./process.js";
 
-const temporaryDirectories: string[] = [];
-
-afterEach(async () => {
-  await Promise.all(temporaryDirectories.splice(0).map((path) => rm(path, { recursive: true })));
-});
-
 describe("runChildProcess", () => {
   it("preserves cwd and env while capturing output", async () => {
-    const cwd = await mkdtemp(join(tmpdir(), "voidmix-process-"));
-    temporaryDirectories.push(cwd);
+    const cwd = await temporaryRepository();
 
     const result = await runChildProcess(
       [
@@ -93,13 +87,13 @@ describe("summarizeProcessOutput", () => {
 });
 
 describe("forwardProcessSignals", () => {
-  it("forwards supported signals and removes listeners", () => {
+  it.each(["SIGTERM", "SIGINT"])("forwards %s and removes listeners", (signal) => {
     const source = new EventEmitter() as unknown as Pick<NodeJS.Process, "off" | "on">;
     const kill = vi.fn(() => true);
     const stop = forwardProcessSignals({ exitCode: null, kill, signalCode: null }, source);
 
-    (source as unknown as EventEmitter).emit("SIGTERM");
-    expect(kill).toHaveBeenCalledWith("SIGTERM");
+    (source as unknown as EventEmitter).emit(signal);
+    expect(kill).toHaveBeenCalledWith(signal);
 
     stop();
     (source as unknown as EventEmitter).emit("SIGINT");

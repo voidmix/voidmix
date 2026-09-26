@@ -1,34 +1,13 @@
-import type { User, UserRepository } from "@voidmix/core";
 import { describe, expect, it, vi } from "vite-plus/test";
 
-import { getDatabaseScriptsEnv } from "../env.js";
+import { databaseEnvironment, user, userRepository as repository } from "../test-fixtures.js";
 import { resolveAdminCreateInput, runCreateAdmin } from "./operation.js";
 
-const databaseUrl = "postgres://voidmix:voidmix@localhost:5432/voidmix";
-
-function environment() {
-  return getDatabaseScriptsEnv({
-    NODE_ENV: "test",
-    DATABASE_URL: databaseUrl,
+const environment = () =>
+  databaseEnvironment({
     ADMIN_EMAIL: "configured@example.com",
     ADMIN_DISPLAY_NAME: "Configured Admin",
   });
-}
-
-function repository(): UserRepository {
-  return {
-    list: vi.fn(async () => ({ items: [], total: 0, nextCursor: null })),
-    getById: vi.fn(async () => null),
-    getByEmail: vi.fn(async () => null),
-    countActiveAdministrators: vi.fn(async () => 1),
-    save: vi.fn(async () => undefined),
-    updateStatus: vi.fn(async () => {
-      throw new Error("not used");
-    }),
-    appendAudit: vi.fn(async () => undefined),
-    listAudit: vi.fn(async () => []),
-  };
-}
 
 describe("admin create", () => {
   it("prefers flags before configured and seed defaults", () => {
@@ -42,14 +21,13 @@ describe("admin create", () => {
 
   it("normalizes email and closes the connection", async () => {
     const close = vi.fn(async () => undefined);
-    const ensureAdmin = vi.fn(async (): Promise<User> => ({
-      id: "admin-id",
-      email: "admin@example.com",
-      displayName: "Admin",
-      role: "admin",
-      status: "active",
-      createdAt: new Date(),
-    }));
+    const ensureAdmin = vi.fn(async () =>
+      user({
+        id: "admin-id",
+        email: "admin@example.com",
+        displayName: "Admin",
+      }),
+    );
 
     await runCreateAdmin({ email: "ADMIN@EXAMPLE.COM", displayName: "Admin" }, environment(), {
       createAdministration: () => ({ ensureAdmin }),

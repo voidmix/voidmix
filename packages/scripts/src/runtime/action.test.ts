@@ -14,31 +14,22 @@ afterEach(() => {
 });
 
 describe.sequential("runCliAction", () => {
-  it("falls back to safe stderr when no command logger can be initialized", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    process.env.NODE_ENV = "invalid-for-scripts-schema";
-
-    await runCliAction("example", async () => {
-      throw new Error("expected failure");
-    });
-
-    expect(consoleError).toHaveBeenCalledWith("vmx example failed: expected failure");
-    expect(process.exitCode).toBe(1);
-  });
-
-  it("falls back to safe stderr when the command logger throws", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
-
-    await runCliAction("example", async ({ setLogger }) => {
-      setLogger(() => {
-        throw new Error("logger failure");
+  it.each(["invalid environment", "throwing logger"])(
+    "falls back to safe stderr: %s",
+    async (failure) => {
+      const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+      if (failure === "invalid environment") process.env.NODE_ENV = "invalid-for-scripts-schema";
+      await runCliAction("example", async ({ setLogger }) => {
+        if (failure === "throwing logger")
+          setLogger(() => {
+            throw new Error("logger failure");
+          });
+        throw new Error("expected failure");
       });
-      throw new Error("expected failure");
-    });
-
-    expect(consoleError).toHaveBeenCalledWith("vmx example failed: expected failure");
-    expect(process.exitCode).toBe(1);
-  });
+      expect(consoleError).toHaveBeenCalledWith("vmx example failed: expected failure");
+      expect(process.exitCode).toBe(1);
+    },
+  );
 
   it("preserves a child process exit code", async () => {
     const log = vi.fn();

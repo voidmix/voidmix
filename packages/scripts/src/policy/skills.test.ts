@@ -1,3 +1,4 @@
+import { expectOnlyFinding } from "../test-fixtures.js";
 import { describe, expect, it } from "vite-plus/test";
 
 import { parseSkillsLock, validateVendoredSkills } from "./skills.js";
@@ -33,16 +34,43 @@ describe("validateVendoredSkills", () => {
     expect(validateVendoredSkills(["hono"], ["hono"], links(wired("hono")))).toEqual([]);
   });
 
-  it("reports a locked skill that is not installed", () => {
-    const findings = validateVendoredSkills(["hono"], [], links({}));
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
-      check: "skills.vendored",
-      location: ".agents/skills/hono",
-      message: "locked skill is not installed",
-      fix: "run: bun run skills:update",
-    });
+  it.each<{ name: string; args: Parameters<typeof validateVendoredSkills>; expected: object }>([
+    {
+      name: "reports a locked skill that is not installed",
+      args: [["hono"], [], links({})],
+      expected: {
+        check: "skills.vendored",
+        location: ".agents/skills/hono",
+        message: "locked skill is not installed",
+        fix: "run: bun run skills:update",
+      },
+    },
+    {
+      name: "rejects an absolute symlink target even though it resolves locally",
+      args: [
+        ["hono"],
+        ["hono"],
+        links({
+          ...wired("hono"),
+          ".claude/skills/hono": "/Users/someone/repo/.agents/skills/hono",
+        }),
+      ],
+      expected: {
+        message:
+          "points at /Users/someone/repo/.agents/skills/hono instead of ../../.agents/skills/hono",
+        fix: expect.stringContaining("ln -s ../../.agents/skills/hono"),
+      },
+    },
+    {
+      name: "reports a skill installed without a lockfile entry",
+      args: [[], ["rogue"], links({})],
+      expected: {
+        location: ".agents/skills/rogue",
+        message: "is installed but absent from skills-lock.json",
+      },
+    },
+  ])("$name", ({ args, expected }) => {
+    expectOnlyFinding(validateVendoredSkills(...args), expected);
   });
 
   it("reports a missing discovery symlink per root", () => {
@@ -53,30 +81,6 @@ describe("validateVendoredSkills", () => {
       "skills/hono",
     ]);
     expect(findings[0]?.message).toBe("is missing or is not a symlink");
-  });
-
-  it("rejects an absolute symlink target even though it resolves locally", () => {
-    const findings = validateVendoredSkills(
-      ["hono"],
-      ["hono"],
-      links({ ...wired("hono"), ".claude/skills/hono": "/Users/someone/repo/.agents/skills/hono" }),
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toBe(
-      "points at /Users/someone/repo/.agents/skills/hono instead of ../../.agents/skills/hono",
-    );
-    expect(findings[0]?.fix).toContain("ln -s ../../.agents/skills/hono");
-  });
-
-  it("reports a skill installed without a lockfile entry", () => {
-    const findings = validateVendoredSkills([], ["rogue"], links({}));
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
-      location: ".agents/skills/rogue",
-      message: "is installed but absent from skills-lock.json",
-    });
   });
 
   it("does not confuse two skills whose names share a prefix", () => {

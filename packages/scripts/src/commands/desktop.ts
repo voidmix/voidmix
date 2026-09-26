@@ -1,6 +1,6 @@
 import { defineCommand } from "citty";
 
-import { runContextualAction } from "../runtime/action.js";
+import { contextualCommand } from "../runtime/command.js";
 import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
 
 export async function runDesktopBuild(dependencies: RepositoryProcessDependencies): Promise<void> {
@@ -16,13 +16,10 @@ export async function runDesktopBuild(dependencies: RepositoryProcessDependencie
   dependencies.log("info", "desktop.build.completed");
 }
 
-const buildDesktopCommand = defineCommand({
+const buildDesktopCommand = contextualCommand("desktop build", "repository", {
   meta: { name: "build", description: "Build the Tauri desktop application" },
-  async run() {
-    await runContextualAction("desktop build", "repository", async (context) => {
-      const { runCommand } = await import("../runtime/process.js");
-      await runDesktopBuild({ ...context, runCommand });
-    });
+  async run(context) {
+    await runDesktopBuild(context);
   },
 });
 

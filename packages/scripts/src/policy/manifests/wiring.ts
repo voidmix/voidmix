@@ -1,9 +1,8 @@
+import { findingFor } from "../findings.js";
 import type { PolicyFinding } from "../checks.js";
 import type { WorkspaceShape } from "../manifests.js";
 
-function wiringFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "tests.wiring", location, message, fix, severity: "warn" };
-}
+const wiringFinding = findingFor("tests.wiring", "warn");
 
 export function validateTestWiring(location: string, shape: WorkspaceShape): PolicyFinding[] {
   if (!shape.hasVitestConfig || shape.hasTestFiles) return [];

@@ -41,8 +41,10 @@
     "@dotenvx/dotenvx": "catalog:tooling",
     "@voidmix/core": "workspace:*",
     "@voidmix/db": "workspace:*",
+    "@voidmix/i18n": "workspace:*",
     "@voidmix/shared": "workspace:*",
     "citty": "catalog:tooling",
+    "oxc-parser": "catalog:tooling",
     "uuid": "catalog:"
   },
   "devDependencies": {

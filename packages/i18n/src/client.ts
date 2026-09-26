@@ -15,14 +15,7 @@ import { createFormatter, type Formatter } from "./formatter.js";
 import type { IntlRuntimeOptions, Locale, LocaleStorage, MessagesByLocale } from "./types.js";
 import type { Translator } from "./translator.js";
 
-export type I18nProviderProps = PropsWithChildren<{
-  locale: Locale;
-  messages: MessagesByLocale;
-  storage?: LocaleStorage;
-  onLocaleChange?: (locale: Locale) => void | Promise<void>;
-  timeZone?: string;
-  formats?: IntlRuntimeOptions["formats"];
-}>;
+export type I18nProviderProps = LocaleProviderProps & { messages: MessagesByLocale };
 
 export type LocaleProviderProps = PropsWithChildren<{
   locale: Locale;
@@ -87,13 +80,7 @@ export function LocaleProvider({
 export function I18nProvider({ messages, children, ...localeProps }: I18nProviderProps) {
   return createElement(
     LocaleProvider,
-    {
-      locale: localeProps.locale,
-      ...(localeProps.storage ? { storage: localeProps.storage } : {}),
-      ...(localeProps.onLocaleChange ? { onLocaleChange: localeProps.onLocaleChange } : {}),
-      ...(localeProps.timeZone ? { timeZone: localeProps.timeZone } : {}),
-      ...(localeProps.formats ? { formats: localeProps.formats } : {}),
-    },
+    localeProps,
     createElement(
       IntlMessagesProvider,
       {

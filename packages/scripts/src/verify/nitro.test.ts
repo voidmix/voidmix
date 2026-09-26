@@ -72,30 +72,26 @@ describe("verifyNitroRuntimes", () => {
     expect(cleanup).toHaveBeenCalledOnce();
   });
 
-  it("rejects output built for a non-Node preset", async () => {
+  it.each([
+    [
+      "non-Node preset",
+      { preset: "bun", serverEntry: "server.mjs" },
+      "Example Nitro output uses bun instead of node-server",
+    ],
+    [
+      "outside output",
+      { preset: "node-server", serverEntry: "../../secret.mjs" },
+      "points outside its output directory",
+    ],
+  ] as const)("rejects unsafe Nitro output: %s", async (_name, metadata, message) => {
     const deps = dependencies();
-
     await expect(
       verifyNitroRuntimes(deps, {
         allocatePort: async () => 43210,
-        readMetadata: async () => JSON.stringify({ preset: "bun", serverEntry: "server.mjs" }),
+        readMetadata: async () => JSON.stringify(metadata),
         targets: [target],
       }),
-    ).rejects.toThrow("Example Nitro output uses bun instead of node-server");
-    expect(deps.runCommand).not.toHaveBeenCalled();
-  });
-
-  it("rejects server entries outside the generated output", async () => {
-    const deps = dependencies();
-
-    await expect(
-      verifyNitroRuntimes(deps, {
-        allocatePort: async () => 43210,
-        readMetadata: async () =>
-          JSON.stringify({ preset: "node-server", serverEntry: "../../secret.mjs" }),
-        targets: [target],
-      }),
-    ).rejects.toThrow("points outside its output directory");
+    ).rejects.toThrow(message);
     expect(deps.runCommand).not.toHaveBeenCalled();
   });
 });

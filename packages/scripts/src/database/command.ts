@@ -1,80 +1,64 @@
 import { defineCommand } from "citty";
 import { v7 as uuidv7 } from "uuid";
 
-import { runContextualAction } from "../runtime/action.js";
+import { contextualCommand } from "../runtime/command.js";
 
-const migrateCommand = defineCommand({
+const migrateCommand = contextualCommand("db migrate", "database", {
   meta: { name: "migrate", description: "Apply database migrations" },
-  async run() {
-    await runContextualAction("db migrate", "database", async (context) => {
-      const [{ runMigrate }, { migrateDatabase }] = await Promise.all([
-        import("./operation.js"),
-        import("@voidmix/db"),
-      ]);
-      await runMigrate(context.environment, {
-        log: context.log,
-        migrate: migrateDatabase,
-      });
+  async run(context) {
+    const [{ runMigrate }, { migrateDatabase }] = await Promise.all([
+      import("./operation.js"),
+      import("@voidmix/db"),
+    ]);
+    await runMigrate(context.environment, {
+      log: context.log,
+      migrate: migrateDatabase,
     });
   },
 });
 
-const seedCommand = defineCommand({
+const seedCommand = contextualCommand("db seed", "database", {
   meta: { name: "seed", description: "Seed development or test data" },
-  async run() {
-    await runContextualAction("db seed", "database", async (context) => {
-      const [{ runSeed }, { openPostgresUsers }, domain] = await Promise.all([
-        import("./operation.js"),
-        import("./users.js"),
-        import("@voidmix/core"),
-      ]);
-      await runSeed(context.environment, {
-        createAdministration: domain.createUserAdministration,
-        log: context.log,
-        now: () => new Date(),
-        openUsers: openPostgresUsers,
-        uuidv7,
-      });
+  async run(context) {
+    const [{ runSeed }, { openPostgresUsers }, domain] = await Promise.all([
+      import("./operation.js"),
+      import("./users.js"),
+      import("@voidmix/core"),
+    ]);
+    await runSeed(context.environment, {
+      createAdministration: domain.createUserAdministration,
+      log: context.log,
+      now: () => new Date(),
+      openUsers: openPostgresUsers,
+      uuidv7,
     });
   },
 });
 
-const cleanCommand = defineCommand({
+const cleanCommand = contextualCommand("db clean", "database", {
   meta: { name: "clean", description: "Drop every table in a development or test database" },
-  async run() {
-    await runContextualAction("db clean", "database", async (context) => {
-      const [{ runClean }, { resetDatabase }] = await Promise.all([
-        import("./operation.js"),
-        import("@voidmix/db"),
-      ]);
-      await runClean(context.environment, { log: context.log, reset: resetDatabase });
-    });
+  async run(context) {
+    const [{ runClean }, { resetDatabase }] = await Promise.all([
+      import("./operation.js"),
+      import("@voidmix/db"),
+    ]);
+    await runClean(context.environment, { log: context.log, reset: resetDatabase });
   },
 });
 
-const pushCommand = defineCommand({
+const pushCommand = contextualCommand("db push", "database", {
   meta: { name: "push", description: "Push the schema straight to a local database" },
-  async run({ rawArgs }) {
-    await runContextualAction("db push", "database", async (context) => {
-      const [{ runPush }, { runCommand }] = await Promise.all([
-        import("./operation.js"),
-        import("../runtime/process.js"),
-      ]);
-      await runPush(context.environment, { ...context, runCommand }, rawArgs);
-    });
+  async run(context, { rawArgs }) {
+    const { runPush } = await import("./operation.js");
+    await runPush(context.environment, context, rawArgs);
   },
 });
 
-const studioCommand = defineCommand({
+const studioCommand = contextualCommand("db studio", "database", {
   meta: { name: "studio", description: "Open Drizzle Studio for a local database" },
-  async run() {
-    await runContextualAction("db studio", "database", async (context) => {
-      const [{ runStudio }, { runCommand }] = await Promise.all([
-        import("./operation.js"),
-        import("../runtime/process.js"),
-      ]);
-      await runStudio(context.environment, { ...context, runCommand });
-    });
+  async run(context) {
+    const { runStudio } = await import("./operation.js");
+    await runStudio(context.environment, context);
   },
 });
 

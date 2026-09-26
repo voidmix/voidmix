@@ -1,7 +1,5 @@
-import { defineCommand } from "citty";
-
 import type { CleanRepositoryOptions } from "../clean.js";
-import { runContextualAction } from "../runtime/action.js";
+import { contextualCommand } from "../runtime/command.js";
 import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
 
 export interface CleanDependencies extends RepositoryProcessDependencies {
@@ -42,7 +40,7 @@ export async function runClean(
   });
 }
 
-export const cleanCommand = defineCommand({
+export const cleanCommand = contextualCommand("clean", "process", {
   meta: {
     name: "clean",
     description: "Remove rebuildable repository outputs and caches",
@@ -59,16 +57,11 @@ export const cleanCommand = defineCommand({
       description: "Also clear Bun's machine-wide install cache",
     },
   },
-  async run({ args }) {
-    await runContextualAction("clean", "process", async (context) => {
-      const [{ cleanRepository }, { runCommand }] = await Promise.all([
-        import("../clean.js"),
-        import("../runtime/process.js"),
-      ]);
-      await runClean(
-        { ...context, cleanRepository, runCommand },
-        { bunCache: args["bun-cache"], dependencies: args.dependencies },
-      );
-    });
+  async run(context, { args }) {
+    const { cleanRepository } = await import("../clean.js");
+    await runClean(
+      { ...context, cleanRepository },
+      { bunCache: args["bun-cache"], dependencies: args.dependencies },
+    );
   },
 });

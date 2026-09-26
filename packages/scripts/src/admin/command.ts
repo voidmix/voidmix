@@ -1,6 +1,6 @@
 import { defineCommand, type ArgsDef } from "citty";
 
-import { runContextualAction } from "../runtime/action.js";
+import { contextualCommand } from "../runtime/command.js";
 
 export const adminCreateArgs = {
   email: {
@@ -15,26 +15,24 @@ export const adminCreateArgs = {
   },
 } as const satisfies ArgsDef;
 
-const createAdminCommand = defineCommand({
+const createAdminCommand = contextualCommand("admin create", "database", {
   meta: { name: "create", description: "Create an idempotent initial administrator" },
   args: adminCreateArgs,
-  async run({ args }) {
-    await runContextualAction("admin create", "database", async (context) => {
-      const [operation, { openPostgresUsers }, domain] = await Promise.all([
-        import("./operation.js"),
-        import("../database/users.js"),
-        import("@voidmix/core"),
-      ]);
-      await operation.runCreateAdmin(
-        operation.resolveAdminCreateInput(args, context.environment),
-        context.environment,
-        {
-          createAdministration: domain.createUserAdministration,
-          log: context.log,
-          openUsers: openPostgresUsers,
-        },
-      );
-    });
+  async run(context, { args }) {
+    const [operation, { openPostgresUsers }, domain] = await Promise.all([
+      import("./operation.js"),
+      import("../database/users.js"),
+      import("@voidmix/core"),
+    ]);
+    await operation.runCreateAdmin(
+      operation.resolveAdminCreateInput(args, context.environment),
+      context.environment,
+      {
+        createAdministration: domain.createUserAdministration,
+        log: context.log,
+        openUsers: openPostgresUsers,
+      },
+    );
   },
 });
 

@@ -1,3 +1,4 @@
+import { parseJson, isObject, serializeJson } from "./json.js";
 import type { PolicyFinding } from "./checks.js";
 import {
   canonicalScripts,
@@ -11,14 +12,7 @@ import {
 
 export { canonicalScripts } from "./manifests/rules.js";
 
-/**
- * What policy observes about a workspace rather than configures.
- *
- * These facts replace a hand-maintained exemption list. `packages/tsconfig` owns
- * no TypeScript project and no test runner, so the script rules are vacuous for
- * it without naming it — and a list of names is itself the kind of unchecked
- * copy this checker exists to remove.
- */
+/** Facts observed from workspace files, not an exemption list. */
 export interface WorkspaceShape {
   /** True when the workspace root holds a `vitest.config.ts`. */
   hasVitestConfig: boolean;
@@ -31,13 +25,7 @@ export interface WorkspaceShape {
 const testFile = /\.(?:test|spec)\.tsx?$/;
 const typeScriptConfig = /^tsconfig(?:\..+)?\.json$/;
 
-/**
- * Derives a workspace's shape from a flat file listing. Kept separate from the
- * rules so the only non-trivial assembly is testable without a filesystem. Pure.
- *
- * @param member repository-relative workspace directory, e.g. `apps/desktop`
- * @param files repository-relative files under the workspace directories
- */
+/** Derive root configs and nested test presence from repository-relative files. */
 export function deriveWorkspaceShape(member: string, files: readonly string[]): WorkspaceShape {
   const prefix = `${member}/`;
   const owned = files
@@ -63,7 +51,7 @@ interface Manifest {
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  if (!isObject(value)) return false;
   const prototype = Object.getPrototypeOf(value);
   return prototype === Object.prototype || prototype === null;
 }
@@ -72,27 +60,14 @@ function isStringMap(value: unknown): value is Record<string, string> {
   return isPlainObject(value) && Object.values(value).every((entry) => typeof entry === "string");
 }
 
-/**
- * Validates one workspace `package.json` against the repository contract: the
- * canonical test scripts, a `check` that reaches every TypeScript project the
- * workspace owns, a `build` that cannot ship an unchecked tree, the catalog and
- * workspace version protocols, and no local restatement of the root toolchain.
- *
- * `peerDependencies` is skipped on purpose: a peer declares a range its consumer
- * must satisfy, and `catalog:` is not a range.
- *
- * Parses the text itself so a malformed manifest reports once instead of
- * throwing past the other checks. Pure.
- */
+/** Validate scripts, dependency protocols and root toolchain inheritance. Peers retain version ranges. */
 export function validateWorkspaceManifest(
   location: string,
   content: string,
   shape: WorkspaceShape,
 ): PolicyFinding[] {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
+  const result = parseJson(content);
+  if (!result.valid) {
     return [
       scriptFinding(
         location,
@@ -101,6 +76,7 @@ export function validateWorkspaceManifest(
       ),
     ];
   }
+  const parsed = result.value;
 
   if (!isPlainObject(parsed)) return [structureFinding(location, "package.json")];
   const manifest = parsed as Manifest;
@@ -139,31 +115,13 @@ export function validateWorkspaceManifest(
   return findings;
 }
 
-/** Serializes a manifest the way Oxfmt formats JSON, so `vp fmt` stays quiet. */
-function serialize(value: unknown): string {
-  return `${JSON.stringify(value, null, 2)}\n`;
-}
-
-/**
- * Rewrites a workspace `package.json` for the findings that have exactly one
- * possible remedy: a canonical test script that deviates or is absent, a `build`
- * that does not run `check` first, and a locally restated `devEngines`.
- *
- * Everything else this module reports needs a decision and is left untouched —
- * which catalog a dependency belongs in, whether a stray test script or the
- * missing runner is the mistake, how a second TypeScript project should be
- * composed into `check`. Applying a guess there would be worse than the finding.
- *
- * Returns the input unchanged when nothing applies, so the caller can compare and
- * skip the write. Pure.
- */
+/** Fix only canonical scripts, unchecked builds and repeated devEngines. Preserve bytes on a no-op. */
 export function fixWorkspaceManifest(content: string, shape: WorkspaceShape): string {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
+  const result = parseJson(content);
+  if (!result.valid) {
     return content;
   }
+  const parsed = result.value;
   if (!isPlainObject(parsed)) return content;
   const manifest = parsed as Manifest;
 
@@ -202,5 +160,5 @@ export function fixWorkspaceManifest(content: string, shape: WorkspaceShape): st
     changed = true;
   }
 
-  return changed ? serialize(manifest) : content;
+  return changed ? serializeJson(manifest) : content;
 }

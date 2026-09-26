@@ -1,8 +1,9 @@
-import { access, readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import type { CatalogInput, I18nReport, SourceInput, SupportedLocale } from "./checks.js";
 import { runI18nChecks } from "./checks.js";
+import { walkFiles } from "../runtime/files.js";
 import { repositoryRoot } from "../runtime/repository.js";
 
 const sourceRoots = ["apps/web/src", "apps/desktop/src", "packages/mail/src"] as const;
@@ -31,28 +32,6 @@ export interface I18nDependencies {
   repositoryRoot: string;
 }
 
-async function walkSourceFiles(root: string, directory: string, files: string[]): Promise<void> {
-  let entries;
-  try {
-    entries = await readdir(join(root, directory), { withFileTypes: true });
-  } catch {
-    return;
-  }
-
-  for (const entry of entries) {
-    if (entry.isDirectory()) {
-      if (skippedDirectories.has(entry.name) || entry.name.startsWith(".")) continue;
-      await walkSourceFiles(root, join(directory, entry.name), files);
-      continue;
-    }
-    if (!entry.isFile() || !/\.(?:ts|tsx)$/u.test(entry.name)) continue;
-    const location = join(directory, entry.name).split("\\").join("/");
-    if (/(?:\.test|\.spec)\.[jt]sx?$/u.test(location)) continue;
-    if (/(?:^|\/)routeTree\.gen\.ts$/u.test(location)) continue;
-    files.push(location);
-  }
-}
-
 async function fileContent(root: string, location: string): Promise<string> {
   try {
     return await readFile(join(root, location), "utf8");
@@ -63,7 +42,16 @@ async function fileContent(root: string, location: string): Promise<string> {
 
 async function listSources(root: string): Promise<SourceInput[]> {
   const locations: string[] = [];
-  for (const sourceRoot of sourceRoots) await walkSourceFiles(root, sourceRoot, locations);
+  for (const sourceRoot of sourceRoots) {
+    await walkFiles(
+      root,
+      sourceRoot,
+      (name) =>
+        /\.tsx?$/u.test(name) && !/(?:\.test|\.spec)\.tsx?$|^routeTree\.gen\.ts$/u.test(name),
+      locations,
+      skippedDirectories,
+    );
+  }
   locations.sort();
   return Promise.all(
     locations.map(async (location) => ({ location, content: await fileContent(root, location) })),
@@ -100,14 +88,4 @@ export async function runI18nCheck(dependencies: I18nDependencies): Promise<I18n
     dependencies.listSources(),
   ]);
   return runI18nChecks(catalogs, sources);
-}
-
-/** Useful for tests and diagnostics without exposing filesystem details. */
-export async function pathExists(path: string): Promise<boolean> {
-  try {
-    await access(path);
-    return true;
-  } catch {
-    return false;
-  }
 }

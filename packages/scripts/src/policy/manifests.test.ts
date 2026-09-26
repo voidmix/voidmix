@@ -1,3 +1,4 @@
+import { expectOnlyFinding } from "../test-fixtures.js";
 import { describe, expect, it } from "vite-plus/test";
 
 import {
@@ -22,37 +23,13 @@ function shape(overrides: Partial<WorkspaceShape> = {}): WorkspaceShape {
   };
 }
 
-/**
- * Serializes a manifest. `scripts` is replaced wholesale rather than merged so a
- * case can omit one: `exactOptionalPropertyTypes` rejects an undefined value.
- */
-function manifest(
-  overrides: {
-    dependencies?: unknown;
-    devDependencies?: unknown;
-    devEngines?: unknown;
-    omitScripts?: boolean;
-    peerDependencies?: unknown;
-    scripts?: unknown;
-  } = {},
-): string {
-  const { omitScripts, scripts, ...manifestFields } = overrides;
+const defaultScripts = { ...canonicalScripts, check: checkCommand, build: checkCommand };
+function manifest(overrides: Record<string, unknown> = {}) {
   return JSON.stringify({
     name: "@voidmix/example",
     private: true,
-    ...manifestFields,
-    ...(omitScripts
-      ? {}
-      : {
-          scripts:
-            scripts === undefined
-              ? {
-                  ...canonicalScripts,
-                  check: checkCommand,
-                  build: checkCommand,
-                }
-              : scripts,
-        }),
+    scripts: defaultScripts,
+    ...overrides,
   });
 }
 
@@ -87,18 +64,14 @@ describe("deriveWorkspaceShape", () => {
 
 describe("validateWorkspaceManifest", () => {
   it("accepts a manifest that matches the contract", () => {
-    expect(validateWorkspaceManifest(location, manifest(), shape())).toEqual([]);
+    expect(validate(manifest())).toEqual([]);
   });
 
   for (const name of Object.keys(canonicalScripts)) {
     it(`reports ${name} when it deviates, quoting the command to paste`, () => {
-      const scripts: Record<string, string> = {
-        ...canonicalScripts,
-        check: checkCommand,
-        build: checkCommand,
-      };
+      const scripts: Record<string, string> = { ...defaultScripts };
       scripts[name] = "vp test --run --silent";
-      const findings = validateWorkspaceManifest(location, manifest({ scripts }), shape());
+      const findings = validate(manifest({ scripts }));
 
       expect(findings).toHaveLength(1);
       expect(findings[0]).toMatchObject({
@@ -113,10 +86,8 @@ describe("validateWorkspaceManifest", () => {
 
   it("reports a canonical script the workspace never declares", () => {
     const { "test:component": _omitted, ...rest } = canonicalScripts;
-    const findings = validateWorkspaceManifest(
-      location,
+    const findings = validate(
       manifest({ scripts: { ...rest, check: checkCommand, build: checkCommand } }),
-      shape(),
     );
 
     expect(findings).toHaveLength(1);
@@ -124,8 +95,7 @@ describe("validateWorkspaceManifest", () => {
   });
 
   it("reports test scripts declared without a runner to run them", () => {
-    const findings = validateWorkspaceManifest(
-      location,
+    const findings = validate(
       manifest({ scripts: { ...canonicalScripts, check: checkCommand } }),
       shape({ hasVitestConfig: false }),
     );
@@ -137,23 +107,69 @@ describe("validateWorkspaceManifest", () => {
 
   it("expects no test scripts when the workspace owns no runner", () => {
     expect(
-      validateWorkspaceManifest(
-        location,
-        manifest({ scripts: { check: checkCommand } }),
-        shape({ hasVitestConfig: false }),
-      ),
+      validate(manifest({ scripts: { check: checkCommand } }), shape({ hasVitestConfig: false })),
     ).toEqual([]);
   });
 
-  it("reports a TypeScript project that check never reaches", () => {
-    const findings = validateWorkspaceManifest(
-      location,
-      manifest(),
-      shape({ typeScriptConfigs: ["tsconfig.json", "tsconfig.node.json"] }),
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toContain("check does not type-check tsconfig.node.json");
+  it.each([
+    {
+      name: "reports a TypeScript project that check never reaches",
+      content: manifest(),
+      shape: shape({ typeScriptConfigs: ["tsconfig.json", "tsconfig.node.json"] }),
+      expected: {
+        message: expect.stringContaining("check does not type-check tsconfig.node.json"),
+      },
+    },
+    {
+      name: "reports a build that can ship an unchecked tree",
+      content: manifest({
+        scripts: { ...canonicalScripts, check: checkCommand, build: "vp build" },
+      }),
+      shape: shape(),
+      expected: {
+        message: expect.stringContaining("build does not run check first"),
+        fix: expect.stringContaining("bun run check &&"),
+      },
+    },
+    {
+      name: "reports a workspace that owns a project but declares no check",
+      content: manifest({ scripts: { ...canonicalScripts } }),
+      shape: shape(),
+      expected: { message: expect.stringContaining("declares no check script") },
+    },
+    {
+      name: "reports a third-party dependency pinned outside the catalog",
+      content: manifest({ dependencies: { zod: "4.4.3" } }),
+      shape: shape(),
+      expected: {
+        check: "manifest.dependencies",
+        location,
+        message: expect.stringContaining("dependencies pins zod to 4.4.3"),
+      },
+    },
+    {
+      name: "reports an internal dependency that bypasses the workspace protocol",
+      content: manifest({ devDependencies: { "@voidmix/tsconfig": "^0.0.0" } }),
+      shape: shape(),
+      expected: {
+        message: expect.stringContaining("devDependencies pins @voidmix/tsconfig"),
+        fix: expect.stringContaining("workspace:*"),
+      },
+    },
+    {
+      name: "reports a workspace that restates the root toolchain",
+      content: manifest({ devEngines: { packageManager: { name: "bun" } } }),
+      shape: shape(),
+      expected: { check: "manifest.engines", message: "declares its own devEngines" },
+    },
+    {
+      name: "reports malformed JSON once rather than throwing past the other rules",
+      content: "{ not json",
+      shape: shape(),
+      expected: { message: "is not valid JSON", fix: expect.stringContaining("without comments") },
+    },
+  ])("$name", ({ content, shape, expected }) => {
+    expectOnlyFinding(validate(content, shape), expected);
   });
 
   it("follows bun run references, so a composed check counts as covering both", () => {
@@ -166,65 +182,16 @@ describe("validateWorkspaceManifest", () => {
     };
 
     expect(
-      validateWorkspaceManifest(
-        location,
+      validate(
         manifest({ scripts }),
         shape({ typeScriptConfigs: ["tsconfig.json", "tsconfig.node.json"] }),
       ),
     ).toEqual([]);
   });
 
-  it("reports a build that can ship an unchecked tree", () => {
-    const scripts = { ...canonicalScripts, check: checkCommand, build: "vp build" };
-    const findings = validateWorkspaceManifest(location, manifest({ scripts }), shape());
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toContain("build does not run check first");
-    expect(findings[0]?.fix).toContain("bun run check &&");
-  });
-
-  it("reports a workspace that owns a project but declares no check", () => {
-    const findings = validateWorkspaceManifest(
-      location,
-      manifest({ scripts: { ...canonicalScripts } }),
-      shape(),
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toContain("declares no check script");
-  });
-
-  it("reports a third-party dependency pinned outside the catalog", () => {
-    const findings = validateWorkspaceManifest(
-      location,
-      manifest({ dependencies: { zod: "4.4.3" } }),
-      shape(),
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({ check: "manifest.dependencies", location });
-    expect(findings[0]?.message).toContain("dependencies pins zod to 4.4.3");
-  });
-
-  it("reports an internal dependency that bypasses the workspace protocol", () => {
-    const findings = validateWorkspaceManifest(
-      location,
-      manifest({ devDependencies: { "@voidmix/tsconfig": "^0.0.0" } }),
-      shape(),
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toContain("devDependencies pins @voidmix/tsconfig");
-    expect(findings[0]?.fix).toContain("workspace:*");
-  });
-
   for (const value of [42, ["catalog:"], null]) {
     it(`reports a non-string dependency value (${String(value)}) without throwing`, () => {
-      const findings = validateWorkspaceManifest(
-        location,
-        manifest({ dependencies: { zod: value } }),
-        shape(),
-      );
+      const findings = validate(manifest({ dependencies: { zod: value } }));
 
       expect(findings).toEqual([
         {
@@ -241,7 +208,7 @@ describe("validateWorkspaceManifest", () => {
   it("reports an invalid scripts field without throwing", () => {
     const content = manifest({ scripts: ["vp test --run"] });
 
-    expect(validateWorkspaceManifest(location, content, shape())).toEqual([
+    expect(validate(content)).toEqual([
       {
         check: "manifest.structure",
         location,
@@ -253,35 +220,7 @@ describe("validateWorkspaceManifest", () => {
   });
 
   it("leaves peerDependencies alone, where a range is the point", () => {
-    expect(
-      validateWorkspaceManifest(
-        location,
-        manifest({ peerDependencies: { react: "^19.2.0" } }),
-        shape(),
-      ),
-    ).toEqual([]);
-  });
-
-  it("reports a workspace that restates the root toolchain", () => {
-    const findings = validateWorkspaceManifest(
-      location,
-      manifest({ devEngines: { packageManager: { name: "bun" } } }),
-      shape(),
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
-      check: "manifest.engines",
-      message: "declares its own devEngines",
-    });
-  });
-
-  it("reports malformed JSON once rather than throwing past the other rules", () => {
-    const findings = validateWorkspaceManifest(location, "{ not json", shape());
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toBe("is not valid JSON");
-    expect(findings[0]?.fix).toContain("without comments");
+    expect(validate(manifest({ peerDependencies: { react: "^19.2.0" } }))).toEqual([]);
   });
 });
 
@@ -292,7 +231,7 @@ describe("fixWorkspaceManifest", () => {
   it("returns a conforming manifest byte-identical, whatever its formatting", () => {
     const content = manifest();
 
-    expect(fixWorkspaceManifest(content, shape())).toBe(content);
+    expect(fix(content)).toBe(content);
   });
 
   it("rewrites every deviating script, adds a missing one, and drops devEngines", () => {
@@ -302,42 +241,40 @@ describe("fixWorkspaceManifest", () => {
       scripts: { ...rest, "test:unit": "vp test --run", check: checkCommand, build: checkCommand },
     });
 
-    const fixed = fixWorkspaceManifest(content, shape());
+    const fixed = fix(content);
 
-    expect(validateWorkspaceManifest(location, fixed, shape())).toEqual([]);
+    expect(validate(fixed)).toEqual([]);
     expect(JSON.parse(fixed)).toMatchObject({ scripts: canonicalScripts });
     expect(fixed).not.toContain("devEngines");
   });
 
   it("prefixes a build that would ship an unchecked tree", () => {
     const scripts = { ...canonicalScripts, check: checkCommand, build: "vp build" };
-    const fixed = fixWorkspaceManifest(manifest({ scripts }), shape());
+    const fixed = fix(manifest({ scripts }));
 
     expect(JSON.parse(fixed).scripts.build).toBe(`bun run check && vp build`);
-    expect(validateWorkspaceManifest(location, fixed, shape())).toEqual([]);
+    expect(validate(fixed)).toEqual([]);
   });
 
   it("leaves a dependency alone, because which catalog it belongs in is a decision", () => {
     const content = manifest({ dependencies: { zod: "4.4.3" } });
 
-    expect(fixWorkspaceManifest(content, shape())).toBe(content);
+    expect(fix(content)).toBe(content);
   });
 
   it("leaves a stray test script alone when the runner is what may be missing", () => {
     const content = manifest({ scripts: { ...canonicalScripts, check: checkCommand } });
 
-    expect(fixWorkspaceManifest(content, shape({ hasVitestConfig: false }))).toBe(content);
+    expect(fix(content, shape({ hasVitestConfig: false }))).toBe(content);
   });
 
   it("creates canonical scripts when a vitest workspace has no scripts field", () => {
-    const content = manifest({ omitScripts: true });
-    const fixed = fixWorkspaceManifest(content, shape({ typeScriptConfigs: [] }));
+    const content = manifest({ scripts: undefined });
+    const fixed = fix(content, shape({ typeScriptConfigs: [] }));
 
     expect(JSON.parse(fixed).scripts).toEqual(canonicalScripts);
-    expect(validateWorkspaceManifest(location, fixed, shape({ typeScriptConfigs: [] }))).toEqual(
-      [],
-    );
-    expect(fixWorkspaceManifest(fixed, shape({ typeScriptConfigs: [] }))).toBe(fixed);
+    expect(validate(fixed, shape({ typeScriptConfigs: [] }))).toEqual([]);
+    expect(fix(fixed, shape({ typeScriptConfigs: [] }))).toBe(fixed);
   });
 
   it("leaves an invalid scripts field untouched", () => {
@@ -345,11 +282,11 @@ describe("fixWorkspaceManifest", () => {
       scripts: ["vp test --run"],
       devEngines: { runtime: { name: "node" } },
     });
-    const fixed = fixWorkspaceManifest(content, shape());
+    const fixed = fix(content);
 
     expect(JSON.parse(fixed).scripts).toEqual(["vp test --run"]);
     expect(JSON.parse(fixed)).not.toHaveProperty("devEngines");
-    expect(validateWorkspaceManifest(location, fixed, shape())).toEqual([
+    expect(validate(fixed)).toEqual([
       expect.objectContaining({
         check: "manifest.structure",
         message: "scripts must be an object whose values are strings",
@@ -358,14 +295,14 @@ describe("fixWorkspaceManifest", () => {
   });
 
   it("leaves malformed JSON untouched rather than guessing at it", () => {
-    expect(fixWorkspaceManifest("{ not json", shape())).toBe("{ not json");
+    expect(fix("{ not json")).toBe("{ not json");
   });
 
   it("is idempotent", () => {
     const scripts = { ...canonicalScripts, "test:unit": "vp test --run", check: checkCommand };
-    const once = fixWorkspaceManifest(manifest({ scripts }), shape());
+    const once = fix(manifest({ scripts }));
 
-    expect(fixWorkspaceManifest(once, shape())).toBe(once);
+    expect(fix(once)).toBe(once);
   });
 });
 
@@ -375,8 +312,7 @@ describe("validateTestWiring", () => {
   it("warns when a runner is configured and no test exists", () => {
     const findings = validateTestWiring(config, shape({ hasTestFiles: false }));
 
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
+    expectOnlyFinding(findings, {
       check: "tests.wiring",
       location: config,
       severity: "warn",
@@ -394,3 +330,10 @@ describe("validateTestWiring", () => {
     ).toEqual([]);
   });
 });
+
+function validate(content: string, workspace = shape()) {
+  return validateWorkspaceManifest(location, content, workspace);
+}
+function fix(content: string, workspace = shape()) {
+  return fixWorkspaceManifest(content, workspace);
+}

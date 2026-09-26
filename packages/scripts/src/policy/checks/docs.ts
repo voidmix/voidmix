@@ -1,3 +1,4 @@
+import { collectFindings, findingFor } from "../findings.js";
 import { join } from "node:path";
 
 import type { PolicyDependencies, PolicyFinding } from "../checks.js";
@@ -9,18 +10,16 @@ export async function checkDocumentationLinks(
   dependencies: PolicyDependencies,
   files: readonly string[],
 ): Promise<PolicyFinding[]> {
-  const findings: PolicyFinding[] = [];
+  const { findings, report } = collectFindings(findingFor("docs.links"));
   for (const file of files) {
     const content = await dependencies.readFile(join(dependencies.repositoryRoot, file));
     for (const link of collectRelativeLinks(file, content)) {
       if (await dependencies.pathExists(join(dependencies.repositoryRoot, link.resolved))) continue;
-      findings.push({
-        check: "docs.links",
-        location: file,
-        message: `link target does not exist: ${link.target}`,
-        fix: `point the link at an existing path or remove it from ${file}`,
-        severity: "error",
-      });
+      report(
+        file,
+        `link target does not exist: ${link.target}`,
+        `point the link at an existing path or remove it from ${file}`,
+      );
     }
   }
   return findings;
@@ -33,13 +32,11 @@ export async function checkDocumentationIndex(
   const indexPath = join(dependencies.repositoryRoot, docsIndex);
   if (!(await dependencies.pathExists(indexPath))) {
     return [
-      {
-        check: "docs.index",
-        location: docsIndex,
-        message: "the documentation index is missing",
-        fix: `create ${docsIndex} and link every document under docs/`,
-        severity: "error",
-      },
+      findingFor("docs.index")(
+        docsIndex,
+        "the documentation index is missing",
+        `create ${docsIndex} and link every document under docs/`,
+      ),
     ];
   }
 
@@ -59,11 +56,11 @@ export async function checkDocumentationIndex(
   const reachable = reachableFrom(docsIndex, edges);
   return documents
     .filter((file) => !reachable.has(file))
-    .map((file) => ({
-      check: "docs.index",
-      location: file,
-      message: `not reachable from ${docsIndex}`,
-      fix: `link ${file} from ${docsIndex} or from a document it already reaches; AGENTS.md declares ${docsIndex} the navigation index`,
-      severity: "error" as const,
-    }));
+    .map((file) =>
+      findingFor("docs.index")(
+        file,
+        `not reachable from ${docsIndex}`,
+        `link ${file} from ${docsIndex} or from a document it already reaches; AGENTS.md declares ${docsIndex} the navigation index`,
+      ),
+    );
 }
