@@ -13,8 +13,6 @@ class FakeRedis implements RedisClientLike {
   }
 
   async set(key: string, value: string, ...args: Array<string | number>): Promise<string | null> {
-    const nx = args.includes("NX");
-    if (nx && this.values.has(key)) return null;
     this.values.set(key, value);
     const exIndex = args.indexOf("EX");
     if (exIndex >= 0) this.expirations.set(key, Number(args[exIndex + 1]));
@@ -28,10 +26,6 @@ class FakeRedis implements RedisClientLike {
       this.expirations.delete(key);
     }
     return count;
-  }
-
-  async mget(...keys: string[]): Promise<Array<string | null>> {
-    return keys.map((key) => this.values.get(key) ?? null);
   }
 
   async incrby(key: string, amount: number): Promise<number> {
@@ -59,22 +53,15 @@ class FakeRedis implements RedisClientLike {
     if (!existed) this.expirations.set(key, ttl);
     return value;
   }
-
-  async scan(_cursor: string, ...args: string[]): Promise<[string, string[]]> {
-    const match = args[args.indexOf("MATCH") + 1] ?? "*";
-    const prefix = match.endsWith("*") ? match.slice(0, -1) : match;
-    return ["0", [...this.values.keys()].filter((key) => key.startsWith(prefix))];
-  }
 }
 
 describe("RedisCache", () => {
-  it("serializes values and supports Laravel-like get/put operations", async () => {
+  it("serializes cached values with a TTL", async () => {
     const redis = new FakeRedis();
     const cache = new RedisCache(redis, "voidmix:cache");
 
-    await expect(cache.get("missing", "fallback")).resolves.toBe("fallback");
-    await expect(cache.put("user", { id: "1" }, 60)).resolves.toBe(true);
-    await expect(cache.get<{ id: string }>("user")).resolves.toEqual({ id: "1" });
+    await expect(cache.remember("user", 60, () => ({ id: "1" }))).resolves.toEqual({ id: "1" });
+    await expect(cache.remember("user", 60, () => null)).resolves.toEqual({ id: "1" });
     expect(redis.expirations.get("voidmix:cache:user")).toBe(60);
   });
 
@@ -87,11 +74,11 @@ describe("RedisCache", () => {
       count: 3,
     };
 
-    await cache.put("nested", value);
-    await cache.put("null", null);
+    await cache.remember("nested", 60, () => value);
+    await cache.remember("null", 60, () => null);
 
-    await expect(cache.get<typeof value>("nested")).resolves.toEqual(value);
-    await expect(cache.get("null")).resolves.toBeNull();
+    await expect(cache.remember("nested", 60, () => null)).resolves.toEqual(value);
+    await expect(cache.remember("null", 60, () => null)).resolves.toBeNull();
     expect(redis.values.get("voidmix:cache:nested")).toBe(JSON.stringify(value));
     expect(redis.values.get("voidmix:cache:null")).toBe("null");
   });
@@ -100,45 +87,27 @@ describe("RedisCache", () => {
     const redis = new FakeRedis();
     const cache = new RedisCache(redis, "voidmix:cache");
 
-    await expect(cache.put("undefined", undefined)).rejects.toThrow("JSON-serializable");
-    await expect(cache.put("bigint", BigInt(1))).rejects.toThrow("JSON-serializable");
+    await expect(cache.remember("undefined", 60, () => undefined)).rejects.toThrow(
+      "JSON-serializable",
+    );
+    await expect(cache.remember("bigint", 60, () => BigInt(1))).rejects.toThrow(
+      "JSON-serializable",
+    );
     const circular: { self?: unknown } = {};
     circular.self = circular;
-    await expect(cache.put("circular", circular)).rejects.toThrow("JSON-serializable");
+    await expect(cache.remember("circular", 60, () => circular)).rejects.toThrow(
+      "JSON-serializable",
+    );
   });
 
-  it("uses NX for add and caches remember results", async () => {
+  it("caches remember results", async () => {
     const redis = new FakeRedis();
     const cache = new RedisCache(redis, "voidmix:cache");
     const resolver = vi.fn(async () => "computed");
 
-    await expect(cache.add("key", "first")).resolves.toBe(true);
-    await expect(cache.add("key", "second")).resolves.toBe(false);
     await expect(cache.remember("remember", 30, resolver)).resolves.toBe("computed");
     await expect(cache.remember("remember", 30, resolver)).resolves.toBe("computed");
     expect(resolver).toHaveBeenCalledOnce();
-  });
-
-  it("pulls atomically, batches values, counts, and flushes only its prefix", async () => {
-    const redis = new FakeRedis();
-    const cache = new RedisCache(redis, "voidmix:cache");
-    const other = new RedisCache(redis, "other:cache");
-
-    await cache.putMany({ one: 1, two: 2 });
-    await other.put("keep", true);
-    await expect(cache.getMany<number>(["one", "missing", "two"])).resolves.toEqual({
-      one: 1,
-      missing: null,
-      two: 2,
-    });
-    await expect(cache.pull<number>("one")).resolves.toBe(1);
-    await expect(cache.pull("missing", "fallback")).resolves.toBe("fallback");
-    await expect(cache.has("one")).resolves.toBe(false);
-    await expect(cache.increment("counter", 2)).resolves.toBe(2);
-    await expect(cache.decrement("counter")).resolves.toBe(1);
-    await cache.flush();
-    await expect(other.get<boolean>("keep")).resolves.toBe(true);
-    await expect(cache.missing("two")).resolves.toBe(true);
   });
 
   it("implements Better Auth raw-string secondary storage semantics", async () => {
@@ -162,16 +131,14 @@ describe("RedisCache", () => {
     });
     const cache = new RedisCache(redis, "voidmix:cache");
 
-    await expect(cache.get("key")).rejects.toThrow("redis unavailable");
+    await expect(cache.remember("key", 60, () => "unused")).rejects.toThrow("redis unavailable");
   });
 
   it("rejects unexpected native RESP3 script replies", async () => {
     const redis = new FakeRedis();
     redis.eval = vi.fn(async () => false);
-    const cache = new RedisCache(redis, "voidmix:cache");
     const storage = createRedisSecondaryStorage(redis, "voidmix:better-auth");
 
-    await expect(cache.pull("key")).rejects.toThrow("unexpected string reply shape");
     await expect(storage.getAndDelete("key")).rejects.toThrow("unexpected string reply shape");
     await expect(storage.increment("key", 30)).rejects.toThrow("unexpected number reply shape");
   });

@@ -18,5 +18,4 @@ export interface ApiContext
 export interface CreateApiRouterOptions {
   modules: ApiModules;
   now?: () => Date;
-  invalidateAuthSettings?: () => Promise<void>;
 }

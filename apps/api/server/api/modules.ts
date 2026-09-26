@@ -1,6 +1,4 @@
 import {
-  createAuthSettingsAdministration,
-  createMailSettingsAdministration,
   createPublicAuthCapabilities,
   createUserAdministration,
   type AuthSettings,
@@ -9,8 +7,6 @@ import {
   type UserRepository,
   type ActivityV2Repository,
 } from "@voidmix/core";
-import type { Locale } from "@voidmix/i18n/types";
-import type { Mailer } from "@voidmix/mail/types";
 import type { AgentRunApplication, ProjectApplication } from "@voidmix/application";
 
 export interface CreateApiModulesOptions {
@@ -19,7 +15,6 @@ export interface CreateApiModulesOptions {
   users: UserRepository;
   settings: SystemSettingsRepository;
   mailFallback: MailSettingsFallback;
-  mailer: Mailer;
   now?: () => Date;
   id?: () => string;
   resolveAuthSettings?: () => Promise<AuthSettings>;
@@ -30,10 +25,6 @@ export interface ApiModules {
   v2Projects?: ProjectApplication;
   v2AgentRuns?: AgentRunApplication;
   users: ReturnType<typeof createUserAdministration>;
-  settings: {
-    auth: ReturnType<typeof createAuthSettingsAdministration>;
-    mail: ReturnType<typeof createMailSettingsAdministration>;
-  };
   publicAuthCapabilities: ReturnType<typeof createPublicAuthCapabilities>;
   activity?: ActivityV2Repository;
 }
@@ -47,25 +38,6 @@ export function createApiModules(options: CreateApiModulesOptions): ApiModules {
       ...(options.now ? { now: options.now } : {}),
       ...(options.id ? { id: options.id } : {}),
     }),
-    settings: {
-      auth: createAuthSettingsAdministration({
-        settings: options.settings,
-        ...(options.now ? { now: options.now } : {}),
-        ...(options.id ? { id: options.id } : {}),
-      }),
-      mail: createMailSettingsAdministration({
-        settings: options.settings,
-        fallback: options.mailFallback,
-        sendTest: (input) =>
-          options.mailer.sendTest({
-            email: input.email,
-            name: input.name,
-            ...(input.locale ? { locale: input.locale as Locale } : {}),
-          }),
-        ...(options.now ? { now: options.now } : {}),
-        ...(options.id ? { id: options.id } : {}),
-      }),
-    },
     publicAuthCapabilities: createPublicAuthCapabilities({
       settings: options.settings,
       mailFallback: options.mailFallback,

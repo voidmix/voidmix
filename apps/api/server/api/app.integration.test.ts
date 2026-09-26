@@ -1,8 +1,13 @@
 import { createApiClient } from "@voidmix/client";
 import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "@voidmix/db";
-import type { ProjectApplication } from "@voidmix/application";
-import type { MailSettingsFallback, User } from "@voidmix/core";
-import type { Mailer } from "@voidmix/mail/types";
+import { createAgentRunApplication, type ProjectApplication } from "@voidmix/application";
+import {
+  ProjectV2DomainError,
+  type AgentRunV2,
+  type AgentRunV2Repository,
+  type MailSettingsFallback,
+  type User,
+} from "@voidmix/core";
 import { describe, expect, it } from "vite-plus/test";
 
 import { createApiApp } from "./app.js";
@@ -61,7 +66,11 @@ function createProjectApplication(): ProjectApplication {
       title,
       description: description ?? null,
     }),
-    assertCapability: notImplemented,
+    assertCapability: async ({ actorId, projectId }) => {
+      if (actorId !== project.personalOwnerId || projectId !== project.id)
+        throw new ProjectV2DomainError("PROJECT_ACCESS_DENIED", "Project access denied.");
+      return project;
+    },
     listTasks: notImplemented,
     createTask: notImplemented,
     updateTask: notImplemented,
@@ -99,19 +108,36 @@ function createApp() {
     templatesBaseUrl: { value: null, source: "missing" },
     resendApiKey: { value: null, source: "missing" },
   };
-  const mailer: Mailer = {
-    sendVerification: async () => {},
-    sendPasswordReset: async () => {},
-    sendWelcome: async () => {},
-    sendTest: async () => {},
+  const projects = createProjectApplication();
+  const runs = new Map<string, AgentRunV2>();
+  const repository: AgentRunV2Repository = {
+    getById: async (id) => runs.get(id) ?? null,
+    create: async ({ now, ...input }) => {
+      const run: AgentRunV2 = {
+        ...input,
+        status: "queued",
+        output: null,
+        error: null,
+        createdAt: now,
+        updatedAt: now,
+      };
+      runs.set(run.id, run);
+      return run;
+    },
+    updateStatus: async ({ id, status, now }) => {
+      const run = runs.get(id);
+      if (!run) return null;
+      Object.assign(run, { status, updatedAt: now });
+      return run;
+    },
   };
   return createApiApp({
     modules: createApiModules({
       users: userRepository,
       settings,
       mailFallback,
-      mailer,
-      v2Projects: createProjectApplication(),
+      v2Projects: projects,
+      v2AgentRuns: createAgentRunApplication({ projects, runs: repository, now: () => now }),
       now: () => now,
     }),
     resolveSession: createHeaderSessionResolver(),
@@ -156,6 +182,30 @@ describe("canonical API", () => {
     expect((await client.projects.list({})).items).toHaveLength(1);
     expect((await client.projects.get({ projectId: "project-1" })).access).toBe("manage");
     expect((await client.projects.create({ title: "New project" })).personalOwnerId).toBe("user-1");
+  });
+
+  it("creates, cancels and retries Agent runs through command dispatch", async () => {
+    const runs = clientFor("user-1").projects.agentRuns;
+    const created = await runs.create({
+      projectId: project.id,
+      idempotencyKey: "first",
+      input: {},
+    });
+    expect(created.status).toBe("queued");
+    expect(created.createdAt).toBeInstanceOf(Date);
+    const cancelled = await runs.cancel({ runId: created.id });
+    expect(cancelled.status).toBe("cancelled");
+    const retried = await runs.retry({ runId: cancelled.id });
+    expect(retried).toMatchObject({ status: "queued", attempt: 2, requestedByUserId: "user-1" });
+    await expect(runs.retry({ runId: retried.id })).rejects.toMatchObject({ code: "CONFLICT" });
+    await expect(runs.cancel({ runId: "missing" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    await expect(
+      clientFor("outsider").projects.agentRuns.create({
+        projectId: project.id,
+        idempotencyKey: "denied",
+        input: {},
+      }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 
   it("keeps admin user routes behind admin capabilities", async () => {

@@ -1,9 +1,3 @@
-import { defineConfig } from "vite-plus/test/config";
+import { workspaceTests } from "../../test.config.js";
 
-export default defineConfig({
-  test: {
-    environment: "node",
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
-    coverage: { reporter: ["text", "json", "lcov"] },
-  },
-});
+export default workspaceTests();

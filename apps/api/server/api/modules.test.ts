@@ -31,19 +31,9 @@ describe("createApiModules", () => {
       users: repository,
       settings,
       mailFallback: fallback,
-      mailer: {
-        sendVerification: async () => {},
-        sendPasswordReset: async () => {},
-        sendWelcome: async () => {},
-        sendTest: async () => {},
-      },
     });
 
     await expect(modules.users.get("owner-1")).resolves.toMatchObject({ id: "owner-1" });
-    await expect(modules.settings.auth.get()).resolves.toMatchObject({ registrationMode: "open" });
-    await expect(modules.settings.mail.get()).resolves.toMatchObject({
-      configurationState: "incomplete",
-    });
     await expect(modules.publicAuthCapabilities.get()).resolves.toMatchObject({
       registrationAvailable: false,
     });

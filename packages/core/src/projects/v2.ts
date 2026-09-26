@@ -110,28 +110,17 @@ function minAccess(left: ProjectAccessV2, right: ProjectAccessV2): ProjectAccess
   return accessRank[left] <= accessRank[right] ? left : right;
 }
 
-function projectMemberAccess(role: ProjectMemberRoleV2): ProjectAccessV2 {
-  switch (role) {
-    case "editor":
-      return "write";
-    case "commenter":
-      return "comment";
-    case "viewer":
-      return "read";
-  }
-}
-
-function organizationMemberAccess(role: OrganizationRoleV2): ProjectAccessV2 {
-  switch (role) {
-    case "owner":
-    case "admin":
-      return "manage";
-    case "editor":
-      return "write";
-    case "viewer":
-      return "read";
-  }
-}
+const projectMemberAccess: Record<ProjectMemberRoleV2, ProjectAccessV2> = {
+  editor: "write",
+  commenter: "comment",
+  viewer: "read",
+};
+const organizationMemberAccess: Record<OrganizationRoleV2, ProjectAccessV2> = {
+  owner: "manage",
+  admin: "manage",
+  editor: "write",
+  viewer: "read",
+};
 
 export interface ResolveProjectAccessV2Input {
   actorId: string;
@@ -155,16 +144,16 @@ export function resolveProjectAccessV2(input: ResolveProjectAccessV2Input): Proj
   const member = input.projectMember;
   if (member?.status === "removed") return "none";
   if (isPersonal) {
-    return member?.status === "active" ? projectMemberAccess(member.role) : "none";
+    return member?.status === "active" ? projectMemberAccess[member.role] : "none";
   }
 
   let base: ProjectAccessV2 = "none";
   if (isOrganization && input.organizationMember?.status === "active") {
-    base = organizationMemberAccess(input.organizationMember.role);
+    base = organizationMemberAccess[input.organizationMember.role];
   }
 
   if (!member) return base;
-  return minAccess(base, projectMemberAccess(member.role));
+  return minAccess(base, projectMemberAccess[member.role]);
 }
 
 export type ProjectCapabilityV2 =
