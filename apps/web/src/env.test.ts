@@ -3,16 +3,16 @@ import { describe, expect, it } from "vite-plus/test";
 
 import { webEnv } from "./env";
 
+function browserEnv(runtimeEnv: Record<string, string>) {
+  return createEnv({ ...webEnv, isServer: false, runtimeEnv: { NODE_ENV: "test", ...runtimeEnv } });
+}
+
 describe("web environment boundaries", () => {
   it("exposes public runtime values in the browser", () => {
-    const env = createEnv({
-      ...webEnv,
-      isServer: false,
-      runtimeEnv: {
-        NODE_ENV: "test",
-        VITE_LOG_LEVEL: "debug",
-        VITE_LOG_PRETTY: "false",
-      },
+    const env = browserEnv({
+      NODE_ENV: "test",
+      VITE_LOG_LEVEL: "debug",
+      VITE_LOG_PRETTY: "false",
     });
 
     expect(env.NODE_ENV).toBe("test");
@@ -24,24 +24,16 @@ describe("web environment boundaries", () => {
   });
 
   it("exposes the standalone API origin to the browser", () => {
-    const env = createEnv({
-      ...webEnv,
-      isServer: false,
-      runtimeEnv: { NODE_ENV: "test", VITE_API_URL: "https://api.example.com" },
-    });
+    const env = browserEnv({ NODE_ENV: "test", VITE_API_URL: "https://api.example.com" });
 
     expect(env.VITE_API_URL).toBe("https://api.example.com");
   });
 
   it("keeps server logger values out of the browser interface", () => {
-    const env = createEnv({
-      ...webEnv,
-      isServer: false,
-      runtimeEnv: {
-        NODE_ENV: "test",
-        LOG_LEVEL: "warn",
-        LOG_PRETTY: "true",
-      },
+    const env = browserEnv({
+      NODE_ENV: "test",
+      LOG_LEVEL: "warn",
+      LOG_PRETTY: "true",
     });
 
     expect(() => Reflect.get(env, "LOG_LEVEL")).toThrow(

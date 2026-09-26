@@ -1,13 +1,3 @@
 {
-  "components": [
-    "avatar",
-    "badge",
-    "button",
-    "card",
-    "dialog",
-    "dropdown-menu",
-    "menubar",
-    "separator",
-    "switch"
-  ]
+  "components": ["avatar", "badge", "button", "card", "dropdown-menu", "switch"]
 }

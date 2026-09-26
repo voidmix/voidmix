@@ -1,8 +1,7 @@
+import { AuthLink } from "./auth-link";
 import { CheckCircle } from "@phosphor-icons/react";
-import { Link } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
-import { Input } from "@voidmix/ui/components/ui/input";
+import { FieldError, FieldGroup } from "@voidmix/ui/components/ui/field";
 import { useState, type FormEvent } from "react";
 
 import { authClient } from "../../lib/auth-client";
@@ -10,57 +9,37 @@ import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
 import { useTranslations } from "../../i18n/client";
 
-import { notifyAuthFailure } from "./feedback";
+import { useAuthSubmission } from "./submission";
+import { AuthInput } from "./auth-input";
 import { PasswordField } from "./password-field";
 import { createPasswordResetCallbackUrl, normalizeAuthRedirect } from "./route-search";
 
 export function ResetPassword({ token, redirectTo }: { token?: string; redirectTo?: string }) {
   const t = useTranslations("auth");
-  const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
   const next = normalizeAuthRedirect(redirectTo);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const {
+    error,
+    pending,
+    submit: submitRequest,
+  } = useAuthSubmission(t("passwordResetFailed"), t("passwordResetFallback"));
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
-    setPending(true);
-
-    try {
-      const result = token
-        ? await authClient.resetPassword({ newPassword: password, token })
-        : await authClient.requestPasswordReset({
-            email,
-            redirectTo: createPasswordResetCallbackUrl(window.location.origin, next),
-          });
-
-      if (result.error) {
-        setError(
-          notifyAuthFailure({
-            translateError,
-            title: t("passwordResetFailed"),
-            error: result.error,
-            fallback: t("passwordResetFallback"),
-          }),
-        );
-      } else {
-        setSent(true);
-      }
-    } catch (cause) {
-      setError(
-        notifyAuthFailure({
-          translateError,
-          title: t("passwordResetFailed"),
-          error: cause,
-          fallback: t("passwordResetFallback"),
-        }),
-      );
-    }
-    setPending(false);
+    if (
+      await submitRequest(() =>
+        token
+          ? authClient.resetPassword({ newPassword: password, token })
+          : authClient.requestPasswordReset({
+              email,
+              redirectTo: createPasswordResetCallbackUrl(window.location.origin, next),
+            }),
+      )
+    )
+      setSent(true);
   }
 
   if (!token && !capabilities.passwordResetRequestAvailable) {
@@ -68,13 +47,9 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
       <AuthCard
         description={t("passwordResetUnavailableDescription")}
         footer={
-          <Link
-            className="font-medium text-foreground hover:underline"
-            to="/login"
-            {...(next ? { search: { redirect: next } } : {})}
-          >
+          <AuthLink next={next} to="/login">
             {t("backToSignIn")}
-          </Link>
+          </AuthLink>
         }
         title={t("passwordResetUnavailable")}
       >
@@ -93,14 +68,9 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
       >
         <div className="space-y-5">
           <CheckCircle aria-hidden="true" className="size-9 text-primary" />
-          <Button
-            className="w-full"
-            nativeButton={false}
-            render={<Link to="/login" {...(next ? { search: { redirect: next } } : {})} />}
-            size="lg"
-          >
+          <AuthLink next={next} button>
             {t("backToSignIn")}
-          </Button>
+          </AuthLink>
         </div>
       </AuthCard>
     );
@@ -110,13 +80,9 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
     <AuthCard
       description={token ? t("chooseNewPassword") : t("sendResetDescription")}
       footer={
-        <Link
-          className="font-medium text-foreground hover:underline"
-          to="/login"
-          {...(next ? { search: { redirect: next } } : {})}
-        >
+        <AuthLink next={next} to="/login">
           {t("backToSignIn")}
-        </Link>
+        </AuthLink>
       }
       title={token ? t("setNewPassword") : t("resetYourPassword")}
     >
@@ -135,20 +101,16 @@ export function ResetPassword({ token, redirectTo }: { token?: string; redirectT
               value={password}
             />
           ) : (
-            <Field>
-              <FieldLabel htmlFor="reset-email">{t("email")}</FieldLabel>
-              <Input
-                aria-describedby={error ? "reset-error" : undefined}
-                autoComplete="email"
-                className="h-9"
-                disabled={pending}
-                id="reset-email"
-                onChange={(event) => setEmail(event.target.value)}
-                required
-                type="email"
-                value={email}
-              />
-            </Field>
+            <AuthInput
+              label={t("email")}
+              aria-describedby={error ? "reset-error" : undefined}
+              autoComplete="email"
+              disabled={pending}
+              id="reset-email"
+              onChange={(event) => setEmail(event.target.value)}
+              type="email"
+              value={email}
+            />
           )}
           {error ? <FieldError id="reset-error">{error}</FieldError> : null}
           <Button className="mt-1 w-full" disabled={pending} size="lg" type="submit">

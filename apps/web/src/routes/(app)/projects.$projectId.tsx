@@ -1,8 +1,8 @@
+import { CreateTitleForm } from "../../features/projects/create-title-form";
+import { ProjectStatus } from "../../features/projects/project-status";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
-import { Input } from "@voidmix/ui/components/ui/input";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { SectionHeading } from "@voidmix/ui/section-heading";
@@ -25,21 +25,13 @@ function ProjectPage({ projectId }: { projectId: string }) {
   const [tasks, setTasks] = useState<Awaited<ReturnType<typeof api.projects.tasks.list>>["items"]>(
     [],
   );
-  const [taskTitle, setTaskTitle] = useState("");
   const [loadFailed, setLoadFailed] = useState(false);
-  const [taskFailed, setTaskFailed] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const submitting = useRef(false);
   const [revision, setRevision] = useState(0);
-  const activeProject = useRef(projectId);
-  activeProject.current = projectId;
 
   useEffect(() => {
     let active = true;
     setResult(null);
     setTasks([]);
-    setTaskTitle("");
-    setTaskFailed(false);
     setLoadFailed(false);
     void Promise.all([api.projects.get({ projectId }), api.projects.tasks.list({ projectId })])
       .then(([projectResponse, taskResponse]) => {
@@ -55,23 +47,9 @@ function ProjectPage({ projectId }: { projectId: string }) {
     };
   }, [projectId, revision]);
 
-  async function createTask(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!taskTitle.trim() || submitting.current) return;
-    submitting.current = true;
-    setSaving(true);
-    setTaskFailed(false);
-    try {
-      const task = await api.projects.tasks.create({ projectId, title: taskTitle.trim() });
-      if (activeProject.current !== projectId) return;
-      setTasks((current) => [...current, task]);
-      setTaskTitle("");
-    } catch {
-      if (activeProject.current === projectId) setTaskFailed(true);
-    } finally {
-      submitting.current = false;
-      setSaving(false);
-    }
+  async function createTask(title: string) {
+    const task = await api.projects.tasks.create({ projectId, title });
+    setTasks((current) => [...current, task]);
   }
 
   return (
@@ -100,26 +78,7 @@ function ProjectPage({ projectId }: { projectId: string }) {
           <PageHeader
             title={result.project.title}
             description={result.project.description ?? t("noDescription")}
-            action={
-              <StatusBadge
-                label={t(
-                  result.project.stage === "draft"
-                    ? "draft"
-                    : result.project.stage === "in_progress"
-                      ? "inProgress"
-                      : result.project.stage === "review"
-                        ? "review"
-                        : "delivered",
-                )}
-                tone={
-                  result.project.stage === "delivered"
-                    ? "success"
-                    : result.project.stage === "draft"
-                      ? "neutral"
-                      : "info"
-                }
-              />
-            }
+            action={<ProjectStatus stage={result.project.stage} />}
           />
           <section className="flex flex-col gap-4" aria-labelledby="tasks-heading">
             <SectionHeading
@@ -127,31 +86,7 @@ function ProjectPage({ projectId }: { projectId: string }) {
               title={t("tasks")}
               action={<span className="text-sm text-muted-foreground">{tasks.length}</span>}
             />
-            <form onSubmit={createTask} aria-busy={saving}>
-              <FieldGroup>
-                <Field data-disabled={saving}>
-                  <FieldLabel htmlFor="task-title">{t("taskPlaceholder")}</FieldLabel>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Input
-                      id="task-title"
-                      className="min-w-0 flex-1 basis-48"
-                      value={taskTitle}
-                      required
-                      disabled={saving}
-                      aria-describedby={taskFailed ? "task-create-error" : undefined}
-                      onChange={(event) => setTaskTitle(event.target.value)}
-                      placeholder={t("taskPlaceholder")}
-                    />
-                    <Button type="submit" disabled={saving || !taskTitle.trim()}>
-                      {saving ? t("saving") : t("addTask")}
-                    </Button>
-                  </div>
-                  {taskFailed ? (
-                    <FieldError id="task-create-error">{t("taskFailed")}</FieldError>
-                  ) : null}
-                </Field>
-              </FieldGroup>
-            </form>
+            <CreateTitleForm key={revision} kind="task" onCreate={createTask} />
             {!tasks.length ? (
               <EmptyState title={t("emptyTasks")} description={t("taskPlaceholder")} />
             ) : (
@@ -160,15 +95,7 @@ function ProjectPage({ projectId }: { projectId: string }) {
                   <li key={task.id} className="flex items-center justify-between gap-3 p-4 text-sm">
                     <span className="min-w-0 [overflow-wrap:anywhere]">{task.title}</span>
                     <StatusBadge
-                      label={t(
-                        task.status === "todo"
-                          ? "todo"
-                          : task.status === "in_progress"
-                            ? "inProgress"
-                            : task.status === "blocked"
-                              ? "blocked"
-                              : "done",
-                      )}
+                      label={t(task.status === "in_progress" ? "inProgress" : task.status)}
                       tone={
                         task.status === "done"
                           ? "success"

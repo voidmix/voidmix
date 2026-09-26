@@ -2,7 +2,32 @@ import { defineConfig } from "@playwright/test";
 import { resolve } from "node:path";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const webUrl = "http://127.0.0.1:3000";
+const basePort = Number(process.env.VOIDMIX_E2E_PORT ?? 3000);
+const origin = (offset: number) => `http://127.0.0.1:${basePort + offset}`;
+const webUrl = origin(0);
+const desktopUrl = origin(1);
+const apiUrl = origin(2);
+
+function server(app: "api" | "web" | "desktop", offset: number) {
+  return {
+    command: `bun run --cwd apps/${app} dev -- --host 127.0.0.1 --port ${basePort + offset}`,
+    cwd: repositoryRoot,
+    env: {
+      VOIDMIX_REPOSITORY_ENV: repositoryRoot,
+      ALLOWED_ORIGINS: `${webUrl},${desktopUrl}`,
+      AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
+      AUTH_URL: app === "api" ? apiUrl : webUrl,
+      VITE_API_URL: apiUrl,
+      DATABASE_URL:
+        process.env.DATABASE_URL ?? "postgres://voidmix:e2e@example.invalid:5432/voidmix",
+      NODE_ENV: "test",
+      NITRO_PORT: String(basePort + offset),
+    },
+    url: `${origin(offset)}${app === "api" ? "/health" : ""}`,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  };
+}
 
 export default defineConfig({
   testDir: "./tests",
@@ -10,59 +35,11 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["dot"], ["html", { open: "never" }]] : "list",
-  use: {
-    trace: "on-first-retry",
-    // These specs locate elements by visible English text, and the application
-    // negotiates its locale from Accept-Language. Pin it so the assertions do
-    // not depend on the machine's language.
-    locale: "en-US",
-  },
+  use: { trace: "on-first-retry", locale: "en-US" },
   projects: [
-    {
-      name: "web",
-      testMatch: /web\.spec\.ts/,
-      use: { baseURL: webUrl },
-    },
-    {
-      name: "admin",
-      testMatch: /admin\.spec\.ts/,
-      use: { baseURL: webUrl },
-    },
+    { name: "web", testMatch: /web\.spec\.ts/, use: { baseURL: webUrl } },
+    { name: "admin", testMatch: /admin\.spec\.ts/, use: { baseURL: webUrl } },
+    { name: "desktop", testMatch: /desktop\.spec\.ts/, use: { baseURL: desktopUrl } },
   ],
-  webServer: [
-    {
-      command: "bun run --cwd apps/api dev -- --host 127.0.0.1",
-      cwd: repositoryRoot,
-      env: {
-        VOIDMIX_REPOSITORY_ENV: repositoryRoot,
-        ALLOWED_ORIGINS: webUrl,
-        AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
-        AUTH_URL: "http://127.0.0.1:3002",
-        DATABASE_URL:
-          process.env.DATABASE_URL ?? "postgres://voidmix:e2e@example.invalid:5432/voidmix",
-        NODE_ENV: "test",
-        NITRO_PORT: "3002",
-      },
-      url: "http://127.0.0.1:3002/health",
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
-    {
-      command: "bun run --cwd apps/web dev -- --host 127.0.0.1",
-      cwd: repositoryRoot,
-      env: {
-        VOIDMIX_REPOSITORY_ENV: repositoryRoot,
-        ALLOWED_ORIGINS: webUrl,
-        AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
-        AUTH_URL: webUrl,
-        VITE_API_URL: "http://127.0.0.1:3002",
-        DATABASE_URL:
-          process.env.DATABASE_URL ?? "postgres://voidmix:e2e@example.invalid:5432/voidmix",
-        NODE_ENV: "test",
-      },
-      url: webUrl,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
-  ],
+  webServer: [server("api", 2), server("web", 0), server("desktop", 1)],
 });

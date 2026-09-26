@@ -3,6 +3,33 @@ import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { fetchRemoteSnapshot, normalizeSnapshot } from "./remote";
 import { demoCloudSnapshot } from "./demo";
 
+function snapshotInput(overrides: Record<string, unknown> = {}) {
+  return {
+    lastChecked: "2026-09-09T00:00:00.000Z",
+    lastBackup: "2026-09-09T00:00:00.000Z",
+    pendingItems: 0,
+    fileCount: 0,
+    newThisWeek: 0,
+    storage: { used: 0, total: 1, projects: 0, media: 0, archives: 0 },
+    jobs: [],
+    devices: [],
+    ...overrides,
+  };
+}
+
+function mockSnapshotFetch(snapshot: Record<string, unknown>) {
+  const fetch = vi.fn(async (input: RequestInfo | URL) => {
+    const pathname = new URL(input instanceof Request ? input.url : input).pathname;
+    return Response.json(
+      pathname === "/rpc/health"
+        ? { status: "ok", timestamp: "2026-09-09T00:00:00.000Z" }
+        : snapshot,
+    );
+  });
+  vi.stubGlobal("fetch", fetch);
+  return fetch;
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
@@ -83,15 +110,8 @@ describe("remote cloud snapshot adapter", () => {
   });
 
   it("normalizes legacy display strings into locale-neutral data", async () => {
-    const fetch = vi.fn(async (input: RequestInfo | URL) => {
-      const url = new URL(
-        typeof input === "string" ? input : input instanceof URL ? input.href : input.url,
-      );
-      if (url.pathname === "/rpc/health") {
-        return Response.json({ status: "ok", timestamp: "2026-09-09T00:00:00.000Z" });
-      }
-      return Response.json({
-        lastChecked: "2026-09-09T00:00:00.000Z",
+    const fetch = mockSnapshotFetch(
+      snapshotInput({
         lastBackup: "2026-09-08T23:52:00.000Z",
         pendingItems: 2,
         fileCount: 128,
@@ -104,37 +124,18 @@ describe("remote cloud snapshot adapter", () => {
           archives: 0,
         },
         jobs: [
-          {
-            id: "job-1",
+          jobInput({
             name: "Campaign exports",
             detail: "18 files · 1.8 GB",
             kind: "upload",
             status: "active",
             progress: 72,
-          },
-          {
-            id: "job-2",
-            name: "Design system",
-            detail: "328 objects indexed",
-            kind: "index",
-            status: "complete",
-            progress: 100,
-          },
+          }),
+          jobInput({ id: "job-2", name: "Design system", detail: "328 objects indexed" }),
         ],
-        devices: [
-          {
-            id: "device-1",
-            name: "Mac Studio",
-            platform: "macOS",
-            kind: "desktop",
-            online: true,
-            lastSeen: "2026-09-09T00:00:00.000Z",
-            synced: "48.2 GB",
-          },
-        ],
-      });
-    });
-    vi.stubGlobal("fetch", fetch);
+        devices: [deviceInput({ lastSeen: "2026-09-09T00:00:00.000Z", synced: "48.2 GB" })],
+      }),
+    );
 
     const result = await fetchRemoteSnapshot("https://api.example.test/");
 
@@ -152,25 +153,13 @@ describe("remote cloud snapshot adapter", () => {
   });
 
   it("rejects non-finite and semantically invalid snapshot values", async () => {
-    const fetch = vi.fn(async (input: RequestInfo | URL) => {
-      const url = new URL(
-        typeof input === "string" ? input : input instanceof URL ? input.href : input.url,
-      );
-      if (url.pathname === "/rpc/health") {
-        return Response.json({ status: "ok", timestamp: "2026-09-09T00:00:00.000Z" });
-      }
-      return Response.json({
-        lastChecked: "2026-09-09T00:00:00.000Z",
+    mockSnapshotFetch(
+      snapshotInput({
         lastBackup: "2026-09-08T23:52:00.000Z",
-        pendingItems: 0,
         fileCount: 1,
-        newThisWeek: 0,
         storage: { used: 3, total: 2, projects: 1, media: 1, archives: 1 },
-        jobs: [],
-        devices: [],
-      });
-    });
-    vi.stubGlobal("fetch", fetch);
+      }),
+    );
 
     await expect(fetchRemoteSnapshot("https://api.example.test")).resolves.toEqual({
       kind: "invalid_snapshot",
@@ -181,41 +170,22 @@ describe("remote cloud snapshot adapter", () => {
     const now = new Date("2026-09-09T12:00:00.000Z");
     const snapshot = normalizeSnapshot(
       {
+        ...snapshotInput(),
         lastChecked: "刚刚",
         lastBackup: "2 hr ago",
-        pendingItems: 0,
-        fileCount: 0,
-        newThisWeek: 0,
-        storage: { used: 0, total: 1, projects: 0, media: 0, archives: 0 },
+
         jobs: [
-          {
-            id: "job-1",
-            name: "索引",
-            detail: "328 个对象已索引 · 0 B",
-            kind: "index",
-            status: "complete",
-            progress: 100,
-          },
-          {
+          jobInput({ name: "索引", detail: "328 个对象已索引 · 0 B" }),
+          jobInput({
             id: "job-2",
             name: "上传",
             detail: "18 个文件 · 1.8 GB",
             kind: "upload",
             status: "active",
             progress: 50,
-          },
+          }),
         ],
-        devices: [
-          {
-            id: "device-1",
-            name: "Mac Studio",
-            platform: "macOS",
-            kind: "desktop",
-            online: true,
-            lastSeen: "8 分钟前",
-            syncedBytes: 0,
-          },
-        ],
+        devices: [deviceInput({ lastSeen: "8 分钟前", syncedBytes: 0 })],
       },
       now,
     );
@@ -238,22 +208,8 @@ describe("remote cloud snapshot adapter", () => {
 
   it("accepts structured object details with a zero byte size", () => {
     const snapshot = normalizeSnapshot({
-      lastChecked: "2026-09-09T00:00:00.000Z",
-      lastBackup: "2026-09-09T00:00:00.000Z",
-      pendingItems: 0,
-      fileCount: 0,
-      newThisWeek: 0,
-      storage: { used: 0, total: 1, projects: 0, media: 0, archives: 0 },
-      jobs: [
-        {
-          id: "job-1",
-          name: "Index",
-          detail: { kind: "objects", count: 0, sizeBytes: 0 },
-          kind: "index",
-          status: "complete",
-          progress: 100,
-        },
-      ],
+      ...snapshotInput(),
+      jobs: [jobInput({ detail: { kind: "objects", count: 0, sizeBytes: 0 } })],
       devices: [],
     });
 
@@ -270,14 +226,9 @@ describe("remote cloud snapshot adapter", () => {
     const now = new Date("2026-09-09T12:00:00.000Z");
     const snapshot = normalizeSnapshot(
       {
+        ...snapshotInput(),
         lastChecked: "2 MINUTES AGO",
         lastBackup: "2026-09-09T00:00:00.000Z",
-        pendingItems: 0,
-        fileCount: 0,
-        newThisWeek: 0,
-        storage: { used: 0, total: 1, projects: 0, media: 0, archives: 0 },
-        jobs: [],
-        devices: [],
       },
       now,
     );
@@ -287,27 +238,34 @@ describe("remote cloud snapshot adapter", () => {
 
   it("rejects an invalid canonical device size instead of falling back to legacy text", () => {
     const snapshot = normalizeSnapshot({
-      lastChecked: "2026-09-09T00:00:00.000Z",
-      lastBackup: "2026-09-09T00:00:00.000Z",
-      pendingItems: 0,
-      fileCount: 0,
-      newThisWeek: 0,
-      storage: { used: 0, total: 1, projects: 0, media: 0, archives: 0 },
+      ...snapshotInput(),
       jobs: [],
       devices: [
-        {
-          id: "device-1",
-          name: "Mac Studio",
-          platform: "macOS",
-          kind: "desktop",
-          online: true,
-          lastSeen: "2026-09-09T00:00:00.000Z",
-          syncedBytes: -1,
-          synced: "5 GB",
-        },
+        deviceInput({ lastSeen: "2026-09-09T00:00:00.000Z", syncedBytes: -1, synced: "5 GB" }),
       ],
     });
 
     expect(snapshot).toBeNull();
   });
 });
+
+function jobInput(fields: Record<string, unknown>) {
+  return {
+    id: "job-1",
+    name: "Index",
+    kind: "index",
+    status: "complete",
+    progress: 100,
+    ...fields,
+  };
+}
+function deviceInput(fields: Record<string, unknown>) {
+  return {
+    id: "device-1",
+    name: "Mac Studio",
+    platform: "macOS",
+    kind: "desktop",
+    online: true,
+    ...fields,
+  };
+}

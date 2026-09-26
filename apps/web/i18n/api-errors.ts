@@ -1,9 +1,4 @@
-import {
-  translateErrorCode,
-  translateKnownErrorCode,
-  type ErrorCodeMap,
-  type Translator,
-} from "@voidmix/i18n";
+import { translateKnownErrorCode, type ErrorCodeMap, type Translator } from "@voidmix/i18n";
 import type { WebTranslator } from "../src/i18n/client";
 
 /**
@@ -22,20 +17,10 @@ const ERROR_KEYS = {
 } as const;
 const ERROR_KEY_MAP: ErrorCodeMap = ERROR_KEYS;
 
-export type ApiErrorCode = keyof typeof ERROR_KEYS;
-
-export function isApiErrorCode(code: string | undefined): code is ApiErrorCode {
-  return code !== undefined && code in ERROR_KEYS;
-}
-
 type ApiErrorTranslator = Translator | WebTranslator<"errors">;
 
 function asCoreTranslator(t: ApiErrorTranslator): Translator {
   return t as unknown as Translator;
-}
-
-export function translateApiError(error: unknown, t: ApiErrorTranslator): string {
-  return translateErrorCode(error, asCoreTranslator(t), ERROR_KEY_MAP);
 }
 
 /**

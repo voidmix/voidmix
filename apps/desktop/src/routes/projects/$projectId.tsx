@@ -33,15 +33,7 @@ function ProjectDetailPage() {
           description={project.description ?? ""}
           action={
             <StatusBadge
-              label={t(
-                project.stage === "draft"
-                  ? "draft"
-                  : project.stage === "in_progress"
-                    ? "in_progress"
-                    : project.stage === "review"
-                      ? "review"
-                      : "delivered",
-              )}
+              label={t(project.stage)}
               tone={
                 project.stage === "delivered"
                   ? "success"

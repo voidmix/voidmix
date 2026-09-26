@@ -1,11 +1,10 @@
+import { CreateTitleForm } from "../../features/projects/create-title-form";
+import { ProjectStatus } from "../../features/projects/project-status";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
-import { Input } from "@voidmix/ui/components/ui/input";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
-import { StatusBadge } from "@voidmix/ui/status-badge";
 import { useTranslations } from "../../i18n/client";
 import { createWebApiClient } from "../../lib/api-client";
 
@@ -18,12 +17,8 @@ function ProjectsPage() {
   const [projects, setProjects] = useState<Awaited<ReturnType<typeof api.projects.list>>["items"]>(
     [],
   );
-  const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [createFailed, setCreateFailed] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const submitting = useRef(false);
   const [revision, setRevision] = useState(0);
 
   useEffect(() => {
@@ -46,52 +41,15 @@ function ProjectsPage() {
     };
   }, [revision]);
 
-  async function createProject(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!title.trim() || submitting.current) return;
-    submitting.current = true;
-    setSaving(true);
-    setCreateFailed(false);
-    try {
-      const project = await api.projects.create({ title: title.trim() });
-      setProjects((current) => [project, ...current]);
-      setTitle("");
-    } catch {
-      setCreateFailed(true);
-    } finally {
-      submitting.current = false;
-      setSaving(false);
-    }
+  async function createProject(title: string) {
+    const project = await api.projects.create({ title });
+    setProjects((current) => [project, ...current]);
   }
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-12">
       <PageHeader title={t("title")} description={t("description")} />
-      <form onSubmit={createProject} aria-busy={saving}>
-        <FieldGroup className="gap-3">
-          <Field data-disabled={saving}>
-            <FieldLabel htmlFor="project-title">{t("titlePlaceholder")}</FieldLabel>
-            <div className="flex flex-wrap items-center gap-2">
-              <Input
-                id="project-title"
-                className="min-w-0 flex-1 basis-48"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                required
-                disabled={saving}
-                aria-describedby={createFailed ? "project-create-error" : undefined}
-                placeholder={t("titlePlaceholder")}
-              />
-              <Button type="submit" disabled={saving || !title.trim()}>
-                {saving ? t("saving") : t("newProject")}
-              </Button>
-            </div>
-            {createFailed ? (
-              <FieldError id="project-create-error">{t("createFailed")}</FieldError>
-            ) : null}
-          </Field>
-        </FieldGroup>
-      </form>
+      <CreateTitleForm kind="project" onCreate={createProject} />
       {loadFailed ? (
         <div className="flex flex-wrap items-center gap-3">
           <p role="alert">{t("loadFailed")}</p>
@@ -122,24 +80,7 @@ function ProjectsPage() {
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="min-w-0 font-medium [overflow-wrap:anywhere]">{project.title}</h2>
-              <StatusBadge
-                label={t(
-                  project.stage === "draft"
-                    ? "draft"
-                    : project.stage === "in_progress"
-                      ? "inProgress"
-                      : project.stage === "review"
-                        ? "review"
-                        : "delivered",
-                )}
-                tone={
-                  project.stage === "delivered"
-                    ? "success"
-                    : project.stage === "draft"
-                      ? "neutral"
-                      : "info"
-                }
-              />
+              <ProjectStatus stage={project.stage} />
             </div>
             <p className="mt-2 line-clamp-2 text-sm text-muted-foreground [overflow-wrap:anywhere]">
               {project.description ?? t("noDescription")}

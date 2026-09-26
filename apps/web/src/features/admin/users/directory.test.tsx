@@ -11,35 +11,21 @@ import { UserDirectory } from "./directory";
 import { createPreviewUsersAdapter } from "./preview-adapter";
 import type { AdminUser, AdminUsersClient } from "./types";
 
-const users: readonly AdminUser[] = [
-  {
-    id: "owner",
-    name: "Mina Cole",
-    email: "owner@example.com",
-    role: "owner",
-    status: "active",
-    lastActive: { kind: "relative", value: -2, unit: "minute" },
-    joinedAt: new Date("2026-05-18T00:00:00.000Z"),
-  },
-  {
-    id: "member",
-    name: "Samira Bell",
-    email: "samira@example.com",
-    role: "user",
-    status: "active",
-    lastActive: { kind: "relative", value: -1, unit: "hour" },
-    joinedAt: new Date("2026-06-21T00:00:00.000Z"),
-  },
-  {
-    id: "suspended",
-    name: "Rei Nakamura",
-    email: "rei@example.com",
-    role: "user",
-    status: "suspended",
-    lastActive: { kind: "relative", value: -9, unit: "day" },
-    joinedAt: new Date("2026-04-07T00:00:00.000Z"),
-  },
-];
+const users: readonly AdminUser[] = (
+  [
+    ["owner", "Mina Cole", "owner", "owner", "active", -2, "minute", "2026-05-18"],
+    ["member", "Samira Bell", "samira", "user", "active", -1, "hour", "2026-06-21"],
+    ["suspended", "Rei Nakamura", "rei", "user", "suspended", -9, "day", "2026-04-07"],
+  ] as const
+).map(([id, name, email, role, status, value, unit, joined]) => ({
+  id,
+  name,
+  email: `${email}@example.com`,
+  role,
+  status,
+  lastActive: { kind: "relative", value, unit },
+  joinedAt: new Date(`${joined}T00:00:00.000Z`),
+}));
 
 afterEach(() => cleanup());
 
