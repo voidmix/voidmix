@@ -1,0 +1,83 @@
+AGENTS.md
+  s_42000bd424f7f1::t_8dadfd4e74b8dd 123,129
+apps/api/AGENTS.md
+  s_42000bd424f7f1::t_b3c8d8aa767de2 12-14,36-37
+apps/desktop/AGENTS.md
+  s_42000bd424f7f1::t_7e0072f3158a94 32-34,37,39-40
+apps/desktop/CHANGELOG.md
+  s_42000bd424f7f1::t_de2a699f1971eb 51-53
+apps/web/AGENTS.md
+  s_42000bd424f7f1::t_2aaa58acdc2e5b 26-27,89
+apps/worker/AGENTS.md
+  s_42000bd424f7f1::t_560f4b37f7e6fe 17-20
+docs/README.md
+  s_42000bd424f7f1::t_1cce4881a8fb0b 52-53
+docs/architecture/decisions/0013-domain-modules-and-retired-code.md
+  s_3bf6498855fd13::t_e052fbcdc4716f 1-39
+docs/architecture/decisions/README.md
+  s_42000bd424f7f1::t_7188d1fa33d0e0 46-47
+docs/architecture/packages.md
+  s_42000bd424f7f1::t_703d6393d290cf 12-15,29,36-37,54-58,100-103,119-120,129-131,157-165,175,184-187,199-200,203-205,245-250
+docs/development/agents.md
+  s_42000bd424f7f1::t_992165a25ac05e 62-63,65-67,87
+docs/development/file-structure.md
+  s_42000bd424f7f1::t_6e261040d9e3c9 41
+docs/development/monolithic-simplification.md
+  s_42000bd424f7f1::t_66d9f56a082066 1-197
+docs/development/testing.md
+  s_42000bd424f7f1::t_a64cacb608d2a7 27,65-67,102-103,135,179-182,200-202,215-216
+e2e/AGENTS.md
+  s_42000bd424f7f1::t_1aaeb675823df8 5,14,21,34,36-38
+packages/ai/AGENTS.md
+  s_42000bd424f7f1::t_2bdf24a689a2f0 23-25
+packages/application/AGENTS.md
+  s_42000bd424f7f1::t_b51239f013fa2d 17-18
+packages/auth/AGENTS.md
+  s_42000bd424f7f1::t_4adb8fc89e187c 30-31
+packages/cache/AGENTS.md
+  s_42000bd424f7f1::t_1078556883176c 6,32-33
+packages/client/AGENTS.md
+  s_42000bd424f7f1::t_e9d66cca9038a3 6-7,22-23
+packages/contracts/AGENTS.md
+  s_42000bd424f7f1::t_28f535ca7461c2 14-18,28-29,35,38,40
+packages/core/AGENTS.md
+  s_42000bd424f7f1::t_733d21cc207019 22-25,57-59
+packages/db/AGENTS.md
+  s_42000bd424f7f1::t_00c0d269944a1a 16-20,24,37-40,62-68
+packages/i18n/AGENTS.md
+  s_42000bd424f7f1::t_d265792f9ed848 34-36
+packages/mail/AGENTS.md
+  s_42000bd424f7f1::t_25ea90d4d226ed 22,41-43
+packages/scripts/AGENTS.md
+  s_42000bd424f7f1::t_40de375d7b6ad7 23-24,68-72
+packages/ui/AGENTS.md
+  s_42000bd424f7f1::t_08f3e362bd57c7 34-37,54,86
+skills/voidmix-infra/SKILL.md
+  s_42000bd424f7f1::t_3d6bb5be7015f7 75
+skills/voidmix-infra/references/orpc-procedures.md
+  s_42000bd424f7f1::t_e2adf0c411c4e0 8-15,26-36,45-47,55,63-64,77,87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c90a2e7f0ca0599d9553d4594c95854931a25e95",
+  "prompts": {},
+  "sessions": {
+    "s_3bf6498855fd13": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c1d4-87be-7921-9af1-a2f5b17e676c",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
