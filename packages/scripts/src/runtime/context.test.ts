@@ -1,32 +1,18 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { temporaryRepository } from "../test-fixtures.js";
 
-import { afterEach, describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vite-plus/test";
 
 import { createCommandContext } from "./context.js";
 import { REPOSITORY_ENV_KEY, resolveProcessEnvironment } from "./env.js";
 
-const temporaryDirectories: string[] = [];
-
-afterEach(async () => {
-  await Promise.all(temporaryDirectories.splice(0).map((path) => rm(path, { recursive: true })));
-});
-
-async function temporaryRepository(): Promise<string> {
-  const path = await mkdtemp(join(tmpdir(), "voidmix-context-"));
-  temporaryDirectories.push(path);
-  await writeFile(
-    join(path, ".env"),
-    "FILE_VALUE=base\nDATABASE_URL=postgresql://voidmix:voidmix@localhost:5432/voidmix\n",
-  );
-  await writeFile(join(path, ".env.local"), "FILE_VALUE=local\n");
-  return path;
-}
+const environmentFiles = {
+  ".env": "FILE_VALUE=base\nDATABASE_URL=postgresql://voidmix:voidmix@localhost:5432/voidmix\n",
+  ".env.local": "FILE_VALUE=local\n",
+};
 
 describe("command environment policies", () => {
   it("does not read repository files for the process policy", async () => {
-    const root = await temporaryRepository();
+    const root = await temporaryRepository(environmentFiles);
     const input = { NODE_ENV: "test", PROCESS_VALUE: "process" };
 
     const result = resolveProcessEnvironment("process", {
@@ -41,7 +27,7 @@ describe("command environment policies", () => {
   });
 
   it("loads repository files without mutating the input", async () => {
-    const root = await temporaryRepository();
+    const root = await temporaryRepository(environmentFiles);
     const input = { NODE_ENV: "test" };
 
     const result = resolveProcessEnvironment("repository", {
@@ -58,7 +44,7 @@ describe("command environment policies", () => {
   });
 
   it("validates the database environment after loading repository files", async () => {
-    const root = await temporaryRepository();
+    const root = await temporaryRepository(environmentFiles);
 
     const context = createCommandContext("database", {
       processEnv: { NODE_ENV: "test" },

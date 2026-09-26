@@ -1,20 +1,14 @@
+import { processDependencies } from "../test-fixtures.js";
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { runClean } from "./clean.js";
 import { runDesktopBuild } from "./desktop.js";
 import { runGenerate } from "./generate.js";
 import { runVerify } from "./verify.js";
-import type { RepositoryCommandOptions } from "../runtime/process-dependencies.js";
 
 function dependencies() {
-  const runCommand = vi.fn(
-    async (_command: readonly string[], _options: RepositoryCommandOptions) => undefined,
-  );
   return {
-    log: vi.fn(),
-    processEnv: { TEST_VALUE: "value" },
-    repositoryRoot: "/repo",
-    runCommand,
+    ...processDependencies(),
     verifyI18n: vi.fn(async () => undefined),
     verifyPolicy: vi.fn(async () => undefined),
     verifyRuntimes: vi.fn(async (_options: { captureOutput: boolean }) => undefined),
@@ -43,23 +37,14 @@ describe("repository workflows", () => {
     });
   });
 
-  it("generates database artifacts", async () => {
+  it.each([
+    ["default", []],
+    ["extra Drizzle flags", ["--hints", "[]"]],
+  ])("generates database artifacts with %s", async (_name, flags) => {
     const deps = dependencies();
-
-    await runGenerate(deps);
-
+    await runGenerate(deps, flags);
     expect(deps.runCommand.mock.calls.map(([command]) => command)).toEqual([
-      ["bun", "run", "--cwd", "packages/db", "generate"],
-    ]);
-  });
-
-  it("forwards extra flags to drizzle-kit generate", async () => {
-    const deps = dependencies();
-
-    await runGenerate(deps, ["--hints", "[]"]);
-
-    expect(deps.runCommand.mock.calls.map(([command]) => command)).toEqual([
-      ["bun", "run", "--cwd", "packages/db", "generate", "--hints", "[]"],
+      ["bun", "run", "--cwd", "packages/db", "generate", ...flags],
     ]);
   });
 
@@ -86,10 +71,9 @@ describe("repository workflows", () => {
   // This sequence is the definition of "everything is checked". A gate missing
   // from it is a gate a contributor who runs only `bun run verify` never meets,
   // which is why it is asserted whole rather than by membership.
-  it("runs every gate, cheapest first", async () => {
+  it.each([false, true])("runs every gate cheapest first (verbose=%s)", async (verbose) => {
     const deps = dependencies();
-
-    await runVerify(deps);
+    await runVerify(deps, { verbose });
 
     expect(deps.verifyI18n).toHaveBeenCalledOnce();
 
@@ -99,7 +83,17 @@ describe("repository workflows", () => {
       ["vp", "run", "@voidmix/shared#build"],
       ["vp", "run", "-r", "check"],
       ["vp", "run", "-r", "test"],
-      ["vp", "run", "-r", "build"],
+      [
+        "vp",
+        "run",
+        "--filter",
+        "./apps/*",
+        "--filter",
+        "./packages/*",
+        "--filter",
+        "!@voidmix/shared",
+        "build",
+      ],
     ]);
     expect(deps.runCommand.mock.calls.map(([, options]) => options.env)).toEqual([
       deps.processEnv,
@@ -109,31 +103,10 @@ describe("repository workflows", () => {
       deps.processEnv,
       { ...deps.processEnv, NITRO_PRESET: "bun" },
     ]);
-    expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual([
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-    ]);
-    expect(deps.verifyRuntimes).toHaveBeenCalledWith({ captureOutput: true });
-  });
-
-  it("keeps child output visible in verbose mode", async () => {
-    const deps = dependencies();
-
-    await runVerify(deps, { verbose: true });
-
-    expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual([
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ]);
-    expect(deps.verifyRuntimes).toHaveBeenCalledWith({ captureOutput: false });
+    expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual(
+      Array(6).fill(!verbose),
+    );
+    expect(deps.verifyRuntimes).toHaveBeenCalledWith({ captureOutput: !verbose });
   });
 
   it("checks formatting before spending minutes on a build", async () => {
@@ -149,25 +122,14 @@ describe("repository workflows", () => {
     expect(deps.verifyRuntimes).not.toHaveBeenCalled();
   });
 
-  it("checks repository policy before spending time on builds", async () => {
+  it.each([
+    ["verifyPolicy", "Policy: 1 errors, 0 warnings."],
+    ["verifyI18n", "i18n: 1 errors, 0 warnings."],
+  ] as const)("stops at %s before any later gate", async (gate, message) => {
     const deps = dependencies();
-    deps.verifyPolicy = vi.fn(async () => {
-      throw new Error("Policy: 1 errors, 0 warnings.");
-    });
-
-    await expect(runVerify(deps)).rejects.toThrow("Policy: 1 errors");
-    expect(deps.runCommand).not.toHaveBeenCalled();
-    expect(deps.verifyRuntimes).not.toHaveBeenCalled();
-  });
-
-  it("checks i18n before repository policy", async () => {
-    const deps = dependencies();
-    deps.verifyI18n = vi.fn(async () => {
-      throw new Error("i18n: 1 errors, 0 warnings.");
-    });
-
-    await expect(runVerify(deps)).rejects.toThrow("i18n: 1 errors");
-    expect(deps.verifyPolicy).not.toHaveBeenCalled();
+    deps[gate].mockRejectedValue(new Error(message));
+    await expect(runVerify(deps)).rejects.toThrow(message);
+    if (gate === "verifyI18n") expect(deps.verifyPolicy).not.toHaveBeenCalled();
     expect(deps.runCommand).not.toHaveBeenCalled();
     expect(deps.verifyRuntimes).not.toHaveBeenCalled();
   });

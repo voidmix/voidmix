@@ -16,45 +16,18 @@ describe("chunk recovery", () => {
     expect(isChunkLoadError({ message: "Failed to fetch" })).toBe(false);
   });
 
-  it("allows the first retry and stale retries", () => {
-    expect(shouldRetryChunkLoad({ previous: null, url: "/signup", now: 20_000 })).toBe(true);
-    expect(
-      shouldRetryChunkLoad({
-        previous: JSON.stringify({ url: "/signup", attemptedAt: 1_000 }),
-        url: "/signup",
-        now: 20_000,
-      }),
-    ).toBe(true);
-  });
-
-  it("blocks a repeated retry for the same URL inside the recovery window", () => {
-    expect(
-      shouldRetryChunkLoad({
-        previous: JSON.stringify({ url: "/signup", attemptedAt: 15_000 }),
-        url: "/signup",
-        now: 20_000,
-      }),
-    ).toBe(false);
-  });
-
-  it("does not let an invalid or future record create a reload loop", () => {
-    expect(shouldRetryChunkLoad({ previous: "not-json", url: "/signup", now: 20_000 })).toBe(false);
-    expect(
-      shouldRetryChunkLoad({
-        previous: JSON.stringify({ url: "/signup", attemptedAt: 21_000 }),
-        url: "/signup",
-        now: 20_000,
-      }),
-    ).toBe(false);
-  });
-
-  it("allows recovery for a different URL", () => {
-    expect(
-      shouldRetryChunkLoad({
-        previous: JSON.stringify({ url: "/login", attemptedAt: 19_000 }),
-        url: "/signup",
-        now: 20_000,
-      }),
-    ).toBe(true);
+  it.each([
+    ["first retry", null, true],
+    ["stale retry", record("/signup", 1_000), true],
+    ["same URL within the window", record("/signup", 15_000), false],
+    ["invalid record", "not-json", false],
+    ["future record", record("/signup", 21_000), false],
+    ["different URL", record("/login", 19_000), true],
+  ] as const)("handles %s", (_name, previous, expected) => {
+    expect(shouldRetryChunkLoad({ previous, url: "/signup", now: 20_000 })).toBe(expected);
   });
 });
+
+function record(url: string, attemptedAt: number) {
+  return JSON.stringify({ url, attemptedAt });
+}

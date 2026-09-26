@@ -1,13 +1,14 @@
+import { AuthLink } from "./auth-link";
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslations } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
-import { Input } from "@voidmix/ui/components/ui/input";
+import { FieldError, FieldGroup } from "@voidmix/ui/components/ui/field";
 import { signIn, signUp } from "../../lib/auth-client";
 import { AuthCard } from "./auth-card";
 import { useAuthCapabilities } from "./capabilities";
-import { notifyAuthFailure } from "./feedback";
+import { useAuthSubmission } from "./submission";
+import { AuthInput } from "./auth-input";
 import { PasswordField } from "./password-field";
 import { createVerificationCallbackUrl, normalizeAuthRedirect } from "./route-search";
 
@@ -23,57 +24,33 @@ export function AuthForm({
   redirectTo?: string;
 }) {
   const t = useTranslations("auth");
-  const translateError = useTranslations("errors");
   const capabilities = useAuthCapabilities();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const {
+    error,
+    pending,
+    submit: submitRequest,
+  } = useAuthSubmission(
+    mode === "login" ? t("signInFailed") : t("registrationFailed"),
+    mode === "login" ? t("signInFallback") : t("registrationFallback"),
+  );
   const next = normalizeAuthRedirect(redirectTo);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPending(true);
-    setError(null);
-
-    let succeeded = false;
-
-    try {
-      const result =
-        mode === "login"
-          ? await signIn.email({ email, password })
-          : await signUp.email({
-              email,
-              password,
-              name,
-              callbackURL: createVerificationCallbackUrl(window.location.origin, next),
-            });
-
-      if (result.error) {
-        setError(
-          notifyAuthFailure({
-            translateError,
-            title: mode === "login" ? t("signInFailed") : t("registrationFailed"),
-            error: result.error,
-            fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
+    const succeeded = await submitRequest(() =>
+      mode === "login"
+        ? signIn.email({ email, password })
+        : signUp.email({
+            email,
+            password,
+            name,
+            callbackURL: createVerificationCallbackUrl(window.location.origin, next),
           }),
-        );
-      } else {
-        succeeded = true;
-      }
-    } catch (cause) {
-      setError(
-        notifyAuthFailure({
-          translateError,
-          title: mode === "login" ? t("signInFailed") : t("registrationFailed"),
-          error: cause,
-          fallback: mode === "login" ? t("signInFallback") : t("registrationFallback"),
-        }),
-      );
-    }
-    setPending(false);
+    );
 
     if (!succeeded) return;
 
@@ -97,13 +74,9 @@ export function AuthForm({
       <AuthCard
         description={t("registrationUnavailableDescription")}
         footer={
-          <Link
-            className="font-medium text-foreground hover:underline"
-            to="/login"
-            {...(next ? { search: { redirect: next } } : {})}
-          >
+          <AuthLink next={next} to="/login">
             {t("backToSignIn")}
-          </Link>
+          </AuthLink>
         }
         title={t("registrationUnavailable")}
       >
@@ -121,24 +94,16 @@ export function AuthForm({
         mode === "login" && capabilities.registrationAvailable ? (
           <span>
             {t("newToVoidmix")}{" "}
-            <Link
-              className="font-medium text-foreground hover:underline"
-              to="/signup"
-              {...(next ? { search: { redirect: next } } : {})}
-            >
+            <AuthLink next={next} to="/signup">
               {t("createAccount")}
-            </Link>
+            </AuthLink>
           </span>
         ) : (
           <span>
             {t("alreadyHaveAccount")}{" "}
-            <Link
-              className="font-medium text-foreground hover:underline"
-              to="/login"
-              {...(next ? { search: { redirect: next } } : {})}
-            >
+            <AuthLink next={next} to="/login">
               {t("signIn")}
-            </Link>
+            </AuthLink>
           </span>
         )
       }
@@ -147,33 +112,25 @@ export function AuthForm({
       <form aria-busy={pending} onSubmit={submit}>
         <FieldGroup className="gap-4">
           {mode !== "login" ? (
-            <Field>
-              <FieldLabel htmlFor="auth-name">{t("name")}</FieldLabel>
-              <Input
-                autoComplete="name"
-                className="h-9"
-                disabled={pending}
-                id="auth-name"
-                onChange={(event) => setName(event.target.value)}
-                required
-                value={name}
-              />
-            </Field>
-          ) : null}
-          <Field>
-            <FieldLabel htmlFor="auth-email">{t("email")}</FieldLabel>
-            <Input
-              aria-describedby={error ? "auth-error" : undefined}
-              autoComplete="email"
-              className="h-9"
+            <AuthInput
+              label={t("name")}
+              autoComplete="name"
               disabled={pending}
-              id="auth-email"
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              type="email"
-              value={email}
+              id="auth-name"
+              onChange={(event) => setName(event.target.value)}
+              value={name}
             />
-          </Field>
+          ) : null}
+          <AuthInput
+            label={t("email")}
+            aria-describedby={error ? "auth-error" : undefined}
+            autoComplete="email"
+            disabled={pending}
+            id="auth-email"
+            onChange={(event) => setEmail(event.target.value)}
+            type="email"
+            value={email}
+          />
           <PasswordField
             action={
               mode === "login" && capabilities.passwordResetRequestAvailable ? (

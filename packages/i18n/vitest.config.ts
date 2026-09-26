@@ -1,7 +1,5 @@
-import { defineConfig } from "vite-plus";
+import { workspaceTests } from "../../test.config.js";
 
-export default defineConfig({
-  test: {
-    environment: "jsdom",
-  },
+export default workspaceTests({
+  environment: "jsdom",
 });

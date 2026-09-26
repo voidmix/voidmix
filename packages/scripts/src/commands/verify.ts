@@ -1,6 +1,4 @@
-import { defineCommand } from "citty";
-
-import { runContextualAction } from "../runtime/action.js";
+import { contextualCommand } from "../runtime/command.js";
 import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
 
 interface VerifyDependencies extends RepositoryProcessDependencies {
@@ -13,14 +11,29 @@ export interface VerifyOptions {
   verbose?: boolean;
 }
 
-/**
- * Formatting and linting are root-level Vite+ commands rather than per-workspace
- * tasks, so they cannot join the `vp run -r` loop below.
- */
-const rootGates = [
-  { command: ["vp", "fmt", "--check"], task: "format" },
-  { command: ["vp", "lint"], task: "lint" },
-] as const;
+/** Explicit ordered gates keep task selection separate from subprocess execution. */
+const processGates = [
+  { task: "format", command: ["vp", "fmt", "--check"] },
+  { task: "lint", command: ["vp", "lint"] },
+  { task: "shared:build", command: ["vp", "run", "@voidmix/shared#build"] },
+  { task: "check", command: ["vp", "run", "-r", "check"] },
+  { task: "test", command: ["vp", "run", "-r", "test"] },
+  {
+    task: "build",
+    command: [
+      "vp",
+      "run",
+      "--filter",
+      "./apps/*",
+      "--filter",
+      "./packages/*",
+      "--filter",
+      "!@voidmix/shared",
+      "build",
+    ],
+    env: { NITRO_PRESET: "bun" },
+  },
+] satisfies Array<{ task: string; command: string[]; env?: NodeJS.ProcessEnv }>;
 
 export async function runVerify(
   dependencies: VerifyDependencies,
@@ -29,39 +42,17 @@ export async function runVerify(
   const captureOutput = !(options.verbose ?? false);
   dependencies.log("info", "verify.task.started", { task: "i18n" });
   await dependencies.verifyI18n();
-  // Repository policy runs first: it costs milliseconds and its failures are
-  // structural, so there is no point building before it passes.
+  // Policy follows i18n before expensive subprocess gates so structural
+  // failures never wait for a build.
   dependencies.log("info", "verify.task.started", { task: "policy" });
   await dependencies.verifyPolicy();
 
-  // Then the seconds-long gates, before the minutes-long ones. A contributor who
-  // only ever runs this command must still be stopped by an unformatted file;
-  // leaving format and lint out of it made CI the only place they were caught.
-  for (const { command, task } of rootGates) {
+  for (const { command, task, env } of processGates) {
     dependencies.log("info", "verify.task.started", { task });
     await dependencies.runCommand(command, {
       captureOutput,
       cwd: dependencies.repositoryRoot,
-      env: dependencies.processEnv,
-    });
-  }
-
-  dependencies.log("info", "verify.task.started", { task: "shared:build" });
-  await dependencies.runCommand(["vp", "run", "@voidmix/shared#build"], {
-    captureOutput,
-    cwd: dependencies.repositoryRoot,
-    env: dependencies.processEnv,
-  });
-
-  for (const task of ["check", "test", "build"] as const) {
-    dependencies.log("info", "verify.task.started", { task });
-    await dependencies.runCommand(["vp", "run", "-r", task], {
-      captureOutput,
-      cwd: dependencies.repositoryRoot,
-      env:
-        task === "build"
-          ? { ...dependencies.processEnv, NITRO_PRESET: "bun" }
-          : dependencies.processEnv,
+      env: env ? { ...dependencies.processEnv, ...env } : dependencies.processEnv,
     });
   }
   dependencies.log("info", "verify.task.started", { task: "runtime" });
@@ -69,7 +60,7 @@ export async function runVerify(
   dependencies.log("info", "verify.completed");
 }
 
-export const verifyCommand = defineCommand({
+export const verifyCommand = contextualCommand("verify", "process", {
   meta: {
     name: "verify",
     description:
@@ -82,45 +73,41 @@ export const verifyCommand = defineCommand({
       description: "Show full output from formatting, linting, checks, tests, and builds",
     },
   },
-  async run({ args }) {
-    await runContextualAction("verify", "process", async (context) => {
-      const [
-        { runCommand },
-        { verifyNitroRuntimes },
-        { createI18nDependencies, runI18nCheck },
-        i18nReport,
-        policyRuntime,
-        policyChecks,
-        policyReport,
-      ] = await Promise.all([
-        import("../runtime/process.js"),
-        import("../verify/nitro.js"),
-        import("../i18n/runtime.js"),
-        import("../i18n/report.js"),
-        import("../policy/runtime.js"),
-        import("../policy/checks.js"),
-        import("../policy/report.js"),
-      ]);
-      const dependencies = { ...context, runCommand };
-      await runVerify(
-        {
-          ...dependencies,
-          async verifyI18n() {
-            const report = await runI18nCheck(createI18nDependencies());
-            if (report.errors > 0) {
-              throw new Error(i18nReport.renderI18nReport(report));
-            }
-          },
-          verifyRuntimes: (options) => verifyNitroRuntimes(dependencies, options),
-          async verifyPolicy() {
-            const report = await policyChecks.runPolicy(policyRuntime.createPolicyDependencies());
-            if (report.errors > 0) {
-              throw new Error(policyReport.renderPolicyReport(report));
-            }
-          },
+  async run(context, { args }) {
+    const [
+      { verifyNitroRuntimes },
+      { createI18nDependencies, runI18nCheck },
+      i18nReport,
+      policyRuntime,
+      policyChecks,
+      policyReport,
+    ] = await Promise.all([
+      import("../verify/nitro.js"),
+      import("../i18n/runtime.js"),
+      import("../i18n/report.js"),
+      import("../policy/runtime.js"),
+      import("../policy/checks.js"),
+      import("../policy/report.js"),
+    ]);
+    const dependencies = context;
+    await runVerify(
+      {
+        ...dependencies,
+        async verifyI18n() {
+          const report = await runI18nCheck(createI18nDependencies());
+          if (report.errors > 0) {
+            throw new Error(i18nReport.renderI18nReport(report));
+          }
         },
-        { verbose: args.verbose },
-      );
-    });
+        verifyRuntimes: (options) => verifyNitroRuntimes(dependencies, options),
+        async verifyPolicy() {
+          const report = await policyChecks.runPolicy(policyRuntime.createPolicyDependencies());
+          if (report.errors > 0) {
+            throw new Error(policyReport.renderPolicyReport(report));
+          }
+        },
+      },
+      { verbose: args.verbose },
+    );
   },
 });

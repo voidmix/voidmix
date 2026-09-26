@@ -1,7 +1,8 @@
-import { defineCommand } from "citty";
-
-import { runContextualAction } from "../runtime/action.js";
-import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
+import { contextualCommand } from "../runtime/command.js";
+import {
+  runRepositoryCommands,
+  type RepositoryProcessDependencies,
+} from "../runtime/process-dependencies.js";
 
 /**
  * Route trees are deliberately absent here. `tsr generate` does not know about
@@ -15,22 +16,14 @@ export async function runGenerate(
   // diff is ambiguous, so extra flags have to reach it unchanged.
   extraArgs: readonly string[] = [],
 ): Promise<void> {
-  dependencies.log("info", "generate.started");
-  for (const [workspace, script] of [["packages/db", "generate"]] as const) {
-    await dependencies.runCommand(["bun", "run", "--cwd", workspace, script, ...extraArgs], {
-      cwd: dependencies.repositoryRoot,
-      env: dependencies.processEnv,
-    });
-  }
-  dependencies.log("info", "generate.completed");
+  await runRepositoryCommands(dependencies, "generate", [
+    ["bun", "run", "--cwd", "packages/db", "generate", ...extraArgs],
+  ]);
 }
 
-export const generateCommand = defineCommand({
+export const generateCommand = contextualCommand("generate", "repository", {
   meta: { name: "generate", description: "Regenerate database artifacts" },
-  async run({ rawArgs }) {
-    await runContextualAction("generate", "repository", async (context) => {
-      const { runCommand } = await import("../runtime/process.js");
-      await runGenerate({ ...context, runCommand }, rawArgs);
-    });
+  async run(context, { rawArgs }) {
+    await runGenerate(context, rawArgs);
   },
 });

@@ -43,3 +43,5 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 The supported renderer and Mail locales are `en` and `zh`. Catalog parity and
 source-boundary checks run with `bun run i18n:check` and are the first gate of
 `bun run verify`.
+
+- [ADR-0013: Domain modules and retirement of unused V1 code](./0013-domain-modules-and-retired-code.md)

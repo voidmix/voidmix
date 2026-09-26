@@ -1,3 +1,4 @@
+import { findingFor, collectFindings } from "./findings.js";
 import type { PolicyFinding } from "./checks.js";
 
 /** Where the Skills CLI writes the canonical copy of a vendored skill. */
@@ -18,9 +19,7 @@ interface SkillsLock {
   skills?: Record<string, LockedSkill>;
 }
 
-function finding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "skills.vendored", location, message, fix, severity: "error" };
-}
+const finding = findingFor("skills.vendored");
 
 export function parseSkillsLock(content: string): string[] {
   const lock = JSON.parse(content) as SkillsLock;
@@ -42,17 +41,15 @@ export function validateVendoredSkills(
   installed: readonly string[],
   linkTargets: ReadonlyMap<string, string | null>,
 ): PolicyFinding[] {
-  const findings: PolicyFinding[] = [];
+  const { findings, report } = collectFindings(finding);
   const present = new Set(installed);
 
   for (const name of locked) {
     if (!present.has(name)) {
-      findings.push(
-        finding(
-          `${vendoredSkillRoot}/${name}`,
-          "locked skill is not installed",
-          "run: bun run skills:update",
-        ),
+      report(
+        `${vendoredSkillRoot}/${name}`,
+        "locked skill is not installed",
+        "run: bun run skills:update",
       );
       continue;
     }
@@ -62,26 +59,22 @@ export function validateVendoredSkills(
       const expected = `${prefix}${name}`;
       const actual = linkTargets.get(location);
       if (actual === expected) continue;
-      findings.push(
-        finding(
-          location,
-          actual === null || actual === undefined
-            ? "is missing or is not a symlink"
-            : `points at ${actual} instead of ${expected}`,
-          `run: rm -rf ${location} && ln -s ${expected} ${location}`,
-        ),
+      report(
+        location,
+        actual === null || actual === undefined
+          ? "is missing or is not a symlink"
+          : `points at ${actual} instead of ${expected}`,
+        `run: rm -rf ${location} && ln -s ${expected} ${location}`,
       );
     }
   }
 
   for (const name of installed) {
     if (locked.includes(name)) continue;
-    findings.push(
-      finding(
-        `${vendoredSkillRoot}/${name}`,
-        "is installed but absent from skills-lock.json",
-        `add it through the Skills CLI so the lockfile records its source and hash, or remove ${vendoredSkillRoot}/${name}`,
-      ),
+    report(
+      `${vendoredSkillRoot}/${name}`,
+      "is installed but absent from skills-lock.json",
+      `add it through the Skills CLI so the lockfile records its source and hash, or remove ${vendoredSkillRoot}/${name}`,
     );
   }
 

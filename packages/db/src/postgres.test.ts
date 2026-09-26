@@ -15,6 +15,7 @@ class FakePostgresDatabase {
   readonly settings = new Map<string, StoredRow>();
   readonly secrets = new Map<string, StoredRow>();
   readonly audits: Array<Record<string, unknown>> = [];
+  private readonly tables = new Map<unknown, { rows: Map<string, StoredRow>; deletes: string[] }>();
 
   constructor(
     options: {
@@ -24,19 +25,20 @@ class FakePostgresDatabase {
       secretDeletes?: string[];
     } = {},
   ) {
-    const updatedAt = new Date("2026-08-24T00:00:00.000Z");
-    for (const [key, value] of Object.entries(options.settings ?? {})) {
-      this.settings.set(key, { key, value, updatedAt, updatedBy: null });
+    for (const [table, rows, values, deletes] of [
+      [systemSettings, this.settings, options.settings, options.settingDeletes],
+      [systemSecrets, this.secrets, options.secrets, options.secretDeletes],
+    ] as const) {
+      this.tables.set(table, { rows, deletes: [...(deletes ?? [])] });
+      for (const [key, value] of Object.entries(values ?? {}))
+        rows.set(key, {
+          key,
+          value,
+          updatedAt: new Date("2026-08-24T00:00:00.000Z"),
+          updatedBy: null,
+        });
     }
-    for (const [key, value] of Object.entries(options.secrets ?? {})) {
-      this.secrets.set(key, { key, value, updatedAt, updatedBy: null });
-    }
-    this.settingDeletes = [...(options.settingDeletes ?? [])];
-    this.secretDeletes = [...(options.secretDeletes ?? [])];
   }
-
-  private readonly settingDeletes: string[];
-  private readonly secretDeletes: string[];
 
   async transaction<Result>(run: (tx: FakePostgresDatabase) => Promise<Result>): Promise<Result> {
     return run(this);
@@ -44,59 +46,39 @@ class FakePostgresDatabase {
 
   select() {
     return {
-      from: (table: unknown) => {
-        const rows =
-          table === systemSettings
-            ? [...this.settings.values()]
-            : table === systemSecrets
-              ? [...this.secrets.values()]
-              : [];
-        if (table === systemSecrets) {
-          return {
-            where: (_condition: unknown) => ({
-              limit: async (limit: number) => rows.slice(0, limit),
-            }),
-          };
-        }
-        return { where: async (_condition: unknown) => rows };
-      },
+      from: (table: unknown) => ({
+        where: () => {
+          const rows = [...this.tables.get(table)!.rows.values()];
+          return Object.assign(Promise.resolve(rows), {
+            limit: async (limit: number) => rows.slice(0, limit),
+          });
+        },
+      }),
     };
   }
 
   delete(table: unknown) {
     return {
-      where: async (_condition: unknown) => {
-        if (table === systemSettings) {
-          const key = this.settingDeletes.shift();
-          if (key) this.settings.delete(key);
-        }
-        if (table === systemSecrets) {
-          const key = this.secretDeletes.shift();
-          if (key) this.secrets.delete(key);
-        }
+      where: async () => {
+        const { rows, deletes } = this.tables.get(table)!;
+        const key = deletes.shift();
+        if (key) rows.delete(key);
       },
     };
   }
 
   insert(table: unknown) {
     return {
-      values: (value: unknown) => {
-        const row = value as Record<string, unknown>;
+      values: (row: StoredRow) => {
         if (table === auditEvents) {
           this.audits.push({ ...row });
           return Promise.resolve();
         }
-        const upsert = async () => {
-          const stored: StoredRow = {
-            key: String(row.key),
-            value: String(row.value),
-            updatedAt: row.updatedAt as Date,
-            updatedBy: typeof row.updatedBy === "string" ? row.updatedBy : null,
-          };
-          if (table === systemSettings) this.settings.set(stored.key, stored);
-          if (table === systemSecrets) this.secrets.set(stored.key, stored);
+        return {
+          onConflictDoUpdate: async () => {
+            this.tables.get(table)!.rows.set(row.key, { ...row });
+          },
         };
-        return { onConflictDoUpdate: upsert };
       },
     };
   }
@@ -201,5 +183,53 @@ describe("PostgresSystemSettingsRepository", () => {
 
     expect(database.settings.size).toBe(0);
     expect(database.audits).toHaveLength(0);
+  });
+});
+
+describe("settings adapter parity", () => {
+  it("preserves omission, set, reset, inheritance and redacted no-op auditing", async () => {
+    const database = new FakePostgresDatabase({
+      settingDeletes: ["auth.registration_mode"],
+      secretDeletes: ["mail.resend_api_key"],
+    });
+    const { InMemorySystemSettingsRepository } = await import("./memory.js");
+    const memory = new InMemorySystemSettingsRepository();
+    const postgres = repository(database);
+    for (const settings of [
+      { registrationMode: { action: "set", value: "closed" } },
+      {},
+      { registrationMode: { action: "set", value: "closed" } },
+      { registrationMode: { action: "reset" } },
+      { registrationMode: { action: "reset" } },
+    ] as const) {
+      const input = { actorId: "owner-1", settings, audit: audit("auth-parity", "auth") };
+      expect(await postgres.updateAuthSettings(input)).toEqual(
+        await memory.updateAuthSettings(input),
+      );
+      expect(database.audits.map((row) => row.metadata)).toEqual(
+        memory.auditEvents.map((row) => row.metadata),
+      );
+    }
+    expect(database.audits).toHaveLength(2);
+    for (const settings of [
+      { resendApiKey: { action: "replace", value: "private-key" } },
+      {},
+      { resendApiKey: { action: "replace", value: "private-key" } },
+      { resendApiKey: { action: "reset" } },
+      { resendApiKey: { action: "reset" } },
+    ] as const) {
+      const input = { actorId: "owner-1", settings, fallback, audit: audit("mail-parity", "mail") };
+      expect(await postgres.updateMailSettings(input)).toEqual(
+        await memory.updateMailSettings(input),
+      );
+      expect(await postgres.resolveMailConfiguration(fallback)).toEqual(
+        await memory.resolveMailConfiguration(fallback),
+      );
+    }
+    expect(database.audits).toHaveLength(4);
+    expect(database.audits.map((row) => row.metadata)).toEqual(
+      memory.auditEvents.map((row) => row.metadata),
+    );
+    expect(JSON.stringify(database.audits)).not.toContain("private-key");
   });
 });

@@ -18,27 +18,16 @@ function createFormatter() {
 }
 
 describe("cloud timestamp formatting", () => {
-  it("preserves minute and hour relative labels", () => {
+  it.each([
+    ["minutes", "2026-09-09T11:52:00.000Z", "-8:minute:numeric"],
+    ["hours", "2026-09-09T10:00:00.000Z", "-2:hour:numeric"],
+    ["recent cross-day", "2026-09-08T12:00:00.000Z", "-1:day:numeric"],
+    ["older absolute", "2026-08-30T12:00:00.000Z", "absolute date"],
+  ])("formats %s timestamps", (_name, timestamp, label) => {
     const formatter = createFormatter();
-
-    expect(formatCloudTime(formatter, new Date("2026-09-09T11:52:00.000Z"), now)).toBe(
-      "-8:minute:numeric",
-    );
-    expect(formatCloudTime(formatter, new Date("2026-09-09T10:00:00.000Z"), now)).toBe(
-      "-2:hour:numeric",
-    );
-    expect(formatter.dateTime).not.toHaveBeenCalled();
-  });
-
-  it("keeps recent cross-day values relative and older values absolute", () => {
-    const formatter = createFormatter();
-
-    expect(formatCloudTime(formatter, new Date("2026-09-08T12:00:00.000Z"), now)).toBe(
-      "-1:day:numeric",
-    );
-    expect(formatCloudTime(formatter, new Date("2026-08-30T12:00:00.000Z"), now)).toBe(
-      "absolute date",
-    );
-    expect(formatter.dateTime).toHaveBeenCalledWith(new Date("2026-08-30T12:00:00.000Z"), "short");
+    const date = new Date(timestamp);
+    expect(formatCloudTime(formatter, date, now)).toBe(label);
+    if (label === "absolute date") expect(formatter.dateTime).toHaveBeenCalledWith(date, "short");
+    else expect(formatter.dateTime).not.toHaveBeenCalled();
   });
 });

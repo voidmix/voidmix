@@ -96,9 +96,9 @@ describe("mail environment", () => {
       }),
     });
 
-    await mailer.sendTest({ email: "alex@example.com" });
+    await mailer.sendWelcome({ email: "alex@example.com" });
     from = "second@example.com";
-    await mailer.sendTest({ email: "alex@example.com" });
+    await mailer.sendWelcome({ email: "alex@example.com" });
 
     expect(send.mock.calls.map(([message]) => message.from.email)).toEqual([
       "first@example.com",
@@ -106,49 +106,26 @@ describe("mail environment", () => {
     ]);
   });
 
-  it("sends in the recipient's language rather than the deployment default", async () => {
-    const send = vi.fn<MailTransport["send"]>(async () => ({ ok: true, id: "sent" }));
-    const mailer = createMailer({ env: developmentEnv, transport: { send } });
-
-    await mailer.sendVerification({
-      email: "alex@example.com",
-      name: "Alex",
-      url: "https://admin.example.com/verify?token=private",
-      locale: "zh",
-    });
-
-    const [message] = send.mock.calls[0]!;
-    expect(message.subject).toBe("验证你的 Voidmix 邮箱");
-    expect(message.html).toContain('lang="zh"');
-  });
-
-  it("falls back to the configured default when no recipient locale is known", async () => {
-    const send = vi.fn<MailTransport["send"]>(async () => ({ ok: true, id: "sent" }));
-    const mailer = createMailer({
-      env: { ...developmentEnv, MAIL_DEFAULT_LOCALE: "zh" },
-      transport: { send },
-    });
-
-    await mailer.sendVerification({
-      email: "alex@example.com",
-      name: "Alex",
-      url: "https://admin.example.com/verify?token=private",
-    });
-
-    expect(send.mock.calls[0]![0].subject).toBe("验证你的 Voidmix 邮箱");
-    expect(send.mock.calls[0]![0].html).toContain('lang="zh"');
-  });
-
-  it("renders the test email in the requested locale", async () => {
-    const send = vi.fn<MailTransport["send"]>(async () => ({ ok: true, id: "sent" }));
-    const mailer = createMailer({ env: developmentEnv, transport: { send } });
-
-    await mailer.sendTest({ email: "alex@example.com", locale: "zh" });
-
-    const message = send.mock.calls[0]![0];
-    expect(message.subject).toBe("Voidmix 邮件配置测试");
-    expect(message.html).toContain("你的 Voidmix 邮件配置正常工作。");
-    expect(message.html).toContain('lang="zh"');
-    expect(message.text).toBe("你的 Voidmix 邮件配置正常工作。");
-  });
+  it.each([
+    ["recipient override", "en", { locale: "zh" }],
+    ["deployment fallback", "zh", {}],
+  ] as const)(
+    "selects the verification language from %s",
+    async (_name, defaultLocale, recipient) => {
+      const send = vi.fn<MailTransport["send"]>(async () => ({ ok: true, id: "sent" }));
+      const mailer = createMailer({
+        env: { ...developmentEnv, MAIL_DEFAULT_LOCALE: defaultLocale },
+        transport: { send },
+      });
+      await mailer.sendVerification({
+        email: "alex@example.com",
+        name: "Alex",
+        url: "https://admin.example.com/verify?token=private",
+        ...recipient,
+      });
+      const [message] = send.mock.calls[0]!;
+      expect(message.subject).toBe("验证你的 Voidmix 邮箱");
+      expect(message.html).toContain('lang="zh"');
+    },
+  );
 });

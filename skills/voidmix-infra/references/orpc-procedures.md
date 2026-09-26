@@ -5,14 +5,14 @@ when exposing new data to Web's public or Admin features.
 
 ## Ownership
 
-- Schemas, procedures, the contract tree, and DTOs all live in the single file
-  `packages/contracts/src/index.ts`. There is no `src/schemas/` and no barrel.
-- Business rules and repository _interfaces_ live in `packages/core/src/index.ts`.
-  The interface is owned by core; `packages/db` depends on core, never the reverse.
-- Repository _implementations_ live in **both** `packages/db/src/postgres.ts` and
-  `packages/db/src/memory.ts`.
-- Handlers, production wiring, and the injected development fallback live in
-  `apps/api/server/api/src/`. Web is a page/SSR shell; `apps/api` is the HTTP composition root.
+- Schemas, procedures and DTOs live in the owning `packages/contracts/src/`
+  domain module; `index.ts` explicitly composes and exports the tree (ADR-0013).
+- Core owns business invariants and repository interfaces in domain modules.
+  Application commands coordinate canonical resource ports and access checks.
+- DB adapters live under `identity/`, `settings/` and `v2/`, behind the existing
+  package entrypoints. Update every implementation of a changed port.
+- Handlers and runtime composition live in `apps/api/server/api/`. Web owns pages
+  and SSR; API is the HTTP composition root.
 - `packages/client/src/index.ts` remains fully generic
   (`ContractRouterClient<typeof apiContract>`) — do not add procedure-specific
   client methods. It may be edited for protocol upgrades, transport wiring, or
@@ -23,21 +23,17 @@ when exposing new data to Web's public or Admin features.
 
 ## Order of edits
 
-1. **Contract** — four edits in `packages/contracts/src/index.ts`: exported
-   `fooSchema`; a module-private `const` procedure (camelCase verb, name differs
-   from its key); registration in the `apiContract` plain nested object literal
-   (not `oc.router()`); an `export type FooDto = z.infer<...>` at the bottom.
-2. **Core** — add the method to the object returned by
-   `createUserAdministration(...)`; extend `UserRepository` if persistence is new.
-3. **Repositories** — update both implementations or `implements UserRepository`
-   fails. `InMemoryUserRepository` must clone on read _and_ write so tests cannot
-   mutate stored state.
-4. **Handler** — add at the matching path inside `os.router({ ... })`. Nothing
-   else registers it; `apps/api/server/api/src/app.ts` mounts the whole router in one
-   `RPCHandler` at `/rpc/*`. New `DomainError` code → add a `case` to
-   `mapDomainError`.
-5. **Test** — copy the `setup()` idiom from
-   `apps/api/server/api/src/app.integration.test.ts`.
+1. **Contract** — extend the owning domain schema/procedure/DTO module and the
+   explicit `apiContract` tree. Reuse common fields and cursor envelopes.
+2. **Core/Application** — extend the owning port and command; preserve guard
+   order, native dates and optional-field semantics.
+3. **Repositories** — update matching implementations. Memory adapters preserve
+   clone boundaries; PostgreSQL preserves transaction handles and atomic outbox writes.
+4. **Handler** — wire the matching canonical router path, permission/principal
+   middleware and owner-local `router-context.ts` helpers. `app.ts` mounts it at
+   `/rpc/*`; add transport-visible domain codes to `canonical-errors.ts`.
+5. **Test** — exercise contract → real client → injected Hono fetch → router →
+   commands → repositories in `apps/api/server/api/app.integration.test.ts`.
 
 ## Rules
 
@@ -46,9 +42,9 @@ when exposing new data to Web's public or Admin features.
   records the permission result. A new Admin procedure without it is public, so
   add unauthenticated and ordinary-user rejection coverage for each one.
 - Business rules `throw new DomainError(code, message)`. Only the API layer maps
-  those to transport codes, via `mapDomainError`. Its switch is exhaustive with
-  no `default`, so a missing case is a compile error — let it guide you.
-- Keep `packages/core` pure: its only dependency is `@voidmix/auth`, and
+  those to transport codes, via `mapDomainError`. The mapping preserves known transport
+  errors and wraps unknown failures with their cause; add coverage for new codes.
+- Keep `packages/core` pure: its dependencies are `@voidmix/auth` and `@voidmix/shared`, and
   `lib: ["ES2022"]` means no DOM types. No Zod, oRPC, Drizzle, Hono, or React.
 - Inject `now` and `id` with defaults in core factories — that is what makes
   tests deterministic.
@@ -56,7 +52,7 @@ when exposing new data to Web's public or Admin features.
   or `void`.
 - **Dates stay native `Date` end to end**; never serialize to ISO strings.
   `z.date()` in contracts, `mode: "date"` in the Drizzle schema.
-  `packages/contracts/src/index.test.ts` exists solely to lock this in.
+  Contracts tests lock native dates and canonical shapes.
 - Audit rows are written **from `packages/core` only**, via
   `users.appendAudit(...)`, in the same logical operation as the mutation and
   only on a real state change. Never from a handler. They are durable product
@@ -64,7 +60,8 @@ when exposing new data to Web's public or Admin features.
 - Enrich the current wide event with `context.log?.set({ actor, target, outcome })`
   — one event per request, not multiple log lines.
 - Procedures are never zero-arg: `client.health({})` needs the explicit `{}`.
-- The oRPC beta client transport uses GET for safe reads and POST for mutations;
+- `isMutationProcedure` in Contracts is consumed by both API and Client: GET for safe reads
+  and POST for mutations;
   batching, deduplication, compression, retry-after handling, and timeouts stay
   in transport wiring rather than procedure-specific client APIs.
 
@@ -77,9 +74,7 @@ when exposing new data to Web's public or Admin features.
   `@voidmix/core`, `@voidmix/contracts`, and `@voidmix/db`, plus a generated
   migration.
 - New request header → also add it to `allowHeaders` in
-  `apps/api/server/api/src/app.ts`.
-  Existing latent bug worth not replicating: `x-voidmix-display-name` is read in
-  `apps/api/server/api/src/session.ts` but missing from that list.
+  `apps/api/server/api/app.ts` when cross-origin browser calls require it.
 - Web and Desktop provide an absolute `VITE_API_URL` for the standalone API origin. Authenticated browser requests include credentials; never
   restore actor identity headers as a production authentication mechanism.
 - Web's `(app)/route.tsx` session gate is navigation assistance only. Per
@@ -89,7 +84,7 @@ when exposing new data to Web's public or Admin features.
 ## Verification
 
 ```bash
-bun run --cwd apps/api/server/api test    # narrowest
+bun run --cwd apps/api test    # narrowest
 bun run check                  # tsc --noEmit per workspace
 ```
 

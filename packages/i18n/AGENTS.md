@@ -31,8 +31,9 @@ Shared locale negotiation, React runtime helpers, Intl formatting, and the
   locale and catalog atomically, and clears failed loads so callers can retry.
 - Applications and Mail own their catalog files. The i18n package owns the
   loader contract but never imports application catalog files.
-- Catalog parity tests must compare recursive keys, node types, and ICU argument
-  names for both supported locales.
+- Catalog parity tests compare recursive keys, node types, and ICU argument
+  names through `@formatjs/icu-messageformat-parser` in the testing subpath.
+  It is a direct catalog dependency, isolated from client/runtime entrypoints.
 - Error helpers read the stable `data.error` envelope (with an optional
   primitive `values` record) and discard untrusted object values before calling
   a translator. They never expose server diagnostic prose.

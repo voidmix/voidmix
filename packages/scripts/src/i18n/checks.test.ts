@@ -1,355 +1,222 @@
 import { describe, expect, it } from "vite-plus/test";
-
 import { checkCatalogPair, checkSourceFile } from "./checks.js";
 
-function catalog(locale: "en" | "zh", content: string, surface = "web" as const) {
-  return {
-    content,
-    locale,
-    location: `apps/${surface}/messages/${locale}.json`,
-    surface,
-  };
+function catalog(locale: "en" | "zh", content: string) {
+  return { content, locale, location: `apps/web/messages/${locale}.json`, surface: "web" as const };
 }
-
-function source(content: string, location = "apps/web/src/example.tsx") {
-  return { content, location };
+function catalogs(en: object, zh: object) {
+  return checkCatalogPair(catalog("en", JSON.stringify(en)), catalog("zh", JSON.stringify(zh)));
 }
+function inspect(content: string, location = "apps/web/src/example.tsx") {
+  return checkSourceFile({
+    content: content.startsWith("<") ? `<>${content}</>` : content,
+    location,
+  });
+}
+const text = (copy: string) => `JSX contains hardcoded user-facing text: ${copy}`;
+const attribute = (name: string) => `JSX attribute ${name} contains hardcoded user-facing text`;
+const property = (name: string) => `UI property ${name} contains hardcoded user-facing text`;
 
 describe("i18n catalog checks", () => {
-  it("reports missing keys", () => {
-    const findings = checkCatalogPair(
-      catalog("en", '{"home":{"title":"Home","subtitle":"Welcome"}}'),
-      catalog("zh", '{"home":{"title":"首页"}}'),
-    );
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "catalog.parity",
-          message: "zh is missing home.subtitle",
-        }),
-      ]),
-    );
-  });
-
-  it("reports catalog node type changes", () => {
-    const findings = checkCatalogPair(
-      catalog("en", '{"home":{"title":"Home"}}'),
-      catalog("zh", '{"home":{"title":{"value":"首页"}}}'),
-    );
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "catalog.parity",
-          message: "home.title changes node type between en and zh",
-        }),
-      ]),
-    );
-  });
-
-  it("reports ICU argument mismatches", () => {
-    const findings = checkCatalogPair(
-      catalog("en", '{"greeting":"Hello, {name}"}'),
-      catalog("zh", '{"greeting":"你好，{user}"}'),
-    );
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "catalog.parity",
-          message: "greeting changes ICU arguments between en and zh",
-        }),
-      ]),
+  it.each([
+    [
+      "missing keys",
+      { home: { title: "Home", subtitle: "Welcome" } },
+      { home: { title: "首页" } },
+      "zh is missing home.subtitle",
+    ],
+    [
+      "node types",
+      { home: { title: "Home" } },
+      { home: { title: { value: "首页" } } },
+      "home.title changes node type between en and zh",
+    ],
+    [
+      "ICU arguments",
+      { greeting: "Hello, {name}" },
+      { greeting: "你好，{user}" },
+      "greeting changes ICU arguments between en and zh",
+    ],
+    [
+      "ordinary apostrophes",
+      { date: "Today's {date}" },
+      { date: "今天是 {day}" },
+      "date changes ICU arguments between en and zh",
+    ],
+  ] as const)("reports mismatched %s", (_name, en, zh, message) => {
+    expect(catalogs(en, zh)).toContainEqual(
+      expect.objectContaining({ check: "catalog.parity", message }),
     );
   });
-
   it("ignores select and plural branch words when comparing ICU arguments", () => {
-    const findings = checkCatalogPair(
-      catalog(
-        "en",
-        '{"status":"{state, select, active {Active} suspended {Suspended} other {Unknown}} {count, plural, one {# file} other {# files}}"}',
+    expect(
+      catalogs(
+        {
+          status:
+            "{state, select, active {Active} suspended {Suspended} other {Unknown}} {count, plural, one {# file} other {# files}}",
+        },
+        {
+          status:
+            "{state, select, active {启用} suspended {停用} other {未知}} {count, plural, one {# 个文件} other {# 个文件}}",
+        },
       ),
-      catalog(
-        "zh",
-        '{"status":"{state, select, active {启用} suspended {停用} other {未知}} {count, plural, one {# 个文件} other {# 个文件}}"}',
-      ),
-    );
-
-    expect(findings).toEqual([]);
-  });
-
-  it("keeps arguments after ordinary apostrophes visible", () => {
-    const findings = checkCatalogPair(
-      catalog("en", '{"date":"Today\'s {date}"}'),
-      catalog("zh", '{"date":"今天是 {day}"}'),
-    );
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "catalog.parity",
-          message: "date changes ICU arguments between en and zh",
-        }),
-      ]),
-    );
+    ).toEqual([]);
   });
 });
 
 describe("i18n source checks", () => {
-  it("ignores translated and dynamic JSX children", () => {
-    const findings = checkSourceFile(
-      source(
-        '<span>{t("title")}</span><span>{user.name}</span><span>{" "}</span><span>{done ? "✓" : "◐"}</span><span>{[domainValue]}</span><span>{"Fixed" && value}</span><span className="copy" />',
-      ),
-    );
-
-    expect(findings).toEqual([]);
+  it.each([
+    [
+      "translated and dynamic children",
+      '<span>{t("title")}</span><span>{user.name}</span><span>{" "}</span><span>{done ? "✓" : "◐"}</span><span>{[domainValue]}</span><span>{"Fixed" && value}</span><span className="copy" />',
+    ],
+    [
+      "technical fragments",
+      "<div><small>v{version}</small><kbd>K</kbd><span>· ≤512 KB</span><span>Voidmix / Chat</span><span>{workspace} / Chat</span></div>",
+    ],
+    ["structural email examples", '<input placeholder="mail@example.com" type="email" />'],
+    [
+      "conditional domain properties",
+      'const project = { status: locale === "zh" ? "active" : "paused" };',
+    ],
+  ])("allows %s", (_name, source) => {
+    expect(inspect(source)).toEqual([]);
   });
-
-  it("reports direct string literals in JSX child expressions", () => {
-    const findings = checkSourceFile(source('<div>{"Hard text"}</div>'));
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          message: "JSX contains hardcoded user-facing text: Hard text",
-        }),
-      ]),
-    );
-  });
-
-  it("reports conditional and logical literals in JSX child expressions", () => {
-    const findings = checkSourceFile(
-      source('<div>{ok ? "Good copy" : fallback && "Bad copy"}</div>'),
-    );
-
-    expect(findings.filter((item) => item.check === "source.hardcoded")).toHaveLength(2);
-    expect(findings.map((item) => item.message)).toEqual([
-      "JSX contains hardcoded user-facing text: Good copy",
-      "JSX contains hardcoded user-facing text: Bad copy",
-    ]);
-  });
-
-  it("reports template literals in JSX child expressions", () => {
-    const findings = checkSourceFile(source("<div>{`Hard text`}</div>"));
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          message: "JSX contains hardcoded user-facing text: Hard text",
-        }),
-      ]),
+  it.each([
+    ["direct child literals", '<div>{"Hard text"}</div>', text("Hard text")],
+    ["child templates", "<div>{`Hard text`}</div>", text("Hard text")],
+    ["render props", '<Comp render={() => "Hard text"} />', text("Hard text")],
+    [
+      "attributes after templates",
+      'const view = <div className={`a ${open ? "b" : "c"}`}><Link aria-label="Hard text" /></div>;',
+      attribute("aria-label"),
+    ],
+    ["native language option copy", "<span>English</span>", text("English")],
+    ["placeholder copy", '<input placeholder="Enter your email" />', attribute("placeholder")],
+  ])("reports %s", (_name, source, message) => {
+    expect(inspect(source)).toContainEqual(
+      expect.objectContaining({ check: "source.hardcoded", message }),
     );
   });
-
-  it("reports string literals returned by JSX render props", () => {
-    const findings = checkSourceFile(source('<Comp render={() => "Hard text"} />'));
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          message: "JSX contains hardcoded user-facing text: Hard text",
-        }),
-      ]),
+  it.each([
+    [
+      "conditional and logical children",
+      '<div>{ok ? "Good copy" : fallback && "Bad copy"}</div>',
+      [text("Good copy"), text("Bad copy")],
+    ],
+    [
+      "elements and fragments",
+      "const view = <><span>Hello</span><span>hello</span></>;",
+      [text("Hello"), text("hello")],
+    ],
+    [
+      "user-facing attributes",
+      '<button aria-label="Open" title="Open menu" className="open-button" id="open">Open</button>',
+      [attribute("aria-label"), attribute("title"), text("Open")],
+    ],
+    [
+      "braced and template attributes",
+      'const view = <div className={`a ${open ? "b" : "c"}`}><Link aria-label={"Hard text"} /><input placeholder={"Enter email"} /><button aria-label={`Open ${name}`} /></div>;',
+      [attribute("aria-label"), attribute("placeholder"), attribute("aria-label")],
+    ],
+    [
+      "conditional metadata",
+      'const head = [{ title: locale === "zh" ? "Voidmix | 创意工作" : "Voidmix | Creative work" }, { name: "description", content: locale === "zh" ? "中文描述" : "English description" }];',
+      [property("title"), property("title"), property("content"), property("content")],
+    ],
+  ] as const)("reports all literals in %s", (_name, source, messages) => {
+    const findings = inspect(source, "apps/web/src/routes/__root.tsx");
+    expect(findings.filter((item) => item.check === "source.hardcoded")).toHaveLength(
+      messages.length,
     );
+    expect(findings.map((item) => item.message)).toEqual(messages);
   });
-
-  it("reports literal text in elements and fragments", () => {
-    const findings = checkSourceFile(
-      source("const view = <><span>Hello</span><span>hello</span></>;"),
-    );
-
-    expect(findings.filter((item) => item.check === "source.hardcoded")).toHaveLength(2);
-    expect(findings.map((item) => item.message)).toEqual([
-      "JSX contains hardcoded user-facing text: Hello",
-      "JSX contains hardcoded user-facing text: hello",
-    ]);
-  });
-
-  it("allows narrow technical JSX fragments but keeps option copy visible", () => {
-    const technical = checkSourceFile(
-      source(
-        "<div><small>v{version}</small><kbd>K</kbd><span>· ≤512 KB</span><span>Voidmix / Chat</span><span>{workspace} / Chat</span></div>",
-      ),
-    );
-    const option = checkSourceFile(source("<span>English</span>"));
-
-    expect(technical).toEqual([]);
-    expect(option).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          message: "JSX contains hardcoded user-facing text: English",
-        }),
-      ]),
-    );
-  });
-
-  it("checks user-facing JSX attributes while ignoring structural attributes", () => {
-    const findings = checkSourceFile(
-      source(
-        '<button aria-label="Open" title="Open menu" className="open-button" id="open">Open</button>',
-      ),
-    );
-
-    expect(findings.filter((item) => item.check === "source.hardcoded")).toHaveLength(3);
-    expect(findings.map((item) => item.message)).toEqual([
-      "JSX attribute aria-label contains hardcoded user-facing text",
-      "JSX attribute title contains hardcoded user-facing text",
-      "JSX contains hardcoded user-facing text: Open",
-    ]);
-  });
-
-  it("keeps JSX attribute checks alive after template-literal expressions", () => {
-    const findings = checkSourceFile(
-      source(
-        'const view = <div className={`a ${open ? "b" : "c"}`}><Link aria-label="Hard text" /></div>;',
-      ),
-    );
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "source.hardcoded",
-          message: "JSX attribute aria-label contains hardcoded user-facing text",
-        }),
-      ]),
-    );
-  });
-
-  it("checks literals inside braced and template JSX attributes", () => {
-    const findings = checkSourceFile(
-      source(`const view = (
-        <div className={\`a \${open ? "b" : "c"}\`}>
-          <Link aria-label={"Hard text"} />
-          <input placeholder={"Enter email"} />
-          <button aria-label={\`Open \${name}\`} />
-        </div>
-      );`),
-    );
-
-    expect(findings.filter((item) => item.check === "source.hardcoded")).toHaveLength(3);
-    expect(findings.map((item) => item.message)).toEqual([
-      "JSX attribute aria-label contains hardcoded user-facing text",
-      "JSX attribute placeholder contains hardcoded user-facing text",
-      "JSX attribute aria-label contains hardcoded user-facing text",
-    ]);
-  });
-
-  it("allows structural email examples while checking real placeholder copy", () => {
-    expect(
-      checkSourceFile(source('<input placeholder="mail@example.com" type="email" />')),
-    ).toEqual([]);
-    expect(checkSourceFile(source('<input placeholder="Enter your email" />'))).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "source.hardcoded",
-          message: "JSX attribute placeholder contains hardcoded user-facing text",
-        }),
-      ]),
-    );
-  });
-
-  it("reports literals in conditional metadata properties", () => {
-    const findings = checkSourceFile(
-      source(
-        `const head = [
-          { title: locale === "zh" ? "Voidmix | 创意工作" : "Voidmix | Creative work" },
-          { name: "description", content: locale === "zh" ? "中文描述" : "English description" },
-        ];`,
-        "apps/web/src/routes/__root.tsx",
-      ),
-    );
-
-    expect(findings.filter((item) => item.check === "source.hardcoded")).toHaveLength(4);
-    expect(findings.map((item) => item.message)).toEqual([
-      "UI property title contains hardcoded user-facing text",
-      "UI property title contains hardcoded user-facing text",
-      "UI property content contains hardcoded user-facing text",
-      "UI property content contains hardcoded user-facing text",
-    ]);
-  });
-
   it("reports literals in conditional UI label variables", () => {
-    const findings = checkSourceFile(
-      source('const currentLabel = locale === "zh" ? "简体中文" : "English";'),
-    );
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "source.hardcoded",
-          message: "UI variable currentLabel contains hardcoded user-facing text",
-        }),
-      ]),
+    const findings = inspect('const currentLabel = locale === "zh" ? "简体中文" : "English";');
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        check: "source.hardcoded",
+        message: "UI variable currentLabel contains hardcoded user-facing text",
+      }),
     );
     expect(findings.filter((item) => item.check === "source.hardcoded")).toHaveLength(2);
   });
-
-  it("does not treat conditional domain properties as UI metadata", () => {
-    const findings = checkSourceFile(
-      source('const project = { status: locale === "zh" ? "active" : "paused" };'),
+  it("rejects fixed locales in Intl formatting calls", () => {
+    expect(
+      inspect('new Intl.DateTimeFormat("en").format(date);', "apps/web/src/format.ts"),
+    ).toContainEqual(
+      expect.objectContaining({
+        check: "source.locale",
+        message: "formatting call hardcodes locale en",
+      }),
     );
-
-    expect(findings).toEqual([]);
   });
-
-  it("enforces the surface translation facade", () => {
-    const directImport = checkSourceFile(
-      source('import { useTranslations } from "@voidmix/i18n/client";', "apps/web/src/page.tsx"),
+  it.each([
+    [
+      "client facade",
+      'import { useTranslations } from "@voidmix/i18n/client";',
+      "apps/web/src/page.tsx",
+      "imports useTranslations directly from @voidmix/i18n/client",
+    ],
+    [
+      "core implementation",
+      'import { createFormatter } from "use-intl/core";',
+      "apps/web/src/format.ts",
+      "imports the use-intl implementation directly",
+    ],
+    [
+      "server implementation",
+      'import { getTranslations } from "use-intl/server";',
+      "apps/web/src/server.ts",
+      "imports the use-intl implementation directly",
+    ],
+  ])("enforces the %s boundary", (_name, source, location, message) => {
+    expect(inspect(source, location)).toContainEqual(
+      expect.objectContaining({ check: "source.facade", message }),
     );
-    const approvedFacade = checkSourceFile(
-      source(
+  });
+  it("allows the approved translation facade", () => {
+    expect(
+      inspect(
         'import { useTranslations } from "@voidmix/i18n/client";',
         "apps/web/src/i18n/client.ts",
       ),
-    );
-    const directImplementationSubpath = checkSourceFile(
-      source('import { createFormatter } from "use-intl/core";', "apps/web/src/format.ts"),
-    );
-    const directServerImplementationSubpath = checkSourceFile(
-      source('import { getTranslations } from "use-intl/server";', "apps/web/src/server.ts"),
-    );
+    ).toEqual([]);
+  });
+});
 
-    expect(directImport).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "source.facade",
-          message: "imports useTranslations directly from @voidmix/i18n/client",
-        }),
-      ]),
-    );
-    expect(approvedFacade).toEqual([]);
-    expect(directImplementationSubpath).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "source.facade",
-          message: "imports the use-intl implementation directly",
-        }),
-      ]),
-    );
-    expect(directServerImplementationSubpath).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "source.facade",
-          message: "imports the use-intl implementation directly",
-        }),
-      ]),
+describe("parser boundaries", () => {
+  it.each([
+    ["quoted ICU braces", "'{ignored}' {name}", "'{ignored}' {name}"],
+    [
+      "nested plural",
+      "{n, plural, one {{name}} other {{name} has #}}",
+      "{n, plural, one {{name}} other {{name}有#}}",
+    ],
+    ["escaped apostrophes", "It''s {name}", "{name}说''"],
+  ])("parses %s without inventing arguments", (_name, en, zh) => {
+    expect(catalogs({ message: en }, { message: zh })).toEqual([]);
+  });
+  it("reports invalid ICU instead of treating it as an empty argument list", () => {
+    expect(catalogs({ message: "{n, plural, one {One}}" }, { message: "一" })).toContainEqual(
+      expect.objectContaining({ check: "catalog.parse" }),
     );
   });
-
-  it("rejects fixed locales in Intl formatting calls", () => {
-    const findings = checkSourceFile(
-      source('new Intl.DateTimeFormat("en").format(date);', "apps/web/src/format.ts"),
+  it("preserves UTF-16 source positions after multibyte characters", () => {
+    const findings = inspect('const icon = "🧭";\nconst view = <div title="Save">你好</div>;');
+    expect(findings.map(({ check, line, column }) => ({ check, line, column }))).toEqual([
+      { check: "source.hardcoded", line: 2, column: 25 },
+      { check: "source.hardcoded", line: 2, column: 32 },
+    ]);
+  });
+  it("reports parse failures and preserves recovery/test exemptions", () => {
+    expect(inspect("const view = <div")).toContainEqual(
+      expect.objectContaining({ check: "source.parse", line: 1 }),
     );
-
-    expect(findings).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          check: "source.locale",
-          message: "formatting call hardcodes locale en",
-        }),
-      ]),
-    );
+    for (const location of [
+      "apps/web/src/example.test.tsx",
+      "apps/web/src/i18n/recovery-messages.ts",
+    ])
+      expect(inspect("const view = <div>Untranslated</div>;", location)).toEqual([]);
   });
 });

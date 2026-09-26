@@ -3,7 +3,7 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { FormEvent, ReactNode } from "react";
+import type { ComponentProps, FormEvent, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mocks = vi.hoisted(() => ({
@@ -31,70 +31,15 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => mocks.navigate,
 }));
 
-vi.mock("@voidmix/i18n/client", () => ({
-  useTranslations: () => (key: string) =>
-    ({
-      alreadyHaveAccount: "Already have an account?",
-      backToSignIn: "Back to sign in",
-      createAccount: "Create account",
-      createYourAccount: "Create your account",
-      creatingAccount: "Creating account…",
-      email: "Email",
-      forgotPassword: "Forgot password?",
-      loginDescription: "Enter your account details to continue to the workspace.",
-      name: "Name",
-      newToVoidmix: "New to Voidmix?",
-      password: "Password",
-      signupDescription: "Create an account with your work email to get started.",
-      registrationFailed: "Registration failed",
-      registrationFallback: "Unable to create your account. Try again.",
-      registrationUnavailable: "Registration unavailable",
-      registrationUnavailableBody:
-        "An administrator can reopen registration after verification email delivery is ready.",
-      registrationUnavailableDescription:
-        "New account registration is not available with the current system and mail configuration.",
-      signIn: "Sign in",
-      signInFailed: "Sign in failed",
-      signInFallback: "Unable to sign in. Check your credentials and try again.",
-      signingIn: "Signing in…",
-      welcomeBack: "Welcome back",
-      passwordResetFailed: "Password reset failed",
-      passwordResetFallback: "Unable to reset your password. Try again.",
-      passwordResetUnavailable: "Password reset unavailable",
-      passwordResetUnavailableDescription:
-        "Password reset email requests are not available with the current system and mail configuration.",
-      passwordResetUnavailableBody:
-        "Existing reset links can still be used. Contact an administrator if you need access.",
-      passwordUpdated: "Password updated",
-      passwordUpdatedDescription: "Your password has been updated. You can now use it to sign in.",
-      resetLinkSentDescription: "We sent a reset link if an account exists for that email address.",
-      setNewPassword: "Set a new password",
-      resetYourPassword: "Reset your password",
-      newPassword: "New password",
-      chooseNewPassword: "Choose a new password with at least eight characters.",
-      sendResetDescription: "Enter your email and we will send you a password reset link.",
-      updatingPassword: "Updating password…",
-      sendingResetLink: "Sending reset link…",
-      verifyLinkInvalid: "This verification link is invalid or expired.",
-      emailVerificationFailed: "Email verification failed",
-      verificationWaitingDescription:
-        "Use the verification link we sent to finish creating your account.",
-      verifyingEmailDescription:
-        "We are confirming your email address. This should only take a moment.",
-      emailVerifiedDescription: "Your email address is verified. You can now sign in to Voidmix.",
-      verificationFailedDescription:
-        "We could not verify this email address with the supplied link.",
-      verificationFailed: "Verification failed",
-      verifyingEmail: "Verifying your email",
-      emailVerified: "Email verified",
-      homeLabel: "Voidmix home",
-      showPassword: "Show password",
-      hidePassword: "Hide password",
-      checkEmail: "Check your email",
-      updatePassword: "Update password",
-      sendResetLink: "Send reset link",
-    })[key] ?? key,
-}));
+vi.mock("@voidmix/i18n/client", async () => {
+  const { default: messages } = await import("../../../../messages/en.json");
+  return {
+    useTranslations: (namespace: keyof typeof messages) => (key: string) => {
+      const catalog = messages[namespace] as Record<string, unknown>;
+      return catalog[key] ?? key;
+    },
+  };
+});
 
 vi.mock("../../../lib/auth-client", () => ({
   authClient: {
@@ -130,34 +75,37 @@ beforeEach(() => {
   mocks.notifyAuthFailure.mockReturnValue("Unable to complete authentication.");
 });
 
+async function submitCredentials(
+  props: ComponentProps<typeof AuthForm> = { mode: "login" },
+  password = "password123",
+) {
+  const user = userEvent.setup();
+  render(<AuthForm {...props} />);
+  await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
+  await user.type(screen.getByLabelText("Password"), password);
+  await user.click(screen.getByRole("button", { name: "Sign in" }));
+}
+
 describe("authentication forms", () => {
-  it("signs in with email credentials and opens Admin", async () => {
+  it.each([
+    ["opens Admin", undefined, "/admin"],
+    ["returns to the requested workspace", "/admin?tab=users", "/admin?tab=users"],
+  ])("signs in with email credentials and %s", async (_name, redirectTo, destination) => {
     mocks.signInEmail.mockResolvedValue({ data: {}, error: null });
-    const user = userEvent.setup();
-    render(<AuthForm mode="login" />);
-
-    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
-    await user.type(screen.getByLabelText("Password"), "password123");
-    await user.click(screen.getByRole("button", { name: "Sign in" }));
-
+    await submitCredentials({ mode: "login", ...(redirectTo ? { redirectTo } : {}) });
     await waitFor(() => {
       expect(mocks.signInEmail).toHaveBeenCalledWith({
         email: "owner@example.com",
         password: "password123",
       });
-      expect(mocks.navigate).toHaveBeenCalledWith({ to: "/admin" });
+      expect(mocks.navigate).toHaveBeenCalledWith({ to: destination });
     });
   });
 
   it("supports embedded login success callbacks without navigating", async () => {
     mocks.signInEmail.mockResolvedValue({ data: {}, error: null });
     const onSuccess = vi.fn();
-    const user = userEvent.setup();
-    render(<AuthForm mode="login" onSuccess={onSuccess} />);
-
-    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
-    await user.type(screen.getByLabelText("Password"), "password123");
-    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    await submitCredentials({ mode: "login", onSuccess });
 
     await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce());
     expect(mocks.navigate).not.toHaveBeenCalled();
@@ -187,30 +135,11 @@ describe("authentication forms", () => {
   it("keeps authentication failures visible and does not navigate", async () => {
     mocks.signInEmail.mockResolvedValue({ data: null, error: { message: "Invalid credentials" } });
     mocks.notifyAuthFailure.mockReturnValue("Invalid credentials");
-    const user = userEvent.setup();
-    render(<AuthForm mode="login" />);
-
-    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
-    await user.type(screen.getByLabelText("Password"), "incorrect-password");
-    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    await submitCredentials({ mode: "login" }, "incorrect-password");
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Invalid credentials");
     expect(mocks.notifyAuthFailure).toHaveBeenCalled();
     expect(mocks.navigate).not.toHaveBeenCalled();
-  });
-
-  it("returns to the requested workspace after signing in", async () => {
-    mocks.signInEmail.mockResolvedValue({ data: {}, error: null });
-    const user = userEvent.setup();
-    render(<AuthForm mode="login" redirectTo="/admin?tab=users" />);
-
-    await user.type(screen.getByRole("textbox", { name: "Email" }), "owner@example.com");
-    await user.type(screen.getByLabelText("Password"), "password123");
-    await user.click(screen.getByRole("button", { name: "Sign in" }));
-
-    await waitFor(() => {
-      expect(mocks.navigate).toHaveBeenCalledWith({ to: "/admin?tab=users" });
-    });
   });
 
   it("hides unavailable registration and password reset entry points", () => {

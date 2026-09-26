@@ -22,3 +22,21 @@ describe("shared primitives", () => {
     nowSpy.mockRestore();
   });
 });
+
+describe("public exports", () => {
+  const publicEntries = [
+    "@voidmix/shared",
+    "@voidmix/shared/env",
+    "@voidmix/shared/env/runtime",
+    "@voidmix/shared/logger",
+    "@voidmix/shared/logger/client",
+    "@voidmix/shared/logger/env",
+    "@voidmix/shared/logger/hono",
+    "@voidmix/shared/logger/orpc",
+    "@voidmix/shared/logger/vite",
+  ] as const;
+
+  it.each(publicEntries)("loads %s from the built package", async (entry) => {
+    await expect(import(entry)).resolves.toBeDefined();
+  });
+});

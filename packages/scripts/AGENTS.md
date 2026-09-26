@@ -20,6 +20,8 @@ src/deps/           Bun dependency maintenance commands and operations
 src/skills/         repository skill maintenance commands and operations
 src/policy/         command, orchestration, checks/<rule-domain>, manifest rules,
                     fixes, per-convention pure modules, report
+src/i18n/          catalog comparison, Oxc source inspection, rules and reporting
+src/test-fixtures.ts shared isolated repository and injected dependency fixtures
 src/verify/         Nitro runtime verification
 ```
 
@@ -63,6 +65,11 @@ Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skill
   `vmx deps dedupe --check` is read-only, and `vmx deps audit` is read-only.
 - Dependency check/update excludes Drizzle RC builds because hash suffixes do
   not sort chronologically. Update Kit and ORM together from the `rc5` tag.
+- Reuse `runtime/command.ts` for command adapters, `process-dependencies.ts` for
+  repository subprocesses, and `runtime/files.ts` for traversal. Policy uses
+  shared findings and strict JSON helpers without changing diagnostic content.
+- Oxc owns JSX/TypeScript parsing; FormatJS through `@voidmix/i18n/testing` owns
+  ICU parsing. Keep source exemptions and diagnostic locations covered.
 - Never print secret values loaded by the env runner.
 
 ## Verification

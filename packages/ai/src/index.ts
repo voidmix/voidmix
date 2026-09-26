@@ -1,4 +1,5 @@
-import type { Project, ProjectTask, ProjectRepository } from "@voidmix/core";
+import type { ProjectV2, TaskStatusV2 } from "@voidmix/core";
+import type { ProjectApplication } from "@voidmix/application";
 
 export type AiRunEvent =
   | { type: "text_delta"; text: string }
@@ -20,7 +21,7 @@ export interface AiSession {
 
 export interface AiRunInput {
   session: AiSession;
-  project: Project;
+  project: Pick<ProjectV2, "id" | "title">;
   prompt: string;
   signal?: AbortSignal;
 }
@@ -58,7 +59,7 @@ export async function collectRun(provider: AiProvider, input: AiRunInput): Promi
 }
 
 export interface ProjectAgentToolDependencies {
-  projects: ProjectRepository;
+  projects: Pick<ProjectApplication, "get" | "listTasks" | "createTask" | "updateTask">;
   actorId: string;
 }
 
@@ -68,11 +69,14 @@ export function createProjectAgentTools(
   const tools = {
     get_project: async (input: unknown) => {
       const projectId = readString(input, "projectId");
-      return dependencies.projects.getById(projectId);
+      return (
+        (await dependencies.projects.get({ projectId, actorId: dependencies.actorId }))?.project ??
+        null
+      );
     },
     list_tasks: async (input: unknown) => {
       const projectId = readString(input, "projectId");
-      return dependencies.projects.listTasks(projectId);
+      return dependencies.projects.listTasks({ projectId, actorId: dependencies.actorId });
     },
     create_task: async (input: unknown) => {
       const projectId = readString(input, "projectId");
@@ -81,7 +85,7 @@ export function createProjectAgentTools(
     },
     update_task: async (input: unknown) => {
       const taskId = readString(input, "taskId");
-      const status = readString(input, "status") as ProjectTask["status"];
+      const status = readString(input, "status") as TaskStatusV2;
       return dependencies.projects.updateTask({ taskId, status, actorId: dependencies.actorId });
     },
   } satisfies Record<string, (input: unknown) => Promise<unknown>>;
@@ -114,11 +118,11 @@ export function createFakeProvider(tools?: AiToolRegistry): AiProvider {
         return;
       }
       yield { type: "thinking", active: true };
-      yield { type: "text_delta", text: `Prepared next steps for ${input.project.name}.` };
+      yield { type: "text_delta", text: `Prepared next steps for ${input.project.title}.` };
       if (tools)
         yield { type: "tool_result", callId: "fake", name: "list_tasks", output: tools.names() };
       yield { type: "thinking", active: false };
-      yield { type: "completed", text: `Prepared next steps for ${input.project.name}.` };
+      yield { type: "completed", text: `Prepared next steps for ${input.project.title}.` };
     },
     async cancel(sessionId) {
       sessions.delete(sessionId);
@@ -181,44 +185,50 @@ export function createPiProvider(options: { cwd?: string; agentDir?: string } = 
         return;
       }
       const events: AiRunEvent[] = [];
-      let resolve: (() => void) | undefined;
-      const pending = new Promise<void>((done) => {
-        resolve = done;
-      });
+      let settled = false;
+      let wake = () => {};
       const unsubscribe = stored.session.subscribe((event) => {
         const normalized = normalizePiEvent(event);
         if (normalized) events.push(normalized);
-        if (isTerminalPiEvent(event)) resolve?.();
+        wake();
       });
-      const rolePrefix = stored.provider.roleId
-        ? `[Agent role: ${stored.provider.roleId}]${stored.provider.roleInstructions ? `\n${stored.provider.roleInstructions}` : ""}\n`
-        : "";
-      const prompt = stored.session.prompt(rolePrefix + input.prompt).catch((error: unknown) => {
-        events.push({
-          type: "failed",
-          message: error instanceof Error ? error.message : "AI run failed.",
-        });
-        resolve?.();
-      });
-      while (
-        events.length === 0 ||
-        !events.some(
-          (event) =>
-            event.type === "completed" || event.type === "failed" || event.type === "cancelled",
-        )
-      ) {
-        if (input.signal?.aborted) {
-          await this.cancel(input.session.id);
-          yield { type: "cancelled" };
-          unsubscribe();
-          return;
+      const onAbort = () => wake();
+      input.signal?.addEventListener("abort", onAbort, { once: true });
+      try {
+        if (!input.signal?.aborted) {
+          const role = stored.provider;
+          const prefix = role.roleId
+            ? `[Agent role: ${role.roleId}]${role.roleInstructions ? `\n${role.roleInstructions}` : ""}\n`
+            : "";
+          void Promise.resolve()
+            .then(() => stored.session.prompt(prefix + input.prompt))
+            .catch((error: unknown) => {
+              events.push({
+                type: "failed",
+                message: error instanceof Error ? error.message : "AI run failed.",
+              });
+            })
+            .finally(() => {
+              settled = true;
+              wake();
+            });
         }
-        await Promise.race([pending, new Promise((done) => setTimeout(done, 20))]);
-        while (events.length > 0) yield events.shift()!;
+        while (!settled || events.length) {
+          if (input.signal?.aborted) {
+            await stored.session.abort();
+            yield { type: "cancelled" };
+            return;
+          }
+          if (events.length) yield events.shift()!;
+          else
+            await new Promise<void>((resolve) => {
+              wake = resolve;
+            });
+        }
+      } finally {
+        unsubscribe();
+        input.signal?.removeEventListener("abort", onAbort);
       }
-      await prompt;
-      unsubscribe();
-      while (events.length > 0) yield events.shift()!;
     },
     async cancel(sessionId) {
       const stored = sessions.get(sessionId);
@@ -242,7 +252,11 @@ export function createPiProvider(options: { cwd?: string; agentDir?: string } = 
 function normalizePiEvent(event: unknown): AiRunEvent | null {
   if (typeof event !== "object" || event === null || !("type" in event)) return null;
   const value = event as Record<string, unknown>;
-  if (value.type === "message_update" && typeof value.assistantMessageEvent === "object") {
+  if (
+    value.type === "message_update" &&
+    typeof value.assistantMessageEvent === "object" &&
+    value.assistantMessageEvent !== null
+  ) {
     const update = value.assistantMessageEvent as Record<string, unknown>;
     if (update.type === "text_delta" && typeof update.delta === "string")
       return { type: "text_delta", text: update.delta };
@@ -283,15 +297,6 @@ function normalizePiEvent(event: unknown): AiRunEvent | null {
     };
   }
   return null;
-}
-
-function isTerminalPiEvent(event: unknown): boolean {
-  return (
-    typeof event === "object" &&
-    event !== null &&
-    "type" in event &&
-    (event.type === "agent_end" || event.type === "agent_error")
-  );
 }
 
 function readString(input: unknown, key: string): string {

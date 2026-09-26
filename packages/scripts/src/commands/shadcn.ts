@@ -3,8 +3,11 @@ import { join } from "node:path";
 
 import { defineCommand } from "citty";
 
-import { runContextualAction } from "../runtime/action.js";
-import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
+import { contextualCommand } from "../runtime/command.js";
+import {
+  runRepositoryCommands,
+  type RepositoryProcessDependencies,
+} from "../runtime/process-dependencies.js";
 
 export const shadcnComponentsFile = "packages/ui/shadcn-components.json";
 
@@ -36,24 +39,32 @@ export async function runShadcnUpdate(dependencies: ShadcnUpdateDependencies): P
   const manifestPath = join(dependencies.repositoryRoot, shadcnComponentsFile);
   const components = await dependencies.readComponents(manifestPath);
 
-  dependencies.log("info", "shadcn.update.started", { components });
-  await dependencies.runCommand(
-    ["bunx", "shadcn@latest", "add", ...components, "--yes", "--overwrite", "--cwd", "packages/ui"],
-    { cwd: dependencies.repositoryRoot, env: dependencies.processEnv },
+  await runRepositoryCommands(
+    dependencies,
+    "shadcn.update",
+    [
+      [
+        "bunx",
+        "shadcn@latest",
+        "add",
+        ...components,
+        "--yes",
+        "--overwrite",
+        "--cwd",
+        "packages/ui",
+      ],
+    ],
+    { components },
   );
-  dependencies.log("info", "shadcn.update.completed", { components });
 }
 
-const updateCommand = defineCommand({
+const updateCommand = contextualCommand("shadcn update", "repository", {
   meta: {
     name: "update",
     description: `Refresh the components listed in ${shadcnComponentsFile} to their latest version`,
   },
-  async run() {
-    await runContextualAction("shadcn update", "repository", async (context) => {
-      const { runCommand } = await import("../runtime/process.js");
-      await runShadcnUpdate({ ...context, runCommand, readComponents: readShadcnComponents });
-    });
+  async run(context) {
+    await runShadcnUpdate({ ...context, readComponents: readShadcnComponents });
   },
 });
 

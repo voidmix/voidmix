@@ -48,6 +48,9 @@ the version in the three manifests is a placeholder rather than a shipped build.
 
 ### Fixed
 
+- Choosing a folder in Settings now sends the expected native authorization
+  payload and displays the authorized directory.
+
 - The titlebar and settings theme controls now stay synchronized. Switching
   language no longer resets settings toggles.
 - Opening a project now displays its detail page instead of leaving the list

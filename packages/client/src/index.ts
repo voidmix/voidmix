@@ -9,7 +9,7 @@ import {
   TimeoutLinkPlugin,
 } from "@orpc/client/plugins";
 import type { ContractRouterClient } from "@orpc/contract";
-import { apiContract } from "@voidmix/contracts";
+import { apiContract, isMutationProcedure } from "@voidmix/contracts";
 
 export { parseApiProblemDetails } from "./errors.js";
 export type { ApiProblemDetails } from "@voidmix/contracts";
@@ -23,27 +23,6 @@ export interface CreateApiClientOptions {
   headers?: ApiHeaders | (() => ApiHeaders | Promise<ApiHeaders>);
   fetch?: typeof globalThis.fetch;
 }
-
-// Keep mutation requests out of GET batching/deduplication. This mirrors the
-// server's allow-list while leaving the client type fully generated from the
-// shared contract.
-const mutationProcedureNames = new Set([
-  "create",
-  "updateStatus",
-  "update",
-  "sendTest",
-  "commitVersion",
-  "complete",
-  "resolveConflict",
-  "transition",
-  "acquireLease",
-  "heartbeat",
-  "archive",
-  "restore",
-  "resolve",
-  "cancel",
-  "retry",
-]);
 
 export function createApiClient(options: CreateApiClientOptions = {}): ApiClient {
   const toHeaders = (value: ApiHeaders): Headers => {
@@ -62,8 +41,7 @@ export function createApiClient(options: CreateApiClientOptions = {}): ApiClient
   const link = new RPCLink({
     url: "/rpc",
     ...(baseUrl ? { origin: baseUrl } : {}),
-    method: (_requestOptions, path) =>
-      mutationProcedureNames.has(path.at(-1) ?? "") ? "POST" : "GET",
+    method: (_requestOptions, path) => (isMutationProcedure(path) ? "POST" : "GET"),
     plugins: [
       new DedupeLinkPlugin({ groups: [readRequestGroup] }),
       new BatchLinkPlugin({ groups: [readRequestGroup], maxSize: 10, mode: "buffered" }),

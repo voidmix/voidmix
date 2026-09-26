@@ -1,3 +1,4 @@
+import { findingFor, collectFindings } from "./findings.js";
 import type { PolicyFinding } from "./checks.js";
 
 export const requiredAgentsSections = [
@@ -38,38 +39,32 @@ function parseSections(content: string): Section[] {
   return sections;
 }
 
-function finding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "agents.workspace", location, message, fix, severity: "error" };
-}
+const finding = findingFor("agents.workspace");
 
 /**
  * Validates one workspace AGENTS.md against the shared five-section schema.
  * Pure: it reads nothing and only inspects the text it is given.
  */
 export function validateWorkspaceAgents(location: string, content: string): PolicyFinding[] {
-  const findings: PolicyFinding[] = [];
+  const { findings, report } = collectFindings(finding);
   const sections = parseSections(content);
   const titles = sections.map((section) => section.title);
 
   for (const required of requiredAgentsSections) {
     const section = sections.find((candidate) => candidate.title === required);
     if (!section) {
-      findings.push(
-        finding(
-          location,
-          `missing ## ${required}`,
-          `add a "## ${required}" section and ${sectionGuidance[required]}`,
-        ),
+      report(
+        location,
+        `missing ## ${required}`,
+        `add a "## ${required}" section and ${sectionGuidance[required]}`,
       );
       continue;
     }
     if (section.body.trim().length === 0) {
-      findings.push(
-        finding(
-          location,
-          `## ${required} is empty`,
-          `fill in "## ${required}" and ${sectionGuidance[required]}`,
-        ),
+      report(
+        location,
+        `## ${required} is empty`,
+        `fill in "## ${required}" and ${sectionGuidance[required]}`,
       );
     }
   }
@@ -79,23 +74,19 @@ export function validateWorkspaceAgents(location: string, content: string): Poli
     (requiredAgentsSections as readonly string[]).includes(title),
   );
   if (present.length === requiredAgentsSections.length && ordered.join() !== present.join()) {
-    findings.push(
-      finding(
-        location,
-        `sections are out of order: ${ordered.join(", ")}`,
-        `reorder the sections to ${requiredAgentsSections.join(", ")}`,
-      ),
+    report(
+      location,
+      `sections are out of order: ${ordered.join(", ")}`,
+      `reorder the sections to ${requiredAgentsSections.join(", ")}`,
     );
   }
 
   const lines = content.replace(/\n$/, "").split("\n").length;
   if (lines > maximumAgentsLines) {
-    findings.push(
-      finding(
-        location,
-        `has ${lines} lines`,
-        `keep AGENTS.md at or below ${maximumAgentsLines} lines and link to docs/ instead`,
-      ),
+    report(
+      location,
+      `has ${lines} lines`,
+      `keep AGENTS.md at or below ${maximumAgentsLines} lines and link to docs/ instead`,
     );
   }
 

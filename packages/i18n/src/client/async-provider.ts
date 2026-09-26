@@ -1,42 +1,20 @@
-import {
-  createElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type Dispatch,
-  type MutableRefObject,
-  type PropsWithChildren,
-  type SetStateAction,
-} from "react";
+import { createElement, useCallback, useEffect, useRef, useState } from "react";
 
 import { IntlCatalogProvider, LocaleContextProvider } from "./runtime.js";
 import { SUPPORTED_LOCALES } from "../constants.js";
-import type {
-  IntlRuntimeOptions,
-  Locale,
-  LocaleCatalogLoader,
-  LocaleStorage,
-  MessageCatalog,
-} from "../types.js";
+import type { Locale, LocaleCatalogLoader, MessageCatalog } from "../types.js";
 
-export type AsyncI18nProviderProps = PropsWithChildren<{
-  locale: Locale;
+import type { LocaleProviderProps } from "../client.js";
+
+export type AsyncI18nProviderProps = LocaleProviderProps & {
   messages: MessageCatalog;
   loadCatalog: LocaleCatalogLoader;
-  storage?: LocaleStorage;
-  onLocaleChange?: (locale: Locale) => void | Promise<void>;
-  timeZone?: string;
-  formats?: IntlRuntimeOptions["formats"];
-}>;
+};
 
 type AsyncLocaleCatalogOptions = Pick<
   AsyncI18nProviderProps,
-  "locale" | "messages" | "loadCatalog"
-> & {
-  storage?: LocaleStorage | undefined;
-  onLocaleChange?: ((locale: Locale) => void | Promise<void>) | undefined;
-};
+  "locale" | "messages" | "loadCatalog" | "storage" | "onLocaleChange"
+>;
 
 type ActiveCatalog = {
   locale: Locale;
@@ -45,44 +23,20 @@ type ActiveCatalog = {
 
 export function AsyncI18nProvider({
   children,
-  locale,
-  messages,
-  loadCatalog,
-  storage,
-  onLocaleChange,
   timeZone,
   formats,
+  ...options
 }: AsyncI18nProviderProps) {
-  const {
-    locale: activeLocale,
-    messages: activeMessages,
-    setLocale,
-  } = useAsyncLocaleCatalog({
+  const { locale, messages, setLocale } = useAsyncLocaleCatalog(options);
+  const runtime = {
     locale,
-    messages,
-    loadCatalog,
-    ...(storage ? { storage } : {}),
-    ...(onLocaleChange ? { onLocaleChange } : {}),
-  });
-
+    ...(timeZone ? { timeZone } : {}),
+    ...(formats ? { formats } : {}),
+  };
   return createElement(
     LocaleContextProvider,
-    {
-      locale: activeLocale,
-      setLocale,
-      ...(timeZone ? { timeZone } : {}),
-      ...(formats ? { formats } : {}),
-    },
-    createElement(
-      IntlCatalogProvider,
-      {
-        locale: activeLocale,
-        messages: activeMessages,
-        ...(timeZone ? { timeZone } : {}),
-        ...(formats ? { formats } : {}),
-      },
-      children,
-    ),
+    { ...runtime, setLocale },
+    createElement(IntlCatalogProvider, { ...runtime, messages }, children),
   );
 }
 
@@ -114,15 +68,13 @@ function useAsyncLocaleCatalog({
 
   useEffect(() => {
     if (!propsChanged) return;
-    syncExternalCatalog({
-      locale,
-      messages,
-      propsRef,
-      requestId,
-      activeRef,
-      catalogCache,
-      setActive,
-    });
+    const nextActive = { locale, messages };
+    propsRef.current = nextActive;
+    requestId.current += 1;
+    activeRef.current = nextActive;
+    catalogCache.current.clear();
+    catalogCache.current.set(locale, Promise.resolve(messages));
+    setActive(nextActive);
   }, [locale, messages, propsChanged]);
 
   const setLocale = useCallback(
@@ -132,17 +84,16 @@ function useAsyncLocaleCatalog({
       if (!SUPPORTED_LOCALES.includes(nextLocale) || nextLocale === currentLocale) return;
 
       const nextMessages = await getOrLoadCatalog(catalogCache.current, nextLocale, loadCatalog);
-      await commitLocale({
-        currentRequestId,
-        requestId,
-        nextLocale,
-        messages: nextMessages,
-        activeRef,
-        setActive,
-        storage,
-        onLocaleChange,
-        mountedRef,
-      });
+      if (!mountedRef.current || currentRequestId !== requestId.current) return;
+      try {
+        storage?.write(nextLocale);
+      } catch {
+        // Persistence failures must not prevent a locale transition.
+      }
+      const nextActive = { locale: nextLocale, messages: nextMessages };
+      activeRef.current = nextActive;
+      setActive(nextActive);
+      if (mountedRef.current) await onLocaleChange?.(nextLocale);
     },
     [loadCatalog, locale, onLocaleChange, propsChanged, storage],
   );
@@ -152,32 +103,6 @@ function useAsyncLocaleCatalog({
     messages: propsChanged ? messages : active.messages,
     setLocale,
   };
-}
-
-function syncExternalCatalog({
-  locale,
-  messages,
-  propsRef,
-  requestId,
-  activeRef,
-  catalogCache,
-  setActive,
-}: {
-  locale: Locale;
-  messages: MessageCatalog;
-  propsRef: MutableRefObject<ActiveCatalog>;
-  requestId: MutableRefObject<number>;
-  activeRef: MutableRefObject<ActiveCatalog>;
-  catalogCache: MutableRefObject<Map<Locale, Promise<MessageCatalog>>>;
-  setActive: Dispatch<SetStateAction<ActiveCatalog>>;
-}) {
-  const nextActive = { locale, messages };
-  propsRef.current = nextActive;
-  requestId.current += 1;
-  activeRef.current = nextActive;
-  catalogCache.current.clear();
-  catalogCache.current.set(locale, Promise.resolve(messages));
-  setActive(nextActive);
 }
 
 function getOrLoadCatalog(
@@ -196,38 +121,4 @@ function getOrLoadCatalog(
     });
   catalogCache.set(locale, catalogPromise);
   return catalogPromise;
-}
-
-async function commitLocale({
-  currentRequestId,
-  requestId,
-  nextLocale,
-  messages,
-  activeRef,
-  setActive,
-  storage,
-  onLocaleChange,
-  mountedRef,
-}: {
-  currentRequestId: number;
-  requestId: MutableRefObject<number>;
-  nextLocale: Locale;
-  messages: MessageCatalog;
-  activeRef: MutableRefObject<ActiveCatalog>;
-  setActive: Dispatch<SetStateAction<ActiveCatalog>>;
-  storage?: LocaleStorage | undefined;
-  onLocaleChange?: ((locale: Locale) => void | Promise<void>) | undefined;
-  mountedRef: MutableRefObject<boolean>;
-}) {
-  if (!mountedRef.current || currentRequestId !== requestId.current) return;
-
-  try {
-    storage?.write(nextLocale);
-  } catch {
-    // Persistence failures must not prevent a locale transition.
-  }
-  const nextActive = { locale: nextLocale, messages };
-  activeRef.current = nextActive;
-  setActive(nextActive);
-  if (mountedRef.current) await onLocaleChange?.(nextLocale);
 }

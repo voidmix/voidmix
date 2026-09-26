@@ -5,7 +5,7 @@ export type MailAddress = {
   name?: string;
 };
 
-export type MailTemplateKind = "email-verification" | "password-reset" | "welcome" | "test";
+export type MailTemplateKind = "email-verification" | "password-reset" | "welcome";
 
 export type MissingMailConfiguration = "RESEND_API_KEY" | "MAIL_FROM";
 
@@ -49,22 +49,16 @@ export type EmailTemplateResult = {
   text: string;
 };
 
-export type EmailTemplate<Input> = (input: Input) => Promise<EmailTemplateResult>;
-
-export type SendLinkEmailInput = {
-  email: string;
-  name?: string | null;
-  url: string;
-  baseUrl?: string;
-  /** The recipient's language. Falls back to `MAIL_DEFAULT_LOCALE` when absent. */
-  locale?: Locale;
-};
-
 export type SendWelcomeEmailInput = {
   email: string;
   name?: string | null;
   /** The recipient's language. Falls back to `MAIL_DEFAULT_LOCALE` when absent. */
   locale?: Locale;
+};
+
+export type SendLinkEmailInput = SendWelcomeEmailInput & {
+  url: string;
+  baseUrl?: string;
 };
 
 export type WelcomeTemplateInput = SendWelcomeEmailInput & {
@@ -75,5 +69,4 @@ export interface Mailer {
   sendVerification(input: SendLinkEmailInput): Promise<void>;
   sendPasswordReset(input: SendLinkEmailInput): Promise<void>;
   sendWelcome(input: SendWelcomeEmailInput): Promise<void>;
-  sendTest(input: SendWelcomeEmailInput): Promise<void>;
 }

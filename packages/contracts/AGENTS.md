@@ -11,8 +11,11 @@ frontend: Zod schemas, the oRPC contract tree, and the DTOs derived from them.
 | ---- | --------------------------------------------------------------------- |
 | `.`  | `src/index.ts` — schemas, procedures, `apiContract`, and `*Dto` types |
 
-Everything lives in that one file. There is no `src/schemas/`, no `src/dto/`,
-and no barrel to update.
+`src/index.ts` composes the explicit contract tree and public exports. Domain
+schemas and procedures live in `account.ts`, `projects.ts`, `reviews.ts`,
+`assets.ts`, and `agents.ts`; `common.ts` owns shared fields, envelopes and
+procedure construction. `methods.ts` owns HTTP method classification for API and client.
+See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired-code.md).
 
 ## Ownership
 
@@ -22,30 +25,25 @@ and no barrel to update.
   primitive `values` (`string`, `number`, `boolean`, or `null`). Keep that
   envelope stable so Web and Desktop can translate codes without consuming
   server diagnostic messages.
-- The `workspace.assets` and `workspace.agents` trees describe immutable asset
-  versions, sync conflicts, Agent runs/steps, and leases. Keep their output
-  dates as native `Date` values and preserve the input fields needed for
-  workspace authorization and idempotent commands.
+- The canonical Account-first tree is the only transport API. Retired Workspace,
+  Project Studio, scheduled-task, and settings procedures must not return.
 - Own nothing else: no network calls, no database access, no business rules.
 
 ## Constraints
 
 - Schemas are exported (`export const fooSchema = z.object({...})`); procedure
-  definitions are module-private `const`s named as camelCase verbs whose name
+  definitions are domain-module `const`s exported only to the tree composer named as camelCase verbs whose name
   differs from their key in the tree (`listUsers` → `list`).
 - `apiContract` is a plain nested object literal, **not** `oc.router()`.
-- DTOs are declared at the bottom as `export type FooDto = z.infer<typeof fooSchema>`.
+- DTOs are declared beside their domain schemas as `export type FooDto = z.infer<typeof fooSchema>`.
 - **Dates stay native `Date`.** Use `z.date()`; never serialize to ISO strings.
-  `src/index.test.ts` exists solely to lock this in.
+  `src/index.test.ts` covers native dates and canonical contract shapes.
 - The contract tree and `apps/api/server/api`'s router tree must match **exactly**. Adding
   to one without the other is a type error deep inside `os.router()` whose
   message does not point at your edit.
 - Public Auth capabilities expose only registration, verification-request, and
   password-reset-request booleans. Never add settings sources, domain lists,
   missing mail fields, or secret state to that public DTO.
-- Settings updates use optional per-field mutation unions. Omitted fields retain
-  their database state; `reset` means delete the database override, not persist
-  an empty inherited value.
 - **A status or audit-action value is declared in three places with no shared
   source**: the literal union in `@voidmix/core`, the `z.enum` here, and the
   `pgEnum` in `@voidmix/db`. Miss one and it fails at runtime (Zod output

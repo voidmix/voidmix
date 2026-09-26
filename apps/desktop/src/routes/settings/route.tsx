@@ -7,7 +7,7 @@ import { PageHeader } from "@voidmix/ui/page-header";
 import { useDesktopTranslations } from "../../i18n/client";
 import { useState } from "react";
 import { useDesktopPreferences, type DesktopToggle } from "../../lib/preferences";
-import { authorizeProjectFolder, type PiRuntimeStatus } from "../../lib/pi";
+import { authorizeProjectFolder, type PiRuntimeStatus } from "../../lib/folder";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,

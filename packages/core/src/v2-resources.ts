@@ -1,56 +1,47 @@
 import { DomainError } from "@voidmix/shared";
 
+/** Fields supplied by a caller; persistence supplies timestamps and initial state. */
+type NewRecord<T, Defaults extends keyof T = never> = Omit<
+  T,
+  "createdAt" | "updatedAt" | Defaults
+> & { now: Date };
+type RecordUpdate<T, Fields extends keyof T> = Pick<T, "id" & keyof T> &
+  Partial<Pick<T, Fields>> & { now: Date };
+
+interface ProjectResource {
+  id: string;
+  projectId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+interface AuthoredResource extends ProjectResource {
+  createdByUserId: string;
+}
+
 export const taskStatusesV2 = ["todo", "in_progress", "blocked", "done"] as const;
 export type TaskStatusV2 = (typeof taskStatusesV2)[number];
 
-export interface TaskV2 {
-  id: string;
-  projectId: string;
-  createdByUserId: string;
+export interface TaskV2 extends AuthoredResource {
   title: string;
   status: TaskStatusV2;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface ProjectTaskV2Repository {
   getById(id: string): Promise<TaskV2 | null>;
   listByProject(projectId: string): Promise<TaskV2[]>;
-  create(input: {
-    id: string;
-    projectId: string;
-    createdByUserId: string;
-    title: string;
-    now: Date;
-  }): Promise<TaskV2>;
-  update(input: {
-    id: string;
-    title?: string;
-    status?: TaskStatusV2;
-    now: Date;
-  }): Promise<TaskV2 | null>;
+  create(input: NewRecord<TaskV2, "status">): Promise<TaskV2>;
+  update(input: RecordUpdate<TaskV2, "title" | "status">): Promise<TaskV2 | null>;
 }
 
-export interface AssetV2 {
-  id: string;
-  projectId: string;
-  createdByUserId: string;
+export interface AssetV2 extends AuthoredResource {
   name: string;
   archived: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface AssetV2Repository {
   getById(id: string): Promise<AssetV2 | null>;
   listByProject(projectId: string): Promise<AssetV2[]>;
-  create(input: {
-    id: string;
-    projectId: string;
-    createdByUserId: string;
-    name: string;
-    now: Date;
-  }): Promise<AssetV2>;
+  create(input: NewRecord<AssetV2, "archived">): Promise<AssetV2>;
 }
 
 export interface AssetVersionV2 {
@@ -67,67 +58,34 @@ export interface AssetVersionV2 {
 
 export interface AssetVersionV2Repository {
   listByAsset(assetId: string): Promise<AssetVersionV2[]>;
-  create(input: {
-    id: string;
-    assetId: string;
-    projectId: string;
-    createdByUserId: string;
-    objectKey: string;
-    byteSize: number;
-    mediaType: string;
-    checksum: string;
-    now: Date;
-  }): Promise<AssetVersionV2>;
+  create(input: NewRecord<AssetVersionV2>): Promise<AssetVersionV2>;
 }
 
 export const reviewStatusesV2 = ["open", "approved", "rejected"] as const;
 export type ReviewStatusV2 = (typeof reviewStatusesV2)[number];
 
-export interface ReviewV2 {
-  id: string;
-  projectId: string;
+export interface ReviewV2 extends AuthoredResource {
   assetVersionId: string | null;
-  createdByUserId: string;
   status: ReviewStatusV2;
   title: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface ReviewV2Repository {
   getById(id: string): Promise<ReviewV2 | null>;
   listByProject(projectId: string): Promise<ReviewV2[]>;
-  create(input: {
-    id: string;
-    projectId: string;
-    assetVersionId: string | null;
-    createdByUserId: string;
-    title: string;
-    now: Date;
-  }): Promise<ReviewV2>;
+  create(input: NewRecord<ReviewV2, "status">): Promise<ReviewV2>;
   update(input: { id: string; status: ReviewStatusV2; now: Date }): Promise<ReviewV2 | null>;
 }
 
-export interface FeedbackV2 {
-  id: string;
+export interface FeedbackV2 extends ProjectResource {
   reviewId: string;
-  projectId: string;
   authorId: string;
   body: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface FeedbackV2Repository {
   listByReview(reviewId: string): Promise<FeedbackV2[]>;
-  create(input: {
-    id: string;
-    reviewId: string;
-    projectId: string;
-    authorId: string;
-    body: string;
-    now: Date;
-  }): Promise<FeedbackV2>;
+  create(input: NewRecord<FeedbackV2>): Promise<FeedbackV2>;
 }
 
 export interface ActivityV2 {
@@ -153,9 +111,7 @@ export const agentRunStatusesV2 = [
 ] as const;
 export type AgentRunStatusV2 = (typeof agentRunStatusesV2)[number];
 
-export interface AgentRunV2 {
-  id: string;
-  projectId: string;
+export interface AgentRunV2 extends ProjectResource {
   requestedByUserId: string;
   assetVersionId: string | null;
   status: AgentRunStatusV2;
@@ -163,31 +119,13 @@ export interface AgentRunV2 {
   input: Record<string, unknown>;
   output: Record<string, unknown> | null;
   error: string | null;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface AgentRunV2Repository {
   getById(id: string): Promise<AgentRunV2 | null>;
   /** Implementations should insert the run and dispatch event atomically. */
-  createQueued?(input: {
-    id: string;
-    projectId: string;
-    requestedByUserId: string;
-    assetVersionId: string | null;
-    attempt: number;
-    input: Record<string, unknown>;
-    now: Date;
-  }): Promise<AgentRunV2>;
-  create(input: {
-    id: string;
-    projectId: string;
-    requestedByUserId: string;
-    assetVersionId: string | null;
-    attempt: number;
-    input: Record<string, unknown>;
-    now: Date;
-  }): Promise<AgentRunV2>;
+  createQueued?(input: NewRecord<AgentRunV2, "status" | "output" | "error">): Promise<AgentRunV2>;
+  create(input: NewRecord<AgentRunV2, "status" | "output" | "error">): Promise<AgentRunV2>;
   updateStatus(input: {
     id: string;
     status: AgentRunStatusV2;
@@ -197,10 +135,9 @@ export interface AgentRunV2Repository {
   }): Promise<AgentRunV2 | null>;
 }
 
-export class AgentRunV2DomainError extends DomainError<
-  "AGENT_RUN_INVALID_INPUT" | "AGENT_RUN_TERMINAL"
-> {
-  constructor(code: "AGENT_RUN_INVALID_INPUT" | "AGENT_RUN_TERMINAL", message: string) {
+type AgentRunErrorCode = "AGENT_RUN_INVALID_INPUT" | "AGENT_RUN_TERMINAL";
+export class AgentRunV2DomainError extends DomainError<AgentRunErrorCode> {
+  constructor(code: AgentRunErrorCode, message: string) {
     super(code, message);
     this.name = "AgentRunV2DomainError";
   }

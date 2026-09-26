@@ -1,13 +1,11 @@
+import { parseJson, isObject, serializeJson } from "./json.js";
+import { findingFor } from "./findings.js";
 import type { PolicyFinding } from "./checks.js";
 
 /** Where the shared presets live, relative to the repository root. */
 export const presetRoot = "packages/tsconfig";
 
-/**
- * True when a repository-relative file is one of the shared preset documents.
- * Which files those are is read from the directory rather than listed, so adding
- * a sixth preset needs no change here.
- */
+/** Discover presets without enumerating their filenames. */
 export function isPresetFile(file: string): boolean {
   return (
     file.startsWith(`${presetRoot}/`) &&
@@ -20,23 +18,17 @@ export function isPresetFile(file: string): boolean {
 export const presetSpecifier = "@voidmix/tsconfig/";
 
 /** A workspace does not inherit from the shared presets. */
-function presetFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "tsconfig.preset", location, message, fix, severity: "error" };
-}
+const presetFinding = findingFor("tsconfig.preset");
 
 /** A workspace restates a value it already inherits. */
-function redundantFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "tsconfig.redundant", location, message, fix, severity: "error" };
-}
+const redundantFinding = findingFor("tsconfig.redundant");
 
 interface TypeScriptConfig {
   compilerOptions?: Record<string, unknown>;
   extends?: unknown;
 }
 
-function isConfigObject(value: unknown): value is TypeScriptConfig {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
+const isConfigObject = (value: unknown): value is TypeScriptConfig => isObject(value);
 
 interface InheritedOption {
   /** Repository-relative preset that last set the value. */
@@ -50,20 +42,13 @@ function resolveConsumerPreset(specifier: unknown): string | null {
   return `${presetRoot}/${specifier.slice(presetSpecifier.length)}`;
 }
 
-/**
- * Resolves the `./` specifier the presets use between themselves. String
- * operations only, so this module stays pure.
- */
+/** Resolve a sibling preset without filesystem access. */
 function resolveSiblingPreset(specifier: string, from: string): string | null {
   if (!specifier.startsWith("./")) return null;
   return `${from.slice(0, from.lastIndexOf("/"))}/${specifier.slice(2)}`;
 }
 
-/**
- * The options a config restates: present locally, and already provided with the
- * same value by the chain. Read by both the validator and the fixer so one can
- * never act on a key the other passed over.
- */
+/** Shared by validation and fixing so both recognize the same overrides. */
 function redundantOptions(
   config: TypeScriptConfig,
   inherited: ReadonlyMap<string, InheritedOption>,
@@ -80,12 +65,7 @@ function redundantOptions(
   return restated;
 }
 
-/**
- * Collects the compiler options a preset provides, following its own `extends`
- * chain so a value set two levels up still counts as inherited. Nearer presets
- * win, and each entry records which file to name in the finding. Returns null
- * when the chain reaches a file the caller did not supply.
- */
+/** Resolve the preset chain. Nearer options win; invalid or cyclic chains return null. */
 function resolveInherited(
   path: string,
   presets: ReadonlyMap<string, string>,
@@ -97,12 +77,11 @@ function resolveInherited(
   const content = presets.get(path);
   if (content === undefined) return null;
 
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
+  const result = parseJson(content);
+  if (!result.valid) {
     return null;
   }
+  const parsed = result.value;
   if (!isConfigObject(parsed)) return null;
 
   let inherited = new Map<string, InheritedOption>();
@@ -121,30 +100,14 @@ function resolveInherited(
   return inherited;
 }
 
-/**
- * Validates one workspace TypeScript config: it must extend a preset that exists,
- * and it must not restate a value the resolved chain already provides.
- *
- * A restated value is silently correct until the preset changes, at which point
- * one workspace quietly keeps the old behaviour — the same failure as any
- * unchecked copy. Overrides with a different value are left alone, because
- * narrowing `types` or widening `lib` is why a workspace file exists at all.
- *
- * Expected values are read from the preset files rather than encoded here, so
- * this check cannot disagree with the presets. Pure.
- *
- * @param location repository-relative path, e.g. `apps/desktop/tsconfig.node.json`
- * @param presets raw JSON text keyed by repository-relative preset path
- */
+/** Validate preset inheritance and redundant compiler options; preserve intentional overrides. */
 export function validateWorkspaceTypeScriptConfig(
   location: string,
   content: string,
   presets: ReadonlyMap<string, string>,
 ): PolicyFinding[] {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
+  const result = parseJson(content);
+  if (!result.valid) {
     return [
       presetFinding(
         location,
@@ -153,6 +116,7 @@ export function validateWorkspaceTypeScriptConfig(
       ),
     ];
   }
+  const parsed = result.value;
   if (!isConfigObject(parsed)) {
     return [
       presetFinding(
@@ -203,37 +167,25 @@ export function validateWorkspaceTypeScriptConfig(
     ];
   }
 
-  const findings: PolicyFinding[] = [];
-  for (const [key, provided] of redundantOptions(config, inherited)) {
-    findings.push(
-      redundantFinding(
-        location,
-        `restates ${key}, which ${provided.source} already sets to the same value`,
-        `delete ${key} from the compilerOptions in ${location}`,
-      ),
-    );
-  }
-  return findings;
+  return redundantOptions(config, inherited).map(([key, provided]) =>
+    redundantFinding(
+      location,
+      `restates ${key}, which ${provided.source} already sets to the same value`,
+      `delete ${key} from the compilerOptions in ${location}`,
+    ),
+  );
 }
 
-/**
- * Rewrites a workspace TypeScript config by deleting the options it restates,
- * dropping an emptied `compilerOptions` with them. A config whose `extends` is
- * missing, unresolvable, or outside the presets is left untouched: which preset it
- * should name is a decision, not a transformation.
- *
- * Returns the input unchanged when nothing applies. Pure.
- */
+/** Remove redundant options only from resolvable configs; preserve bytes on a no-op. */
 export function fixWorkspaceTypeScriptConfig(
   content: string,
   presets: ReadonlyMap<string, string>,
 ): string {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
+  const result = parseJson(content);
+  if (!result.valid) {
     return content;
   }
+  const parsed = result.value;
   if (!isConfigObject(parsed)) return content;
   const config = parsed;
 
@@ -247,5 +199,5 @@ export function fixWorkspaceTypeScriptConfig(
   for (const [key] of redundant) delete config.compilerOptions?.[key];
   if (Object.keys(config.compilerOptions ?? {}).length === 0) delete config.compilerOptions;
 
-  return `${JSON.stringify(config, null, 2)}\n`;
+  return serializeJson(config);
 }

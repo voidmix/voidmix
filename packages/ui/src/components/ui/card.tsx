@@ -1,3 +1,4 @@
+import { styledSlot } from "#lib/styled-slot";
 import * as React from "react";
 
 import { cn } from "#lib/utils";
@@ -20,69 +21,20 @@ function Card({
   );
 }
 
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-header"
-      className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const CardHeader = styledSlot(
+  "div",
+  "card-header",
+  "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+);
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-title"
-      className={cn(
-        "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const CardDescription = styledSlot("div", "card-description", "text-sm text-muted-foreground");
 
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
-      {...props}
-    />
-  );
-}
+const CardContent = styledSlot("div", "card-content", "px-(--card-spacing)");
 
-function CardAction({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-action"
-      className={cn("col-start-2 row-span-2 row-start-1 self-start justify-self-end", className)}
-      {...props}
-    />
-  );
-}
+const CardFooter = styledSlot(
+  "div",
+  "card-footer",
+  "flex items-center rounded-b-xl border-t bg-muted/50 p-(--card-spacing)",
+);
 
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div data-slot="card-content" className={cn("px-(--card-spacing)", className)} {...props} />
-  );
-}
-
-function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-footer"
-      className={cn(
-        "flex items-center rounded-b-xl border-t bg-muted/50 p-(--card-spacing)",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export { Card, CardHeader, CardFooter, CardTitle, CardAction, CardDescription, CardContent };
+export { Card, CardHeader, CardFooter, CardDescription, CardContent };
