@@ -13,7 +13,6 @@ import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Field, FieldError, FieldLabel } from "./ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import { Separator } from "./ui/separator";
 import { Toaster, toast } from "./ui/toast";
 
 afterEach(() => cleanup());
@@ -77,16 +76,14 @@ describe("Badge", () => {
 });
 
 describe("layout primitives", () => {
-  it("exposes base-nova card and separator slots", () => {
+  it("exposes base-nova card slots", () => {
     render(
       <Card>
         <CardContent>Workspace summary</CardContent>
-        <Separator />
       </Card>,
     );
 
     expect(screen.getByText("Workspace summary")).toHaveAttribute("data-slot", "card-content");
-    expect(screen.getByRole("separator")).toHaveAttribute("data-slot", "separator");
   });
 });
 

@@ -1,6 +1,5 @@
+import { AuthLink } from "./auth-link";
 import { CheckCircle, CircleNotch, WarningCircle } from "@phosphor-icons/react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@voidmix/ui/components/ui/button";
 import { FieldError } from "@voidmix/ui/components/ui/field";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -9,6 +8,7 @@ import { AuthCard } from "./auth-card";
 import { useTranslations } from "../../i18n/client";
 
 import { notifyAuthFailure } from "./feedback";
+import { runAuthRequest } from "./submission";
 import { normalizeAuthRedirect } from "./route-search";
 
 type VerificationStatus = "waiting" | "verifying" | "verified" | "failed";
@@ -37,35 +37,22 @@ export function VerifyEmail({
   useEffect(() => {
     if (!token) return;
 
-    void authClient
-      .verifyEmail({ query: { token } })
-      .then((result) => {
-        if (result.error) {
-          setError(
-            notifyAuthFailure({
-              translateError,
-              title: t("emailVerificationFailed"),
-              error: result.error,
-              fallback: t("verifyLinkInvalid"),
-            }),
-          );
-          setStatus("failed");
-          return;
-        }
-
-        setStatus("verified");
-      })
-      .catch((cause: unknown) => {
+    void runAuthRequest(
+      () => authClient.verifyEmail({ query: { token } }),
+      (error) => {
         setError(
           notifyAuthFailure({
             translateError,
             title: t("emailVerificationFailed"),
-            error: cause,
+            error,
             fallback: t("verifyLinkInvalid"),
           }),
         );
         setStatus("failed");
-      });
+      },
+    ).then((succeeded) => {
+      if (succeeded) setStatus("verified");
+    });
   }, [token]);
 
   const content = {
@@ -99,14 +86,9 @@ export function VerifyEmail({
         {current.icon}
         {error ? <FieldError>{error}</FieldError> : null}
         {status !== "verifying" ? (
-          <Button
-            className="w-full"
-            nativeButton={false}
-            render={<Link to="/login" {...(next ? { search: { redirect: next } } : {})} />}
-            size="lg"
-          >
+          <AuthLink next={next} button>
             {t("backToSignIn")}
-          </Button>
+          </AuthLink>
         ) : null}
       </div>
     </AuthCard>

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { createApiClient } from "@voidmix/client";
 import { getDesktopLocaleHeaders } from "../../i18n/client";
 import type { CloudSnapshot } from "./types";
@@ -8,7 +9,36 @@ export type RemoteSnapshotResult =
   | { kind: "overview_unavailable" }
   | { kind: "health_check_failed" };
 
-type SnapshotDetail = CloudSnapshot["jobs"][number]["detail"];
+const name = z.string().min(1);
+const nonnegative = z.number().nonnegative();
+const count = nonnegative.int();
+const detailSchema = z
+  .object({
+    kind: z.enum(["files", "objects"]),
+    count,
+    sizeBytes: nonnegative.optional(),
+  })
+  .transform(({ sizeBytes, ...detail }) => ({
+    ...detail,
+    ...(sizeBytes !== undefined ? { sizeBytes } : {}),
+  }));
+const jobSchema = z.object({
+  id: name,
+  name,
+  kind: z.enum(["upload", "download", "index"]),
+  status: z.enum(["active", "queued", "complete"]),
+  progress: nonnegative.max(100),
+  detail: z.preprocess(normalizeDetail, detailSchema),
+});
+const storageSchema = z
+  .object({
+    used: nonnegative,
+    total: nonnegative.positive(),
+    projects: nonnegative,
+    media: nonnegative,
+    archives: nonnegative,
+  })
+  .refine(({ used, total }) => used <= total);
 
 export async function fetchRemoteSnapshot(
   apiUrl: string,
@@ -39,7 +69,10 @@ export async function fetchRemoteSnapshot(
         headers: { ...getDesktopLocaleHeaders(), accept: "application/json" },
         signal: requestSignal,
       });
-      if (!response.ok) throw new Error(`Cloud API returned ${response.status}`);
+      if (!response.ok) {
+        signal?.throwIfAborted();
+        return { kind: "overview_unavailable" };
+      }
       const data: unknown = await response.json();
       const snapshot = normalizeSnapshot(data);
       if (!snapshot) return { kind: "invalid_snapshot" };
@@ -54,8 +87,6 @@ export async function fetchRemoteSnapshot(
 }
 
 export function normalizeSnapshot(value: unknown, now = new Date()): CloudSnapshot | null {
-  if (!value || typeof value !== "object") return null;
-  const input = value as Record<string, unknown>;
   const parseDate = (candidate: unknown): Date | null => {
     if (candidate instanceof Date) return Number.isFinite(candidate.valueOf()) ? candidate : null;
     if (typeof candidate === "number") {
@@ -73,96 +104,46 @@ export function normalizeSnapshot(value: unknown, now = new Date()): CloudSnapsh
     if (Number.isFinite(parsed.valueOf())) return parsed;
     return parseRelativeDate(value, now);
   };
-  const parseCount = (candidate: unknown): number | null =>
-    typeof candidate === "number" && Number.isSafeInteger(candidate) && candidate >= 0
-      ? candidate
-      : null;
-  const parseNumber = (candidate: unknown): number | null =>
-    typeof candidate === "number" && Number.isFinite(candidate) && candidate >= 0
-      ? candidate
-      : null;
-  const lastChecked = parseDate(input.lastChecked);
-  const lastBackup = parseDate(input.lastBackup);
-  const pendingItems = parseCount(input.pendingItems);
-  const fileCount = parseCount(input.fileCount);
-  const newThisWeek = parseCount(input.newThisWeek);
-  if (
-    !lastChecked ||
-    !lastBackup ||
-    pendingItems === null ||
-    fileCount === null ||
-    newThisWeek === null ||
-    !Array.isArray(input.jobs) ||
-    !Array.isArray(input.devices)
-  )
-    return null;
-
-  const storage = normalizeStorage(input.storage, parseNumber);
-  if (!storage) return null;
-
-  const jobs = input.jobs.map((job) => {
-    if (!job || typeof job !== "object") return null;
-    const candidate = job as Record<string, unknown>;
-    const id = typeof candidate.id === "string" && candidate.id.length > 0 ? candidate.id : null;
-    const name =
-      typeof candidate.name === "string" && candidate.name.length > 0 ? candidate.name : null;
-    const kind =
-      candidate.kind === "upload" || candidate.kind === "download" || candidate.kind === "index"
-        ? candidate.kind
-        : null;
-    const status =
-      candidate.status === "active" ||
-      candidate.status === "queued" ||
-      candidate.status === "complete"
-        ? candidate.status
-        : null;
-    const progress =
-      typeof candidate.progress === "number" &&
-      Number.isFinite(candidate.progress) &&
-      candidate.progress >= 0 &&
-      candidate.progress <= 100
-        ? candidate.progress
-        : null;
-    const detail = normalizeDetail(candidate.detail, parseCount, parseNumber);
-    return id && name && kind && status && progress !== null && detail
-      ? { id, name, kind, status, progress, detail }
-      : null;
-  });
-  const devices = input.devices.map((device) => {
-    if (!device || typeof device !== "object") return null;
-    const candidate = device as Record<string, unknown>;
-    const id = typeof candidate.id === "string" && candidate.id.length > 0 ? candidate.id : null;
-    const name =
-      typeof candidate.name === "string" && candidate.name.length > 0 ? candidate.name : null;
-    const platform =
-      typeof candidate.platform === "string" && candidate.platform.length > 0
-        ? candidate.platform
-        : null;
-    const kind =
-      candidate.kind === "desktop" || candidate.kind === "laptop" || candidate.kind === "phone"
-        ? candidate.kind
-        : null;
-    const online = typeof candidate.online === "boolean" ? candidate.online : null;
-    const lastSeen = parseDate(candidate.lastSeen);
-    const syncedBytes =
-      candidate.syncedBytes === undefined
-        ? parseHumanSize(candidate.synced)
-        : parseNumber(candidate.syncedBytes);
-    return id && name && platform && kind && online !== null && lastSeen && syncedBytes !== null
-      ? { id, name, platform, kind, online, lastSeen, syncedBytes }
-      : null;
-  });
-  if (jobs.some((job) => !job) || devices.some((device) => !device)) return null;
-  return {
-    lastChecked,
-    lastBackup,
-    pendingItems,
-    fileCount,
-    newThisWeek,
-    storage,
-    jobs: jobs as CloudSnapshot["jobs"],
-    devices: devices as CloudSnapshot["devices"],
-  };
+  const date = z.unknown().transform(parseDate).pipe(z.date());
+  const device = z
+    .object({
+      id: name,
+      name,
+      platform: name,
+      kind: z.enum(["desktop", "laptop", "phone"]),
+      online: z.boolean(),
+      lastSeen: date,
+      syncedBytes: nonnegative.optional(),
+      synced: z.unknown().optional(),
+    })
+    .transform(({ syncedBytes, synced, ...device }) => ({
+      ...device,
+      syncedBytes: syncedBytes ?? parseHumanSize(synced),
+    }))
+    .pipe(
+      z.object({
+        id: name,
+        name,
+        platform: name,
+        kind: z.enum(["desktop", "laptop", "phone"]),
+        online: z.boolean(),
+        lastSeen: z.date(),
+        syncedBytes: nonnegative,
+      }),
+    );
+  const result = z
+    .object({
+      lastChecked: date,
+      lastBackup: date,
+      pendingItems: count,
+      fileCount: count,
+      newThisWeek: count,
+      storage: storageSchema,
+      jobs: z.array(jobSchema),
+      devices: z.array(device),
+    })
+    .safeParse(value);
+  return result.success ? result.data : null;
 }
 
 function parseRelativeDate(value: string, now: Date): Date | null {
@@ -201,81 +182,22 @@ function parseHumanSize(value: unknown): number | null {
   return Number.isFinite(bytes) && bytes >= 0 ? bytes : null;
 }
 
-function normalizeDetail(
-  value: unknown,
-  parseCount: (value: unknown) => number | null,
-  parseNumber: (value: unknown) => number | null,
-): SnapshotDetail | null {
-  if (value && typeof value === "object") {
-    const detail = value as Record<string, unknown>;
-    const count = parseCount(detail.count);
-    if (count !== null && (detail.kind === "files" || detail.kind === "objects")) {
-      const sizeBytes = detail.sizeBytes === undefined ? undefined : parseNumber(detail.sizeBytes);
-      if (sizeBytes === null) return null;
-      return {
-        kind: detail.kind,
-        count,
-        ...(sizeBytes !== undefined ? { sizeBytes } : {}),
-      };
-    }
-    return null;
-  }
-  if (typeof value !== "string") return null;
+function normalizeDetail(value: unknown): unknown {
+  if (typeof value !== "string") return value;
   const normalized = value.replace(/\s+/gu, " ").trim();
   const sizePattern = String.raw`(\d+(?:\.\d+)?)\s*(B|KB|MB|GB|TB)`;
-  const files = normalized.match(
-    new RegExp(String.raw`^(\d+)\s*(?:files?|个文件)(?:\s*[·•]\s*${sizePattern})?$`, "iu"),
-  );
-  if (files) {
-    const count = parseCount(Number(files[1]));
-    if (count === null) return null;
-    const sizeBytes = files[2] && files[3] ? parseHumanSize(`${files[2]} ${files[3]}`) : null;
-    if (files[2] && files[3] && sizeBytes === null) return null;
-    return {
-      kind: "files",
-      count,
-      ...(sizeBytes !== null ? { sizeBytes } : {}),
-    };
-  }
-
-  const objects = normalized.match(
-    new RegExp(
-      String.raw`^(?:(?:indexed|已索引)\s*)?(\d+)\s*(?:objects?|个(?:变更)?对象)(?:\s*(?:indexed|已索引|已编入索引))?(?:\s*[·•]\s*${sizePattern})?$`,
-      "iu",
-    ),
-  );
-  if (!objects) return null;
-  const count = parseCount(Number(objects[1]));
-  if (count === null) return null;
-  const sizeBytes = objects[2] && objects[3] ? parseHumanSize(`${objects[2]} ${objects[3]}`) : null;
-  if (objects[2] && objects[3] && sizeBytes === null) return null;
-  return {
-    kind: "objects",
-    count,
-    ...(sizeBytes !== null ? { sizeBytes } : {}),
+  const patterns = {
+    files: String.raw`^(\d+)\s*(?:files?|个文件)(?:\s*[·•]\s*${sizePattern})?$`,
+    objects: String.raw`^(?:(?:indexed|已索引)\s*)?(\d+)\s*(?:objects?|个(?:变更)?对象)(?:\s*(?:indexed|已索引|已编入索引))?(?:\s*[·•]\s*${sizePattern})?$`,
   };
-}
-
-function normalizeStorage(
-  value: unknown,
-  parseNumber: (value: unknown) => number | null,
-): CloudSnapshot["storage"] | null {
-  if (!value || typeof value !== "object") return null;
-  const storage = value as Record<string, unknown>;
-  const used = parseNumber(storage.used);
-  const total = parseNumber(storage.total);
-  const projects = parseNumber(storage.projects);
-  const media = parseNumber(storage.media);
-  const archives = parseNumber(storage.archives);
-  if (
-    used === null ||
-    total === null ||
-    total <= 0 ||
-    used > total ||
-    projects === null ||
-    media === null ||
-    archives === null
-  )
-    return null;
-  return { used, total, projects, media, archives };
+  for (const [kind, pattern] of Object.entries(patterns)) {
+    const match = normalized.match(new RegExp(pattern, "iu"));
+    if (match)
+      return {
+        kind,
+        count: Number(match[1]),
+        ...(match[2] && match[3] ? { sizeBytes: parseHumanSize(`${match[2]} ${match[3]}`) } : {}),
+      };
+  }
+  return null;
 }
