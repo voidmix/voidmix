@@ -101,12 +101,6 @@ export async function createApiRuntime({
         updatedAt: cached.updatedAt === null ? null : new Date(cached.updatedAt),
       };
     };
-    const invalidateAuthSettings = () =>
-      // Surface Redis invalidation failures: a successful settings write must
-      // not claim success when other API instances may keep stale policy.
-      cacheConnection
-        ? cacheConnection.cache.forget(authPolicyKey).then(() => undefined)
-        : Promise.resolve();
     const auth = createApiAuth({
       connection,
       environment,
@@ -142,11 +136,7 @@ export async function createApiRuntime({
       users: new PostgresUserRepository(connection.db),
       settings,
       mailFallback,
-      mailer,
       resolveAuthSettings: getAuthSettings,
-      ...(environment.BLOB_STORAGE_DIR
-        ? { blobStorage: new FileSystemBlobStorageRepository(environment.BLOB_STORAGE_DIR) }
-        : {}),
     });
     let closePromise: Promise<void> | undefined;
 
@@ -156,7 +146,6 @@ export async function createApiRuntime({
         allowedOrigins: environment.ALLOWED_ORIGINS,
         authHandler,
         resolveSession: createBetterAuthSessionResolver(auth),
-        invalidateAuthSettings,
         loggerConfig,
       }),
       close(): Promise<void> {

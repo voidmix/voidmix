@@ -1,21 +1,7 @@
-import {
-  createAgentAdministration,
-  createAssetAdministration,
-  type AuditEvent,
-  type Project,
-  type ProjectTask,
-  type User,
-} from "@voidmix/core";
+import { type AuditEvent, type User } from "@voidmix/core";
 import { describe, expect, it } from "vite-plus/test";
 
-import {
-  createInMemoryAgentRepositories,
-  createInMemoryAssetRepositories,
-  InMemoryProjectRepository,
-  InMemorySystemSettingsRepository,
-  InMemoryUserRepository,
-  InMemoryWorkspaceMembershipRepository,
-} from "./memory.js";
+import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "./memory.js";
 
 const users: User[] = [
   {
@@ -36,132 +22,6 @@ const users: User[] = [
   },
 ];
 
-describe("InMemoryProjectRepository", () => {
-  const timestamp = new Date("2026-09-09T01:00:00.000Z");
-  const projects: Project[] = [
-    {
-      id: "project-a",
-      name: "First",
-      description: "First project",
-      status: "active",
-      ownerId: "owner-1",
-      stage: "in_progress",
-      archived: false,
-      archivedAt: null,
-      previousStage: null,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
-    {
-      id: "project-b",
-      name: "Second",
-      description: "Second project",
-      status: "active",
-      ownerId: "owner-1",
-      stage: "review",
-      archived: false,
-      archivedAt: null,
-      previousStage: null,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
-    {
-      id: "project-c",
-      name: "Other owner",
-      description: "Hidden",
-      status: "active",
-      ownerId: "owner-2",
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
-  ];
-  const tasks: ProjectTask[] = [
-    {
-      id: "task-a",
-      projectId: "project-b",
-      title: "First task",
-      status: "todo",
-      createdBy: "owner-1",
-      updatedAt: timestamp,
-    },
-    {
-      id: "task-b",
-      projectId: "project-b",
-      title: "Second task",
-      status: "in_progress",
-      createdBy: "owner-1",
-      updatedAt: timestamp,
-    },
-  ];
-
-  it("filters, sorts, and clones projects and tasks", async () => {
-    const repository = new InMemoryProjectRepository(projects, tasks);
-    projects[1]!.name = "Mutated seed";
-    tasks[1]!.title = "Mutated seed task";
-
-    const listedProjects = await repository.list("owner-1");
-    const listedTasks = await repository.listTasks("project-b");
-    expect(listedProjects.map((project) => project.id)).toEqual(["project-b", "project-a"]);
-    expect(listedTasks.map((task) => task.id)).toEqual(["task-b", "task-a"]);
-    expect(listedProjects[0]?.name).toBe("Second");
-    expect(listedTasks[0]?.title).toBe("Second task");
-
-    listedProjects[0]!.name = "Mutated read";
-    listedProjects[0]!.updatedAt.setUTCFullYear(2000);
-    listedTasks[0]!.updatedAt.setUTCFullYear(2000);
-    expect(await repository.getById("project-b")).toMatchObject({
-      name: "Second",
-      updatedAt: timestamp,
-    });
-    expect((await repository.listTasks("project-b"))[0]?.updatedAt).toEqual(timestamp);
-  });
-
-  it("creates and updates canonical project lifecycle and task fields", async () => {
-    let id = 0;
-    const now = new Date("2026-09-09T02:00:00.000Z");
-    const repository = new InMemoryProjectRepository([], [], {
-      now: () => now,
-      id: () => `generated-${++id}`,
-    });
-    const project = await repository.create({ ownerId: "owner-1", name: "New project" });
-    expect(project).toMatchObject({
-      id: "generated-1",
-      description: "",
-      status: "active",
-      stage: "draft",
-      archived: false,
-    });
-
-    const archivedAt = new Date("2026-09-09T03:00:00.000Z");
-    const archived = await repository.update({
-      id: project.id,
-      actorId: "owner-1",
-      name: "Renamed",
-      stage: "review",
-      archived: true,
-      archivedAt,
-      previousStage: "review",
-    });
-    expect(archived).toMatchObject({
-      name: "Renamed",
-      status: "archived",
-      stage: "review",
-      archived: true,
-      archivedAt,
-      previousStage: "review",
-    });
-
-    const task = await repository.createTask({
-      projectId: project.id,
-      actorId: "owner-1",
-      title: "Prepare review",
-    });
-    await expect(
-      repository.updateTask({ taskId: task.id, actorId: "owner-1", status: "done" }),
-    ).resolves.toMatchObject({ status: "done", updatedAt: now });
-  });
-});
-
 describe("InMemoryUserRepository", () => {
   it("supports search and cursor pagination", async () => {
     const repository = new InMemoryUserRepository(users);
@@ -174,29 +34,6 @@ describe("InMemoryUserRepository", () => {
     expect(firstPage.items[0]?.id).toBe("user-2");
     expect(secondPage.items[0]?.id).toBe("user-1");
     expect((await repository.list({ limit: 10, query: "FIRST" })).total).toBe(1);
-  });
-});
-
-describe("InMemoryWorkspaceMembershipRepository", () => {
-  it("looks up a membership by user and workspace", async () => {
-    const repository = new InMemoryWorkspaceMembershipRepository([
-      {
-        id: "membership-1",
-        workspaceId: "workspace-1",
-        userId: "user-1",
-        role: "editor",
-        status: "active",
-        createdAt: new Date("2026-01-01T00:00:00.000Z"),
-        updatedAt: new Date("2026-01-01T00:00:00.000Z"),
-      },
-    ]);
-
-    await expect(
-      repository.getByUserAndWorkspace({ userId: "user-1", workspaceId: "workspace-1" }),
-    ).resolves.toMatchObject({ role: "editor" });
-    await expect(
-      repository.getByUserAndWorkspace({ userId: "user-2", workspaceId: "workspace-1" }),
-    ).resolves.toBeNull();
   });
 });
 
@@ -242,16 +79,7 @@ describe("InMemorySystemSettingsRepository", () => {
         allowedEmailDomains: { action: "set" as const, value: ["example.com"] },
         welcomeEmailEnabled: { action: "set" as const, value: false },
       },
-      audit: {
-        id: "audit-auth-1",
-        actorId: "owner-1",
-        action: "system.settings.updated" as const,
-        targetType: "system_setting" as const,
-        targetId: "auth",
-        targetUserId: null,
-        occurredAt: new Date("2026-08-24T01:00:00.000Z"),
-        metadata: {},
-      },
+      audit: settingsAudit("audit-auth-1", "auth", "owner-1", new Date("2026-08-24T01:00:00.000Z")),
     };
 
     await repository.updateAuthSettings(input);
@@ -275,16 +103,12 @@ describe("InMemorySystemSettingsRepository", () => {
     const repository = new InMemorySystemSettingsRepository({
       settings: { "auth.registration_mode": "closed" },
     });
-    const audit = {
-      id: "audit-auth-reset-1",
-      actorId: "owner-1",
-      action: "system.settings.updated",
-      targetType: "system_setting",
-      targetId: "auth",
-      targetUserId: null,
-      occurredAt: new Date("2026-08-24T01:30:00.000Z"),
-      metadata: {},
-    } as const;
+    const audit = settingsAudit(
+      "audit-auth-reset-1",
+      "auth",
+      "owner-1",
+      new Date("2026-08-24T01:30:00.000Z"),
+    );
 
     const updated = await repository.updateAuthSettings({
       actorId: "owner-1",
@@ -332,16 +156,7 @@ describe("InMemorySystemSettingsRepository", () => {
       secrets: { "mail.resend_api_key": "database-key" },
       auditEvents,
     });
-    const audit = {
-      id: "audit-1",
-      actorId: "admin-1",
-      action: "system.settings.updated",
-      targetType: "system_setting",
-      targetId: "mail",
-      targetUserId: null,
-      occurredAt: new Date("2026-08-24T00:00:00.000Z"),
-      metadata: {},
-    } as const;
+    const audit = settingsAudit("audit-1", "mail", "admin-1", new Date("2026-08-24T00:00:00.000Z"));
     await repository.updateMailSettings({
       actorId: "admin-1",
       settings: {},
@@ -374,16 +189,7 @@ describe("InMemorySystemSettingsRepository", () => {
         enabled: { action: "set" as const, value: false },
       },
       fallback,
-      audit: {
-        id: "audit-1",
-        actorId: "admin-1",
-        action: "system.settings.updated" as const,
-        targetType: "system_setting" as const,
-        targetId: "mail",
-        targetUserId: null,
-        occurredAt: new Date("2026-08-24T00:00:00.000Z"),
-        metadata: {},
-      },
+      audit: settingsAudit("audit-1", "mail", "admin-1", new Date("2026-08-24T00:00:00.000Z")),
     };
 
     await repository.updateMailSettings(input);
@@ -398,16 +204,12 @@ describe("InMemorySystemSettingsRepository", () => {
       actorId: "admin-1",
       settings: { fromName: { action: "set", value: "Database sender" } },
       fallback,
-      audit: {
-        id: "audit-one-mail-field",
-        actorId: "admin-1",
-        action: "system.settings.updated",
-        targetType: "system_setting",
-        targetId: "mail",
-        targetUserId: null,
-        occurredAt: new Date("2026-08-24T01:45:00.000Z"),
-        metadata: {},
-      },
+      audit: settingsAudit(
+        "audit-one-mail-field",
+        "mail",
+        "admin-1",
+        new Date("2026-08-24T01:45:00.000Z"),
+      ),
     });
 
     expect([...repository.settings.keys()]).toEqual(["mail.from_name"]);
@@ -423,16 +225,7 @@ describe("InMemorySystemSettingsRepository", () => {
       actorId: "admin-1",
       settings: { from: { action: "reset" } },
       fallback,
-      audit: {
-        id: "audit-reset",
-        actorId: "admin-1",
-        action: "system.settings.updated",
-        targetType: "system_setting",
-        targetId: "mail",
-        targetUserId: null,
-        occurredAt: new Date("2026-08-24T02:00:00.000Z"),
-        metadata: {},
-      },
+      audit: settingsAudit("audit-reset", "mail", "admin-1", new Date("2026-08-24T02:00:00.000Z")),
     });
 
     expect(repository.settings.has("mail.from")).toBe(false);
@@ -443,273 +236,20 @@ describe("InMemorySystemSettingsRepository", () => {
   });
 });
 
-describe("InMemory asset and Agent repositories", () => {
-  it("allows only one concurrent asset at a workspace path", async () => {
-    const repositories = createInMemoryAssetRepositories();
-    let sequence = 0;
-    const administration = createAssetAdministration({
-      repositories,
-      id: () => `path-${++sequence}`,
-    });
-
-    const results = await Promise.allSettled([
-      administration.create({ workspaceId: "workspace-1", path: "docs/same.md" }),
-      administration.create({ workspaceId: "workspace-1", path: "docs/same.md" }),
-    ]);
-
-    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
-    expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
-    expect(repositories.assets.assets.size).toBe(1);
-  });
-
-  it("persists immutable asset versions and records sync conflicts", async () => {
-    const repositories = createInMemoryAssetRepositories();
-    let sequence = 0;
-    const administration = createAssetAdministration({
-      repositories,
-      now: () => new Date("2026-08-24T03:00:00.000Z"),
-      id: () => `asset-${++sequence}`,
-    });
-
-    const asset = await administration.create({
-      workspaceId: "workspace-1",
-      path: "docs/readme.md",
-    });
-    const committed = await administration.commitVersion({
-      actorId: "user-1",
-      assetId: asset.id,
-      workspaceId: asset.workspaceId,
-      blobHash: "abcdef0123456789",
-      byteSize: 10,
-      expectedHeadVersionId: null,
-      parentVersionId: null,
-      idempotencyKey: "upload-1",
-    });
-    const replay = await administration.commitVersion({
-      actorId: "user-1",
-      assetId: asset.id,
-      workspaceId: asset.workspaceId,
-      blobHash: "abcdef0123456789",
-      byteSize: 10,
-      expectedHeadVersionId: null,
-      parentVersionId: null,
-      idempotencyKey: "upload-1",
-    });
-
-    expect(replay.version.id).toBe(committed.version.id);
-    expect((await repositories.assets.getById(asset.id))?.headVersionId).toBe(committed.version.id);
-    const stored = await repositories.versions.getById(committed.version.id);
-    expect(stored).not.toBe(committed.version);
-    expect(repositories.versions.versions.size).toBe(1);
-    await expect(
-      administration.commitVersion({
-        actorId: "user-1",
-        assetId: asset.id,
-        workspaceId: asset.workspaceId,
-        blobHash: "abcdef0123456789",
-        byteSize: 10,
-        expectedHeadVersionId: null,
-        parentVersionId: null,
-        idempotencyKey: "upload-2",
-      }),
-    ).rejects.toMatchObject({ code: "ASSET_HEAD_CONFLICT" });
-    expect(repositories.conflicts.conflicts.size).toBe(1);
-  });
-
-  it("allocates Agent step sequences and renews a lease through repository ports", async () => {
-    const repositories = createInMemoryAgentRepositories();
-    let tick = 0;
-    const now = () => new Date(`2026-08-24T03:0${tick++}:00.000Z`);
-    const administration = createAgentAdministration({
-      repositories,
-      now,
-      id: () => `agent-${tick}`,
-      leaseDurationMs: 120_000,
-    });
-    const run = await administration.createRun({
-      workspaceId: "workspace-1",
-      requestedBy: "user-1",
-      goal: "index assets",
-    });
-    const first = await administration.createStep({ runId: run.id, name: "scan" });
-    const second = await administration.createStep({ runId: run.id, name: "summarize" });
-    const lease = await administration.acquireLease({ runId: run.id, holderId: "worker-1" });
-    const renewed = await administration.heartbeat({ runId: run.id, holderId: "worker-1" });
-
-    expect([first.sequence, second.sequence]).toEqual([1, 2]);
-    expect(renewed.expiresAt.getTime()).toBeGreaterThan(lease.expiresAt.getTime());
-    const storedRun = await repositories.runs.getById(run.id);
-    expect(storedRun?.currentStepId).toBe(second.id);
-  });
-
-  it("serializes Agent lease acquisition and step sequence allocation", async () => {
-    const repositories = createInMemoryAgentRepositories();
-    let sequence = 0;
-    const administration = createAgentAdministration({
-      repositories,
-      id: () => `race-${++sequence}`,
-      leaseDurationMs: 10_000,
-    });
-    const run = await administration.createRun({
-      workspaceId: "workspace-1",
-      requestedBy: "user-1",
-      goal: "race",
-    });
-
-    const leases = await Promise.allSettled([
-      administration.acquireLease({ runId: run.id, holderId: "worker-1" }),
-      administration.acquireLease({ runId: run.id, holderId: "worker-2" }),
-    ]);
-    expect(leases.filter((result) => result.status === "fulfilled")).toHaveLength(1);
-    expect(leases.filter((result) => result.status === "rejected")).toHaveLength(1);
-
-    const steps = await Promise.all([
-      administration.createStep({ runId: run.id, name: "first" }),
-      administration.createStep({ runId: run.id, name: "second" }),
-    ]);
-    expect(steps.map((step) => step.sequence).sort()).toEqual([1, 2]);
-  });
-
-  it("rejects a stale concurrent Agent transition", async () => {
-    const repositories = createInMemoryAgentRepositories();
-    const administration = createAgentAdministration({
-      repositories,
-      id: () => "transition-run",
-    });
-    const run = await administration.createRun({
-      workspaceId: "workspace-1",
-      requestedBy: "user-1",
-      goal: "transition",
-    });
-
-    const results = await Promise.allSettled([
-      administration.transitionRun({ runId: run.id, status: "running" }),
-      administration.transitionRun({ runId: run.id, status: "cancelled" }),
-    ]);
-    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
-    expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
-    expect((await administration.getRun(run.id))?.status).toBe("running");
-  });
-
-  it("preserves a step linked after an Agent transition snapshot was read", async () => {
-    const repositories = createInMemoryAgentRepositories();
-    let sequence = 0;
-    const administration = createAgentAdministration({
-      repositories,
-      now: () => new Date("2026-08-24T03:30:00.000Z"),
-      id: () => `aggregate-${++sequence}`,
-    });
-    const run = await administration.createRun({
-      workspaceId: "workspace-1",
-      requestedBy: "user-1",
-      goal: "preserve aggregate fields",
-    });
-    const staleSnapshot = await repositories.runs.getById(run.id);
-    expect(staleSnapshot).not.toBeNull();
-    const step = await administration.createStep({ runId: run.id, name: "first" });
-
-    const result = await repositories.commands.transitionRun({
-      run: {
-        ...staleSnapshot!,
-        status: "running",
-        updatedAt: new Date("2026-08-24T03:31:00.000Z"),
-      },
-      expectedStatus: "queued",
-    });
-
-    expect(result).toMatchObject({ status: "updated", run: { currentStepId: step.id } });
-  });
-
-  it("serializes concurrent asset head commits", async () => {
-    const repositories = createInMemoryAssetRepositories();
-    let sequence = 0;
-    const administration = createAssetAdministration({
-      repositories,
-      now: () => new Date("2026-08-24T04:00:00.000Z"),
-      id: () => `concurrent-${++sequence}`,
-    });
-    const asset = await administration.create({
-      workspaceId: "workspace-1",
-      path: "docs/concurrent.md",
-    });
-    const input = {
-      actorId: "user-1",
-      assetId: asset.id,
-      workspaceId: asset.workspaceId,
-      blobHash: "abcdef0123456789",
-      byteSize: 10,
-      expectedHeadVersionId: null,
-      parentVersionId: null,
-    } as const;
-
-    const results = await Promise.allSettled([
-      administration.commitVersion({ ...input, idempotencyKey: "concurrent-a" }),
-      administration.commitVersion({ ...input, idempotencyKey: "concurrent-b" }),
-    ]);
-
-    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
-    expect(repositories.versions.versions.size).toBe(1);
-    expect(repositories.conflicts.conflicts.size).toBe(1);
-  });
-
-  it("replays concurrent commits that share an idempotency key", async () => {
-    const repositories = createInMemoryAssetRepositories();
-    let sequence = 0;
-    const administration = createAssetAdministration({
-      repositories,
-      now: () => new Date("2026-08-24T05:00:00.000Z"),
-      id: () => `replay-${++sequence}`,
-    });
-    const asset = await administration.create({
-      workspaceId: "workspace-1",
-      path: "docs/replay.md",
-    });
-    const input = {
-      actorId: "user-1",
-      assetId: asset.id,
-      workspaceId: asset.workspaceId,
-      blobHash: "abcdef0123456789",
-      byteSize: 10,
-      expectedHeadVersionId: null,
-      parentVersionId: null,
-      idempotencyKey: "same-concurrent-key",
-    } as const;
-
-    const results = await Promise.all([
-      administration.commitVersion(input),
-      administration.commitVersion(input),
-    ]);
-
-    expect(results[1]?.version.id).toBe(results[0]?.version.id);
-    expect(repositories.versions.versions.size).toBe(1);
-    expect(repositories.conflicts.conflicts.size).toBe(0);
-  });
-
-  it("resolves a sync conflict only once under concurrent requests", async () => {
-    const repositories = createInMemoryAssetRepositories();
-    let sequence = 0;
-    const administration = createAssetAdministration({
-      repositories,
-      now: () => new Date("2026-08-24T06:00:00.000Z"),
-      id: () => `conflict-${++sequence}`,
-    });
-    const asset = await administration.create({
-      workspaceId: "workspace-1",
-      path: "docs/conflict.md",
-    });
-    const conflict = await administration.recordConflict({
-      workspaceId: asset.workspaceId,
-      assetId: asset.id,
-      expectedHeadVersionId: null,
-      actualHeadVersionId: "remote-1",
-    });
-
-    const results = await Promise.allSettled([
-      administration.resolveConflict({ conflictId: conflict.id, actorId: "user-1" }),
-      administration.resolveConflict({ conflictId: conflict.id, actorId: "user-2" }),
-    ]);
-
-    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
-    expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
-  });
-});
+function settingsAudit(
+  id: string,
+  targetId: "auth" | "mail",
+  actorId: string,
+  occurredAt: Date,
+): AuditEvent {
+  return {
+    id,
+    actorId,
+    action: "system.settings.updated",
+    targetType: "system_setting",
+    targetId,
+    targetUserId: null,
+    occurredAt,
+    metadata: {},
+  };
+}

@@ -1,10 +1,6 @@
-import { defineConfig } from "vite-plus/test/config";
+import { workspaceTests } from "../../test.config.js";
 
-export default defineConfig({
-  test: {
-    environment: "jsdom",
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
-    setupFiles: ["./src/test/setup.ts"],
-    coverage: { reporter: ["text", "json", "lcov"] },
-  },
+export default workspaceTests({
+  environment: "jsdom",
+  setupFiles: ["./src/test/setup.ts"],
 });

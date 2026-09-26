@@ -1,97 +1,33 @@
 import { describe, expect, it } from "vite-plus/test";
 import {
-  createAuthSettingsAdministration,
   createDefaultAuthSettings,
-  createMailSettingsAdministration,
-  createProjectAdministration,
   createPublicAuthCapabilities,
   createUserAdministration,
-  type AuditEvent,
-  type AuthSettings,
-  type AuthSettingsView,
-  type MailSettings,
   type MailSettingsFallback,
-  type ProjectRepository,
-  type SystemSettingsRepository,
   type User,
   type UserRepository,
 } from "./index";
 
-describe("project administration", () => {
-  it("delegates project and task operations to its repository", async () => {
-    const calls: string[] = [];
-    const project: ProjectRepository = {
-      async list(ownerId) {
-        calls.push("list:" + ownerId);
-        return [];
-      },
-      async getById(id) {
-        calls.push("get:" + id);
-        return null;
-      },
-      async create(input) {
-        calls.push("create:" + input.ownerId);
-        throw new Error("unused");
-      },
-      async update(input) {
-        calls.push("update:" + input.id);
-        throw new Error("unused");
-      },
-      async listTasks(projectId) {
-        calls.push("tasks:" + projectId);
-        return [];
-      },
-      async createTask(input) {
-        calls.push("create-task:" + input.projectId);
-        throw new Error("unused");
-      },
-      async updateTask(input) {
-        calls.push("update-task:" + input.taskId);
-        throw new Error("unused");
-      },
-    };
-    const service = createProjectAdministration({ projects: project });
-    await service.list("owner-1");
-    await service.get("project-1");
-    await service.tasks("project-1");
-    expect(calls).toEqual(["list:owner-1", "get:project-1", "tasks:project-1"]);
-  });
-});
+const unused = async (): Promise<never> => {
+  throw new Error("unexpected repository call");
+};
 
 function repository(seed: User[]): UserRepository {
   const users = new Map(seed.map((user) => [user.id, user]));
-  const audit: AuditEvent[] = [];
   return {
-    async list() {
-      return { items: [...users.values()], total: users.size, nextCursor: null };
-    },
-    async getById(id) {
-      return users.get(id) ?? null;
-    },
-    async getByEmail(email) {
-      return [...users.values()].find((user) => user.email === email) ?? null;
-    },
-    async countActiveAdministrators() {
-      return [...users.values()].filter(
+    list: unused,
+    getById: async (id) => users.get(id) ?? null,
+    getByEmail: async (email) => [...users.values()].find((user) => user.email === email) ?? null,
+    countActiveAdministrators: async () =>
+      [...users.values()].filter(
         (user) => user.status === "active" && (user.role === "admin" || user.role === "owner"),
-      ).length;
-    },
-    async save(user) {
+      ).length,
+    save: async (user) => {
       users.set(user.id, user);
     },
-    async updateStatus(id, status) {
-      const current = users.get(id);
-      if (!current) throw new Error("missing user");
-      const updated = { ...current, status };
-      users.set(id, updated);
-      return updated;
-    },
-    async appendAudit(event) {
-      audit.push(event);
-    },
-    async listAudit() {
-      return audit;
-    },
+    updateStatus: unused,
+    appendAudit: async () => {},
+    listAudit: unused,
   };
 }
 
@@ -113,253 +49,48 @@ const fallback: MailSettingsFallback = {
 };
 
 describe("user administration", () => {
-  it("prevents an administrator from suspending themselves", async () => {
+  it.each([
+    ["self-suspension", admin.id, "SELF_SUSPENSION"],
+    ["final administrator", "operator", "LAST_ADMIN"],
+  ])("rejects %s before mutation", async (_name, actorId, code) => {
     const service = createUserAdministration({ users: repository([admin]) });
     await expect(
-      service.updateStatus({ actorId: admin.id, userId: admin.id, status: "suspended" }),
-    ).rejects.toMatchObject({ code: "SELF_SUSPENSION" });
-  });
-
-  it("keeps the final active administrator from being suspended", async () => {
-    const service = createUserAdministration({ users: repository([admin]) });
-
-    await expect(
-      service.updateStatus({ actorId: "operator", userId: admin.id, status: "suspended" }),
-    ).rejects.toMatchObject({ code: "LAST_ADMIN" });
+      service.updateStatus({ actorId, userId: admin.id, status: "suspended" }),
+    ).rejects.toMatchObject({ code });
   });
 
   it("creates an initial administrator idempotently", async () => {
     const service = createUserAdministration({ users: repository([]), id: () => "usr_created" });
-    const first = await service.ensureAdmin({ email: admin.email, displayName: admin.displayName });
-    const second = await service.ensureAdmin({
-      email: admin.email,
-      displayName: admin.displayName,
-    });
+    const input = { email: admin.email, displayName: admin.displayName };
+    const first = await service.ensureAdmin(input);
+    const second = await service.ensureAdmin(input);
     expect(second.id).toBe(first.id);
   });
 });
 
-describe("mail settings administration", () => {
-  it("rejects invalid typed mail settings before persistence", async () => {
-    const updateMailSettings = async (): Promise<MailSettings> => {
-      throw new Error("must not persist");
-    };
-    const settings = settingsRepository({ updateMailSettings });
-    const service = createMailSettingsAdministration({ settings, fallback });
-
-    await expect(
-      service.update({
-        actorId: "admin-1",
-        settings: {
-          from: { action: "set", value: "invalid-email" },
-        },
-      }),
-    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
-  });
-
-  it("records only recipient and result after a successful test delivery", async () => {
-    const audit: AuditEvent[] = [];
-    const sendTest = async () => {};
-    const service = createMailSettingsAdministration({
-      settings: settingsRepository({ audit }),
-      fallback: {
-        ...fallback,
-        from: { value: "mail@example.com", source: "environment" },
-        resendApiKey: { value: "key", source: "environment" },
-      },
-      sendTest,
-      now: () => new Date("2026-08-24T00:00:00.000Z"),
-      id: () => "audit-mail-test",
-    });
-
-    await service.sendTest({
-      actorId: "admin-1",
-      recipient: { email: "admin@example.com", name: "Admin" },
-    });
-
-    expect(audit).toEqual([
-      expect.objectContaining({
-        action: "system.mail.test.sent",
-        targetType: "system_setting",
-        targetId: "mail",
-        metadata: { recipient: "admin@example.com", result: "sent" },
-      }),
-    ]);
-    expect(JSON.stringify(audit)).not.toContain("key");
-  });
-});
-
-describe("auth settings administration", () => {
+describe("public auth capabilities", () => {
   it("exposes capabilities only when verification mail is configured", async () => {
     const service = createPublicAuthCapabilities({
-      settings: settingsRepository({}),
-      mailFallback: {
-        enabled: { value: true, source: "default" },
-        from: { value: null, source: "missing" },
-        fromName: { value: "Voidmix", source: "default" },
-        templatesBaseUrl: { value: null, source: "missing" },
-        resendApiKey: { value: null, source: "missing" },
+      settings: {
+        resolveAuthSettings: async () => createDefaultAuthSettings(),
+        resolveMailConfiguration: async () => ({
+          settings: {
+            enabled: true,
+            from: "mail@example.com",
+            fromName: "Voidmix",
+            templatesBaseUrl: null,
+            configurationState: "incomplete",
+            missing: ["RESEND_API_KEY", "MAIL_FROM"],
+          },
+          resendApiKey: null,
+        }),
       },
+      mailFallback: fallback,
     });
-
     await expect(service.get()).resolves.toEqual({
       registrationAvailable: false,
       verificationEmailRequestAvailable: false,
       passwordResetRequestAvailable: false,
     });
   });
-
-  it("normalizes and deduplicates allowed email domains before persistence", async () => {
-    let persisted: AuthSettingsView | undefined;
-    let audit: AuditEvent | undefined;
-    const service = createAuthSettingsAdministration({
-      settings: settingsRepository({
-        updateAuthSettings: async (input) => {
-          audit = input.audit;
-          const domains =
-            input.settings.allowedEmailDomains?.action === "set"
-              ? input.settings.allowedEmailDomains.value
-              : [];
-          persisted = authSettingsView({
-            ...createDefaultAuthSettings(),
-            allowedEmailDomains: domains,
-            updatedAt: input.audit.occurredAt,
-          });
-          return persisted;
-        },
-      }),
-      now: () => new Date("2026-08-24T01:00:00.000Z"),
-      id: () => "audit-auth",
-    });
-
-    await service.update({
-      actorId: "owner-1",
-      settings: {
-        allowedEmailDomains: {
-          action: "set",
-          value: [" Example.COM ", "example.com", "studio.example"],
-        },
-      },
-    });
-
-    expect(persisted?.allowedEmailDomains).toEqual(["example.com", "studio.example"]);
-    expect(audit).toMatchObject({
-      action: "system.settings.updated",
-      targetType: "system_setting",
-      targetId: "auth",
-    });
-  });
-
-  it("rejects malformed allowed email domains", async () => {
-    const service = createAuthSettingsAdministration({ settings: settingsRepository({}) });
-
-    await expect(
-      service.update({
-        actorId: "owner-1",
-        settings: {
-          allowedEmailDomains: { action: "set", value: ["https://example.com"] },
-        },
-      }),
-    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
-  });
 });
-
-function settingsRepository(options: {
-  audit?: AuditEvent[];
-  updateAuthSettings?: SystemSettingsRepository["updateAuthSettings"];
-  updateMailSettings?: SystemSettingsRepository["updateMailSettings"];
-}): SystemSettingsRepository {
-  async function getMailSettings(fallback: MailSettingsFallback): Promise<MailSettings> {
-    const missing: MailSettings["missing"] = [];
-    if (!fallback.resendApiKey.value) missing.push("RESEND_API_KEY");
-    if (!fallback.from.value) missing.push("MAIL_FROM");
-    return {
-      enabled: fallback.enabled.value,
-      from: fallback.from.value,
-      fromName: fallback.fromName.value,
-      templatesBaseUrl: fallback.templatesBaseUrl.value,
-      sources: {
-        enabled: fallback.enabled.source,
-        from: fallback.from.source,
-        fromName: fallback.fromName.source,
-        templatesBaseUrl: fallback.templatesBaseUrl.source,
-      },
-      inherited: {
-        enabled: { ...fallback.enabled },
-        from: { ...fallback.from },
-        fromName: { ...fallback.fromName },
-        templatesBaseUrl: { ...fallback.templatesBaseUrl },
-      },
-      resendApiKey: {
-        configured: Boolean(fallback.resendApiKey.value),
-        source: fallback.resendApiKey.value ? "environment" : "missing",
-        inheritedConfigured: Boolean(fallback.resendApiKey.value),
-      },
-      configurationState: missing.length === 0 ? "ready" : "incomplete",
-      missing,
-      updatedAt: null,
-    };
-  }
-
-  return {
-    async getAuthSettings() {
-      return authSettingsView(createDefaultAuthSettings());
-    },
-    async resolveAuthSettings() {
-      return createDefaultAuthSettings();
-    },
-    updateAuthSettings:
-      options.updateAuthSettings ??
-      (async ({ audit }) =>
-        authSettingsView({ ...createDefaultAuthSettings(), updatedAt: audit.occurredAt })),
-    getMailSettings,
-    async resolveMailConfiguration(fallback) {
-      return {
-        settings: {
-          enabled: fallback.enabled.value,
-          from: fallback.from.value,
-          fromName: fallback.fromName.value,
-          templatesBaseUrl: fallback.templatesBaseUrl.value,
-          configurationState: (await getMailSettings(fallback)).configurationState,
-          missing: (await getMailSettings(fallback)).missing,
-        },
-        resendApiKey: fallback.resendApiKey.value,
-      };
-    },
-    updateMailSettings:
-      options.updateMailSettings ??
-      (async ({ fallback }) => {
-        return getMailSettings(fallback);
-      }),
-    async appendMailTestAudit(event) {
-      options.audit?.push(event);
-    },
-  };
-}
-
-function authSettingsView(settings: AuthSettings): AuthSettingsView {
-  const defaults = createDefaultAuthSettings();
-  return {
-    ...settings,
-    sources: {
-      registrationMode: "default",
-      allowedEmailDomains: "default",
-      welcomeEmailEnabled: "default",
-      verificationEmailEnabled: "default",
-      passwordResetEmailEnabled: "default",
-    },
-    inherited: {
-      registrationMode: { value: defaults.registrationMode, source: "default" },
-      allowedEmailDomains: { value: defaults.allowedEmailDomains, source: "default" },
-      welcomeEmailEnabled: { value: defaults.welcomeEmailEnabled, source: "default" },
-      verificationEmailEnabled: {
-        value: defaults.verificationEmailEnabled,
-        source: "default",
-      },
-      passwordResetEmailEnabled: {
-        value: defaults.passwordResetEmailEnabled,
-        source: "default",
-      },
-    },
-  };
-}

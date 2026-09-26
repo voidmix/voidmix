@@ -1,3 +1,4 @@
+import { isMutationProcedure } from "@voidmix/contracts";
 import { COMMON_ERROR_STATUS_MAP, ORPCError, RPCSerializer } from "@orpc/server";
 import { BodyLimitPlugin, RPCHandler } from "@orpc/server/fetch";
 import {
@@ -32,7 +33,6 @@ export interface CreateApiAppOptions {
   authHandler: (request: Request) => Promise<Response>;
   now?: () => Date;
   loggerConfig?: EvlogConfig;
-  invalidateAuthSettings?: () => Promise<void>;
 }
 
 type ApiEnv = {
@@ -42,27 +42,6 @@ type ApiEnv = {
     auth: ApiRequestAuthContext;
   };
 };
-
-// The contract currently names mutations with verbs that are safe to classify
-// at the transport boundary. Keep this list explicit: GET requests are
-// subject to CSRF protection and may be batched/deduplicated by the client.
-const mutationProcedureNames = new Set([
-  "create",
-  "updateStatus",
-  "update",
-  "sendTest",
-  "commitVersion",
-  "complete",
-  "resolveConflict",
-  "transition",
-  "acquireLease",
-  "heartbeat",
-  "archive",
-  "restore",
-  "resolve",
-  "cancel",
-  "retry",
-]);
 
 const rpcSerializer = new RPCSerializer();
 
@@ -98,9 +77,6 @@ export function createApiApp(options: CreateApiAppOptions) {
   const router = createCanonicalApiRouter({
     modules: options.modules,
     ...(options.now ? { now: options.now } : {}),
-    ...(options.invalidateAuthSettings
-      ? { invalidateAuthSettings: options.invalidateAuthSettings }
-      : {}),
   });
   const loggerConfig = options.loggerConfig ?? createLoggerConfig({ service: "api" });
   const middlewareOptions = {
@@ -120,7 +96,7 @@ export function createApiApp(options: CreateApiAppOptions) {
         new TimeoutHandlerPlugin<ApiContext>({ timeout: 15_000 }),
       ],
       allowMethods: (method, _procedure, path) => {
-        const isMutation = mutationProcedureNames.has(path.at(-1) ?? "");
+        const isMutation = isMutationProcedure(path);
         return isMutation ? method === "POST" : method === "GET" || method === "POST";
       },
       errorStatusMap: { ...COMMON_ERROR_STATUS_MAP, MAIL_NOT_CONFIGURED: 503 },

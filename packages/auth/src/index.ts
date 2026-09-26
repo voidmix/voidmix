@@ -1,21 +1,7 @@
 export const roles = ["user", "admin", "owner"] as const;
 export type Role = (typeof roles)[number];
 
-export const permissions = [
-  "workspace.assets.read",
-  "workspace.assets.write",
-  "workspace.agents.read",
-  "workspace.agents.write",
-  "admin.users.read",
-  "admin.users.write",
-  "admin.audit.read",
-  "admin.settings.mail.read",
-  "admin.settings.mail.write",
-  "admin.settings.mail.secret.write",
-  "admin.settings.mail.test",
-  "admin.settings.auth.read",
-  "admin.settings.auth.write",
-] as const;
+export const permissions = ["admin.users.read", "admin.users.write", "admin.audit.read"] as const;
 export type Permission = (typeof permissions)[number];
 
 export interface SessionUser {
@@ -30,42 +16,16 @@ export interface Session {
   expiresAt: Date;
 }
 
+const adminPermissions = [
+  "admin.users.read",
+  "admin.users.write",
+  "admin.audit.read",
+] as const satisfies readonly Permission[];
+
 const grants: Record<Role, ReadonlySet<Permission>> = {
-  user: new Set([
-    "workspace.assets.read",
-    "workspace.assets.write",
-    "workspace.agents.read",
-    "workspace.agents.write",
-  ]),
-  admin: new Set([
-    "workspace.assets.read",
-    "workspace.assets.write",
-    "workspace.agents.read",
-    "workspace.agents.write",
-    "admin.users.read",
-    "admin.users.write",
-    "admin.audit.read",
-    "admin.settings.mail.read",
-    "admin.settings.mail.write",
-    "admin.settings.mail.secret.write",
-    "admin.settings.mail.test",
-    "admin.settings.auth.read",
-  ]),
-  owner: new Set([
-    "workspace.assets.read",
-    "workspace.assets.write",
-    "workspace.agents.read",
-    "workspace.agents.write",
-    "admin.users.read",
-    "admin.users.write",
-    "admin.audit.read",
-    "admin.settings.mail.read",
-    "admin.settings.mail.write",
-    "admin.settings.mail.secret.write",
-    "admin.settings.mail.test",
-    "admin.settings.auth.read",
-    "admin.settings.auth.write",
-  ]),
+  user: new Set(),
+  admin: new Set(adminPermissions),
+  owner: new Set(adminPermissions),
 };
 
 export function hasPermission(session: Session | null, permission: Permission): boolean {

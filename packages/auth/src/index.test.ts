@@ -20,17 +20,8 @@ describe("hasPermission", () => {
     expect(hasPermission(session("user"), "admin.users.read")).toBe(false);
   });
 
-  it("keeps the role grants explicit", () => {
-    expect(hasPermission(session("admin"), "admin.settings.mail.secret.write")).toBe(true);
-    expect(hasPermission(session("admin"), "admin.settings.auth.read")).toBe(true);
-    expect(hasPermission(session("admin"), "admin.settings.auth.write")).toBe(false);
-    expect(hasPermission(session("owner"), "admin.settings.auth.write")).toBe(true);
-    expect(hasPermission(session("user"), "admin.settings.mail.read")).toBe(false);
-  });
-
-  it("keeps workspace capability grants separate from membership access", () => {
-    expect(hasPermission(session("user"), "workspace.assets.read")).toBe(true);
-    expect(hasPermission(session("user"), "workspace.agents.write")).toBe(true);
-    expect(hasPermission(session("admin"), "workspace.assets.write")).toBe(true);
+  it.each(["admin", "owner"] as const)("grants the active admin surface to %s", (role) => {
+    for (const permission of ["admin.users.read", "admin.users.write", "admin.audit.read"] as const)
+      expect(hasPermission(session(role), permission)).toBe(true);
   });
 });

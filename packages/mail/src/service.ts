@@ -1,11 +1,6 @@
 import { getMailEnv, type MailEnvironment } from "./env.js";
 import type { Locale } from "@voidmix/i18n/types";
-import {
-  passwordResetEmail,
-  testEmail,
-  verificationEmail,
-  welcomeEmail,
-} from "./templates/index.js";
+import { passwordResetEmail, verificationEmail, welcomeEmail } from "./templates/index.js";
 import { createLoggerTransport, createResendTransport } from "./transports/index.js";
 import type {
   MailAddress,
@@ -13,6 +8,8 @@ import type {
   MailMessage,
   MailTemplateKind,
   MailTransport,
+  EmailTemplateResult,
+  SendWelcomeEmailInput,
   MissingMailConfiguration,
   ResolvedMailConfiguration,
 } from "./types.js";
@@ -50,11 +47,7 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
   async function deliver(
     template: MailTemplateKind,
     to: MailAddress,
-    render: (configuration: ResolvedMailConfiguration) => Promise<{
-      subject: string;
-      html: string;
-      text: string;
-    }>,
+    render: (configuration: ResolvedMailConfiguration) => Promise<EmailTemplateResult>,
   ): Promise<void> {
     const configuration = await resolveConfiguration();
     const missing = missingConfiguration(configuration);
@@ -77,46 +70,27 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
     if (!result.ok) throw new Error(`Failed to send ${template} email: ${result.error}`);
   }
 
+  function sender<Input extends SendWelcomeEmailInput>(
+    kind: MailTemplateKind,
+    render: (input: Input, locale: Locale) => Promise<EmailTemplateResult>,
+    urlKey: "baseUrl" | "appUrl",
+  ) {
+    return (input: Input) =>
+      deliver(kind, address(input.email, input.name), (configuration) =>
+        render(
+          {
+            ...input,
+            ...(configuration.templatesBaseUrl ? { [urlKey]: configuration.templatesBaseUrl } : {}),
+          },
+          input.locale ?? defaultLocale,
+        ),
+      );
+  }
+
   return {
-    async sendVerification(input) {
-      await deliver("email-verification", address(input.email, input.name), (configuration) =>
-        verificationEmail(
-          {
-            ...input,
-            ...(configuration.templatesBaseUrl ? { baseUrl: configuration.templatesBaseUrl } : {}),
-          },
-          input.locale ?? defaultLocale,
-        ),
-      );
-    },
-    async sendPasswordReset(input) {
-      await deliver("password-reset", address(input.email, input.name), (configuration) =>
-        passwordResetEmail(
-          {
-            ...input,
-            ...(configuration.templatesBaseUrl ? { baseUrl: configuration.templatesBaseUrl } : {}),
-          },
-          input.locale ?? defaultLocale,
-        ),
-      );
-    },
-    async sendWelcome(input) {
-      await deliver("welcome", address(input.email, input.name), (configuration) =>
-        welcomeEmail(
-          {
-            ...input,
-            ...(configuration.templatesBaseUrl ? { appUrl: configuration.templatesBaseUrl } : {}),
-          },
-          input.locale ?? defaultLocale,
-        ),
-      );
-    },
-    async sendTest(input) {
-      await deliver("test", address(input.email, input.name), async () => {
-        const locale = input.locale ?? defaultLocale;
-        return testEmail(locale);
-      });
-    },
+    sendVerification: sender("email-verification", verificationEmail, "baseUrl"),
+    sendPasswordReset: sender("password-reset", passwordResetEmail, "baseUrl"),
+    sendWelcome: sender("welcome", welcomeEmail, "appUrl"),
   };
 }
 

@@ -10,18 +10,8 @@ export interface MailRuntimeSettings {
   missing: Array<"RESEND_API_KEY" | "MAIL_FROM">;
 }
 export interface MailSettings extends MailRuntimeSettings {
-  sources: {
-    enabled: SettingSource;
-    from: SettingSource;
-    fromName: SettingSource;
-    templatesBaseUrl: SettingSource;
-  };
-  inherited: {
-    enabled: InheritedSetting<boolean>;
-    from: InheritedSetting<string | null>;
-    fromName: InheritedSetting<string>;
-    templatesBaseUrl: InheritedSetting<string | null>;
-  };
+  sources: SettingSources<MailFields>;
+  inherited: InheritedSettings<MailFields>;
   resendApiKey: {
     configured: boolean;
     source: Extract<SettingSource, "database" | "environment" | "missing">;
@@ -29,11 +19,11 @@ export interface MailSettings extends MailRuntimeSettings {
   };
   updatedAt: Date | null;
 }
-export interface MailSettingsFallback {
-  enabled: InheritedSetting<boolean>;
-  from: InheritedSetting<string | null>;
-  fromName: InheritedSetting<string>;
-  templatesBaseUrl: InheritedSetting<string | null>;
+type MailFields = Pick<MailRuntimeSettings, "enabled" | "from" | "fromName" | "templatesBaseUrl">;
+type SettingSources<T> = { [K in keyof T]: SettingSource };
+type InheritedSettings<T> = { [K in keyof T]: InheritedSetting<T[K]> };
+type SettingUpdates<T> = { [K in keyof T]?: UpdateSetting<T[K]> };
+export interface MailSettingsFallback extends InheritedSettings<MailFields> {
   resendApiKey: InheritedSetting<string | null>;
 }
 export interface MailRuntimeConfiguration {
@@ -57,29 +47,12 @@ export interface AuthSettings {
   passwordResetEmailEnabled: boolean;
   updatedAt: Date | null;
 }
+type AuthFields = Omit<AuthSettings, "updatedAt">;
 export interface AuthSettingsView extends AuthSettings {
-  sources: {
-    registrationMode: SettingSource;
-    allowedEmailDomains: SettingSource;
-    welcomeEmailEnabled: SettingSource;
-    verificationEmailEnabled: SettingSource;
-    passwordResetEmailEnabled: SettingSource;
-  };
-  inherited: {
-    registrationMode: InheritedSetting<RegistrationMode>;
-    allowedEmailDomains: InheritedSetting<string[]>;
-    welcomeEmailEnabled: InheritedSetting<boolean>;
-    verificationEmailEnabled: InheritedSetting<boolean>;
-    passwordResetEmailEnabled: InheritedSetting<boolean>;
-  };
+  sources: SettingSources<AuthFields>;
+  inherited: InheritedSettings<AuthFields>;
 }
-export interface UpdateAuthSettingsInput {
-  registrationMode?: UpdateSetting<RegistrationMode>;
-  allowedEmailDomains?: UpdateSetting<string[]>;
-  welcomeEmailEnabled?: UpdateSetting<boolean>;
-  verificationEmailEnabled?: UpdateSetting<boolean>;
-  passwordResetEmailEnabled?: UpdateSetting<boolean>;
-}
+export type UpdateAuthSettingsInput = SettingUpdates<AuthFields>;
 export interface PublicAuthCapabilities {
   registrationAvailable: boolean;
   verificationEmailRequestAvailable: boolean;
@@ -111,5 +84,4 @@ export interface SystemSettingsRepository {
     fallback: MailSettingsFallback;
     audit: AuditEvent;
   }): Promise<MailSettings>;
-  appendMailTestAudit(event: AuditEvent): Promise<void>;
 }

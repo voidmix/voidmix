@@ -8,16 +8,19 @@ import {
 import type { ProjectApplication } from "./index.js";
 
 export interface AgentRunApplication {
-  create(input: {
-    actorId: string;
-    projectId: string;
-    assetVersionId?: string | null;
-    idempotencyKey: string;
-    input: Record<string, unknown>;
-  }): Promise<AgentRunV2>;
-  get(input: { actorId: string; runId: string }): Promise<AgentRunV2>;
-  cancel(input: { actorId: string; runId: string }): Promise<AgentRunV2>;
-  retry(input: { actorId: string; runId: string }): Promise<AgentRunV2>;
+  create(
+    this: void,
+    input: {
+      actorId: string;
+      projectId: string;
+      assetVersionId?: string | null;
+      idempotencyKey: string;
+      input: Record<string, unknown>;
+    },
+  ): Promise<AgentRunV2>;
+  get(this: void, input: { actorId: string; runId: string }): Promise<AgentRunV2>;
+  cancel(this: void, input: { actorId: string; runId: string }): Promise<AgentRunV2>;
+  retry(this: void, input: { actorId: string; runId: string }): Promise<AgentRunV2>;
 }
 
 export function createAgentRunApplication(options: {
@@ -31,7 +34,7 @@ export function createAgentRunApplication(options: {
   const createQueued = (input: Parameters<AgentRunV2Repository["create"]>[0]) =>
     options.runs.createQueued ? options.runs.createQueued(input) : options.runs.create(input);
 
-  return {
+  const commands: AgentRunApplication = {
     async create({ actorId, projectId, assetVersionId, idempotencyKey, input }) {
       await options.projects.assertCapability({ actorId, projectId, capability: "project.write" });
       const stableId = `agent-run-${actorId}-${projectId}-${idempotencyKey}`;
@@ -60,7 +63,7 @@ export function createAgentRunApplication(options: {
     },
 
     async cancel({ actorId, runId }) {
-      const run = await this.get({ actorId, runId });
+      const run = await commands.get({ actorId, runId });
       assertAgentRunCanCancelV2(run.status);
       const updated = await options.runs.updateStatus({
         id: run.id,
@@ -73,7 +76,7 @@ export function createAgentRunApplication(options: {
     },
 
     async retry({ actorId, runId }) {
-      const run = await this.get({ actorId, runId });
+      const run = await commands.get({ actorId, runId });
       if (run.status !== "failed" && run.status !== "cancelled") {
         throw new AgentRunV2DomainError(
           "AGENT_RUN_TERMINAL",
@@ -96,4 +99,5 @@ export function createAgentRunApplication(options: {
       });
     },
   };
+  return commands;
 }

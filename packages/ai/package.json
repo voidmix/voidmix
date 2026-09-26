@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "catalog:",
+    "@voidmix/application": "workspace:*",
     "@voidmix/core": "workspace:*"
   },
   "devDependencies": {

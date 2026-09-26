@@ -9,94 +9,41 @@ function mailer(sendWelcome: Mailer["sendWelcome"]): Mailer {
     sendVerification: async () => {},
     sendPasswordReset: async () => {},
     sendWelcome,
-    sendTest: async () => {},
   };
 }
 
 describe("welcome email policy", () => {
-  it("uses an explicit request locale without inventing a fallback", () => {
-    expect(
-      recipientLocale(
-        new Request("https://voidmix.test/api/auth", {
-          headers: { "accept-language": "zh-CN, en;q=0.8" },
-        }),
-      ),
-    ).toEqual({ locale: "zh" });
-    expect(recipientLocale(new Request("https://voidmix.test/api/auth"))).toEqual({});
-    expect(recipientLocale(undefined)).toEqual({});
+  it.each([
+    ["Accept-Language", { "accept-language": "zh-CN, en;q=0.8" }, { locale: "zh" }],
+    ["cookie precedence", { cookie: "locale=en", "accept-language": "zh-CN" }, { locale: "en" }],
+    ["no headers", {}, {}],
+    ["no request", undefined, {}],
+  ])("resolves recipient locale: %s", (_name, headers, expected) => {
+    const request = headers ? new Request("https://voidmix.test/api/auth", { headers }) : undefined;
+    expect(recipientLocale(request)).toEqual(expected);
   });
 
-  it("gives the locale cookie precedence over Accept-Language", () => {
-    expect(
-      recipientLocale(
-        new Request("https://voidmix.test/api/auth", {
-          headers: {
-            cookie: "locale=en",
-            "accept-language": "zh-CN",
-          },
-        }),
-      ),
-    ).toEqual({ locale: "en" });
-  });
-
-  it("skips welcome delivery when the dynamic setting is disabled", async () => {
-    const sendWelcome = vi.fn(async () => {});
-
-    await sendWelcomeEmailIfEnabled({
-      user: { email: "person@example.com", name: "Person" },
-      mailer: mailer(sendWelcome),
-      getAuthSettings: async () => ({
-        ...createDefaultAuthSettings(),
-        welcomeEmailEnabled: false,
-      }),
-    });
-
-    expect(sendWelcome).not.toHaveBeenCalled();
-  });
-
-  it("sends welcome mail when the dynamic setting is enabled", async () => {
-    const sendWelcome = vi.fn(async () => {});
-
-    await sendWelcomeEmailIfEnabled({
-      user: { email: "person@example.com", name: "Person" },
-      mailer: mailer(sendWelcome),
-      getAuthSettings: async () => createDefaultAuthSettings(),
-    });
-
-    expect(sendWelcome).toHaveBeenCalledWith({
-      email: "person@example.com",
-      name: "Person",
-    });
-  });
-
-  it("forwards the recipient locale to the mailer", async () => {
-    const sendWelcome = vi.fn(async () => {});
-
-    await sendWelcomeEmailIfEnabled({
-      user: { email: "person@example.com", name: "Person" },
-      mailer: mailer(sendWelcome),
-      getAuthSettings: async () => createDefaultAuthSettings(),
-      locale: "zh",
-    });
-
-    expect(sendWelcome).toHaveBeenCalledWith({
-      email: "person@example.com",
-      name: "Person",
-      locale: "zh",
-    });
-  });
-
-  it("omits the locale entirely when none was resolved", async () => {
+  it.each([
+    ["disabled", false, {}],
+    ["enabled without a locale", true, {}],
+    ["enabled with Chinese locale", true, { locale: "zh" }],
+  ] as const)("applies welcome policy: %s", async (_name, welcomeEmailEnabled, locale) => {
     const sendWelcome = vi.fn<Mailer["sendWelcome"]>(async () => {});
-
+    const user = { email: "person@example.com", name: "Person" };
     await sendWelcomeEmailIfEnabled({
-      user: { email: "person@example.com", name: "Person" },
+      user,
       mailer: mailer(sendWelcome),
-      getAuthSettings: async () => createDefaultAuthSettings(),
+      getAuthSettings: async () => ({ ...createDefaultAuthSettings(), welcomeEmailEnabled }),
+      ...locale,
     });
-
-    // Not `locale: undefined` — the mailer's fallback depends on the property
-    // being absent, and `exactOptionalPropertyTypes` forbids the explicit form.
-    expect(Object.keys(sendWelcome.mock.calls[0]![0])).toEqual(["email", "name"]);
+    if (!welcomeEmailEnabled) expect(sendWelcome).not.toHaveBeenCalled();
+    else {
+      expect(sendWelcome).toHaveBeenCalledWith({ ...user, ...locale });
+      expect(Object.keys(sendWelcome.mock.calls[0]![0])).toEqual([
+        "email",
+        "name",
+        ...Object.keys(locale),
+      ]);
+    }
   });
 });
