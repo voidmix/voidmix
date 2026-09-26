@@ -1,0 +1,205 @@
+apps/api/server/api/app.integration.test.ts
+  s_42000bd424f7f1::t_cccfd702a69a49 3-10,69-73,111-132,139-140,187-210
+apps/api/server/api/app.ts
+  s_42000bd424f7f1::t_41584ddf32d295 1,99
+apps/api/server/api/auth/config.test.ts
+  s_42000bd424f7f1::t_a21de3629de58b 16-23,26-30,32,34,36-37,39-47
+apps/api/server/api/canonical-errors.ts
+  s_42000bd424f7f1::t_29e0e728f5537e 23-32,39-56
+apps/api/server/api/canonical-router.ts
+  s_42000bd424f7f1::t_c74c9276d5f579 1-3,5-6,13,24-25,27-28,33,43-47,51-53,56-59,61-62,66-68,70-71,74-79,83-85,88-90,93-98,102-105,110-125,127-129,134-139,143,145-146
+apps/api/server/api/router-context.test.ts
+  s_42000bd424f7f1::t_0c7492e6c76c9e 2-5,7-24,26-41
+apps/api/server/api/router-context.ts
+  s_42000bd424f7f1::t_b3ac2a439a85dc 1-92
+apps/api/server/api/runtime.test.ts
+  s_42000bd424f7f1::t_8e9e911c51dd67 6-26,33,35,47,49,57-61,64,71-72,76,79-81,99-102,104
+apps/api/vitest.config.ts
+  s_42000bd424f7f1::t_02a1a3a839dec9 1,3-7
+apps/desktop/vitest.config.ts
+  s_42000bd424f7f1::t_466b8afbc18af6 1,3
+apps/web/vitest.config.ts
+  s_42000bd424f7f1::t_42b6c732524ca8 1,3-7
+apps/worker/vitest.config.ts
+  s_42000bd424f7f1::t_30eef36290d545 1,3
+packages/ai/package.json
+  s_42000bd424f7f1::t_055754849f6e13 20
+packages/ai/src/index.test.ts
+  s_42000bd424f7f1::t_d6f47e85ffc804 11,22-67
+packages/ai/src/index.ts
+  s_42000bd424f7f1::t_d98c01481d4c0e 1-2,24,62,72-75,79,88,121,125,188-189,193,195-226,228-230,255-259
+packages/ai/src/pi.test.ts
+  s_42000bd424f7f1::t_1f0751690a2722 1-2,4-24,26-31,33-39,43-49,51,53-71,73-77
+packages/ai/vitest.config.ts
+  s_42000bd424f7f1::t_3ad18951d24cf0 1,3
+packages/application/src/agent-v2.ts
+  s_42000bd424f7f1::t_44df13f0e0cc44 11-23,37,66,79,102
+packages/application/src/assets.ts
+  s_42000bd424f7f1::t_5517c19224c310 1-75
+packages/application/src/context.ts
+  s_42000bd424f7f1::t_8fdee2ea7ddecf 2-12,14-28,32-42,45-47,49-58
+packages/application/src/index.test.ts
+  s_42000bd424f7f1::t_c260fc0d8cecc2 2-6,36-37,40-85,87-89,94,105,123,128,142,169,228,240,256-312
+packages/application/src/index.ts
+  s_42000bd424f7f1::t_f5209dfe8ada80 1-6,18-20,22-25
+packages/application/src/members.ts
+  s_42000bd424f7f1::t_039f0534efa4bf 1-61
+packages/application/src/projects.ts
+  s_42000bd424f7f1::t_a08cfc49a7ce1e 1-11,13-30,33-49,52-55,57-60,63-71,73,75-82,85-88,90,93-103,106,109-110,112-116,119-128,131
+packages/application/src/resources.ts
+  s_42000bd424f7f1::t_20e9106d7f62d3 1-17,19-25,27-34,36-46,48-51,53-64,66-74,76-83,85-105,108
+packages/application/src/types.ts
+  s_42000bd424f7f1::t_12c08af6053582 2-25,27-31,33-68,70-87
+packages/application/vitest.config.ts
+  s_42000bd424f7f1::t_21dbbac1b92e21 1,3
+packages/auth/src/index.test.ts
+  s_42000bd424f7f1::t_61cb285b855f21 23-25
+packages/auth/src/index.ts
+  s_42000bd424f7f1::t_d10b35cfa7ff3d 4,19-24,26-28
+packages/auth/vitest.config.ts
+  s_42000bd424f7f1::t_57702266e2b5f8 1,3
+packages/cache/src/index.test.ts
+  s_42000bd424f7f1::t_a2d52a6209b8a8 59,63-64,77-78,80-81,90-95,98-100,103,134
+packages/cache/src/index.ts
+  s_42000bd424f7f1::t_57b9eded009fde 4,21,23,89,91-92,97-98,101-102,113
+packages/cache/vitest.config.ts
+  s_42000bd424f7f1::t_7cd13e78d441e8 1,3
+packages/client/src/index.test.ts
+  s_42000bd424f7f1::t_cc76c1de2c5ac1 16-25,38
+packages/client/src/index.ts
+  s_42000bd424f7f1::t_0fffe1074c2d7f 12,44
+packages/client/vitest.config.ts
+  s_42000bd424f7f1::t_27bebd68eacad5 1,3
+packages/contracts/src/account.ts
+  s_42000bd424f7f1::t_ebeeec35eb7b33 1-97
+packages/contracts/src/agents.ts
+  s_42000bd424f7f1::t_6a92b967937263 1-39
+packages/contracts/src/assets.ts
+  s_42000bd424f7f1::t_1548b99256b89b 1-71
+packages/contracts/src/common.ts
+  s_42000bd424f7f1::t_549ac66c892d81 1-57
+packages/contracts/src/index.test.ts
+  s_42000bd424f7f1::t_91716038ac2d64 3
+packages/contracts/src/index.ts
+  s_42000bd424f7f1::t_4187490f097e42 1-5,8-10,12-18,20-22,25-28,31-34,37-40,43-46,50,53,55,57-62,67-115
+packages/contracts/src/methods.ts
+  s_42000bd424f7f1::t_690c2bdc5f4476 1-21
+packages/contracts/src/projects.ts
+  s_42000bd424f7f1::t_4187b81ec003f2 1-155
+packages/contracts/src/reviews.ts
+  s_42000bd424f7f1::t_60aa5b485b9386 1-50
+packages/contracts/vitest.config.ts
+  s_42000bd424f7f1::t_2f5c9dfae18c09 1,3
+packages/core/src/projects/v2.ts
+  s_42000bd424f7f1::t_fa59f57e0bbdd6 113-123,147,152,156
+packages/core/src/settings/application.ts
+  s_42000bd424f7f1::t_c1715f8a5933be 9
+packages/core/src/settings/model.ts
+  s_42000bd424f7f1::t_cb78aec5934b01 13-14,22-26,50,52-53,55
+packages/core/src/v2-resources.ts
+  s_42000bd424f7f1::t_471974e3190490 3-11,14-17,19-24,32-33,36,44,61,67,76,80,88,114,127-128,138-140
+packages/core/vitest.config.ts
+  s_42000bd424f7f1::t_85682eaa72eef6 1,3
+packages/db/src/audit.ts
+  s_42000bd424f7f1::t_1281916c9f29da 1-2,4,6-12
+packages/db/src/connection.ts
+  s_42000bd424f7f1::t_5454c3897844a1 1-4,6-8,11-16,19-29,31-41
+packages/db/src/identity/memory.ts
+  s_42000bd424f7f1::t_b506016c619582 2-7,10-12,14-15,18-21,23-26,32-37,41-43,46-51,54-57,60-61,64-69,72-73,76-77,80,82-83
+packages/db/src/identity/postgres.ts
+  s_42000bd424f7f1::t_7a431fad519054 1-100
+packages/db/src/index.ts
+  s_42000bd424f7f1::t_122a0b44c014a4 16,20
+packages/db/src/memory.test.ts
+  s_42000bd424f7f1::t_52ed9bb1ab2232 1,4,82,106-111,159,192,207-212,228,239-255
+packages/db/src/memory.ts
+  s_42000bd424f7f1::t_710d0c4c3ec28e 1-2
+packages/db/src/postgres.test.ts
+  s_42000bd424f7f1::t_eef66420659fb6 18,28-39,49-56,62-65,72,77-80,188-235
+packages/db/src/postgres.ts
+  s_42000bd424f7f1::t_49d5d885505df1 1-3
+packages/db/src/schema.ts
+  s_42000bd424f7f1::t_89cb0172186a1e 1-8
+packages/db/src/schema/columns.ts
+  s_42000bd424f7f1::t_060726844f157f 1-15
+packages/db/src/schema/enums.ts
+  s_42000bd424f7f1::t_73eb454ae9e48e 1-84,98-129
+packages/db/src/schema/identity.ts
+  s_42000bd424f7f1::t_9b500b5232e014 1-126
+packages/db/src/schema/legacy-assets.ts
+  s_42000bd424f7f1::t_a7bbbb60a2f108 1-142
+packages/db/src/schema/legacy-projects.ts
+  s_42000bd424f7f1::t_0d3a36c4e85510 1-206
+packages/db/src/schema/projects.ts
+  s_42000bd424f7f1::t_98995780cd2c5f 1-99
+packages/db/src/schema/relations.ts
+  s_42000bd424f7f1::t_521b48f8218108 1-16
+packages/db/src/schema/resources.ts
+  s_42000bd424f7f1::t_75569b8d6c2ad9 1-117
+packages/db/src/schema/tables.ts
+  s_42000bd424f7f1::t_f3769cd87645b7 1-17
+packages/db/src/settings/memory.ts
+  s_42000bd424f7f1::t_2d7ed802f4317f 1-69
+packages/db/src/settings/mutations.ts
+  s_42000bd424f7f1::t_033eeb537406a5 1-3,5-11,14-26,28-36,38-46,48-57,59-72,74,76-86,88-102
+packages/db/src/settings/postgres.ts
+  s_42000bd424f7f1::t_8269b8488dadaa 1-22,24-46,48-62,64-115
+packages/db/src/settings/reader.ts
+  s_42000bd424f7f1::t_d513227549a590 1-51
+packages/db/src/settings/values.ts
+  s_42000bd424f7f1::t_0c35b6ae219273 2-28,30-76,78-121,123-126,128-130,132-142,144-148,150-152
+packages/db/src/v2.ts
+  s_42000bd424f7f1::t_8f5c0d7c5422ff 1-3
+packages/db/src/v2/agents.test.ts
+  s_42000bd424f7f1::t_4ef041e305aa1d 2-3,5-68
+packages/db/src/v2/agents.ts
+  s_42000bd424f7f1::t_8d1821e129db2a 1-64
+packages/db/src/v2/projects.ts
+  s_42000bd424f7f1::t_8a51288354188a 1-25,27-28,30-31,34-39,42-48,50-70,72-86,88-98,102-108,111-128,132-137,140-164,167-184,187-206,208-213
+packages/db/src/v2/resources.ts
+  s_42000bd424f7f1::t_d97f41dfd471d3 1-209
+packages/db/src/v2/results.ts
+  s_42000bd424f7f1::t_b4b422b9bdf414 1-10
+packages/db/src/v2/types.ts
+  s_42000bd424f7f1::t_47a8a6c746d7eb 1-3
+packages/db/vitest.config.ts
+  s_42000bd424f7f1::t_a07d09e21e04b6 1,3
+packages/i18n/vitest.config.ts
+  s_42000bd424f7f1::t_0792a61bd33037 1,3-4
+packages/mail/src/service.test.ts
+  s_42000bd424f7f1::t_cc7a6d0dfa1097 99,101,109-130
+packages/mail/src/service.ts
+  s_42000bd424f7f1::t_e6659e15bfda9d 3,11-12,50,73-80,83,88-93
+packages/mail/src/templates/link.tsx
+  s_42000bd424f7f1::t_630bd76291bfc9 3,5-6,8-13,15-17,19-30,33-42
+packages/mail/src/templates/password-reset.tsx
+  s_42000bd424f7f1::t_d0817cbe9e5ca3 3,5-6
+packages/mail/src/templates/verification.tsx
+  s_42000bd424f7f1::t_2e1fa2198e781b 3,5-6
+packages/mail/vitest.config.ts
+  s_42000bd424f7f1::t_e1badd2ca86bd7 1,3
+packages/scripts/vitest.config.ts
+  s_42000bd424f7f1::t_c69d252f5e3516 1,3
+packages/shared/vitest.config.ts
+  s_42000bd424f7f1::t_0e1934e11c9cc6 1,3
+packages/ui/vitest.config.ts
+  s_42000bd424f7f1::t_3d9114062e073e 1,3-5
+test.config.ts
+  s_42000bd424f7f1::t_1a890a8b213e58 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7ddf9b07baac60ed891f58ee094f5f6402b6f06f",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
