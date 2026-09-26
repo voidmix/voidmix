@@ -29,12 +29,15 @@ src/
     shell/           Tauri-aware desktop shell
   lib/cloud.ts      stable cloud facade and formatting helper
   lib/cloud/        remote normalization, source selection, and types
-  lib/desktop.ts    Tauri bridge helpers
+  lib/desktop.ts    Tauri window/runtime bridge
+  lib/folder.ts     Settings folder-authorization bridge
+  styles/          shell, overview, device/activity, project/settings styles
   lib/preferences.ts persisted Zustand store for renderer preferences
   router.integration.test.tsx route rendering, loading, refresh, and history tests
-  i18n/             static catalogs and API error codes
+  i18n/             static catalogs, locale bootstrap and date formatting
 src-tauri/
-  src/main.rs, src/lib.rs   Rust entry and app setup
+  src/main.rs, src/lib.rs   Rust entry, tray and window setup
+  src/folder.rs             Settings folder authorization
   tauri.conf.json           window, bundle, and updater configuration
   capabilities/default.json permission allowlist
   Cargo.toml

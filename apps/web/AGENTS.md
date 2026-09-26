@@ -23,15 +23,14 @@ src/
     (app)/(admin)/admin.tsx  protected Admin user-directory mount at /admin
     (app)/projects.index.tsx canonical project list route and page
     (app)/projects.$projectId.tsx canonical project detail route and page
-  features/auth/     Better Auth forms
+  features/auth/     Better Auth forms, shared inputs, links and submission lifecycle
+  features/projects/ shared project/task title form
   features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
   i18n/              catalog loaders, API error codes, recovery copy
 scripts/             read-only production bundle analysis
 tests/               shared Web test fixtures and cross-feature tests
 server/
   health.ts          Web liveness endpoint only
-
-tsr.config.json      TanStack Router CLI config (all defaults, target react)
 ```
 
 ## Ownership
@@ -87,7 +86,7 @@ tsr.config.json      TanStack Router CLI config (all defaults, target react)
   It is navigation aid, not authorization enforcement; the API remains the
   final authorization boundary.
 - `(app)/(admin)/route.tsx` owns the AdminShell layout. The canonical release exposes the user directory and audit views; system mail/auth settings routes are intentionally absent.
-- Public Auth pages consume only `auth.capabilities.get`. Registration and- Public Auth pages consume only `auth.capabilities.get`. Registration and
+- Public Auth pages consume only `auth.capabilities.get`. Registration and
   tokenless reset entry points follow those booleans, an existing reset token
   remains usable, and capability-request failures fail open so the server remains
   the final policy boundary.

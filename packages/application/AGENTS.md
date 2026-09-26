@@ -14,6 +14,8 @@ database, AI SDK, or renderer concerns.
 
 ## Ownership
 
+- `index.ts` composes commands from `projects.ts`, `members.ts`, `resources.ts`,
+  and `assets.ts`; `context.ts` owns shared resource loading and authorization.
 - Resolve Project capabilities from personal ownership, Organization membership,
   and project-level grants.
 - Keep command/query orchestration independent of Hono, Drizzle, and React.

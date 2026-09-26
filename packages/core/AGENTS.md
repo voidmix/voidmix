@@ -19,12 +19,10 @@ transported or stored.
   initial administrator creation, typed mail and authentication settings rules,
   source/inheritance models, derived public Auth capabilities, and durable
   audit-event creation.
-- Own workspace membership types and the actor-plus-workspace access
-  administration seam. Active owners and editors may write; active viewers
-  may read. Missing memberships are denied.
-- Own asset path/version/conflict invariants and Agent run/step/lease state
-  machines. Repository commands that cross records declare an atomic contract;
-  adapters must preserve it.
+- Own canonical V2 personal/Organization project access, resource ports,
+  Agent cancellation rules, outbox contracts, and the blob-storage port.
+- Ownership is distinct from authorship. Organization capability is a ceiling;
+  a project membership can narrow it but cannot elevate it.
 - Own the **repository interfaces**. The dependency direction is inverted on
   purpose: `@voidmix/db` depends on this package to learn what to implement.
 - Own no transport concern. Business rules throw `DomainError`; only the API
@@ -56,9 +54,9 @@ transported or stored.
 - Audit rows are initiated **here and only here**, in the same logical operation as
   the mutation. They are durable product records, distinct from `@voidmix/shared/logger`
   operational events. Never append audit from a handler.
-- Authentication settings normalize email domains to lowercase exact domains,
-  reject invalid domains, and cap the allowlist at 100 entries. An empty list
-  means every domain is allowed.
+- Runtime authentication uses exact lowercase email domains. An empty allowlist
+  permits every domain. Settings administration factories are retired; the
+  repository ports remain for Auth/Mail resolution and adapter mutation semantics.
 - Settings mutations are field-scoped: omission retains database state, `set`
   or `replace` writes an override, and `reset` removes an override so the
   repository can resolve its inherited value.

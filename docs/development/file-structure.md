@@ -38,7 +38,7 @@ bounded contexts live beside their ports and application services:
 packages/core/src/
   identity/   users and audit records
   settings/   typed system policy and mail configuration
-  workspace/  membership and workspace access
+  projects/   canonical personal/Organization project access
   projects/   project/task ports and facade
   assets/     immutable versions and sync conflicts
   agents/     runs, steps, leases, and tool capabilities

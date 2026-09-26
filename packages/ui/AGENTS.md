@@ -31,6 +31,10 @@ Page layout and product-specific composition stay in the owning application.
 - Keep shared patterns business-neutral. Applications map domain states such as
   `in_progress` or `blocked` to `StatusBadge`'s visual tones (`info`, `warning`,
   `success`, or `danger`) before rendering them.
+- Share static element wrappers through `src/lib/styled-slot.ts`; preserve
+  data slots, caller prop precedence, classes and refs.
+- `FieldError` renders caller-provided children; applications own validation
+  messages and localization. Empty children render nothing.
 - Own no page layout, route tree, or application navigation.
 - Keep project cards, task lists, activity entries and Pi run timelines in Web:
   their domain-specific props are not part of this primitive package.
@@ -47,7 +51,7 @@ Page layout and product-specific composition stay in the owning application.
     `avatar.tsx` and `logo.tsx`);
   - shadcn-generated components live directly in `src/components/ui/` and are
     imported by consumers through `@voidmix/ui/components/ui/<name>`.
-- Use package-local `imports` aliases (`#lib/*`, `#hooks/*`, `#components/*`)
+- Use package-local `imports` aliases (`#lib/*`, `#components/*`)
   for deep internal imports and package self-references. Nearby relative imports
   remain valid; consumers continue to use the public `exports` paths.
 - **`bun run shadcn:update` passes `--overwrite`.** `src/components/ui/button.tsx`
@@ -79,6 +83,6 @@ Page layout and product-specific composition stay in the owning application.
 
 ```bash
 bun run --cwd packages/ui check
-bun run --cwd packages/ui test:component   # the only script that collects tests
+bun run --cwd packages/ui test:component   # focused accessible primitive checks
 git diff packages/ui                        # after any shadcn:update
 ```

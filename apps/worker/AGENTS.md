@@ -14,10 +14,10 @@ long-running work and is never imported by Web, Desktop, or shared packages.
 
 ## Ownership
 
-- Claim durable work using a lease and dispatch it to application commands and
-  the server-side AI adapter.
-- Keep cancellation, retry, and reconnect state in the durable AgentRun model.
-- Emit structured lifecycle logs through `@voidmix/shared/logger`.
+- Claim durable work using a lease and invoke an injected dispatcher.
+- `createAgentRunDispatcher` loads queued V2 runs, persists running and terminal
+  states, and invokes an injected executor. Provider composition belongs to the
+  host; this module does not initialize Pi or HTTP sessions.
 
 ## Constraints
 

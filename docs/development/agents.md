@@ -59,11 +59,12 @@ Above all, prefer the existing local pattern over a new abstraction.
 
 - Put new code in the workspace that already owns the behavior; do not create a
   package. New shared packages need a stable interface and two real consumers.
-- Extend `packages/contracts/src/index.ts` in place. It is one file on purpose
-  and has no barrel.
+- Extend the owning contracts domain module and wire its procedure into the
+  explicit `packages/contracts/src/index.ts` tree; see ADR-0013.
 - Keep dates as native `Date` end to end. Never serialize to ISO strings.
-- Call `requirePermission` at the top of every protected API handler. It is not
-  middleware, and omitting it makes the procedure public with no failing test.
+- Apply the matching permission middleware to protected Admin procedures and
+  the principal middleware to authenticated canonical routes. Application
+  commands enforce project capabilities; cover rejected callers in tests.
 - Write audit rows from `@voidmix/core` only, never from a handler, and never
   mix them with `@voidmix/shared/logger` operational events.
 - Prefer a narrower `AGENTS.md` over a broader one: if a rule only holds inside
@@ -83,7 +84,7 @@ workspace's own narrowest check first, then broaden by risk.
 `AGENTS.md` missing a section or over the line cap, a workspace absent from a
 listing, a directory that is empty or lacks a `package.json`, a dangling
 documentation link, a document unreachable from `docs/README.md`, or broken skill
-wiring. Every finding prints a `Fix:` line, and it runs first inside
+wiring. Every finding prints a `Fix:` line, and it runs immediately after i18n inside
 `bun run verify` so a structural failure never waits for a build.
 
 Report outcomes honestly. If a check fails, say so with its output; if a step was

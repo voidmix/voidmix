@@ -19,7 +19,7 @@ scripts/         local deterministic email preview
 
 ## Ownership
 
-- Own verification, password reset, welcome, and administrator test email content.
+- Own verification, password reset, and welcome email content.
 - Resolve injected mail configuration for every delivery. Use Resend when
   configured; use logger transport only in development/test.
 - Production configuration errors occur at send time as `MailUnavailableError`;
@@ -38,9 +38,9 @@ scripts/         local deterministic email preview
   `MAIL_DEFAULT_LOCALE`, itself falling back to `en`. Omit `locale` rather than
   passing `undefined` — the fallback depends on the property being absent
   (ADR-0005).
-- The Admin `sendTest` input may carry a locale so operators can verify either
-  catalog. Better Auth callbacks derive the recipient locale from the triggering
-  request; mail sent without a request uses the configured default.
+- Better Auth callbacks derive the recipient locale from the triggering request;
+  mail sent without a request uses the configured default. Verification and reset
+  templates share `templates/link.tsx`; the service shares configuration and delivery.
 
 ## Verification
 

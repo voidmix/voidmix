@@ -13,13 +13,15 @@ interfaces owned by `@voidmix/core`.
 | `./env`    | the database environment preset                             |
 | `./schema` | Drizzle tables, enums, and the `schema` aggregate           |
 
-Source layout: `src/schema.ts` (one flat file, no `src/schema/`),
-`src/postgres.ts`, `src/memory.ts`, `src/env.ts`, `src/index.ts`, and SQL output
-under `drizzle/`.
+Source layout: small compatibility entrypoints (`schema.ts`, `postgres.ts`,
+`memory.ts`, `v2.ts`); domain implementations under `identity/`, `settings/`,
+`v2/`, and `schema/`. `settings/reader.ts`, `settings/values.ts`, and
+`settings/mutations.ts` share resolution, decoding, and mutations across adapters. SQL history remains under `drizzle/`.
+See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired-code.md).
 
 ## Ownership
 
-- Own the Drizzle schema, user, workspace-membership, asset, agent, and
+- Own the Drizzle schema, user, canonical V2 resource, outbox, blob, and
   system-settings repositories in PostgreSQL and memory, plus migration
   execution.
 - Own no business rule and no interface definition — both belong to
@@ -32,17 +34,10 @@ under `drizzle/`.
   `@voidmix/contracts`.
 - PostgreSQL and in-memory implementations must be updated together when a
   domain repository interface changes.
-- Asset adapters expose a complete repository graph whose `commitVersion`
-  operation inserts the immutable version and advances the head with a
-  compare-and-set in one transaction (or serialized in-memory critical
-  section). Asset path creation is also atomic. Do not reintroduce split
-  version/head writes or read-before-insert uniqueness checks in a handler.
-  Conflict resolution uses an `open`-state compare-and-set so two resolvers
-  cannot both claim success.
-- Agent adapters expose atomic commands for lease acquisition and renewal,
-  step sequence allocation, and status transitions. PostgreSQL serializes on
-  run rows and uses conditional status updates; the in-memory graph uses one
-  command queue so concurrency tests retain production semantics.
+- Queued Agent creation inserts the run and outbox event in the same transaction.
+  All statements in that operation use the transaction handle.
+- Legacy table definitions remain for migration stability. They have no runtime
+  repository adapters. Do not remove them as part of runtime cleanup.
 - Auth policy reuses `system_settings` with the fixed keys
   `auth.registration_mode`, `auth.allowed_email_domains`,
   `mail.welcome_enabled`, `mail.verification_enabled`, and
@@ -64,11 +59,13 @@ under `drizzle/`.
   not the legacy object form; index names are `<table>_<cols>_idx`; camelCase
   TS keys map to explicit snake_case columns; timestamps are always
   `{ withTimezone: true, mode: "date" }` so native `Date` survives end to end.
-- A new table must be registered **twice**: in the `schema` aggregate at the
-  bottom of `src/schema.ts`, and in the named re-export barrel `src/index.ts`.
-- Keep application relations in the single `defineRelations(schema, ...)`
-  export. For multiple foreign keys between the same tables, use explicit
-  aliases; audit events use `actor` and nullable `targetUser`.
+- Export new tables from the owning schema domain module. `schema/tables.ts`
+  aggregates those namespaces, while `schema.ts` exposes the schema subpath.
+  Add a new domain to both entrypoints; export from the root only for a backend
+  consumer. Keep the historical scheduled-task aggregate exclusion intact.
+- Keep runtime relations in `schema/relations.ts`. Better Auth uses relational
+  queries; domain adapters use explicit joins. Persisted foreign keys belong
+  to table definitions and are independent of this runtime relation graph.
 - **Never hand-edit generated migrations.** Each lives in its own
   `drizzle/<timestamp>_<name>/` with `migration.sql` and `snapshot.json`
   (Drizzle 1.0 RC; there is no `_journal.json`). Regenerate instead, and do not

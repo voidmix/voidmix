@@ -9,6 +9,9 @@ The standalone Nitro API application and the only HTTP composition root.
 ```text
 server/
   api/                 Hono, oRPC, auth, module composition, and API env
+    router-context.ts  authenticated inputs, optional-field omission, pagination
+    canonical-errors.ts centralized transport error conversion
+    canonical-router.ts explicit canonical route composition
   app.ts               Nitro entry delegating to the API runtime
   env.ts               host-specific environment composition (AUTH_URL 3002)
   runtime.ts           memoized runtime and close boundary
@@ -30,6 +33,8 @@ server/
 - Keep the standalone `AUTH_URL` default at `http://localhost:3002`; production
   must provide its public URL explicitly.
 - Preserve `/api/auth/*`, `/rpc/*`, and `/health` as stable public endpoints.
+- Runtime Auth/Mail read settings repositories directly. The retired settings
+  administration module and cache-invalidation callback are not part of V2.
 - Configure the process logger once with service `api`; request logging is
   configured by the shared runtime.
 - Keep all Nitro host wiring under `server/`; `src/` is not a runtime source tree.

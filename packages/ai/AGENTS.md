@@ -20,7 +20,9 @@ HTTP transport, authentication, database connections, domain rules, or UI.
 - Depend on domain interfaces, never on Drizzle, Hono, oRPC, React, or Web.
 - Never read request sessions or create database connections.
 - Keep provider and SDK types behind this package's small public interface.
-- Tools receive explicit authenticated project context and dependencies.
+- Tools receive explicit authenticated project context and a canonical
+  `@voidmix/application` command interface. Always pass the trusted actor ID;
+  never bypass application authorization with a direct project repository.
 - Never log prompts, credentials, tokens, or private project content.
 
 ## Verification

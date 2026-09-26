@@ -27,12 +27,8 @@ the single grant lookup that answers whether a session may do something.
 - The grant table is `Record<Role, ReadonlySet<Permission>>`, so a **missing role
   is a compile error**. Every role uses an explicit permission allowlist; adding
   to `permissions` must never silently expand an existing role.
-- Auth settings deliberately split read from write: Admin and Owner may read;
-  only Owner may write. Keep this split when adding related procedures or UI.
-- Workspace permissions (`workspace.assets.*` and `workspace.agents.*`) are
-  granted by the global role table but never replace workspace membership:
-  the API also requires an active membership and applies its owner/editor/viewer
-  role.
+- Settings administration is retired in Account-first V2; do not restore its
+  unused permission strings. Runtime authentication policy remains API-owned.
 - `hasPermission(session: Session | null, permission)` accepts `null` and returns
   `false` for it. Callers must still distinguish "no session" (401) from
   "insufficient role" (403); `apps/api/server/api`'s `requirePermission` does that.

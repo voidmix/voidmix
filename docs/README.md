@@ -49,6 +49,8 @@ deployment boundaries, and coding-agent guidance.
   gaps and acceptance checks for the VoidMix visual target.
 - [File structure](./development/file-structure.md) — where a new file goes
   inside a workspace, and the conventions policy enforces.
+- [Monolithic simplification](./development/monolithic-simplification.md) —
+  frozen LOC measurements, retired-consumer evidence, and verification results.
 - [Abstraction ablation](./development/abstraction-ablation.md) — measured
   removals, preserved behavior, and a rejected guard-removal experiment.
 - [UI Kit ablation](./development/ui-ablation.md) — shared UI extraction,
