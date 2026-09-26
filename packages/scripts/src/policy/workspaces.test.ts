@@ -1,3 +1,4 @@
+import { expectOnlyFinding } from "../test-fixtures.js";
 import { describe, expect, it } from "vite-plus/test";
 
 import {
@@ -57,16 +58,24 @@ describe("validateWorkspaceInventory", () => {
     expect(validateWorkspaceInventory(members, rootAgents)).toEqual([]);
   });
 
-  it("reports a workspace that is missing from the listing", () => {
-    const findings = validateWorkspaceInventory([...members, "packages/auth"], rootAgents);
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
-      check: "workspace.listing",
-      location: "AGENTS.md",
-      message: "workspace packages/auth is not listed in Repository shape",
-    });
-    expect(findings[0]?.fix).toContain("auth");
+  it.each<{ name: string; args: Parameters<typeof validateWorkspaceInventory>; expected: object }>([
+    {
+      name: "reports a workspace that is missing from the listing",
+      args: [[...members, "packages/auth"], rootAgents],
+      expected: {
+        check: "workspace.listing",
+        location: "AGENTS.md",
+        message: "workspace packages/auth is not listed in Repository shape",
+        fix: expect.stringContaining("auth"),
+      },
+    },
+    {
+      name: "reports an unparseable listing once rather than flagging every workspace",
+      args: [members, "# Title\n\n## Other\n\ntext\n"],
+      expected: { message: "the Repository shape fence lists no workspaces" },
+    },
+  ])("$name", ({ args, expected }) => {
+    expectOnlyFinding(validateWorkspaceInventory(...args), expected);
   });
 
   it("reports a listed name that is not a workspace", () => {
@@ -79,13 +88,6 @@ describe("validateWorkspaceInventory", () => {
       "Repository shape lists db, which is not a workspace",
     ]);
   });
-
-  it("reports an unparseable listing once rather than flagging every workspace", () => {
-    const findings = validateWorkspaceInventory(members, "# Title\n\n## Other\n\ntext\n");
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toBe("the Repository shape fence lists no workspaces");
-  });
 });
 
 describe("findNonWorkspaceDirectories", () => {
@@ -96,8 +98,7 @@ describe("findNonWorkspaceDirectories", () => {
   it("reports a directory that sits under a glob without a package.json", () => {
     const findings = findNonWorkspaceDirectories([...members, "packages/audit"], members);
 
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
+    expectOnlyFinding(findings, {
       check: "workspace.directory",
       location: "packages/audit",
       message: "is matched by a workspace glob but has no package.json",
@@ -158,26 +159,23 @@ describe("validateListedWorkspacePaths", () => {
     expect(validateListedWorkspacePaths("README.md", members, members)).toEqual([]);
   });
 
-  it("reports a listed path that is no longer a workspace", () => {
-    const findings = validateListedWorkspacePaths(
-      "README.md",
-      [...members, "apps/worker"],
-      members,
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toBe("lists apps/worker, which is not a workspace");
-  });
-
-  it("reports a workspace the listing omits", () => {
-    const findings = validateListedWorkspacePaths(
-      "README.md",
-      members.filter((member) => member !== "packages/db"),
-      members,
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.message).toBe("does not list packages/db");
+  it.each<{
+    name: string;
+    args: Parameters<typeof validateListedWorkspacePaths>;
+    expected: object;
+  }>([
+    {
+      name: "reports a listed path that is no longer a workspace",
+      args: ["README.md", [...members, "apps/worker"], members],
+      expected: { message: "lists apps/worker, which is not a workspace" },
+    },
+    {
+      name: "reports a workspace the listing omits",
+      args: ["README.md", members.filter((member) => member !== "packages/db"), members],
+      expected: { message: "does not list packages/db" },
+    },
+  ])("$name", ({ args, expected }) => {
+    expectOnlyFinding(validateListedWorkspacePaths(...args), expected);
   });
 });
 

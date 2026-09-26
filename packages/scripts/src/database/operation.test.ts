@@ -1,44 +1,13 @@
-import type { User, UserRepository } from "@voidmix/core";
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { getDatabaseScriptsEnv } from "../env.js";
+import {
+  databaseUrl,
+  databaseEnvironment as environment,
+  user,
+  userRepository,
+} from "../test-fixtures.js";
 import { runClean, runMigrate, runPush, runSeed, runStudio } from "./operation.js";
-
-const databaseUrl = "postgres://voidmix:voidmix@localhost:5432/voidmix";
-
-function environment(overrides: Record<string, string> = {}) {
-  return getDatabaseScriptsEnv({
-    NODE_ENV: "test",
-    DATABASE_URL: databaseUrl,
-    ...overrides,
-  });
-}
-
-function user(overrides: Partial<User> = {}): User {
-  return {
-    id: "user-id",
-    email: "owner@voidmix.local",
-    displayName: "Owner",
-    role: "admin",
-    status: "active",
-    createdAt: new Date("2026-01-01T00:00:00.000Z"),
-    ...overrides,
-  };
-}
-
-function userRepository(overrides: Partial<UserRepository> = {}): UserRepository {
-  return {
-    list: vi.fn(async () => ({ items: [], total: 0, nextCursor: null })),
-    getById: vi.fn(async () => null),
-    getByEmail: vi.fn(async () => null),
-    countActiveAdministrators: vi.fn(async () => 1),
-    save: vi.fn(async () => undefined),
-    updateStatus: vi.fn(async () => user()),
-    appendAudit: vi.fn(async () => undefined),
-    listAudit: vi.fn(async () => []),
-    ...overrides,
-  };
-}
 
 describe("database commands", () => {
   it("requires DATABASE_URL before migrations can be configured", () => {
@@ -51,20 +20,13 @@ describe("database commands", () => {
     vi.unstubAllEnvs();
   });
 
-  it("migrates the configured database", async () => {
-    const migrate = vi.fn(async () => undefined);
-
-    await runMigrate(environment(), { migrate, log: vi.fn() });
-
-    expect(migrate).toHaveBeenCalledWith(databaseUrl);
-  });
-
-  it("cleans the configured database", async () => {
-    const reset = vi.fn(async () => undefined);
-
-    await runClean(environment(), { reset, log: vi.fn() });
-
-    expect(reset).toHaveBeenCalledWith(databaseUrl);
+  it.each([
+    ["migrates", runMigrate],
+    ["cleans", runClean],
+  ])("%s the configured database", async (_name, run) => {
+    const operation = vi.fn(async () => undefined);
+    await run(environment(), { migrate: operation, reset: operation, log: vi.fn() });
+    expect(operation).toHaveBeenCalledWith(databaseUrl);
   });
 
   it("seeds users and always closes the connection", async () => {
@@ -142,36 +104,21 @@ describe("database commands", () => {
     expect(reset).not.toHaveBeenCalled();
   });
 
-  it("pushes the schema and forwards extra drizzle-kit flags", async () => {
-    const runCommand = vi.fn(async () => undefined);
-    const processEnv = { DATABASE_URL: databaseUrl };
-
-    await runPush(
-      environment(),
-      { log: vi.fn(), processEnv, repositoryRoot: "/repo", runCommand },
-      ["--hints", "[]"],
-    );
-
-    expect(runCommand).toHaveBeenCalledWith(
-      ["bun", "run", "drizzle-kit", "push", "--config", "drizzle.config.ts", "--hints", "[]"],
-      { cwd: "/repo/packages/db", env: processEnv },
-    );
-  });
-
-  it("starts Drizzle Studio with the loaded environment", async () => {
-    const runCommand = vi.fn(async () => undefined);
-    const processEnv = { DATABASE_URL: databaseUrl };
-
-    await runStudio(environment(), {
-      log: vi.fn(),
-      processEnv,
-      repositoryRoot: "/repo",
-      runCommand,
-    });
-
-    expect(runCommand).toHaveBeenCalledWith(
-      ["bun", "run", "drizzle-kit", "studio", "--config", "drizzle.config.ts"],
-      { cwd: "/repo/packages/db", env: processEnv },
-    );
-  });
+  it.each([
+    ["push", runPush, ["--hints", "[]"]],
+    ["studio", runStudio, []],
+  ] as const)(
+    "runs Drizzle %s with repository environment and extra flags",
+    async (command, run, flags) => {
+      const runCommand = vi.fn(async () => undefined);
+      const processEnv = { DATABASE_URL: databaseUrl };
+      await run(environment(), { log: vi.fn(), processEnv, repositoryRoot: "/repo", runCommand }, [
+        ...flags,
+      ]);
+      expect(runCommand).toHaveBeenCalledWith(
+        ["bun", "run", "drizzle-kit", command, "--config", "drizzle.config.ts", ...flags],
+        { cwd: "/repo/packages/db", env: processEnv },
+      );
+    },
+  );
 });

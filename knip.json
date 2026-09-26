@@ -12,7 +12,8 @@
     "**/dist/**",
     "**/storybook-static/**",
     "**/src-tauri/**",
-    "packages/db/drizzle.config.ts"
+    "packages/db/drizzle.config.ts",
+    ".claude/worktrees/**"
   ],
   "drizzle": false,
   "workspaces": {
@@ -47,6 +48,14 @@
     },
     "packages/db": {
       "ignoreFiles": ["drizzle.config.ts"]
+    },
+    "packages/shared": {
+      "entry": [
+        "src/index.ts",
+        "src/env/index.ts",
+        "src/env/runtime.ts",
+        "src/logger/{index,client,env,hono,orpc,vite}.ts"
+      ]
     }
   }
 }

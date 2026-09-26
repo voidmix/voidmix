@@ -1,3 +1,4 @@
+import { findingFor, collectFindings } from "../findings.js";
 import type { PolicyFinding } from "../checks.js";
 import type { WorkspaceShape } from "../manifests.js";
 
@@ -10,17 +11,11 @@ export const canonicalScripts: Readonly<Record<string, string>> = {
     "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
 };
 
-export function scriptFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "manifest.scripts", location, message, fix, severity: "error" };
-}
+export const scriptFinding = findingFor("manifest.scripts");
 
-export function dependencyFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "manifest.dependencies", location, message, fix, severity: "error" };
-}
+export const dependencyFinding = findingFor("manifest.dependencies");
 
-export function engineFinding(location: string, message: string, fix: string): PolicyFinding {
-  return { check: "manifest.engines", location, message, fix, severity: "error" };
-}
+export const engineFinding = findingFor("manifest.engines");
 
 export function structureFinding(location: string, field: string): PolicyFinding {
   return {
@@ -50,71 +45,59 @@ export function validateScripts(
   scripts: Readonly<Record<string, string>>,
   shape: WorkspaceShape,
 ): PolicyFinding[] {
-  const findings: PolicyFinding[] = [];
+  const { findings, report } = collectFindings(scriptFinding);
   for (const [name, canonical] of Object.entries(canonicalScripts)) {
     const declared = scripts[name];
     if (!shape.hasVitestConfig) {
       if (declared !== undefined) {
-        findings.push(
-          scriptFinding(
-            location,
-            `declares ${name} without a vitest.config.ts to run it`,
-            `remove ${name} from ${location}, or add a vitest.config.ts to the workspace`,
-          ),
+        report(
+          location,
+          `declares ${name} without a vitest.config.ts to run it`,
+          `remove ${name} from ${location}, or add a vitest.config.ts to the workspace`,
         );
       }
       continue;
     }
     if (declared === undefined) {
-      findings.push(
-        scriptFinding(
-          location,
-          `does not declare ${name}, so \`vp run -r ${name}\` skips this workspace`,
-          `add to ${location}: "${name}": "${canonical}"`,
-        ),
+      report(
+        location,
+        `does not declare ${name}, so \`vp run -r ${name}\` skips this workspace`,
+        `add to ${location}: "${name}": "${canonical}"`,
       );
     } else if (declared !== canonical) {
-      findings.push(
-        scriptFinding(
-          location,
-          `${name} does not match the repository-wide command`,
-          `set ${name} in ${location} to: ${canonical}`,
-        ),
+      report(
+        location,
+        `${name} does not match the repository-wide command`,
+        `set ${name} in ${location} to: ${canonical}`,
       );
     }
   }
 
   const check = expandScript(scripts, "check");
   if (shape.typeScriptConfigs.length > 0 && check === undefined) {
-    findings.push(
-      scriptFinding(
-        location,
-        "owns a TypeScript project but declares no check script",
-        `add to ${location}: "check": "tsc --noEmit -p ${shape.typeScriptConfigs[0]}"`,
-      ),
+    report(
+      location,
+      "owns a TypeScript project but declares no check script",
+      `add to ${location}: "check": "tsc --noEmit -p ${shape.typeScriptConfigs[0]}"`,
     );
   }
   if (check !== undefined) {
     for (const config of shape.typeScriptConfigs) {
       if (check.includes(`-p ${config}`)) continue;
-      findings.push(
-        scriptFinding(
-          location,
-          `check does not type-check ${config}, so nothing ever does`,
-          `extend the check script in ${location} with: tsc --noEmit -p ${config}`,
-        ),
+      report(
+        location,
+        `check does not type-check ${config}, so nothing ever does`,
+        `extend the check script in ${location} with: tsc --noEmit -p ${config}`,
       );
     }
   }
 
   const build = expandScript(scripts, "build");
   if (build !== undefined && check !== undefined && !build.startsWith(check)) {
-    findings.push(
-      scriptFinding(
-        location,
-        "build does not run check first, so it can ship an unchecked tree",
-        `prefix the build script in ${location} with: bun run check &&`,
-      ),
+    report(
+      location,
+      "build does not run check first, so it can ship an unchecked tree",
+      `prefix the build script in ${location} with: bun run check &&`,
     );
   }
   return findings;
@@ -125,26 +108,22 @@ export function validateDependencies(
   group: string,
   dependencies: Readonly<Record<string, string>>,
 ): PolicyFinding[] {
-  const findings: PolicyFinding[] = [];
+  const { findings, report } = collectFindings(dependencyFinding);
   for (const [name, version] of Object.entries(dependencies)) {
     if (name.startsWith("@voidmix/")) {
       if (version === "workspace:*") continue;
-      findings.push(
-        dependencyFinding(
-          location,
-          `${group} pins ${name} to ${version} instead of the workspace protocol`,
-          `set ${name} in ${location} to: workspace:*`,
-        ),
+      report(
+        location,
+        `${group} pins ${name} to ${version} instead of the workspace protocol`,
+        `set ${name} in ${location} to: workspace:*`,
       );
       continue;
     }
     if (version.startsWith("catalog:")) continue;
-    findings.push(
-      dependencyFinding(
-        location,
-        `${group} pins ${name} to ${version} instead of a catalog entry`,
-        `add ${name} to a root catalog and set it in ${location} to: catalog: or catalog:<name>`,
-      ),
+    report(
+      location,
+      `${group} pins ${name} to ${version} instead of a catalog entry`,
+      `add ${name} to a root catalog and set it in ${location} to: catalog: or catalog:<name>`,
     );
   }
   return findings;

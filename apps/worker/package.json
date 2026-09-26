@@ -14,11 +14,8 @@
     "build": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@voidmix/ai": "workspace:*",
-    "@voidmix/application": "workspace:*",
     "@voidmix/core": "workspace:*",
-    "@voidmix/db": "workspace:*",
-    "@voidmix/shared": "workspace:*"
+    "@voidmix/db": "workspace:*"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",

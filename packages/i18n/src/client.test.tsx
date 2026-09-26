@@ -29,19 +29,6 @@ function Probe() {
     <div>
       <output data-testid="locale">{locale}</output>
       <output data-testid="message">{t("greeting", { name: "Ada" })}</output>
-      <button onClick={() => void setLocale("zh").catch(() => undefined)}>切换</button>
-    </div>
-  );
-}
-
-function AsyncProbe() {
-  const locale = useLocale();
-  const setLocale = useSetLocale();
-  const t = useTranslations("home");
-  return (
-    <div>
-      <output data-testid="async-locale">{locale}</output>
-      <output data-testid="async-message">{t("greeting", { name: "Ada" })}</output>
       <button onClick={() => void setLocale("en").catch(() => undefined)}>English</button>
       <button onClick={() => void setLocale("zh").catch(() => undefined)}>中文</button>
     </div>
@@ -61,21 +48,44 @@ function AsyncFormatterProbe() {
   );
 }
 
+function probe(props: Partial<Omit<import("./client").I18nProviderProps, "children">> = {}) {
+  return (
+    <I18nProvider locale="en" messages={messages} {...props}>
+      <Probe />
+    </I18nProvider>
+  );
+}
+
+function asyncProbe({
+  locale = "en",
+  messages: catalog = messages[locale],
+  children = <Probe />,
+  ...props
+}: Partial<import("./client").AsyncI18nProviderProps> &
+  Pick<import("./client").AsyncI18nProviderProps, "loadCatalog">) {
+  return (
+    <AsyncI18nProvider locale={locale} messages={catalog} {...props}>
+      {children}
+    </AsyncI18nProvider>
+  );
+}
+
+function pendingCatalog() {
+  let resolve!: (catalog: typeof messages.zh) => void;
+  const promise = new Promise<typeof messages.zh>((done) => {
+    resolve = done;
+  });
+  return { loadCatalog: vi.fn(() => promise), resolve };
+}
+
 describe("I18nProvider", () => {
   it("renders a complete static catalog without suspending and switches locale", async () => {
     const write = vi.fn();
-    render(
-      <StrictMode>
-        <I18nProvider locale="en" messages={messages} storage={{ read: () => "en", write }}>
-          <Probe />
-        </I18nProvider>
-      </StrictMode>,
-    );
+    render(<StrictMode>{probe({ storage: { read: () => "en", write } })}</StrictMode>);
 
-    expect(screen.getByTestId("locale").textContent).toBe("en");
-    expect(screen.getByTestId("message").textContent).toBe("Hello Ada");
+    expectLocale("en", "Hello Ada");
 
-    fireEvent.click(screen.getByRole("button", { name: "切换" }));
+    fireEvent.click(screen.getByRole("button", { name: "中文" }));
 
     expect(write).toHaveBeenCalledWith("zh");
 
@@ -84,35 +94,13 @@ describe("I18nProvider", () => {
     expect(write).toHaveBeenCalledWith("zh");
   });
 
-  it("remains interactive after StrictMode effect replay", async () => {
-    render(
-      <StrictMode>
-        <I18nProvider locale="en" messages={messages}>
-          <Probe />
-        </I18nProvider>
-      </StrictMode>,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "切换" }));
-    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
-  });
-
   it("adopts a new locale when the provider props change", async () => {
-    const { rerender } = render(
-      <I18nProvider locale="en" messages={messages}>
-        <Probe />
-      </I18nProvider>,
-    );
+    const { rerender } = render(probe({}));
 
-    rerender(
-      <I18nProvider locale="zh" messages={messages}>
-        <Probe />
-      </I18nProvider>,
-    );
+    rerender(probe({ locale: "zh" }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("locale").textContent).toBe("zh");
-      expect(screen.getByTestId("message").textContent).toBe("你好，Ada");
+      expectLocale("zh", "你好，Ada");
     });
   });
 
@@ -122,18 +110,9 @@ describe("I18nProvider", () => {
       throw new Error("document update failed");
     });
 
-    render(
-      <I18nProvider
-        locale="en"
-        messages={messages}
-        onLocaleChange={onLocaleChange}
-        storage={{ read: () => "en", write }}
-      >
-        <Probe />
-      </I18nProvider>,
-    );
+    render(probe({ onLocaleChange: onLocaleChange, storage: { read: () => "en", write } }));
 
-    fireEvent.click(screen.getByRole("button", { name: "切换" }));
+    fireEvent.click(screen.getByRole("button", { name: "中文" }));
 
     expect((await screen.findByTestId("locale")).textContent).toBe("zh");
     expect(screen.getByTestId("message").textContent).toBe("你好，Ada");
@@ -141,45 +120,18 @@ describe("I18nProvider", () => {
     expect(onLocaleChange).toHaveBeenCalledWith("zh");
   });
 
-  it("keeps an in-memory switch when locale persistence is a no-op", async () => {
+  it.each([
+    ["is a no-op", () => {}],
+    [
+      "throws",
+      () => {
+        throw new Error("storage unavailable");
+      },
+    ],
+  ] as const)("keeps an in-memory switch when locale persistence %s", async (_name, write) => {
     const onLocaleChange = vi.fn();
-    render(
-      <I18nProvider
-        locale="en"
-        messages={messages}
-        onLocaleChange={onLocaleChange}
-        storage={{ read: () => "en", write: () => {} }}
-      >
-        <Probe />
-      </I18nProvider>,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "切换" }));
-
-    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
-    expect(onLocaleChange).toHaveBeenCalledWith("zh");
-  });
-
-  it("keeps an in-memory switch when locale persistence throws", async () => {
-    const onLocaleChange = vi.fn();
-    render(
-      <I18nProvider
-        locale="en"
-        messages={messages}
-        onLocaleChange={onLocaleChange}
-        storage={{
-          read: () => "en",
-          write: () => {
-            throw new Error("storage unavailable");
-          },
-        }}
-      >
-        <Probe />
-      </I18nProvider>,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "切换" }));
-
+    render(probe({ onLocaleChange, storage: { read: () => "en", write } }));
+    fireEvent.click(screen.getByRole("button", { name: "中文" }));
     await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
     expect(onLocaleChange).toHaveBeenCalledWith("zh");
   });
@@ -196,33 +148,27 @@ describe("I18nProvider", () => {
     expect(localStorage.read()).toBe("zh");
   });
 
-  it("keeps locale switching available under React StrictMode", async () => {
-    const { StrictMode } = await import("react");
-    render(
-      <StrictMode>
-        <I18nProvider locale="en" messages={messages}>
-          <Probe />
-        </I18nProvider>
-      </StrictMode>,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "切换" }));
-    expect((await screen.findByTestId("locale")).textContent).toBe("zh");
-  });
+  it.each(["synchronous", "asynchronous"])(
+    "remains interactive under StrictMode: %s",
+    async (mode) => {
+      const loadCatalog = async (locale: keyof typeof messages) => messages[locale];
+      render(
+        <StrictMode>{mode === "synchronous" ? probe() : asyncProbe({ loadCatalog })}</StrictMode>,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "中文" }));
+      await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
+      expect((await screen.findByTestId("locale")).textContent).toBe("zh");
+    },
+  );
 });
 
 describe("AsyncI18nProvider", () => {
   it("renders the initial catalog without loading another locale", () => {
     const loadCatalog = vi.fn(async (locale: keyof typeof messages) => messages[locale]);
 
-    render(
-      <AsyncI18nProvider locale="en" messages={messages.en} loadCatalog={loadCatalog}>
-        <AsyncProbe />
-      </AsyncI18nProvider>,
-    );
+    render(asyncProbe({ loadCatalog }));
 
-    expect(screen.getByTestId("async-locale").textContent).toBe("en");
-    expect(screen.getByTestId("async-message").textContent).toBe("Hello Ada");
+    expectLocale("en", "Hello Ada");
     expect(loadCatalog).not.toHaveBeenCalled();
   });
 
@@ -230,14 +176,11 @@ describe("AsyncI18nProvider", () => {
     const loadCatalog = vi.fn(async (locale: keyof typeof messages) => messages[locale]);
 
     render(
-      <AsyncI18nProvider
-        locale="en"
-        messages={messages.en}
-        loadCatalog={loadCatalog}
-        timeZone="America/Los_Angeles"
-      >
-        <AsyncFormatterProbe />
-      </AsyncI18nProvider>,
+      asyncProbe({
+        loadCatalog,
+        timeZone: "America/Los_Angeles",
+        children: <AsyncFormatterProbe />,
+      }),
     );
 
     expect(screen.getByTestId("async-formatted-date").textContent).toContain("12/31/2025");
@@ -245,49 +188,27 @@ describe("AsyncI18nProvider", () => {
 
   it("adopts a new locale and catalog when the provider props change", async () => {
     const loadCatalog = vi.fn(async (locale: keyof typeof messages) => messages[locale]);
-    const { rerender } = render(
-      <AsyncI18nProvider locale="en" messages={messages.en} loadCatalog={loadCatalog}>
-        <AsyncProbe />
-      </AsyncI18nProvider>,
-    );
+    const { rerender } = render(asyncProbe({ loadCatalog }));
 
-    rerender(
-      <AsyncI18nProvider locale="zh" messages={messages.zh} loadCatalog={loadCatalog}>
-        <AsyncProbe />
-      </AsyncI18nProvider>,
-    );
+    rerender(asyncProbe({ locale: "zh", messages: messages.zh, loadCatalog }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("async-locale").textContent).toBe("zh");
-      expect(screen.getByTestId("async-message").textContent).toBe("你好，Ada");
+      expectLocale("zh", "你好，Ada");
     });
     expect(loadCatalog).not.toHaveBeenCalled();
   });
 
   it("ignores a pending switch after newer provider props arrive", async () => {
-    let resolveChinese: ((catalog: typeof messages.zh) => void) | undefined;
-    const chinesePromise = new Promise<typeof messages.zh>((resolve) => {
-      resolveChinese = resolve;
-    });
-    const loadCatalog = vi.fn(() => chinesePromise);
+    const { loadCatalog, resolve: resolveChinese } = pendingCatalog();
     const refreshedEnglish = { home: { greeting: "Hello refreshed {name}" } };
-    const { rerender } = render(
-      <AsyncI18nProvider locale="en" messages={messages.en} loadCatalog={loadCatalog}>
-        <AsyncProbe />
-      </AsyncI18nProvider>,
-    );
+    const { rerender } = render(asyncProbe({ loadCatalog }));
 
     fireEvent.click(screen.getByRole("button", { name: "中文" }));
-    rerender(
-      <AsyncI18nProvider locale="en" messages={refreshedEnglish} loadCatalog={loadCatalog}>
-        <AsyncProbe />
-      </AsyncI18nProvider>,
-    );
+    rerender(asyncProbe({ locale: "en", messages: refreshedEnglish, loadCatalog }));
     resolveChinese?.(messages.zh);
 
     await waitFor(() => {
-      expect(screen.getByTestId("async-locale").textContent).toBe("en");
-      expect(screen.getByTestId("async-message").textContent).toBe("Hello refreshed Ada");
+      expectLocale("en", "Hello refreshed Ada");
     });
   });
 
@@ -296,21 +217,16 @@ describe("AsyncI18nProvider", () => {
     const loadCatalog = vi.fn(async (locale: keyof typeof messages) => messages[locale]);
 
     render(
-      <AsyncI18nProvider
-        locale="en"
-        messages={messages.en}
-        loadCatalog={loadCatalog}
-        storage={{ read: () => "en", write }}
-      >
-        <AsyncProbe />
-      </AsyncI18nProvider>,
+      asyncProbe({
+        loadCatalog,
+        storage: { read: () => "en", write },
+      }),
     );
 
     fireEvent.click(screen.getByRole("button", { name: "中文" }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("async-locale").textContent).toBe("zh");
-      expect(screen.getByTestId("async-message").textContent).toBe("你好，Ada");
+      expectLocale("zh", "你好，Ada");
     });
     expect(loadCatalog).toHaveBeenCalledTimes(1);
     expect(loadCatalog).toHaveBeenCalledWith("zh");
@@ -318,17 +234,9 @@ describe("AsyncI18nProvider", () => {
   });
 
   it("shares the pending catalog promise across concurrent requests", async () => {
-    let resolveCatalog: ((catalog: typeof messages.zh) => void) | undefined;
-    const catalogPromise = new Promise<typeof messages.zh>((resolve) => {
-      resolveCatalog = resolve;
-    });
-    const loadCatalog = vi.fn(() => catalogPromise);
+    const { loadCatalog, resolve: resolveCatalog } = pendingCatalog();
 
-    render(
-      <AsyncI18nProvider locale="en" messages={messages.en} loadCatalog={loadCatalog}>
-        <AsyncProbe />
-      </AsyncI18nProvider>,
-    );
+    render(asyncProbe({ loadCatalog }));
 
     fireEvent.click(screen.getByRole("button", { name: "中文" }));
     await waitFor(() => expect(loadCatalog).toHaveBeenCalledTimes(1));
@@ -336,7 +244,7 @@ describe("AsyncI18nProvider", () => {
     expect(loadCatalog).toHaveBeenCalledTimes(1);
 
     resolveCatalog?.(messages.zh);
-    await waitFor(() => expect(screen.getByTestId("async-locale").textContent).toBe("zh"));
+    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
   });
 
   it("keeps the current locale after a load failure and retries later", async () => {
@@ -345,46 +253,39 @@ describe("AsyncI18nProvider", () => {
       .mockRejectedValueOnce(new Error("catalog unavailable"))
       .mockResolvedValueOnce(messages.zh);
 
-    render(
-      <AsyncI18nProvider locale="en" messages={messages.en} loadCatalog={loadCatalog}>
-        <AsyncProbe />
-      </AsyncI18nProvider>,
-    );
+    render(asyncProbe({ loadCatalog }));
 
     fireEvent.click(screen.getByRole("button", { name: "中文" }));
     await waitFor(() => expect(loadCatalog).toHaveBeenCalledTimes(1));
-    expect(screen.getByTestId("async-locale").textContent).toBe("en");
+    expect(screen.getByTestId("locale").textContent).toBe("en");
 
     fireEvent.click(screen.getByRole("button", { name: "中文" }));
-    await waitFor(() => expect(screen.getByTestId("async-locale").textContent).toBe("zh"));
+    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("zh"));
     expect(loadCatalog).toHaveBeenCalledTimes(2);
   });
 
   it("does not commit a stale catalog after a newer locale request", async () => {
-    let resolveChinese: ((catalog: typeof messages.zh) => void) | undefined;
-    const chinesePromise = new Promise<typeof messages.zh>((resolve) => {
-      resolveChinese = resolve;
-    });
-    const loadCatalog = vi.fn(() => chinesePromise);
+    const { loadCatalog, resolve: resolveChinese } = pendingCatalog();
     const write = vi.fn();
 
     render(
-      <AsyncI18nProvider
-        locale="en"
-        messages={messages.en}
-        loadCatalog={loadCatalog}
-        storage={{ read: () => "en", write }}
-      >
-        <AsyncProbe />
-      </AsyncI18nProvider>,
+      asyncProbe({
+        loadCatalog,
+        storage: { read: () => "en", write },
+      }),
     );
 
     fireEvent.click(screen.getByRole("button", { name: "中文" }));
     fireEvent.click(screen.getByRole("button", { name: "English" }));
     resolveChinese?.(messages.zh);
 
-    await waitFor(() => expect(screen.getByTestId("async-locale").textContent).toBe("en"));
-    expect(screen.getByTestId("async-message").textContent).toBe("Hello Ada");
+    await waitFor(() => expect(screen.getByTestId("locale").textContent).toBe("en"));
+    expect(screen.getByTestId("message").textContent).toBe("Hello Ada");
     expect(write).not.toHaveBeenCalled();
   });
 });
+
+function expectLocale(locale: string, text: string) {
+  expect(screen.getByTestId("locale").textContent).toBe(locale);
+  expect(screen.getByTestId("message").textContent).toBe(text);
+}

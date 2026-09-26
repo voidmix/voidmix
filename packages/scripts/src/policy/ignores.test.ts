@@ -1,3 +1,4 @@
+import { expectOnlyFinding } from "../test-fixtures.js";
 import { describe, expect, it } from "vite-plus/test";
 
 import { fixWorkspaceIgnore, parseIgnorePatterns, validateWorkspaceIgnore } from "./ignores.js";
@@ -36,25 +37,45 @@ describe("validateWorkspaceIgnore", () => {
     expect(validateWorkspaceIgnore(location, anchored, rootPatterns)).toEqual([]);
   });
 
-  it("reports a bare directory name, which matches at any depth", () => {
-    const findings = validateWorkspaceIgnore(location, "dist\n", rootPatterns);
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
-      check: "ignore.anchor",
-      location,
-      message: "dist is not anchored to the workspace root",
-      severity: "error",
-    });
-    expect(findings[0]?.fix).toContain("/dist");
-  });
-
-  it("reports a name whose only slash is trailing", () => {
-    const findings = validateWorkspaceIgnore(location, "coverage/\n", rootPatterns);
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({ check: "ignore.anchor", location });
-    expect(findings[0]?.message).toContain("coverage/");
+  it.each<{ name: string; args: Parameters<typeof validateWorkspaceIgnore>; expected: object }>([
+    {
+      name: "reports a bare directory name, which matches at any depth",
+      args: [location, "dist\n", rootPatterns],
+      expected: {
+        check: "ignore.anchor",
+        location,
+        message: "dist is not anchored to the workspace root",
+        severity: "error",
+        fix: expect.stringContaining("/dist"),
+      },
+    },
+    {
+      name: "reports a name whose only slash is trailing",
+      args: [location, "coverage/\n", rootPatterns],
+      expected: {
+        check: "ignore.anchor",
+        location,
+        message: expect.stringContaining("coverage/"),
+      },
+    },
+    {
+      name: "reports a pattern the root already applies everywhere",
+      args: [location, "node_modules/\n", rootPatterns],
+      expected: {
+        check: "ignore.duplicate",
+        location,
+        message: "repeats node_modules/ from the root .gitignore",
+        severity: "error",
+        fix: expect.stringContaining("the root already applies it everywhere"),
+      },
+    },
+    {
+      name: "reports a duplicate once even when it is also unanchored",
+      args: [location, ".DS_Store\n", rootPatterns],
+      expected: { check: "ignore.duplicate" },
+    },
+  ])("$name", ({ args, expected }) => {
+    expectOnlyFinding(validateWorkspaceIgnore(...args), expected);
   });
 
   it("accepts a pattern anchored by an interior slash", () => {
@@ -67,26 +88,6 @@ describe("validateWorkspaceIgnore", () => {
 
   it("accepts an unanchored negation, which re-includes rather than hides", () => {
     expect(validateWorkspaceIgnore(location, "!keep\n", rootPatterns)).toEqual([]);
-  });
-
-  it("reports a pattern the root already applies everywhere", () => {
-    const findings = validateWorkspaceIgnore(location, "node_modules/\n", rootPatterns);
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({
-      check: "ignore.duplicate",
-      location,
-      message: "repeats node_modules/ from the root .gitignore",
-      severity: "error",
-    });
-    expect(findings[0]?.fix).toContain("the root already applies it everywhere");
-  });
-
-  it("reports a duplicate once even when it is also unanchored", () => {
-    const findings = validateWorkspaceIgnore(location, ".DS_Store\n", rootPatterns);
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]).toMatchObject({ check: "ignore.duplicate" });
   });
 });
 

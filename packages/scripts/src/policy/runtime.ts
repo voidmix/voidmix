@@ -1,8 +1,9 @@
-import { access, readdir, readFile, readlink, writeFile } from "node:fs/promises";
+import { readdir, readFile, readlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import type { PolicyDependencies } from "./checks.js";
 import { vendoredSkillRoot } from "./skills.js";
+import { walkFiles, pathExists as exists } from "../runtime/files.js";
 import { repositoryRoot } from "../runtime/repository.js";
 
 /** Directories that never contain repository content. */
@@ -24,48 +25,6 @@ const markdownRoots = ["docs", "skills", "apps", "packages", "e2e"] as const;
 
 /** Root-level markdown files policy owns. */
 const rootMarkdownFiles = ["AGENTS.md", "CLAUDE.md", "CONTRIBUTING.md", "README.md"] as const;
-
-async function exists(path: string): Promise<boolean> {
-  try {
-    await access(path);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Collects the files under `directory` that `accept` selects, depth first.
- *
- * Tool-owned and dot-prefixed directories are skipped. That is not tidiness: a
- * build writes copies of source files into `.output` and `.tanstack`, and a
- * check that saw a stale copy would report on a tree nobody edits.
- */
-async function walkFiles(
-  root: string,
-  directory: string,
-  accept: (name: string) => boolean,
-  found: string[],
-): Promise<void> {
-  const absolute = join(root, directory);
-  let entries;
-  try {
-    entries = await readdir(absolute, { withFileTypes: true });
-  } catch {
-    return;
-  }
-
-  for (const entry of entries) {
-    if (entry.isDirectory()) {
-      if (skippedDirectories.has(entry.name) || entry.name.startsWith(".")) continue;
-      await walkFiles(root, join(directory, entry.name), accept, found);
-      continue;
-    }
-    if (entry.isFile() && accept(entry.name)) {
-      found.push(join(directory, entry.name));
-    }
-  }
-}
 
 const markdown = (name: string) => name.endsWith(".md");
 
@@ -185,7 +144,7 @@ async function listEmptyDirectories(): Promise<string[]> {
 async function listWorkspaceFiles(): Promise<string[]> {
   const found: string[] = [];
   for (const member of await listWorkspaceMembers()) {
-    await walkFiles(repositoryRoot, member, () => true, found);
+    await walkFiles(repositoryRoot, member, () => true, found, skippedDirectories);
   }
   return found.map((file) => file.split("\\").join("/")).sort();
 }
@@ -196,7 +155,7 @@ async function listMarkdownFiles(): Promise<string[]> {
     if (await exists(join(repositoryRoot, file))) found.push(file);
   }
   for (const root of markdownRoots) {
-    await walkFiles(repositoryRoot, root, markdown, found);
+    await walkFiles(repositoryRoot, root, markdown, found, skippedDirectories);
   }
   return found.map((file) => file.split("\\").join("/")).sort();
 }
