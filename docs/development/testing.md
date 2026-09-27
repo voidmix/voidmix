@@ -132,8 +132,8 @@ bunx vp test --run
 ```
 
 Do not rely on a globally installed `vp` binary. Even when its version matches
-the repository's version, its global install directory is a different physical
-dependency tree from the workspace's `vite-plus/test` import. That splits the
+the repository's pinned release, its global install directory is a different
+physical dependency tree from the workspace's `vite-plus/test` import. That splits the
 runner from the test API and can fail before the first test with
 `Cannot read properties of undefined (reading 'config')`. Workspace scripts are
 safe because they resolve `vp` from the root `node_modules/.bin`, the same way

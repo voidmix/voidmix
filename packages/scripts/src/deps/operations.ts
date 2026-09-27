@@ -9,10 +9,11 @@ const tazeOptions = [
   "minor",
   "-r",
   "-l",
+  // The runner and coverage package must match the versions bundled by Vite+.
   "--exclude",
-  "vitest@4",
+  "vitest",
   "--exclude",
-  "@vitest/coverage-v8@4",
+  "@vitest/coverage-v8",
   // RC build hashes do not sort by release date; update both from the rc5 tag.
   "--exclude",
   "drizzle-kit",

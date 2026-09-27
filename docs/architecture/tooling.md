@@ -32,11 +32,16 @@ runner.
 Internal packages use `workspace:*`. Change third-party versions in the root
 catalog rather than individual workspace manifests.
 
-Stable dependencies that can upgrade independently use caret semver ranges
-(`^`). Exact versions remain for
-pre-release packages, tightly coupled toolchains, and native bindings whose
-versions must move together: oRPC, Drizzle RC, Nitro beta, Storybook, Vite+,
-Vitest coverage, and Lightning CSS.
+Stable third-party dependencies use caret semver ranges (`^`), including
+`0.x` releases without a pre-release suffix. Vitest coverage is pinned exactly
+to the runner bundled by Vite+. Pre-release dependencies remain exact: oRPC
+beta, Drizzle RC, Nitro beta, and Vite+ RC with its Vite alias.
+The committed `bun.lock` records the exact resolved versions for frozen installs.
+
+Storybook packages and Lightning CSS also use ranges, but their resolved
+versions must stay aligned with their companion packages.
+Validate that alignment when refreshing the lockfile; a range does not remove
+the requirement to upgrade coupled packages together.
 
 Root overrides are reserved for cross-cutting toolchain constraints:
 
@@ -190,8 +195,12 @@ oRPC uses `beta`, and Drizzle Kit/ORM use the same `rc5` build. Their `latest`
 tags still point to older stable lines, so a stable-only scan misses updates.
 Update Drizzle manually from `rc5`; the generic semver scan can recommend an
 older build when its hash happens to sort higher.
-Vite+ `0.3.2` still bundles Vitest `4.1.11`; keep `@vitest/coverage-v8` at
-`4.1.11` rather than independently upgrading it to Vitest 5.
+Vite+ `1.0.0-rc.1` bundles Vitest `5.0.1`. The coverage catalog pins
+`@vitest/coverage-v8` to `5.0.1` so its exact Vitest peer matches the runner.
+The separately published coverage `5.0.2` must wait for a matching Vite+ release.
+Dependency maintenance excludes the runner and
+coverage package at every major version; upgrade them together with Vite+ and
+the root `vite` alias/override, and verify coverage after resolving the lockfile.
 
 Refresh a cross-platform lockfile with `bun install --lockfile-only --os '*' --cpu '*'`,
 then install locally with `bun install --frozen-lockfile`. This keeps the optional

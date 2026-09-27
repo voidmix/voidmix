@@ -13,7 +13,7 @@ afterEach(() => {
   else process.env.NODE_ENV = originalNodeEnvironment;
 });
 
-describe.sequential("runCliAction", () => {
+describe("runCliAction", { concurrent: false }, () => {
   it.each(["invalid environment", "throwing logger"])(
     "falls back to safe stderr: %s",
     async (failure) => {
