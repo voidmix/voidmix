@@ -1,0 +1,39 @@
+DESIGN.md
+  s_42000bd424f7f1::t_dd9bdee8771f29 3,6-80
+docs/architecture/design.md
+  s_42000bd424f7f1::t_ff76db4d055721 3-56
+docs/development/visual-audit.md
+  s_42000bd424f7f1::t_54a3f13e9253db 1-102
+e2e/AGENTS.md
+  s_42000bd424f7f1::t_dbcf43d1c2275e 15-16,26-28
+e2e/capture-product.ts
+  s_42000bd424f7f1::t_0a58032c58f16a 1-133
+e2e/package.json
+  s_42000bd424f7f1::t_c34def2f760676 10-11
+e2e/playwright.config.ts
+  s_42000bd424f7f1::t_f6bc503e9bf39c 41
+e2e/tests/authenticated-web.spec.ts
+  s_42000bd424f7f1::t_1e8189c4f802f6 29,33
+e2e/tests/desktop.spec.ts
+  s_42000bd424f7f1::t_c13feab6375345 5,16-29
+e2e/tests/redesign.spec.ts
+  s_42000bd424f7f1::t_db14a8df462b9b 1-195
+e2e/tests/web.spec.ts
+  s_42000bd424f7f1::t_fb415514b34afd 7-10,22,30-32,63-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a8f10bab3da0c3844ba3256e61d29a3405f11436",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
