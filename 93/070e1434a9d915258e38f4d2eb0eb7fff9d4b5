@@ -1,0 +1,51 @@
+packages/db/AGENTS.md
+  s_42000bd424f7f1::t_068d5f172823a1 37-43,108
+packages/db/package.json
+  s_42000bd424f7f1::t_ce4320fdf7a9bc 19-20,30
+packages/db/src/identity/memory.ts
+  s_42000bd424f7f1::t_f0f4c07d84f801 11,19-48,53-57
+packages/db/src/identity/postgres.ts
+  s_42000bd424f7f1::t_4165fd77bf70cd 14-22,24-37,44-48,51,72,78,102
+packages/db/src/identity/transactions.test.ts
+  s_42000bd424f7f1::t_b69ee87a7327b2 1-42
+packages/db/src/pagination.ts
+  s_42000bd424f7f1::t_ce7a2b202ce162 1-51
+packages/db/src/v2/activity.ts
+  s_42000bd424f7f1::t_98c3eafdbff138 1-35
+packages/db/src/v2/assets.ts
+  s_42000bd424f7f1::t_024796df439630 1-89
+packages/db/src/v2/projects.ts
+  s_42000bd424f7f1::t_cf28f3a73ab07f 1-3,37-40,43-47
+packages/db/src/v2/resources.ts
+  s_42000bd424f7f1::t_27bd2af4bccc85 1-4
+packages/db/src/v2/reviews.ts
+  s_42000bd424f7f1::t_a61591ee333a1b 1-74
+packages/db/src/v2/tasks.ts
+  s_42000bd424f7f1::t_1d92bb4f46545f 1-52
+packages/db/src/v2/visibility.ts
+  s_42000bd424f7f1::t_485c7230fe0081 1-16
+packages/db/tests/database.ts
+  s_42000bd424f7f1::t_07639d79f35cc8 1-14
+packages/db/tests/domains.integration.test.ts
+  s_42000bd424f7f1::t_7e6313159d3eae 1-342
+packages/db/tsconfig.json
+  s_42000bd424f7f1::t_e2ec58e6bf2528 3
+packages/db/vitest.postgres.config.ts
+  s_42000bd424f7f1::t_7d3b6b9ed54b8d 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "93070e1434a9d915258e38f4d2eb0eb7fff9d4b5",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
