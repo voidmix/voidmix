@@ -1,0 +1,39 @@
+apps/storybook/src/modal.stories.tsx
+  s_42000bd424f7f1::t_b0ff17df911eef 1-38
+apps/storybook/src/states.stories.tsx
+  s_42000bd424f7f1::t_ba70ba1de5e005 1,38-48
+packages/ui/AGENTS.md
+  s_42000bd424f7f1::t_05364fcfca6a8b 10-21,39-40
+packages/ui/package.json
+  s_42000bd424f7f1::t_789ef50c14dba2 24-26
+packages/ui/src/components/ui/button.tsx
+  s_42000bd424f7f1::t_96a19063c872d0 8
+packages/ui/src/components/ui/input.tsx
+  s_42000bd424f7f1::t_e127e167a08159 12
+packages/ui/src/loading-state.tsx
+  s_42000bd424f7f1::t_b716176c3bf418 1-13
+packages/ui/src/modal.component.test.tsx
+  s_42000bd424f7f1::t_8f82e91c4ecd17 1-61
+packages/ui/src/modal.tsx
+  s_42000bd424f7f1::t_19fa48278701cd 1-68
+packages/ui/src/page-header.tsx
+  s_42000bd424f7f1::t_3a48c4e33e2df7 20-22
+packages/ui/src/styles/globals.css
+  s_42000bd424f7f1::t_8e0608fe92db9e 19-21,28,36,38,40-42,45,56,92,114,159,161,176-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c4b13be40706861719449e4c7ef07d2f31676b00",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
