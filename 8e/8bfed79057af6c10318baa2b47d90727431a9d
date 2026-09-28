@@ -1,0 +1,27 @@
+apps/api/server/api/app.integration.test.ts
+  s_42000bd424f7f1::t_ea27d35d7be4bb 1,61-64,129,161-180
+apps/api/server/api/app.ts
+  s_42000bd424f7f1::t_e77408a843f4ec 130-139,157-166
+apps/api/server/api/compression.integration.test.ts
+  s_42000bd424f7f1::t_f54b52ea156fb0 1-23
+packages/client/AGENTS.md
+  s_42000bd424f7f1::t_009cdcf2fbc991 37-39
+packages/client/src/index.ts
+  s_42000bd424f7f1::t_5d5137ea333af7 48-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8e8bfed79057af6c10318baa2b47d90727431a9d",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
