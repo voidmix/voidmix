@@ -1,3 +1,4 @@
+import { LoadingState } from "@voidmix/ui/loading-state";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -33,4 +34,15 @@ export const Statuses: Story = {
       <StatusBadge label="Complete" tone="success" />
     </div>
   ),
+};
+
+export const Loading: Story = {
+  args: { title: "Loading", description: "Preserve the page layout while data loads." },
+  render: () => <LoadingState label="Loading your projects…" />,
+};
+export const Unavailable: Story = {
+  args: {
+    title: "Overview is not available",
+    description: "The service is reachable, but overview data is not available.",
+  },
 };

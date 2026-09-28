@@ -16,13 +16,16 @@
  * meaning when the theme changes.
  */
 :root {
+  --control-height: 2.5rem;
+  --brand-signal: #5865f2;
+  --brand-violet: #8b6cff;
   --background: #f7f9fc;
   --foreground: #172033;
   --card: #ffffff;
   --card-foreground: #172033;
   --popover: #ffffff;
   --popover-foreground: #172033;
-  --primary: #5865f2;
+  --primary: #4d58d8;
   --primary-foreground: #ffffff;
   --secondary: #eef1ff;
   --secondary-foreground: #26315f;
@@ -30,16 +33,16 @@
   --muted-foreground: #5a667a;
   --accent: #e7f8fb;
   --accent-foreground: #14515d;
-  --destructive: #e45b6b;
+  --destructive: #b82f45;
   --destructive-foreground: #ffffff;
-  --success: #20b486;
+  --success: #087f5b;
   --success-foreground: #ffffff;
-  --warning: #e8a33d;
-  --warning-foreground: #4d330b;
-  --info: #4a8bea;
+  --warning: #a06412;
+  --warning-foreground: #ffffff;
+  --info: #2563b8;
   --info-foreground: #ffffff;
   --border: #dce3ef;
-  --input: #d3dceb;
+  --input: #8491a5;
   --ring: #5865f2;
   --surface-subtle: #fbfcfe;
   --surface-sunken: #eef2f7;
@@ -50,7 +53,7 @@
   --chart-3: #36c5d8;
   --chart-4: #20b486;
   --chart-5: #e8a33d;
-  --radius: 0.625rem;
+  --radius: 0.75rem;
   --sidebar: #f1f4fa;
   --sidebar-foreground: #172033;
   --sidebar-primary: #5865f2;
@@ -86,7 +89,7 @@
   --info: #78b2ff;
   --info-foreground: #061b38;
   --border: #2b3850;
-  --input: #33415d;
+  --input: #66748e;
   --ring: #7c88ff;
   --surface-subtle: #11192b;
   --surface-sunken: #080d19;
@@ -108,7 +111,7 @@
 }
 
 @theme inline {
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: Inter, "SF Pro Display", "Segoe UI", "Noto Sans SC", system-ui, sans-serif;
   --font-heading: var(--font-sans);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -153,9 +156,9 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
   --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-md: 0.5rem;
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-xl: 1rem;
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
@@ -168,5 +171,60 @@
 
   :where(button, a, input, textarea, select):focus-visible {
     outline: none;
+  }
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  :where(button, input, select, textarea) {
+    font-family: inherit;
+  }
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  [data-slot="button"],
+  [data-slot="input"],
+  [data-slot="input-group"] {
+    min-height: var(--control-height);
+  }
+  [data-slot="button"] {
+    transition-duration: 180ms;
+  }
+  [data-slot="button"]:has(> svg:only-child) {
+    min-width: var(--control-height);
+  }
+  @media (pointer: coarse) {
+    [data-slot="button"],
+    [data-slot="input"],
+    select {
+      min-height: 44px;
+    }
+    [data-slot="button"]:has(> svg:only-child) {
+      min-width: 44px;
+    }
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

@@ -7,17 +7,18 @@ Page layout and product-specific composition stay in the owning application.
 
 ## Interface
 
-| Path                                                  | Purpose                                               |
-| ----------------------------------------------------- | ----------------------------------------------------- |
-| `./components/ui/*`                                   | Tree-shakable generated shadcn components             |
-| `./avatar`, `./logo`                                  | Compatibility/product-specific wrapper exports        |
-| `./toast`                                             | Lazy Toast manager and `AsyncToaster` wrapper         |
-| `.`                                                   | Empty compatibility entrypoint                        |
-| `./styles.css`                                        | what applications import: the shared base-nova tokens |
-| `./styles/globals.css`                                | the shadcn-owned Tailwind entry and oklch token block |
-| `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives |
-| `./status-badge` and `./components/ui/switch`         | Visual status tones and accessible boolean control    |
-| `./lib/*`                                             | `cn` and CVA helpers                                  |
+| Path                                                  | Purpose                                                 |
+| ----------------------------------------------------- | ------------------------------------------------------- |
+| `./components/ui/*`                                   | Tree-shakable generated shadcn components               |
+| `./avatar`, `./logo`                                  | Compatibility/product-specific wrapper exports          |
+| `./toast`                                             | Lazy Toast manager and `AsyncToaster` wrapper           |
+| `.`                                                   | Empty compatibility entrypoint                          |
+| `./styles.css`                                        | what applications import: the shared base-nova tokens   |
+| `./styles/globals.css`                                | the shadcn-owned Tailwind entry and oklch token block   |
+| `./modal`, `./loading-state`                          | Accessible controlled overlay and stable pending layout |
+| `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives   |
+| `./status-badge` and `./components/ui/switch`         | Visual status tones and accessible boolean control      |
+| `./lib/*`                                             | `cn` and CVA helpers                                    |
 
 ## Ownership
 
@@ -35,6 +36,8 @@ Page layout and product-specific composition stay in the owning application.
   data slots, caller prop precedence, classes and refs.
 - `FieldError` renders caller-provided children; applications own validation
   messages and localization. Empty children render nothing.
+- Modal owns naming, focus containment/restoration and optional busy dismissal
+  protection; callers supply localized labels and business state.
 - Own no page layout, route tree, or application navigation.
 - Keep project cards, task lists, activity entries and Pi run timelines in Web:
   their domain-specific props are not part of this primitive package.

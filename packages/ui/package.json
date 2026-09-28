@@ -21,7 +21,9 @@
     "./styles.css": "./src/styles.css",
     "./styles/globals.css": "./src/styles/globals.css",
     "./components/ui/*": "./src/components/ui/*.tsx",
-    "./lib/*": "./src/lib/*.ts"
+    "./lib/*": "./src/lib/*.ts",
+    "./modal": "./src/modal.tsx",
+    "./loading-state": "./src/loading-state.tsx"
   },
   "scripts": {
     "check": "tsc --noEmit -p tsconfig.json",
