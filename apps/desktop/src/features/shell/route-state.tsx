@@ -3,6 +3,7 @@ import { LoadingState } from "@voidmix/ui/loading-state";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { ArrowsClockwise } from "@phosphor-icons/react";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
 import { useDesktopTranslations } from "../../i18n/client";
 
 export function RefreshButton({ routeId }: { routeId: string }) {
@@ -13,15 +14,18 @@ export function RefreshButton({ routeId }: { routeId: string }) {
       state.matches.some((match) => match.routeId === routeId && Boolean(match.isFetching)),
   });
   return (
-    <Button
+    <IconButton
+      label={t(loading ? "refreshing" : "refresh")}
       variant="outline"
       disabled={loading}
       aria-busy={loading}
       onClick={() => void router.invalidate({ filter: (match) => match.routeId === routeId })}
     >
-      <ArrowsClockwise data-icon="inline-start" />
-      {t(loading ? "refreshing" : "refresh")}
-    </Button>
+      <ArrowsClockwise
+        aria-hidden="true"
+        className={loading ? "animate-spin motion-reduce:animate-none" : undefined}
+      />
+    </IconButton>
   );
 }
 

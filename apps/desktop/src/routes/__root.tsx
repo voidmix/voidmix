@@ -1,3 +1,4 @@
+import { TooltipProvider } from "@voidmix/ui/components/ui/tooltip";
 import { HeadContent, Navigate, Scripts, createRootRoute } from "@tanstack/react-router";
 import { normalizeLocale } from "@voidmix/i18n";
 import {
@@ -57,7 +58,7 @@ function LocalizedDocument({ children }: { children: ReactNode }) {
       </head>
       <body>
         <PreferredLocaleBootstrap />
-        {children}
+        <TooltipProvider delay={300}>{children}</TooltipProvider>
         <Scripts />
       </body>
     </html>

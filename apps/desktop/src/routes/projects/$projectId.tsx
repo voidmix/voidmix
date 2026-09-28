@@ -139,7 +139,9 @@ function ProjectDetail() {
                   {failed ? <p role="alert">{errors("unknown")}</p> : null}
                 </form>
               ) : null}
-              {!writable ? <p className="text-sm text-muted-foreground">{t("readOnly")}</p> : null}
+              {!writable && project.tasks.length > 0 ? (
+                <p className="text-sm text-muted-foreground">{t("readOnly")}</p>
+              ) : null}
               {!project.tasks.length ? (
                 <EmptyState
                   title={t("emptyTasks")}

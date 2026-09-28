@@ -87,7 +87,9 @@ function ProjectDetail({ projectId }: { projectId: string }) {
             }
           />
           {creating && writable ? <CreateTitleForm kind="task" onCreate={createTask} /> : null}
-          {!writable ? <p className="text-sm text-muted-foreground">{t("readOnly")}</p> : null}
+          {!writable && tasks.length > 0 ? (
+            <p className="text-sm text-muted-foreground">{t("readOnly")}</p>
+          ) : null}
           {!tasks.length ? (
             <EmptyState
               title={t("emptyTasks")}

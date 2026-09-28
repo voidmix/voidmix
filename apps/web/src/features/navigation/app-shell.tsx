@@ -1,7 +1,7 @@
-import { FolderSimple, List, UsersThree } from "@phosphor-icons/react";
+import { ArrowsClockwise, FolderSimple, List, UsersThree } from "@phosphor-icons/react";
 import { Link, Outlet, useLocation, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Logo } from "@voidmix/ui/logo";
 import { Modal } from "@voidmix/ui/modal";
@@ -73,9 +73,9 @@ export function AppShell() {
               onOpenChange={setOpen}
               drawer
               trigger={
-                <Button size="icon" variant="ghost" aria-label={t("openNavigation")}>
+                <IconButton label={t("openNavigation")}>
                   <List aria-hidden="true" />
-                </Button>
+                </IconButton>
               }
             >
               {navigation}
@@ -91,8 +91,12 @@ export function AppShell() {
           </div>
           <span>{pathname.startsWith("/admin") ? t("users") : t("projects")}</span>
           {refreshing ? (
-            <span role="status" className="ml-auto text-xs text-muted-foreground">
-              {t("refreshing")}
+            <span role="status" title={t("refreshing")} className="ml-auto text-muted-foreground">
+              <ArrowsClockwise
+                className="size-4 animate-spin motion-reduce:animate-none"
+                aria-hidden="true"
+              />
+              <span className="sr-only">{t("refreshing")}</span>
             </span>
           ) : null}
         </header>

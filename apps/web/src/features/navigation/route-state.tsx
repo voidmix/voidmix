@@ -1,5 +1,6 @@
 import { Alert, AlertDescription } from "@voidmix/ui/components/ui/alert";
-import { WarningCircle } from "@phosphor-icons/react";
+import { CaretLineLeft, CaretRight, WarningCircle } from "@phosphor-icons/react";
+import { IconButton } from "@voidmix/ui/icon-button";
 import { LoadingState } from "@voidmix/ui/loading-state";
 import { translateKnownApiError } from "../../../i18n/api-errors";
 import type { ErrorComponentProps } from "@tanstack/react-router";
@@ -37,14 +38,14 @@ export function PageNavigation({
   return (
     <nav aria-label={t("pagination")} className="flex justify-end gap-2">
       {cursor ? (
-        <Button variant="outline" onClick={() => onNavigate()}>
-          {t("first")}
-        </Button>
+        <IconButton label={t("first")} variant="outline" onClick={() => onNavigate()}>
+          <CaretLineLeft aria-hidden="true" />
+        </IconButton>
       ) : null}
       {nextCursor ? (
-        <Button variant="outline" onClick={() => onNavigate(nextCursor)}>
-          {t("next")}
-        </Button>
+        <IconButton label={t("next")} variant="outline" onClick={() => onNavigate(nextCursor)}>
+          <CaretRight aria-hidden="true" />
+        </IconButton>
       ) : null}
     </nav>
   );

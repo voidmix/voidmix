@@ -161,7 +161,9 @@
     "projectFolderPlaceholder": "/Users/you/project",
     "bindFolder": "Bind folder",
     "preferenceUnavailable": "Unavailable: this preference is saved locally, but its runtime is not connected.",
-    "folderFailed": "The folder could not be authorized. Check the path and try again."
+    "folderFailed": "The folder could not be authorized. Check the path and try again.",
+    "unavailable": "Unavailable",
+    "aboutSetting": "About {name}"
   },
   "projects": {
     "title": "Projects",

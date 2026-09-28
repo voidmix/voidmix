@@ -7,18 +7,19 @@ Page layout and product-specific composition stay in the owning application.
 
 ## Interface
 
-| Path                                                  | Purpose                                                 |
-| ----------------------------------------------------- | ------------------------------------------------------- |
-| `./components/ui/*`                                   | Tree-shakable generated shadcn components               |
-| `./avatar`, `./logo`                                  | Compatibility/product-specific wrapper exports          |
-| `./toast`                                             | Lazy Toast manager and `AsyncToaster` wrapper           |
-| `.`                                                   | Empty compatibility entrypoint                          |
-| `./styles.css`                                        | what applications import: the shared base-nova tokens   |
-| `./styles/globals.css`                                | the Tailwind entry and semantic light/dark tokens       |
-| `./modal`, `./loading-state`                          | Accessible controlled overlay and stable pending layout |
-| `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives   |
-| `./status-badge` and `./components/ui/switch`         | Visual status tones and accessible boolean control      |
-| `./lib/*`                                             | `cn` and CVA helpers                                    |
+| Path                                                  | Purpose                                                    |
+| ----------------------------------------------------- | ---------------------------------------------------------- |
+| `./components/ui/*`                                   | Tree-shakable generated shadcn components                  |
+| `./avatar`, `./logo`                                  | Compatibility/product-specific wrapper exports             |
+| `./toast`                                             | Lazy Toast manager and `AsyncToaster` wrapper              |
+| `.`                                                   | Empty compatibility entrypoint                             |
+| `./styles.css`                                        | what applications import: the shared base-nova tokens      |
+| `./styles/globals.css`                                | the Tailwind entry and semantic light/dark tokens          |
+| `./modal`, `./loading-state`                          | Accessible controlled overlay and stable pending layout    |
+| `./icon-button`, `./help-hint`                        | Labelled utility buttons with tooltips and click-open help |
+| `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives      |
+| `./status-badge` and `./components/ui/switch`         | Visual status tones and accessible boolean control         |
+| `./lib/*`                                             | `cn` and CVA helpers                                       |
 
 ## Ownership
 
@@ -51,6 +52,9 @@ Page layout and product-specific composition stay in the owning application.
   architecture decision.
 - Maintain keyboard behavior, focus states, reduced-motion support, and useful
   accessible names on every interactive primitive.
+- Utility IconButton labels appear on hover and keyboard focus. HelpHint uses a
+  click-open Popover so explanations also work on touchscreens. Keep primary and
+  destructive action labels visible; disabled reasons must remain discoverable.
 - There are **two file layouts, and picking wrong loses work**:
   - hand-written primitives are flat kebab-case files in `src/` (for example
     `avatar.tsx` and `logo.tsx`);

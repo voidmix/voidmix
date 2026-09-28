@@ -1,3 +1,4 @@
+import { TooltipProvider } from "@voidmix/ui/components/ui/tooltip";
 import {
   HeadContent,
   Scripts,
@@ -226,7 +227,7 @@ function LocalizedDocument({ children, theme }: { children: ReactNode; theme: Us
           disableTransitionOnChange
         >
           <ClientLogger />
-          {children}
+          <TooltipProvider delay={300}>{children}</TooltipProvider>
           <AsyncToaster />
           <Scripts />
         </ThemeProvider>

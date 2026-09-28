@@ -62,5 +62,11 @@ shell serves project lists, details and Admin. The historical beUI route variant
 has been retired. Standard shadcn components provide keyboard Tabs, Dialog/Sheet,
 Table/Checkbox, ToggleGroup and state presentation. Page layout stays app-local.
 
+Utility actions share IconButton with labelled hover/focus tooltips. Setting
+explanations use HelpHint popovers that open by click, keyboard or touch; repeated
+unavailable notices are grouped by section while disabled controls retain an
+accessible reason. Primary actions, destructive actions, errors and permissions
+keep explicit text. Public copy uses short, concrete descriptions.
+
 [Neutral UI delivery](../development/neutral-ui.md) records migration details,
 responsive image generation and verification evidence.

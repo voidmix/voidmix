@@ -17,7 +17,7 @@ function ActivityPage() {
   const t = useDesktopTranslations("activity");
   return (
     <div className="page">
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader title={t("title")} />
       <EmptyState title={t("unavailable")} description={t("unavailableDescription")} />
     </div>
   );

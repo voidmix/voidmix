@@ -2,7 +2,7 @@ import { useRef, type KeyboardEvent } from "react";
 
 import { Desktop, Moon, Sun } from "@phosphor-icons/react";
 
-import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
 import { cn } from "@voidmix/ui/lib/utils";
 import { useTheme, type UserTheme } from "@voidmix/ui/theme";
 
@@ -51,9 +51,9 @@ export function ThemeSwitcher() {
         const label = t(option.labelKey);
 
         return (
-          <Button
+          <IconButton
             aria-checked={selected}
-            aria-label={label}
+            label={label}
             className={cn(
               "text-muted-foreground",
               selected && "bg-background text-foreground shadow-xs hover:bg-background",
@@ -67,11 +67,11 @@ export function ThemeSwitcher() {
             role="radio"
             size="icon-sm"
             tabIndex={selected ? 0 : -1}
-            title={`${t("theme")}: ${label}`}
+            hint={`${t("theme")}: ${label}`}
             variant="ghost"
           >
             <Icon aria-hidden="true" />
-          </Button>
+          </IconButton>
         );
       })}
     </div>

@@ -13,6 +13,7 @@
     "input",
     "input-group",
     "label",
+    "popover",
     "separator",
     "sheet",
     "skeleton",
@@ -21,6 +22,7 @@
     "tabs",
     "toast",
     "toggle",
-    "toggle-group"
+    "toggle-group",
+    "tooltip"
   ]
 }

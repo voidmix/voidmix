@@ -1,3 +1,4 @@
+import { TooltipProvider } from "@voidmix/ui/components/ui/tooltip";
 import "@voidmix/ui/styles.css";
 
 import { ThemeProvider } from "@voidmix/ui/theme";
@@ -13,7 +14,9 @@ const withThemeProvider: Decorator = (Story, context) => {
       initialTheme={theme}
       storageKey={false}
     >
-      <Story />
+      <TooltipProvider delay={300}>
+        <Story />
+      </TooltipProvider>
     </ThemeProvider>
   );
 };

@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { LOCALE_OPTIONS } from "@voidmix/i18n";
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
@@ -34,15 +34,14 @@ function WindowActions() {
   return (
     <div className="window-actions">
       {message ? <span className="window-message">{message}</span> : null}
-      <Button
+      <IconButton
         size="icon"
         variant="ghost"
         onClick={() => void handleHide()}
-        aria-label={t("hideToTray")}
-        title={t("hideToTray")}
+        label={t("hideToTray")}
       >
         <TrayArrowDown aria-hidden="true" />
-      </Button>
+      </IconButton>
     </div>
   );
 }
@@ -128,34 +127,33 @@ export function DesktopShell() {
 
       <div className="app-frame">
         <header className="titlebar" data-tauri-drag-region>
-          <Button
+          <IconButton
             size="icon"
             variant="ghost"
-            aria-label={t(collapsed ? "expandNavigation" : "collapseNavigation")}
+            label={t(collapsed ? "expandNavigation" : "collapseNavigation")}
             aria-pressed={collapsed}
             onClick={() => setCollapsed(!collapsed)}
           >
             <SidebarSimple aria-hidden="true" />
-          </Button>
+          </IconButton>
           <span className="titlebar-context">{t("control")}</span>
-          <Button
+          <IconButton
             size="icon"
             variant="ghost"
             onClick={toggleTheme}
-            aria-label={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
-            title={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
+            label={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
           >
             {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-          </Button>
-          <Button
+          </IconButton>
+          <IconButton
             size="icon"
             variant="ghost"
             onClick={() => void setLocale(nextLocale.value).catch(() => undefined)}
-            aria-label={nextLocale.nativeName}
-            title={`${t("language")}: ${nextLocale.nativeName}`}
+            label={nextLocale.nativeName}
+            hint={`${t("language")}: ${nextLocale.nativeName}`}
           >
             <Translate aria-hidden="true" />
-          </Button>
+          </IconButton>
           <WindowActions />
         </header>
         <main className="app-content">

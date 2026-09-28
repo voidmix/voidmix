@@ -3,7 +3,7 @@ import { useHydrated } from "@tanstack/react-router";
 import { LOCALE_OPTIONS } from "@voidmix/i18n";
 import { useLocale, useSetLocale, useTranslations } from "../i18n/client";
 import type { Locale } from "@voidmix/i18n/types";
-import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
 import { lazy, Suspense, useState } from "react";
 
 const LazyLanguageMenu = lazy(async () => {
@@ -32,8 +32,8 @@ export function LanguageSwitcher() {
     preloadLanguageMenu();
   };
   const createTrigger = (onClick?: () => void) => (
-    <Button
-      aria-label={`${t("language")}: ${currentLabel}`}
+    <IconButton
+      label={`${t("language")}: ${currentLabel}`}
       aria-expanded={open}
       aria-haspopup="menu"
       disabled={!hydrated || pending}
@@ -41,11 +41,11 @@ export function LanguageSwitcher() {
       onFocus={preloadLanguageMenu}
       onPointerDown={preloadLanguageMenu}
       size="icon-sm"
-      title={`${t("language")}: ${currentLabel}`}
+      hint={`${t("language")}: ${currentLabel}`}
       variant="ghost"
     >
       <Globe aria-hidden="true" />
-    </Button>
+    </IconButton>
   );
 
   const onLocaleChange = (nextLocale: Locale) => {

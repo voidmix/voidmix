@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Compact refresh and pagination controls; move setting explanations into accessible help popovers and group unavailable notices.
 - Replace titlebar theme, language and hide-to-tray text with compact icon buttons and accessible labels.
 - Use shadcn Neutral light and dark themes, consistent controls and neutral status badges.
 - Keep the Logo visible when navigation is collapsed.

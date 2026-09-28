@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { useLocale, useSetLocale } from "../../i18n/client";
 import { Suspense, useState } from "react";
 
-import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,15 +48,15 @@ export function AccountMenu({
     >
       <DropdownMenuTrigger
         render={
-          <Button
-            aria-label={t("openAccountMenu")}
+          <IconButton
+            label={t("openAccountMenu")}
             onFocus={prefetchThemeMenu}
             onPointerDown={prefetchThemeMenu}
             size="icon-sm"
             variant="ghost"
           >
             <DotsThree aria-hidden="true" weight="bold" />
-          </Button>
+          </IconButton>
         }
       />
       <DropdownMenuContent align="end" className="min-w-44" side="top" sideOffset={8}>

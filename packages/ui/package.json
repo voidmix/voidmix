@@ -35,7 +35,11 @@
     "./components/ui/checkbox": "./src/components/ui/checkbox.tsx",
     "./components/ui/table": "./src/components/ui/table.tsx",
     "./components/ui/toggle": "./src/components/ui/toggle.tsx",
-    "./components/ui/toggle-group": "./src/components/ui/toggle-group.tsx"
+    "./components/ui/toggle-group": "./src/components/ui/toggle-group.tsx",
+    "./components/ui/tooltip": "./src/components/ui/tooltip.tsx",
+    "./components/ui/popover": "./src/components/ui/popover.tsx",
+    "./icon-button": "./src/icon-button.tsx",
+    "./help-hint": "./src/help-hint.tsx"
   },
   "scripts": {
     "check": "tsc --noEmit -p tsconfig.json",

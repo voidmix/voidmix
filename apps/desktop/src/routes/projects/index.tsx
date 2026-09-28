@@ -2,6 +2,8 @@ import { FolderSimple, Plus } from "@phosphor-icons/react";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
+import { CaretLineLeft, CaretRight } from "@phosphor-icons/react";
 import { Field, FieldLabel } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
 import { Modal } from "@voidmix/ui/modal";
@@ -155,17 +157,22 @@ function ProjectsPage() {
       </section>
       <nav aria-label={navigation("pagination")} className="mb-4 flex justify-end gap-2">
         {search.cursor ? (
-          <Button variant="outline" onClick={() => void navigate({ search: {} })}>
-            {navigation("first")}
-          </Button>
+          <IconButton
+            label={navigation("first")}
+            variant="outline"
+            onClick={() => void navigate({ search: {} })}
+          >
+            <CaretLineLeft aria-hidden="true" />
+          </IconButton>
         ) : null}
         {result.data?.nextCursor ? (
-          <Button
+          <IconButton
+            label={navigation("next")}
             variant="outline"
             onClick={() => void navigate({ search: { cursor: result.data!.nextCursor! } })}
           >
-            {navigation("next")}
-          </Button>
+            <CaretRight aria-hidden="true" />
+          </IconButton>
         ) : null}
       </nav>
     </div>

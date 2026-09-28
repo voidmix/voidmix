@@ -4,6 +4,10 @@ import { Field, FieldLabel } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
 import { Switch } from "@voidmix/ui/components/ui/switch";
 import { PageHeader } from "@voidmix/ui/page-header";
+import { Badge } from "@voidmix/ui/components/ui/badge";
+import { IconButton } from "@voidmix/ui/icon-button";
+import { HelpHint } from "@voidmix/ui/help-hint";
+import { Moon, Sun } from "@phosphor-icons/react";
 import { useDesktopTranslations } from "../../i18n/client";
 import { useState } from "react";
 import { useDesktopPreferences, type DesktopToggle } from "../../lib/preferences";
@@ -35,27 +39,23 @@ function SettingToggle({
   label,
   description,
   preference,
+  unavailableId,
 }: {
   label: string;
   description: string;
   preference: DesktopToggle;
+  unavailableId: string;
 }) {
   const enabled = useDesktopPreferences((state) => state[preference]);
-
   const t = useDesktopTranslations("settings");
+
   return (
     <div className="setting-row">
-      <div>
+      <div className="flex min-w-0 items-center gap-1">
         <strong>{label}</strong>
-        <p>{description}</p>
-        <p id={`${preference}-unavailable`}>{t("preferenceUnavailable")}</p>
+        <HelpHint label={t("aboutSetting", { name: label })} description={description} />
       </div>
-      <Switch
-        aria-label={label}
-        checked={enabled}
-        disabled
-        aria-describedby={`${preference}-unavailable`}
-      />
+      <Switch aria-label={label} checked={enabled} disabled aria-describedby={unavailableId} />
     </div>
   );
 }
@@ -71,18 +71,21 @@ function SettingsPage() {
 
   return (
     <div className="page settings-page">
-      <PageHeader className="mb-7" title={t("title")} description={t("description")} />
+      <PageHeader className="mb-7" title={t("title")} />
       <section className="settings-section">
         <h2>{t("theme")}</h2>
         <div className="settings-list">
           <div className="setting-row">
             <div>
               <strong>{theme === "dark" ? t("darkTheme") : t("lightTheme")}</strong>
-              <p>{t("theme")}</p>
             </div>
-            <Button variant="outline" onClick={toggleTheme}>
-              {theme === "dark" ? t("lightTheme") : t("darkTheme")}
-            </Button>
+            <IconButton
+              label={theme === "dark" ? t("lightTheme") : t("darkTheme")}
+              variant="outline"
+              onClick={toggleTheme}
+            >
+              {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+            </IconButton>
           </div>
         </div>
       </section>
@@ -91,8 +94,14 @@ function SettingsPage() {
         <div className="settings-list">
           <div className="setting-row">
             <div>
-              <strong>{t("projectFolder")}</strong>
-              <p>{folderStatus?.authorizedProject ?? t("projectFolderDescription")}</p>
+              <div className="flex items-center gap-1">
+                <strong>{t("projectFolder")}</strong>
+                <HelpHint
+                  label={t("aboutSetting", { name: t("projectFolder") })}
+                  description={t("projectFolderDescription")}
+                />
+              </div>
+              {folderStatus?.authorizedProject ? <p>{folderStatus.authorizedProject}</p> : null}
             </div>
             <div className="flex gap-2">
               <Field>
@@ -131,7 +140,17 @@ function SettingsPage() {
       </section>
       {sections.map((section) => (
         <section className="settings-section" key={section.title}>
-          <h2>{t(section.title)}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="mb-0!">{t(section.title)}</h2>
+            <Badge variant="outline">{t("unavailable")}</Badge>
+            <HelpHint
+              label={t("aboutSetting", { name: t(section.title) })}
+              description={t("preferenceUnavailable")}
+            />
+          </div>
+          <p id={`${section.title}-unavailable`} className="sr-only">
+            {t("preferenceUnavailable")}
+          </p>
           <div className="settings-list">
             {section.settings.map(([preference, description]) => (
               <SettingToggle
@@ -139,6 +158,7 @@ function SettingsPage() {
                 label={t(preference)}
                 description={t(description)}
                 preference={preference}
+                unavailableId={`${section.title}-unavailable`}
               />
             ))}
           </div>

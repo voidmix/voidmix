@@ -86,6 +86,7 @@
         "react-dom": "catalog:",
       },
       "devDependencies": {
+        "@phosphor-icons/react": "catalog:frontend",
         "@storybook/addon-a11y": "catalog:tooling",
         "@storybook/addon-docs": "catalog:tooling",
         "@storybook/react-vite": "catalog:tooling",

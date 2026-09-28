@@ -1,6 +1,7 @@
 import { CaretDown, DownloadSimple, FunnelSimple, MagnifyingGlass } from "@phosphor-icons/react";
 import { ToggleGroup, ToggleGroupItem } from "@voidmix/ui/components/ui/toggle-group";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,10 +99,9 @@ export function DirectoryToolbar({
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Button aria-label={t("exportVisible")} onClick={onExport} size="sm" variant="outline">
+      <IconButton label={t("exportVisible")} onClick={onExport} size="icon-sm" variant="outline">
         <DownloadSimple aria-hidden="true" weight="regular" />
-        <span className="max-[480px]:hidden">{t("export")}</span>
-      </Button>
+      </IconButton>
     </div>
   );
 }

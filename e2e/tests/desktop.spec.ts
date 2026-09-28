@@ -5,7 +5,7 @@ test("navigates Desktop and preserves settings, theme and keyboard controls", as
   await expect(page.getByRole("heading", { name: "Your workbench" })).toBeVisible();
   const navigation = page.getByRole("navigation", { name: "Primary navigation" });
   await navigation.getByRole("link", { name: "Settings" }).click();
-  await expect(page.getByLabel("Project folder")).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Project folder", exact: true })).toBeVisible();
   await expect(navigation.getByRole("link", { name: "Settings" })).toHaveAttribute(
     "aria-current",
     "page",
@@ -21,11 +21,17 @@ test("navigates Desktop and preserves settings, theme and keyboard controls", as
   await expect(page.locator("html")).toHaveClass(/dark/);
   const toggle = page.getByRole("switch", { name: "Start with the system" });
   await expect(toggle).toBeDisabled();
+  const preferenceHelp = page.getByRole("button", { name: "About Sync behavior", exact: true });
+  await preferenceHelp.click();
   await expect(
     page
-      .getByText("Unavailable: this preference is saved locally, but its runtime is not connected.")
-      .first(),
+      .getByRole("dialog", { name: "About Sync behavior" })
+      .getByText(
+        "Unavailable: this preference is saved locally, but its runtime is not connected.",
+      ),
   ).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(preferenceHelp).toBeFocused();
   const collapse = page.getByRole("button", { name: "Collapse navigation" });
   await collapse.focus();
   await page.keyboard.press("Enter");
@@ -38,6 +44,6 @@ test("navigates Desktop and preserves settings, theme and keyboard controls", as
   await expect(page.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
   await expect(navigation.getByRole("link", { name: "Projects" })).toHaveClass(/active/);
   await page.goBack();
-  await expect(page.getByLabel("Project folder")).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Project folder", exact: true })).toBeVisible();
   await expect(navigation.getByRole("link", { name: "Settings" })).toHaveClass(/active/);
 });

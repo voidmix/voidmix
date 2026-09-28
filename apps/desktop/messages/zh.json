@@ -161,7 +161,9 @@
     "projectFolderPlaceholder": "/Users/you/project",
     "bindFolder": "绑定目录",
     "preferenceUnavailable": "暂不可用：已有偏好保留在此设备，相关功能尚未接入。",
-    "folderFailed": "目录授权失败，请检查路径后重试。"
+    "folderFailed": "目录授权失败，请检查路径后重试。",
+    "unavailable": "暂不可用",
+    "aboutSetting": "了解{name}"
   },
   "projects": {
     "title": "项目",

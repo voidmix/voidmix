@@ -25,6 +25,11 @@ Base UI owns overlays, focus containment, dismissal and keyboard behavior.
 Utility actions such as theme, language and window controls use compact icon
 buttons with accessible names and hover hints. Keep descriptive copy out of
 toolbars; primary business actions retain short, explicit text labels.
+Use shared IconButton for hover/focus hints and HelpHint for explanations that
+must open on click or touch. Group repeated unavailable notices into one short
+status per section, with the reason available from its help control. Keep form
+labels, errors, permissions and real data visible. Shorten marketing paragraphs
+to one specific sentence instead of repeating the same capability.
 
 Retain the Inter/system Chinese fallback stack without runtime font downloads.
 Application headings are 24–28px, sections 18–20px, body 14px and metadata at

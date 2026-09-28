@@ -1,4 +1,6 @@
 import { Button } from "@voidmix/ui/components/ui/button";
+import { IconButton } from "@voidmix/ui/icon-button";
+import { X } from "@phosphor-icons/react";
 import { useTranslations } from "../../../i18n/client";
 import { useDirectoryStore, useDirectorySelector } from "./store-provider";
 import { changeUserStatus } from "./operations";
@@ -44,9 +46,9 @@ export function DirectoryActions({
       >
         {t("activateSelected")}
       </Button>
-      <Button onClick={() => store.getState().selectAll([])} size="sm" variant="ghost">
-        {t("clear")}
-      </Button>
+      <IconButton label={t("clear")} onClick={() => store.getState().selectAll([])} size="icon-sm">
+        <X aria-hidden="true" />
+      </IconButton>
     </div>
   ) : null;
 }
