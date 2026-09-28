@@ -874,7 +874,9 @@
     "noDeadline": "未设置",
     "updated": "最近更新",
     "created": "创建日期",
-    "readOnly": "你可以查看此项目的任务，暂没有编辑权限。"
+    "readOnly": "你可以查看此项目的任务，暂没有编辑权限。",
+    "projectName": "项目",
+    "stage": "阶段"
   },
   "navigation": {
     "loading": "正在加载…",

@@ -1,6 +1,7 @@
 import type { ApiClient } from "@voidmix/client";
 type Project = Awaited<ReturnType<ApiClient["projects"]["get"]>>["project"];
 import { StatusBadge, type StatusTone } from "@voidmix/ui/status-badge";
+import { BeuiBadge } from "@voidmix/ui/beui-badge";
 import { useTranslations } from "../../i18n/client";
 
 const tones = {
@@ -10,9 +11,20 @@ const tones = {
   delivered: "success",
 } as const satisfies Record<Project["stage"], StatusTone>;
 
-export function ProjectStatus({ stage }: { stage: Project["stage"] }) {
+export function ProjectStatus({
+  stage,
+  appearance,
+}: {
+  stage: Project["stage"];
+  appearance?: "beui";
+}) {
   const t = useTranslations("projects");
-  return (
-    <StatusBadge label={t(stage === "in_progress" ? "inProgress" : stage)} tone={tones[stage]} />
-  );
+  const label = t(stage === "in_progress" ? "inProgress" : stage);
+  if (appearance === "beui")
+    return (
+      <BeuiBadge tone={stage === "review" ? "warning" : tones[stage]} contentKey={stage}>
+        {label}
+      </BeuiBadge>
+    );
+  return <StatusBadge label={label} tone={tones[stage]} />;
 }

@@ -8,8 +8,18 @@ import { Modal } from "@voidmix/ui/modal";
 import { signOut, useSession } from "../../lib/auth-client";
 import { useTranslations } from "../../i18n/client";
 import { AccountMenu } from "./account-menu";
+import { BeuiAppShell } from "./beui-app-shell";
 
 export function AppShell() {
+  const pathname = useLocation({ select: (location) => location.pathname });
+  return pathname === "/projects" || pathname === "/projects/" ? (
+    <BeuiAppShell />
+  ) : (
+    <ClassicAppShell />
+  );
+}
+
+function ClassicAppShell() {
   const t = useTranslations("navigation");
   const session = useSession();
   const navigate = useNavigate();

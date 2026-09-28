@@ -15,7 +15,11 @@ test("Web explains actual project access rejection without leaking the project",
 }) => {
   await login(page, "member");
   await page.goto("/projects/e2e-project-001");
-  await expect(page.getByRole("alert")).toContainText("does not have permission");
+  // The detail loader reads the project and tasks in parallel. Project lookup
+  // conceals inaccessible IDs with NOT_FOUND; tasks reject with FORBIDDEN.
+  await expect(page.getByRole("alert")).toHaveText(
+    /^(The project could not be found\.|Your account does not have permission to view this content\.)$/,
+  );
   await expect(page.getByText("Admin film 001", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "User management", exact: true })).toHaveCount(0);
 });

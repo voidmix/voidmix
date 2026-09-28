@@ -14,6 +14,7 @@ tests/admin.spec.ts    Admin smoke project
 tests/authenticated-web.spec.ts real login, SSR isolation, project and Admin flows
 capture-product.ts    real-route product screenshots with guarded synthetic seed
 tests/redesign.spec.ts responsive, theme, locale and navigation coverage
+tests/beui.spec.ts     project-index pilot, portal focus, failure/retry and cancellation
 database.ts           isolated migration/seed with synthetic credential accounts
 tests/desktop.spec.ts  Desktop theme, locale, navigation, settings and keyboard checks
 ```

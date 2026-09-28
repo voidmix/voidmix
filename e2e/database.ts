@@ -6,6 +6,7 @@ import { sql } from "drizzle-orm";
 export const accounts = {
   admin: { id: "e2e-admin", email: "admin@example.test", name: "E2E Administrator" },
   member: { id: "e2e-member", email: "member@example.test", name: "E2E Member" },
+  pilot: { id: "e2e-pilot", email: "pilot@example.test", name: "Pilot Tester" },
 } as const;
 // Synthetic, test-only credentials. Never read or copy a developer account.
 export const password = "Voidmix-test-login-only-2026!";

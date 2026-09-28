@@ -78,3 +78,10 @@ migration and delayed hydration.
 
 See [product design](docs/architecture/design.md) and the
 [visual implementation audit](docs/development/visual-audit.md) for verification.
+
+## Project index pilot
+
+Web `/projects` uses the [beUI pilot](docs/development/beui-pilot.md): graphite
+and mist-white surfaces, black/white primary actions, restrained 180ms feedback,
+and a 232px navigation rail. This is an opt-in route variant, not a global token
+replacement. Logo artwork and other pages retain the visual language above.

@@ -38,6 +38,7 @@ export default defineConfig({
   reporter: process.env.CI ? [["dot"], ["html", { open: "never" }]] : "list",
   use: { trace: "on-first-retry", locale: "en-US" },
   projects: [
+    { name: "beui", testMatch: /beui\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "redesign", testMatch: /redesign\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "web", testMatch: /(?:^|\/)web\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "authenticated", testMatch: /authenticated-web\.spec\.ts/, use: { baseURL: webUrl } },

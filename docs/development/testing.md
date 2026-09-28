@@ -64,7 +64,7 @@ browser and other operating systems. The CI generate step supplies a non-routabl
 generation does not connect to PostgreSQL.
 
 `bun run test:e2e` starts API, Web and Desktop preview servers itself.
-It runs the `web`, `admin`, `authenticated` and `desktop` projects. Configure the
+It runs the `web`, `admin`, `authenticated`, `redesign`, `beui` and `desktop` projects. Configure the
 dedicated database as described below. Set `VOIDMIX_E2E_PORT` to
 choose the Web port (default 3000); Desktop uses +1 and API +2. The retired Project Studio suite and its
 mock API fixture have been removed; Web still checks the sign-in redirect for

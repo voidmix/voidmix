@@ -3,6 +3,7 @@ import { translateKnownApiError } from "../../../i18n/api-errors";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { BeuiButton } from "@voidmix/ui/beui-button";
 import { useTranslations } from "../../i18n/client";
 export function RoutePending() {
   const t = useTranslations("navigation");
@@ -23,23 +24,26 @@ export function PageNavigation({
   nextCursor,
   cursor,
   onNavigate,
+  appearance,
 }: {
   nextCursor: string | null;
   cursor?: string | undefined;
   onNavigate: (cursor?: string) => void;
+  appearance?: "beui";
 }) {
   const t = useTranslations("navigation");
+  const Action = appearance === "beui" ? BeuiButton : Button;
   return (
     <nav aria-label={t("pagination")} className="flex justify-end gap-2">
       {cursor ? (
-        <Button variant="outline" onClick={() => onNavigate()}>
+        <Action variant="outline" onClick={() => onNavigate()}>
           {t("first")}
-        </Button>
+        </Action>
       ) : null}
       {nextCursor ? (
-        <Button variant="outline" onClick={() => onNavigate(nextCursor)}>
+        <Action variant="outline" onClick={() => onNavigate(nextCursor)}>
           {t("next")}
-        </Button>
+        </Action>
       ) : null}
     </nav>
   );

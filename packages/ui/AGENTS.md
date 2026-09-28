@@ -7,23 +7,28 @@ Page layout and product-specific composition stay in the owning application.
 
 ## Interface
 
-| Path                                                  | Purpose                                                 |
-| ----------------------------------------------------- | ------------------------------------------------------- |
-| `./components/ui/*`                                   | Tree-shakable generated shadcn components               |
-| `./avatar`, `./logo`                                  | Compatibility/product-specific wrapper exports          |
-| `./toast`                                             | Lazy Toast manager and `AsyncToaster` wrapper           |
-| `.`                                                   | Empty compatibility entrypoint                          |
-| `./styles.css`                                        | what applications import: the shared base-nova tokens   |
-| `./styles/globals.css`                                | the shadcn-owned Tailwind entry and oklch token block   |
-| `./modal`, `./loading-state`                          | Accessible controlled overlay and stable pending layout |
-| `./page-header`, `./section-heading`, `./empty-state` | Generic heading and actionable empty-state primitives   |
-| `./status-badge` and `./components/ui/switch`         | Visual status tones and accessible boolean control      |
-| `./lib/*`                                             | `cn` and CVA helpers                                    |
+| Path                                                                           | Purpose                                                 |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `./components/ui/*`                                                            | Tree-shakable generated shadcn components               |
+| `./avatar`, `./logo`                                                           | Compatibility/product-specific wrapper exports          |
+| `./toast`                                                                      | Lazy Toast manager and `AsyncToaster` wrapper           |
+| `.`                                                                            | Empty compatibility entrypoint                          |
+| `./styles.css`                                                                 | what applications import: the shared base-nova tokens   |
+| `./styles/globals.css`                                                         | the Tailwind entry and semantic light/dark tokens       |
+| `./beui-button`, `./beui-badge`, `./beui-sidebar`, `./beui-sidebar-navigation` | Adapted public beUI primitives; opt-in theme            |
+| `./modal`, `./loading-state`                                                   | Accessible controlled overlay and stable pending layout |
+| `./page-header`, `./section-heading`, `./empty-state`                          | Generic heading and actionable empty-state primitives   |
+| `./status-badge` and `./components/ui/switch`                                  | Visual status tones and accessible boolean control      |
+| `./lib/*`                                                                      | `cn` and CVA helpers                                    |
 
 ## Ownership
 
 - Own Base UI interactive primitives, shadcn `base-nova` conventions, Phosphor
   icons, Tailwind v4 tokens, and the `cn`/CVA composition helpers.
+- The beUI pilot uses the opt-in `.beui-theme` scope; default tokens and Logo
+  artwork remain unchanged. [Pilot guide](../../docs/development/beui-pilot.md)
+  records provenance and manual updates. Never add adapted files to the
+  overwrite manifest `shadcn-components.json`.
 - Own the base-nova design vocabulary: semantic tokens, focus, radius, and
   motion.
 - Own the lazy Toast manager bridge so renderer applications can defer the Toast

@@ -54,3 +54,10 @@ labelled as examples; there are no third-party image or font requests.
 [Visual audit](../development/visual-audit.md) records viewport coverage, screenshot
 provenance and results. Shared primitives have deterministic Storybook examples;
 product flows use the real test API and PostgreSQL in Playwright.
+
+## beUI pilot
+
+The Web project index opts into neutral page tokens and adapted public beUI
+primitives. Other routes retain their current visual language, including the
+original Logo. See the [pilot guide](../development/beui-pilot.md) for source
+provenance, theme boundaries and validation.

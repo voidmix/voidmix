@@ -23,7 +23,11 @@
     "./components/ui/*": "./src/components/ui/*.tsx",
     "./lib/*": "./src/lib/*.ts",
     "./modal": "./src/modal.tsx",
-    "./loading-state": "./src/loading-state.tsx"
+    "./loading-state": "./src/loading-state.tsx",
+    "./beui-button": "./src/beui-button.tsx",
+    "./beui-badge": "./src/beui-badge.tsx",
+    "./beui-sidebar": "./src/beui-sidebar.tsx",
+    "./beui-sidebar-navigation": "./src/beui-sidebar-navigation.tsx"
   },
   "scripts": {
     "check": "tsc --noEmit -p tsconfig.json",
@@ -38,7 +42,8 @@
     "@base-ui/react": "catalog:frontend",
     "@phosphor-icons/react": "catalog:frontend",
     "class-variance-authority": "catalog:frontend",
-    "cn": "catalog:frontend"
+    "cn": "catalog:frontend",
+    "motion": "catalog:frontend"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "catalog:tooling",

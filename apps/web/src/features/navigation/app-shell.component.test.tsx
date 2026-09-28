@@ -11,6 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test"
 import { messages } from "../../../tests/fixtures/messages";
 
 const mocks = vi.hoisted(() => ({
+  pathname: "/projects",
   navigate: vi.fn(),
   signOut: vi.fn(),
   session: {
@@ -27,7 +28,7 @@ vi.mock("@tanstack/react-router", () => ({
     </a>
   ),
   Outlet: () => <p>Directory</p>,
-  useLocation: () => "/projects",
+  useLocation: () => mocks.pathname,
   useRouterState: () => false,
   useNavigate: () => mocks.navigate,
 }));
@@ -72,7 +73,10 @@ function renderShell() {
   };
 }
 
-describe("admin shell account menu", () => {
+describe.each(["/projects", "/admin"])("account menu at %s", (pathname) => {
+  beforeEach(() => {
+    mocks.pathname = pathname;
+  });
   it("opens the account menu from the sidebar trigger", async () => {
     const { trigger, user } = renderShell();
 
@@ -137,3 +141,20 @@ it("offers projects to every account and hides administrator navigation from mem
   expect(screen.queryByText(/Production online|42 ms/)).not.toBeInTheDocument();
   mocks.session.data = { user: { name: "Ada Lovelace", role: "owner" } };
 });
+
+it.each(["/projects", "/projects/", "/projects/example", "/admin"])(
+  "scopes the pilot to the project index: %s",
+  (pathname) => {
+    mocks.pathname = pathname;
+    const { container } = render(
+      <I18nProvider locale="en" messages={messages}>
+        <ThemeProvider disableScript storageKey={false}>
+          <AppShell />
+        </ThemeProvider>
+      </I18nProvider>,
+    );
+    expect(container.querySelector(".beui-theme") !== null).toBe(
+      pathname === "/projects" || pathname === "/projects/",
+    );
+  },
+);

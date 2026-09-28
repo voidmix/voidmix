@@ -28,6 +28,7 @@ src/
   features/projects/ shared project/task title form
   features/admin/    users adapters, scoped Zustand, views and tests
   features/navigation/ AppShell, account menu, pending/error/retry and pagination
+                       beUI shell and scoped styles for /projects only
   lib/route-api.ts    request-scoped SSR client and credentialed browser client
   i18n/              catalog loaders, API error codes, recovery copy
 scripts/             read-only production bundle analysis
@@ -104,6 +105,9 @@ server/
 - `(app)/route.tsx` owns AppShell, shared by projects and Admin. The Admin group
   exposes the user directory; its navigation entry is visible only to owners
   and admins. API authorization remains authoritative.
+- `/projects` selects the beUI shell during render, including SSR; detail and
+  Admin routes retain the existing shell. Pass `.beui-theme` to popup surfaces
+  rendered in portals. See the [pilot guide](../../docs/development/beui-pilot.md).
 - Public Auth pages consume only `auth.capabilities.get`. Registration and
   tokenless reset entry points follow those booleans, an existing reset token
   remains usable, and capability-request failures fail open so the server remains

@@ -16,5 +16,8 @@
     "ui": "#components/ui",
     "lib": "#lib",
     "hooks": "#hooks"
+  },
+  "registries": {
+    "@beui": "https://proxy.collectui.pro/api/r/beui/{name}.json"
   }
 }

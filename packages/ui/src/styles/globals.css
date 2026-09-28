@@ -110,6 +110,53 @@
   --sidebar-ring: #7c88ff;
 }
 
+/* beUI pilot: opt-in scope, also applied to portal surfaces. Logo assets are unchanged. */
+.beui-theme {
+  --background: #f7f7f7;
+  --foreground: #202020;
+  --card: #ffffff;
+  --card-foreground: #202020;
+  --popover: #ffffff;
+  --popover-foreground: #202020;
+  --primary: #242424;
+  --primary-foreground: #ffffff;
+  --secondary: #ededed;
+  --secondary-foreground: #404040;
+  --muted: #f0f0f0;
+  --muted-foreground: #626262;
+  --accent: #e8e8e8;
+  --accent-foreground: #242424;
+  --border: #e0e0e0;
+  --input: #868686;
+  --ring: #626262;
+  --success: #087553;
+  --warning: #8a580c;
+  --destructive: #b52d42;
+}
+.dark .beui-theme,
+[data-theme="dark"] .beui-theme {
+  --background: #171717;
+  --foreground: #f4f4f4;
+  --card: #1e1e1e;
+  --card-foreground: #f4f4f4;
+  --popover: #242424;
+  --popover-foreground: #f4f4f4;
+  --primary: #eeeeee;
+  --primary-foreground: #202020;
+  --secondary: #303030;
+  --secondary-foreground: #dedede;
+  --muted: #2b2b2b;
+  --muted-foreground: #b2b2b2;
+  --accent: #383838;
+  --accent-foreground: #f4f4f4;
+  --border: #3b3b3b;
+  --input: #808080;
+  --ring: #c1c1c1;
+  --success: #62d5aa;
+  --warning: #edbe73;
+  --destructive: #f08a99;
+}
+
 @theme inline {
   --font-sans: Inter, "SF Pro Display", "Segoe UI", "Noto Sans SC", system-ui, sans-serif;
   --font-heading: var(--font-sans);

@@ -874,7 +874,9 @@
     "noDeadline": "Not set",
     "updated": "Last updated",
     "created": "Created",
-    "readOnly": "You have read-only access to tasks in this project."
+    "readOnly": "You have read-only access to tasks in this project.",
+    "projectName": "Project",
+    "stage": "Stage"
   },
   "navigation": {
     "loading": "Loading…",
