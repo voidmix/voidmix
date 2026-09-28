@@ -1,0 +1,23 @@
+DESIGN.md
+  s_42000bd424f7f1::t_69b4582ba0425d 25-27
+apps/desktop/CHANGELOG.md
+  s_42000bd424f7f1::t_dd50498a1881a1 5
+apps/desktop/src/features/shell/desktop-shell.tsx
+  s_42000bd424f7f1::t_a640eeed3cd408 1-11,38,41,44,55,142,148,151,153-155,157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "40a11c4a1fe164a8bb351237e7db7602fa97209d",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
