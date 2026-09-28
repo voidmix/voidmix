@@ -1,3 +1,4 @@
+import { checkArchitecture } from "./checks/architecture.js";
 import { join } from "node:path";
 
 import { checkDocumentationIndex, checkDocumentationLinks } from "./checks/docs.js";
@@ -94,6 +95,7 @@ export async function runPolicy(dependencies: PolicyDependencies): Promise<Polic
     ),
     ...(await checkWorkspaceIgnores(dependencies, members)),
     ...(await checkWorkspaceManifests(dependencies, members, workspaceFiles)),
+    ...(await checkArchitecture(dependencies, members, workspaceFiles)),
     ...(await checkTypeScriptConfigs(dependencies, members, workspaceFiles)),
     ...(await checkDocumentationLinks(dependencies, files)),
     ...(await checkDocumentationIndex(dependencies, files)),

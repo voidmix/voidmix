@@ -118,7 +118,8 @@
     "storybook:build": "bun run --cwd apps/storybook build",
     "verify": "vmx verify",
     "shadcn:update": "vmx shadcn update",
-    "postinstall": "bun run --cwd packages/shared build"
+    "postinstall": "bun run --cwd packages/shared build",
+    "test:postgres": "vp run @voidmix/db#test:postgres"
   },
   "devDependencies": {
     "@tailwindcss/vite": "catalog:frontend",

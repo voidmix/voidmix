@@ -11,6 +11,8 @@ private workspace that is deliberately separate from Vitest.
 playwright.config.ts   projects, baseURLs, and the webServer definitions
 tests/web.spec.ts      Web home, language switching, and project-access smoke tests
 tests/admin.spec.ts    Admin smoke project
+tests/authenticated-web.spec.ts real login, SSR isolation, project and Admin flows
+database.ts           isolated migration/seed with synthetic credential accounts
 tests/desktop.spec.ts  Desktop theme, locale, navigation, settings and keyboard checks
 ```
 
@@ -36,6 +38,9 @@ Scripts: `e2e` (the run), `test:ui`, `test:report`, `check`.
 - `webServer` starts Web at `VOIDMIX_E2E_PORT` (default 3000), Desktop at +1,
   and API at +2 with `NODE_ENV=test`. Web/Admin share Web; Desktop has its own
   project. Admin verifies the unauthenticated redirect without actor headers.
+- All runs require NODE_ENV=test and TEST_DATABASE_URL naming voidmix_*test.
+  Global setup migrates and resets that dedicated database. Real API login uses
+  seeded password hashes; do not introduce actor headers or production bypasses.
 - `reuseExistingServer` is off in CI and on locally. Do not invert that.
 - Assert through roles and accessible names rather than CSS selectors, so the
   tests keep verifying accessibility alongside behaviour.
@@ -45,5 +50,5 @@ Scripts: `e2e` (the run), `test:ui`, `test:report`, `check`.
 ```bash
 bun run --cwd e2e check
 bun run --cwd e2e playwright install chromium   # first run only
-bun run test:e2e
+NODE_ENV=test TEST_DATABASE_URL=postgres://localhost/voidmix_e2e_test bun run test:e2e
 ```

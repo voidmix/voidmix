@@ -132,10 +132,10 @@ narrow a failure down, not to be run in sequence:
 | check or test    | that workspace's own command, named in its `AGENTS.md` |
 | build or runtime | `bun run --cwd apps/<app> build`                       |
 
-`bun run test:e2e` and `bun run doctor` stay outside it: one needs a Playwright
-browser, the other asserts machine prerequisites and cannot run in CI. CI runs
-`verify` and adds only what needs a clean git tree, a browser, or another
-operating system.
+`bun run test:postgres` and `bun run test:e2e` stay outside it: both require an
+explicit test database, and E2E also needs a Playwright browser. `bun run doctor`
+asserts machine prerequisites and cannot run in CI. CI adds PostgreSQL 17,
+browser, clean-tree and operating-system checks to `verify`.
 
 Every application and test-bearing package owns an independent
 `vitest.config.ts`. Preserve that boundary, never rely on a globally installed

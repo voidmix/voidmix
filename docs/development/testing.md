@@ -40,9 +40,10 @@ down: `bun run policy` prints each finding with a `Fix:` line and
 format:fix` rewrites in place, and a workspace's own `AGENTS.md` names its
 narrowest check and test.
 
-Two commands stay outside `verify` on purpose. `bun run test:e2e` needs a
-Playwright browser, and `bun run doctor` asserts machine prerequisites, which is
-not something CI can assert about itself.
+Three commands stay outside `verify` on purpose. `bun run test:postgres` needs a
+dedicated PostgreSQL 17 test database; `bun run test:e2e` needs a separate test
+database and Playwright browser. `bun run doctor` asserts machine prerequisites,
+which is not something CI can assert about itself.
 
 `bun run knip:report` is also a separate advisory check. Knip finds unused
 files, exports, dependencies, and duplicate exports across the workspace graph.
@@ -57,13 +58,14 @@ verification command cannot contain: a
 `git diff --exit-code` after the build and after `bun run generate`, because
 those need a clean git tree; the three layer scripts, because `bun run test`
 passes whether or not their filters match anything; `test:coverage` for the
-uploaded artifact; and the E2E and Desktop jobs, which need a browser and other
-operating systems. The CI generate step supplies a non-routable
+uploaded artifact; and the PostgreSQL, E2E and Desktop jobs, which need a database,
+browser and other operating systems. The CI generate step supplies a non-routable
 `DATABASE_URL`; Drizzle validates its configuration while loading it, but
 generation does not connect to PostgreSQL.
 
 `bun run test:e2e` starts API, Web and Desktop preview servers itself.
-It runs the `web`, `admin` and `desktop` projects. Set `VOIDMIX_E2E_PORT` to
+It runs the `web`, `admin`, `authenticated` and `desktop` projects. Configure the
+dedicated database as described below. Set `VOIDMIX_E2E_PORT` to
 choose the Web port (default 3000); Desktop uses +1 and API +2. The retired Project Studio suite and its
 mock API fixture have been removed; Web still checks the sign-in redirect for
 unauthenticated access to `/projects`.
@@ -178,7 +180,7 @@ run `bun run policy` for the paste-ready fix in each workspace.
 
 Node workspaces use the Node test environment. DOM workspaces and individual
 component/integration files opt into jsdom with local setup, keeping globals out
-of server and library checks. E2E uses separate Web, Admin and Desktop projects;
+of server and library checks. E2E uses separate Web, Admin, authenticated and Desktop projects;
 Web/Admin target the Web server, while Desktop targets its own browser preview.
 
 Run a single browser project or inspect its report with:
@@ -214,3 +216,25 @@ bun run --cwd e2e test:report
   an artifact without enforcing a minimum threshold.
 - CI runs Web, Admin and Desktop Playwright smoke tests in a separate Linux
   E2E job after installing Chromium.
+
+## Real database and authenticated browser gates
+
+PostgreSQL 17 runs independently of the four identical Vitest layer commands:
+
+```bash
+NODE_ENV=test TEST_DATABASE_URL=postgres://localhost/voidmix_local_test bun run test:postgres
+NODE_ENV=test TEST_DATABASE_URL=postgres://localhost/voidmix_e2e_test bun run test:e2e
+```
+
+Both require an explicit dedicated database named `voidmix_*test`; missing or
+unsafe configuration fails. Each suite applies committed migrations and resets
+its own fixture data. Never point these commands at development or production
+data. Use separate databases when running both simultaneously. CI supplies a
+PostgreSQL 17 service per job. `VOIDMIX_E2E_PORT` reserves Web/Desktop/API on three
+consecutive ports for concurrent local development.
+
+Database coverage includes Core/SQL visibility parity, keyset pagination,
+administrator concurrency, rollback and idempotence. Authenticated Playwright
+uses real Better Auth credentials and API/DB services for project creation,
+tasks, Admin filtering/status updates, SSR isolation, refresh/history and errors.
+No actor-header authentication bypass is enabled.

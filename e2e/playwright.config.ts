@@ -1,3 +1,4 @@
+import { databaseUrl } from "./database.js";
 import { defineConfig } from "@playwright/test";
 import { resolve } from "node:path";
 
@@ -18,8 +19,7 @@ function server(app: "api" | "web" | "desktop", offset: number) {
       AUTH_SECRET: "e2e-only-secret-that-is-long-enough-for-better-auth",
       AUTH_URL: app === "api" ? apiUrl : webUrl,
       VITE_API_URL: apiUrl,
-      DATABASE_URL:
-        process.env.DATABASE_URL ?? "postgres://voidmix:e2e@example.invalid:5432/voidmix",
+      DATABASE_URL: databaseUrl(),
       NODE_ENV: "test",
       NITRO_PORT: String(basePort + offset),
     },
@@ -30,6 +30,7 @@ function server(app: "api" | "web" | "desktop", offset: number) {
 }
 
 export default defineConfig({
+  globalSetup: "./database.ts",
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
@@ -37,7 +38,8 @@ export default defineConfig({
   reporter: process.env.CI ? [["dot"], ["html", { open: "never" }]] : "list",
   use: { trace: "on-first-retry", locale: "en-US" },
   projects: [
-    { name: "web", testMatch: /web\.spec\.ts/, use: { baseURL: webUrl } },
+    { name: "web", testMatch: /(?:^|\/)web\.spec\.ts/, use: { baseURL: webUrl } },
+    { name: "authenticated", testMatch: /authenticated-web\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "admin", testMatch: /admin\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "desktop", testMatch: /desktop\.spec\.ts/, use: { baseURL: desktopUrl } },
   ],

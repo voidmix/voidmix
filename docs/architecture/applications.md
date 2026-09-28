@@ -30,16 +30,17 @@ browser composition root for authentication and Admin operations.
   redirect. Signup also gives Better Auth a same-origin verification callback,
   so the email flow returns to the Web verification state before the user signs
   in.
-- `(app)/route.tsx` owns the browser session gate. The nested `(admin)` group
-  mounts the Admin shell, `/admin` user directory, and `/admin/settings` mail
-  configuration. `/admin/settings/auth` exposes registration and Auth-mail
-  policy as read-only for Admin and writable for Owner. Settings fields show
-  their effective source and safe inherited value; reset deletes the database
-  override instead of persisting the fallback. Public Auth pages consume a
-  separate three-boolean capability view and fail open when it cannot be loaded,
-  while
-  `apps/api/server/api` remains authoritative for authentication,
-  authorization, suspended users, and audit rules.
+- `(app)/route.tsx` resolves the account through the API before protected
+  loaders. Project list/detail and Admin directory own remote data in loaders,
+  with request cancellation and mutation invalidation. SSR creates a client
+  per request; account changes hide stale data and clear protected caches.
+- Admin URL search owns server filters and pagination. A page-scoped Zustand
+  store owns selection, pending IDs and message descriptors. It holds no user
+  entities and never persists. Preview adapters are only explicitly injected in
+  tests. The API remains authoritative for permissions and audits.
+- Public Auth pages consume a separate three-boolean capability view and fail
+  open when it cannot be loaded; authentication and mail settings retain their
+  server-side inheritance. Retired settings administration routes stay absent.
 - Admin-specific adapters, tables, filters, and layouts stay isolated under
   `apps/web/src/features/admin`; fusion removes a deployment unit without
   turning those modules into public-home concerns.

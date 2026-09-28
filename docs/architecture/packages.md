@@ -17,10 +17,11 @@ DTO contains only three booleans; settings administration RPCs are retired.
 ## `@voidmix/application`
 
 The application command/query layer shared by the API and Agent Worker. It
-coordinates V2 Project ports from `@voidmix/core`, resolves personal and
-Organization capabilities, and never imports Hono, Drizzle, React, or an AI
-provider. Persistence, transactions, outbox delivery, and provider lifecycle
-remain adapter responsibilities.
+coordinates Identity, Projects, Assets, Reviews and Activity ports from Core.
+ProjectAccess supplies narrow capability checks across domains. Application owns
+workflow ordering and invokes the administration transaction port; DB implements
+atomicity and authorized list queries. HTTP, SQL, React and provider lifecycle
+remain outside Application. See [domain services](./domain-services.md).
 
 ## `@voidmix/ai`
 
@@ -94,12 +95,12 @@ public barrel is organized into bounded contexts:
 - `projects` owns the account-first V2 Project scope, ProjectMember roles,
   lifecycle, and centralized capability evaluator. V2 resources are modeled
   independently of Workspace and Project Studio.
-- `v2-resources` defines the stable Task, Asset, Review, Activity, and AgentRun
-  records that application commands will persist and expose through V2
-  contracts.
+- Task models live within `projects`; `assets`, `reviews`, `activity` and
+  `agents` own their records and repository ports. Identity retains rules and
+  audit construction while Application owns its workflows.
 - `assets` retains the blob upload/download port and errors used by V2.
 - `agents/outbox.ts` defines durable dispatch ports; Agent cancellation invariants
-  live with V2 resources. Retired Workspace, Project Studio, scheduled-task,
+  live in `agents/runs.ts`. Retired Workspace, Project Studio, scheduled-task,
   asset-sync and legacy Agent implementations are removed.
 
 These contexts remain one package until a second independent server consumer

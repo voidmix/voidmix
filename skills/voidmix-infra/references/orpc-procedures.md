@@ -46,17 +46,16 @@ when exposing new data to Web's public or Admin features.
   errors and wraps unknown failures with their cause; add coverage for new codes.
 - Keep `packages/core` pure: its dependencies are `@voidmix/auth` and `@voidmix/shared`, and
   `lib: ["ES2022"]` means no DOM types. No Zod, oRPC, Drizzle, Hono, or React.
-- Inject `now` and `id` with defaults in core factories — that is what makes
+- Inject `now` and `id` with defaults in application factories — that is what makes
   tests deterministic.
 - `getX` returns `T | null` and never throws; mutators return the updated entity
   or `void`.
 - **Dates stay native `Date` end to end**; never serialize to ISO strings.
   `z.date()` in contracts, `mode: "date"` in the Drizzle schema.
   Contracts tests lock native dates and canonical shapes.
-- Audit rows are written **from `packages/core` only**, via
-  `users.appendAudit(...)`, in the same logical operation as the mutation and
-  only on a real state change. Never from a handler. They are durable product
-  records, distinct from `@voidmix/shared/logger` operational events.
+- Construct audit events in Core. Application appends them through the
+  administration transaction port together with the mutation, only on real
+  changes. Never append from a handler; operational logs stay separate.
 - Enrich the current wide event with `context.log?.set({ actor, target, outcome })`
   — one event per request, not multiple log lines.
 - Procedures are never zero-arg: `client.health({})` needs the explicit `{}`.
@@ -88,7 +87,7 @@ bun run --cwd apps/api test    # narrowest
 bun run check                  # tsc --noEmit per workspace
 ```
 
-The integration idiom runs contract → client → RPC → router → core →
+The integration idiom runs contract → client → RPC → router → application → core ports →
 repository in-process, with no network and no database, by handing the Hono app
 to the real client as its `fetch`:
 

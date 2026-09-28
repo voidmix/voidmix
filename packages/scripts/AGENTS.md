@@ -61,6 +61,10 @@ Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skill
   skills, TypeScript, and manifest checks live under `policy/checks/`; manifest
   script/dependency rules live under `policy/manifests/`. Preserve the public
   `runPolicy` and manifest-rule interfaces when splitting internals.
+- Architecture policy checks production dependency direction, cross-package
+  private imports (including relative paths and aliases), and workspace cycles.
+  Enum parity tests compare Core, Contracts and DB without adding runtime edges.
+- Admin and seed commands compose Identity from Application, not Core.
 - Dependency maintenance is explicit: `vmx deps dedupe` may rewrite `bun.lock`,
   `vmx deps dedupe --check` is read-only, and `vmx deps audit` is read-only.
 - Dependency check/update excludes Drizzle RC builds because hash suffixes do

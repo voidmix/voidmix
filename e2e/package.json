@@ -12,7 +12,10 @@
   "devDependencies": {
     "@playwright/test": "catalog:tooling",
     "@types/node": "catalog:tooling",
+    "@voidmix/db": "workspace:*",
     "@voidmix/tsconfig": "workspace:*",
+    "better-auth": "catalog:",
+    "drizzle-orm": "catalog:backend",
     "typescript": "catalog:tooling"
   }
 }

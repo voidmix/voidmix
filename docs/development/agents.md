@@ -65,8 +65,9 @@ Above all, prefer the existing local pattern over a new abstraction.
 - Apply the matching permission middleware to protected Admin procedures and
   the principal middleware to authenticated canonical routes. Application
   commands enforce project capabilities; cover rejected callers in tests.
-- Write audit rows from `@voidmix/core` only, never from a handler, and never
-  mix them with `@voidmix/shared/logger` operational events.
+- Construct audit events in Core and append them in Application through the
+  administration transaction port, never from a handler. Keep operational logs
+  separate. See ADR-0014.
 - Prefer a narrower `AGENTS.md` over a broader one: if a rule only holds inside
   one workspace, it belongs to that workspace's file.
 - When a choice would relax a stated constraint, stop and write an

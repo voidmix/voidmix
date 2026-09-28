@@ -46,8 +46,46 @@ jobs:
           path: "**/coverage"
           if-no-files-found: warn
 
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: voidmix_test
+          POSTGRES_PASSWORD: voidmix_test
+          POSTGRES_DB: voidmix_ci_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U voidmix_test -d voidmix_ci_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      NODE_ENV: test
+      TEST_DATABASE_URL: postgres://voidmix_test:voidmix_test@127.0.0.1:5432/voidmix_ci_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: bun install --frozen-lockfile
+      - run: bun run test:postgres
+
   e2e:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: voidmix_test
+          POSTGRES_PASSWORD: voidmix_test
+          POSTGRES_DB: voidmix_ci_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U voidmix_test -d voidmix_ci_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      NODE_ENV: test
+      TEST_DATABASE_URL: postgres://voidmix_test:voidmix_test@127.0.0.1:5432/voidmix_ci_test
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
