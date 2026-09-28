@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("navigates Desktop and preserves settings, theme and keyboard controls", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Your studio is in motion" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your workbench" })).toBeVisible();
   const navigation = page.getByRole("navigation", { name: "Primary navigation" });
   await navigation.getByRole("link", { name: "Settings" }).click();
   await expect(page.getByLabel("Project folder")).toBeVisible();
@@ -13,10 +13,20 @@ test("navigates Desktop and preserves settings, theme and keyboard controls", as
   await page.getByRole("main").getByRole("button", { name: "Dark", exact: true }).click();
   await expect(page.locator("html")).toHaveClass(/dark/);
   const toggle = page.getByRole("switch", { name: "Start with the system" });
-  const previous = await toggle.getAttribute("aria-checked");
-  await toggle.focus();
-  await page.keyboard.press("Space");
-  await expect(toggle).toHaveAttribute("aria-checked", previous === "true" ? "false" : "true");
+  await expect(toggle).toBeDisabled();
+  await expect(
+    page
+      .getByText("Unavailable: this preference is saved locally, but its runtime is not connected.")
+      .first(),
+  ).toBeVisible();
+  const collapse = page.getByRole("button", { name: "Collapse navigation" });
+  await collapse.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "Expand navigation" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page.getByRole("button", { name: "Expand navigation" }).click();
   await navigation.getByRole("link", { name: "Projects" }).click();
   await expect(page.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
   await page.goBack();

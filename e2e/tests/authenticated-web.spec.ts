@@ -26,9 +26,11 @@ test("real login, project creation, task creation, refresh and paginated history
   await expect(page.getByRole("link", { name: /Admin film/ })).toHaveCount(2);
   await page.goBack();
   await expect(page.getByRole("link", { name: /Admin film/ })).toHaveCount(50);
+  await page.getByRole("button", { name: "New project", exact: true }).click();
   await page.getByLabel("Project title").fill("Browser created film");
   await page.getByLabel("Project title").press("Enter");
   await page.getByRole("link", { name: /Browser created film/ }).click();
+  await page.getByRole("button", { name: "Add task", exact: true }).click();
   await page.getByLabel("Add a task").fill("Browser created task");
   await page.getByLabel("Add a task").press("Enter");
   await expect(page.getByText("Browser created task", { exact: true })).toBeVisible();

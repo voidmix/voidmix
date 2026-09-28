@@ -12,6 +12,8 @@ playwright.config.ts   projects, baseURLs, and the webServer definitions
 tests/web.spec.ts      Web home, language switching, and project-access smoke tests
 tests/admin.spec.ts    Admin smoke project
 tests/authenticated-web.spec.ts real login, SSR isolation, project and Admin flows
+capture-product.ts    real-route product screenshots with guarded synthetic seed
+tests/redesign.spec.ts responsive, theme, locale and navigation coverage
 database.ts           isolated migration/seed with synthetic credential accounts
 tests/desktop.spec.ts  Desktop theme, locale, navigation, settings and keyboard checks
 ```
@@ -21,6 +23,9 @@ Scripts: `e2e` (the run), `test:ui`, `test:report`, `check`.
 ## Ownership
 
 - Own Playwright projects and startup for API, Web and the Desktop browser preview.
+- `capture:product` requires the same guarded test database and already-running
+  loopback API/Web servers (ports selected by VOIDMIX_E2E_PORT). It upserts only
+  dedicated visual-example records and writes Web public product images.
 - Own no unit or integration coverage. Those live beside the code they test.
 
 ## Constraints
