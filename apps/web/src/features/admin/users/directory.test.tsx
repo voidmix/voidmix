@@ -6,6 +6,16 @@ import userEvent from "@testing-library/user-event";
 import { I18nProvider } from "@voidmix/i18n/client";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
+import { DirectoryProvider } from "./store-provider";
+import { directorySearch } from "./search";
+import { RouteError } from "../../navigation/route-state";
 import { messages } from "../../../../tests/fixtures/messages";
 import { UserDirectory } from "./directory";
 import { createPreviewUsersAdapter } from "./preview-adapter";
@@ -30,9 +40,43 @@ const users: readonly AdminUser[] = (
 afterEach(() => cleanup());
 
 function renderDirectory(client: AdminUsersClient = createPreviewUsersAdapter(users)) {
+  const root = createRootRoute();
+  const route = createRoute({
+    getParentRoute: () => root,
+    path: "/",
+    validateSearch: directorySearch,
+    loaderDeps: ({ search }) => search,
+    loader: ({ deps, abortController }) => client.listUsers(deps, abortController.signal),
+    errorComponent: RouteError,
+  });
+  function DirectoryPage() {
+    const page = route.useLoaderData() as unknown as Awaited<
+      ReturnType<AdminUsersClient["listUsers"]>
+    >;
+    const search = route.useSearch();
+    const navigate = route.useNavigate();
+    return (
+      <DirectoryProvider>
+        <UserDirectory
+          client={client}
+          page={page}
+          search={search}
+          onSearch={(patch) => void navigate({ search: directorySearch({ ...search, ...patch }) })}
+          reload={async () => {
+            await router.invalidate({ sync: true });
+          }}
+        />
+      </DirectoryProvider>
+    );
+  }
+  route.update({ component: DirectoryPage });
+  const router = createRouter({
+    routeTree: root.addChildren([route]),
+    history: createMemoryHistory({ initialEntries: ["/"] }),
+  });
   render(
     <I18nProvider locale="en" messages={messages}>
-      <UserDirectory client={client} />
+      <RouterProvider router={router} />
     </I18nProvider>,
   );
   return userEvent.setup();
@@ -83,7 +127,7 @@ describe("UserDirectory", () => {
     const listUsers = vi
       .fn<AdminUsersClient["listUsers"]>()
       .mockRejectedValueOnce(new Error("offline"))
-      .mockResolvedValueOnce(users);
+      .mockResolvedValueOnce({ items: users, total: users.length, nextCursor: null });
     const client: AdminUsersClient = {
       listUsers,
       updateUserStatus: vi.fn(async (input) => ({

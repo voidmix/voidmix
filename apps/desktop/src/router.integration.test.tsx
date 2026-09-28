@@ -62,7 +62,10 @@ beforeEach(() => {
   useDesktopPreferences.setState(useDesktopPreferences.getInitialState(), true);
   localStorage.clear();
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
-  loaders.loadProjects.mockResolvedValue({ status: "loaded", data: [] });
+  loaders.loadProjects.mockResolvedValue({
+    status: "loaded",
+    data: { items: [], nextCursor: null },
+  });
   loaders.loadProject.mockResolvedValue({
     status: "loaded",
     data: project("project-1", "Launch film"),
@@ -134,11 +137,13 @@ describe("Desktop Start routes", () => {
   });
 
   it("shows route pending UI until project data is ready", async () => {
-    const pending = deferred<{ status: "loaded"; data: [] }>();
+    const pending = deferred<{ status: "loaded"; data: { items: []; nextCursor: null } }>();
     loaders.loadProjects.mockReturnValue(pending.promise);
     renderRoute("/projects");
     expect(await screen.findByRole("status")).toBeDefined();
-    await act(async () => pending.resolve({ status: "loaded", data: [] }));
+    await act(async () =>
+      pending.resolve({ status: "loaded", data: { items: [], nextCursor: null } }),
+    );
     expect(await screen.findByRole("heading", { name: "Projects" })).toBeDefined();
     expect(screen.queryByRole("status")).toBeNull();
   });
@@ -166,6 +171,31 @@ describe("Desktop Start routes", () => {
     expect(screen.getByRole("heading", { name: "Second project" })).toBeDefined();
   });
 
+  it("navigates cursor pages and restores the first page through browser history", async () => {
+    loaders.loadProjects.mockImplementation((_signal: AbortSignal, query: { cursor?: string }) =>
+      Promise.resolve({
+        status: "loaded",
+        data: {
+          items: [
+            project(query.cursor ? "second" : "first", query.cursor ? "Second page" : "First page"),
+          ],
+          nextCursor: query.cursor ? null : "next",
+        },
+      }),
+    );
+    const router = renderRoute("/projects");
+    expect(await screen.findByRole("heading", { name: "First page" })).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+    expect(await screen.findByRole("heading", { name: "Second page" })).toBeDefined();
+    expect(router.state.location.search).toEqual({ cursor: "next" });
+    expect(loaders.loadProjects).toHaveBeenLastCalledWith(expect.any(AbortSignal), {
+      cursor: "next",
+    });
+    await act(() => router.history.back());
+    expect(await screen.findByRole("heading", { name: "First page" })).toBeDefined();
+    expect(router.state.location.search).toEqual({});
+  });
+
   it("reloads the project list after creation", async () => {
     renderRoute("/projects");
     await screen.findByRole("heading", { name: "Projects" });
@@ -175,7 +205,7 @@ describe("Desktop Start routes", () => {
     loaders.createProject.mockResolvedValue(project("new", "New film"));
     loaders.loadProjects.mockResolvedValue({
       status: "loaded",
-      data: [project("new", "New film")],
+      data: { items: [project("new", "New film")], nextCursor: null },
     });
     fireEvent.submit(input.closest("form")!);
 

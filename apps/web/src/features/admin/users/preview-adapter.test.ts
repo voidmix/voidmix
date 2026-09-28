@@ -27,11 +27,18 @@ describe("preview users adapter", () => {
 
     await expect(
       adapter.listUsers({ query: "  ADA@EXAMPLE  ", status: "active" }),
-    ).resolves.toEqual([expect.objectContaining({ id: "1" })]);
-    await expect(adapter.listUsers({ status: "active" })).resolves.toHaveLength(1);
-    await expect(adapter.listUsers({ role: "admin" })).resolves.toEqual([
-      expect.objectContaining({ id: "2" }),
-    ]);
+    ).resolves.toMatchObject({
+      items: [expect.objectContaining({ id: "1" })],
+      total: 1,
+      nextCursor: null,
+    });
+    await expect(adapter.listUsers({ status: "active" })).resolves.toMatchObject({
+      items: [expect.anything()],
+      total: 1,
+    });
+    await expect(adapter.listUsers({ role: "admin" })).resolves.toMatchObject({
+      items: [expect.objectContaining({ id: "2" })],
+    });
   });
 
   it("updates a copied preview record without mutating the fixture", async () => {
@@ -52,7 +59,10 @@ describe("preview users adapter", () => {
     ).resolves.toMatchObject({
       status: "suspended",
     });
-    await expect(adapter.listUsers({ status: "suspended" })).resolves.toHaveLength(1);
+    await expect(adapter.listUsers({ status: "suspended" })).resolves.toMatchObject({
+      items: [expect.anything()],
+      total: 1,
+    });
     await expect(
       adapter.updateUserStatus({ userId: "missing", status: "active" }),
     ).rejects.toMatchObject({ code: "USER_NOT_FOUND" });

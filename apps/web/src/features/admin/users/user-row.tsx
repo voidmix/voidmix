@@ -1,3 +1,4 @@
+import { useDirectoryStore, useDirectorySelector } from "./store-provider";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -10,19 +11,10 @@ import {
   formatAdminStatus,
 } from "./display";
 
-export function UserRow({
-  user,
-  onToggle,
-  selected,
-  onSelect,
-  isPending,
-}: {
-  user: AdminUser;
-  onToggle: () => void;
-  selected: boolean;
-  onSelect: (selected: boolean) => void;
-  isPending: boolean;
-}) {
+export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => void }) {
+  const store = useDirectoryStore();
+  const selected = useDirectorySelector((state) => state.selectedIds.has(user.id));
+  const isPending = useDirectorySelector((state) => state.pendingIds.has(user.id));
   const tone = statusTone(user.status);
   const t = useTranslations("admin");
   const formatter = useFormatter();
@@ -35,7 +27,7 @@ export function UserRow({
           aria-label={`${t("selectUser")} ${user.name}`}
           checked={selected}
           className="size-3.5 accent-primary"
-          onChange={(event) => onSelect(event.currentTarget.checked)}
+          onChange={(event) => store.getState().select(user.id, event.currentTarget.checked)}
           type="checkbox"
         />
       </td>

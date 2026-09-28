@@ -834,5 +834,13 @@
     "todo": "To do",
     "blocked": "Blocked",
     "done": "Done"
+  },
+  "navigation": {
+    "loading": "Loading…",
+    "failed": "The data could not be loaded. Please retry.",
+    "retry": "Retry",
+    "pagination": "Pagination",
+    "next": "Next page",
+    "first": "First page"
   }
 }

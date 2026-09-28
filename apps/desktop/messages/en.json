@@ -201,5 +201,13 @@
     "userNotFound": "The requested user could not be found.",
     "mailNotConfigured": "Email delivery is not configured.",
     "unknown": "Something went wrong. Try again."
+  },
+  "navigation": {
+    "loading": "Loading…",
+    "failed": "The data could not be loaded. Please retry.",
+    "retry": "Retry",
+    "pagination": "Pagination",
+    "next": "Next page",
+    "first": "First page"
   }
 }

@@ -10,6 +10,6 @@ export function createWebApiClient(
   return createApiClient({
     ...options,
     ...(env.VITE_API_URL ? { baseUrl: env.VITE_API_URL } : {}),
-    fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
+    fetch: options.fetch ?? ((input, init) => fetch(input, { ...init, credentials: "include" })),
   });
 }

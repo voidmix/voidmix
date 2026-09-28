@@ -1,5 +1,9 @@
 # Changelog — Voidmix Desktop
 
+## Unreleased
+
+- Add project pagination with URL-backed navigation and route cancellation.
+
 This file exists for `apps/desktop` alone, because it is the only surface with a
 version users see: a Tauri bundle they install and later upgrade. Web (including
 Admin routes) and API are continuously deployed from `canary` and have no release to describe, so

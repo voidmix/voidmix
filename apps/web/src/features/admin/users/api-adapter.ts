@@ -1,6 +1,6 @@
-import { createApiClient, type ApiClient } from "@voidmix/client";
+import type { ApiClient } from "@voidmix/client";
+import { createWebApiClient } from "../../../lib/api-client";
 
-import { env } from "../../../env";
 import type { AdminUser, AdminUsersClient, UserRole, UserStatus } from "./types";
 
 type ApiUser = {
@@ -25,29 +25,15 @@ export function toAdminUser(user: ApiUser): AdminUser {
   };
 }
 
-function createConfiguredApiClient() {
-  return createApiClient({
-    ...(env.VITE_API_URL ? { baseUrl: env.VITE_API_URL } : {}),
-    fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
-  });
-}
-
-export function createApiUsersAdapter(
-  api: ApiClient = createConfiguredApiClient(),
-): AdminUsersClient {
+export function createApiUsersAdapter(api: ApiClient = createWebApiClient()): AdminUsersClient {
   return {
-    async listUsers(input) {
-      const page = await api.admin.users.list({
-        ...(input.query ? { query: input.query } : {}),
-        limit: 100,
-      });
-      return page.items
-        .map(toAdminUser)
-        .filter(
-          (user) =>
-            (!input.status || user.status === input.status) &&
-            (!input.role || user.role === input.role),
-        );
+    async listUsers(input, signal) {
+      const { query, ...filters } = input;
+      const page = await api.admin.users.list(
+        { ...filters, ...(query?.trim() ? { query: query.trim() } : {}), limit: input.limit ?? 50 },
+        { signal },
+      );
+      return { ...page, items: page.items.map(toAdminUser) };
     },
     async updateUserStatus(input) {
       return toAdminUser(await api.admin.users.updateStatus(input));
@@ -56,5 +42,3 @@ export function createApiUsersAdapter(
 }
 
 export type ApiUsersAdapter = ReturnType<typeof createApiUsersAdapter>;
-
-export const apiUsersAdapter = createApiUsersAdapter();

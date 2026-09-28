@@ -11,11 +11,14 @@ beforeEach(() => vi.resetAllMocks());
 describe("project route transport", () => {
   it("passes route cancellation to both project reads", async () => {
     const { signal } = new AbortController();
-    api.projects.list.mockResolvedValue({ items: [] });
+    api.projects.list.mockResolvedValue({ items: [], nextCursor: null });
     api.projects.get.mockResolvedValue({ project: null });
-    await expect(loadProjects(signal)).resolves.toEqual({ status: "loaded", data: [] });
+    await expect(loadProjects(signal)).resolves.toEqual({
+      status: "loaded",
+      data: { items: [], nextCursor: null },
+    });
     await expect(loadProject("missing", signal)).resolves.toEqual({ status: "loaded", data: null });
-    expect(api.projects.list).toHaveBeenCalledWith({}, { signal });
+    expect(api.projects.list).toHaveBeenCalledWith({ limit: 50 }, { signal });
     expect(api.projects.get).toHaveBeenCalledWith({ projectId: "missing" }, { signal });
   });
 

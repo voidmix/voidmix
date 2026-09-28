@@ -3,6 +3,7 @@ import { env } from "../env";
 import { getDesktopLocaleHeaders } from "../i18n/client";
 
 export type StudioProject = Awaited<ReturnType<ApiClient["projects"]["list"]>>["items"][number];
+export type StudioProjectPage = Awaited<ReturnType<ApiClient["projects"]["list"]>>;
 export type StudioDetail = Awaited<ReturnType<ApiClient["projects"]["get"]>>["project"];
 export type StudioLoad<T> = { status: "loaded"; data: T } | { status: "unavailable"; data: null };
 
@@ -14,11 +15,14 @@ function getClient(): ApiClient {
   });
 }
 
-export async function loadProjects(signal?: AbortSignal): Promise<StudioLoad<StudioProject[]>> {
+export async function loadProjects(
+  signal?: AbortSignal,
+  query: { cursor?: string } = {},
+): Promise<StudioLoad<StudioProjectPage>> {
   if (!env.VITE_API_URL) return { status: "unavailable", data: null };
   try {
-    const result = await getClient().projects.list({}, { signal });
-    return { status: "loaded", data: result.items };
+    const result = await getClient().projects.list({ limit: 50, ...query }, { signal });
+    return { status: "loaded", data: result };
   } catch {
     signal?.throwIfAborted();
     return { status: "unavailable", data: null };

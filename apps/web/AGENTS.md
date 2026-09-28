@@ -25,7 +25,9 @@ src/
     (app)/projects.$projectId.tsx canonical project detail route and page
   features/auth/     Better Auth forms, shared inputs, links and submission lifecycle
   features/projects/ shared project/task title form
-  features/admin/    Admin shell, users adapters, views, tests, and scoped CSS
+  features/admin/    Admin shell, users adapters, scoped Zustand, views and tests
+  features/navigation/ shared pending/error/retry and page navigation
+  lib/route-api.ts    request-scoped SSR client and credentialed browser client
   i18n/              catalog loaders, API error codes, recovery copy
 scripts/             read-only production bundle analysis
 tests/               shared Web test fixtures and cross-feature tests
@@ -43,6 +45,15 @@ server/
 
 - `/projects` and `/projects/$projectId` are authenticated canonical project routes backed by `@voidmix/client`; they do not render preview or Workspace compatibility data.
 
+- Project and Admin loaders own remote entities, AbortSignal and mutation
+  invalidation. URL search owns filters and cursor; lists explicitly request 50.
+- SSR forwards only Better Auth cookies to the configured API. Protected loader
+  data carries accountId; account changes hide stale data and clear route caches.
+- Admin DirectoryProvider creates one non-persisted Zustand store per page and
+  account. It owns selection, pending IDs and untranslated notice descriptors.
+  Filters/pages reset selection; disposal rejects late operation feedback.
+- Selection, batch writes and CSV export apply only to the current page. Preview
+  adapters may only be explicitly injected by tests; API errors never select them.
 - File-based routing. Add `src/routes/<path>.tsx` exporting
   `export const Route = createFileRoute("/path")({ component: X })`. Server-only
   endpoints may use `server.handlers` and omit `component`. The route tree
@@ -81,7 +92,7 @@ server/
 - Web does not initialize a database or API runtime.
 - `server/env.ts` is never imported by browser modules. Keep database, Auth, mail,
   and allowed-origin values on the server side of the Web bundle.
-- `(app)/route.tsx` uses the API-backed session gate as a navigation aid and
+- `(app)/route.tsx` uses account.get as a navigation aid and
   retains the client-side session gate for hydration and stale-cookie recovery.
   It is navigation aid, not authorization enforcement; the API remains the
   final authorization boundary.

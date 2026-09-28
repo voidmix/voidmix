@@ -58,7 +58,15 @@ export function createPreviewUsersAdapter(
 
   return {
     async listUsers(input) {
-      return users.filter((user) => matchesInput(user, input));
+      const matches = users.filter((user) => matchesInput(user, input));
+      const offset = Number(input.cursor ?? 0);
+      const limit = input.limit ?? 50;
+      const items = matches.slice(offset, offset + limit).map((user) => ({ ...user }));
+      return {
+        items,
+        total: matches.length,
+        nextCursor: offset + items.length < matches.length ? String(offset + items.length) : null,
+      };
     },
     async updateUserStatus(input) {
       const user = users.find((candidate) => candidate.id === input.userId);

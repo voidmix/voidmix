@@ -1,6 +1,6 @@
 import { AuthLink } from "./auth-link";
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useHydrated } from "@tanstack/react-router";
 import { useTranslations } from "../../i18n/client";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { FieldError, FieldGroup } from "@voidmix/ui/components/ui/field";
@@ -24,6 +24,7 @@ export function AuthForm({
   redirectTo?: string;
 }) {
   const t = useTranslations("auth");
+  const hydrated = useHydrated();
   const capabilities = useAuthCapabilities();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -115,7 +116,7 @@ export function AuthForm({
             <AuthInput
               label={t("name")}
               autoComplete="name"
-              disabled={pending}
+              disabled={pending || !hydrated}
               id="auth-name"
               onChange={(event) => setName(event.target.value)}
               value={name}
@@ -125,7 +126,7 @@ export function AuthForm({
             label={t("email")}
             aria-describedby={error ? "auth-error" : undefined}
             autoComplete="email"
-            disabled={pending}
+            disabled={pending || !hydrated}
             id="auth-email"
             onChange={(event) => setEmail(event.target.value)}
             type="email"
@@ -145,7 +146,7 @@ export function AuthForm({
             }
             aria-describedby={error ? "auth-error" : undefined}
             autoComplete={mode === "login" ? "current-password" : "new-password"}
-            disabled={pending}
+            disabled={pending || !hydrated}
             id="auth-password"
             label={t("password")}
             minLength={8}
@@ -154,7 +155,7 @@ export function AuthForm({
             value={password}
           />
           {error ? <FieldError id="auth-error">{error}</FieldError> : null}
-          <Button className="mt-1 w-full" disabled={pending} size="lg" type="submit">
+          <Button className="mt-1 w-full" disabled={pending || !hydrated} size="lg" type="submit">
             {pending
               ? mode === "login"
                 ? t("signingIn")

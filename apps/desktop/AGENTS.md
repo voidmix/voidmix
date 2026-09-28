@@ -66,6 +66,9 @@ src-tauri/
 - Keep `/projects/` in `projects/index.tsx`; `projects/route.tsx` renders an
   `Outlet` for both the list and `/projects/$projectId`. Activity filters are
   validated URL search parameters.
+- Project lists request 50 rows and store their cursor in URL search, preserving
+  browser history and route cancellation. Device preferences keep their existing
+  validation, migrations and delayed hydration.
 - Shared pending and retry UI lives in `features/shell/route-state.tsx`.
 - `lib/preferences.ts` owns theme, sync pause, and settings toggles in one
   Zustand store. Subscribe with selectors so unrelated preferences do not

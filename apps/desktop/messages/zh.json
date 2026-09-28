@@ -201,5 +201,13 @@
     "userNotFound": "找不到请求的用户。",
     "mailNotConfigured": "邮件发送尚未配置。",
     "unknown": "出了点问题，请重试。"
+  },
+  "navigation": {
+    "loading": "正在加载…",
+    "failed": "数据加载失败，请重试。",
+    "retry": "重试",
+    "pagination": "分页",
+    "next": "下一页",
+    "first": "第一页"
   }
 }

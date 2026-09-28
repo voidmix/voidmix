@@ -28,6 +28,7 @@ vi.mock("@tanstack/react-router", () => ({
     </a>
   ),
   Outlet: () => null,
+  useHydrated: () => true,
   useNavigate: () => mocks.navigate,
 }));
 

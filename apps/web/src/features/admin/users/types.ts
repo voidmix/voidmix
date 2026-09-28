@@ -17,12 +17,20 @@ export interface AdminUser {
 }
 
 export interface UserListInput {
+  limit?: number;
+  cursor?: string;
   query?: string;
   status?: UserStatus;
   role?: UserRole;
 }
 
 export interface AdminUsersClient {
-  listUsers(input: UserListInput): Promise<readonly AdminUser[]>;
+  listUsers(input: UserListInput, signal?: AbortSignal): Promise<AdminUsersPage>;
   updateUserStatus(input: { userId: string; status: UserStatus }): Promise<AdminUser>;
+}
+
+export interface AdminUsersPage {
+  items: readonly AdminUser[];
+  total: number;
+  nextCursor: string | null;
 }

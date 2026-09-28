@@ -834,5 +834,13 @@
     "todo": "待办",
     "blocked": "已阻塞",
     "done": "已完成"
+  },
+  "navigation": {
+    "loading": "正在加载…",
+    "failed": "数据加载失败，请重试。",
+    "retry": "重试",
+    "pagination": "分页",
+    "next": "下一页",
+    "first": "第一页"
   }
 }

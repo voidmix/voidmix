@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { DirectoryActions, DirectoryFeedback } from "./directory-actions";
+import { useEffect } from "react";
 
-import { Button } from "@voidmix/ui/components/ui/button";
 import { useFormatter, useTranslations } from "../../../i18n/client";
 
 import { adminUsersClient, type AdminUsersClient } from "./client";
 import { DirectoryToolbar } from "./directory-toolbar";
 import { MetricGrid } from "./metric-grid";
-import { useAdminUsers } from "./use-admin-users";
+import { useDirectoryStore } from "./store-provider";
+import { changeUserStatus } from "./operations";
+import type { AdminUsersPage, UserListInput, UserRole, UserStatus } from "./types";
+import { PageNavigation } from "../../navigation/route-state";
 import { UserTable } from "./user-table";
 import {
   formatAdminJoinedAt,
@@ -15,92 +18,47 @@ import {
   formatAdminStatus,
 } from "./display";
 
-export function UserDirectory({ client = adminUsersClient }: { client?: AdminUsersClient } = {}) {
-  const usersState = useAdminUsers(client);
+export function UserDirectory({
+  page,
+  search,
+  onSearch,
+  reload,
+  client = adminUsersClient,
+}: {
+  page: AdminUsersPage;
+  search: UserListInput;
+  onSearch: (patch: {
+    query?: string | undefined;
+    role?: UserRole | undefined;
+    status?: UserStatus | undefined;
+    cursor?: string | undefined;
+  }) => void;
+  reload: () => Promise<void>;
+  client?: AdminUsersClient;
+}) {
   const t = useTranslations("admin");
   const formatter = useFormatter();
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
-  const [pendingIds, setPendingIds] = useState<Set<string>>(() => new Set());
-  const [notice, setNotice] = useState<string | null>(null);
-
+  const store = useDirectoryStore();
   useEffect(() => {
-    setSelectedIds(new Set());
-  }, [usersState.query, usersState.role, usersState.status]);
-
-  const selectedUsers = usersState.users.filter((user) => selectedIds.has(user.id));
-  const actionableUsers = selectedUsers.filter((user) => user.role !== "owner");
-
-  function setSelected(userId: string, selected: boolean) {
-    setSelectedIds((current) => {
-      const next = new Set(current);
-      if (selected) next.add(userId);
-      else next.delete(userId);
-      return next;
+    store.getState().resetSelection();
+  }, [store, search.query, search.role, search.status, search.cursor]);
+  const toggleUser = (user: AdminUsersPage["items"][number]) =>
+    changeUserStatus({
+      store,
+      client,
+      users: [user],
+      status: user.status === "suspended" ? "active" : "suspended",
+      reload,
+      single: true,
     });
-  }
-
-  function setAllSelected(selected: boolean) {
-    setSelectedIds(selected ? new Set(usersState.users.map((user) => user.id)) : new Set());
-  }
-
-  async function toggleUser(user: (typeof usersState.users)[number]) {
-    setNotice(null);
-    setPendingIds((current) => new Set(current).add(user.id));
-    try {
-      const nextStatus = user.status === "suspended" ? "active" : "suspended";
-      await usersState.toggleSuspension(user);
-      setNotice(t("userStatusChanged", { name: user.name, status: nextStatus }));
-    } catch {
-      setNotice(t("userUpdateFailed", { name: user.name }));
-    } finally {
-      setPendingIds((current) => {
-        const next = new Set(current);
-        next.delete(user.id);
-        return next;
-      });
-    }
-  }
-
-  async function updateSelected(status: "active" | "suspended") {
-    if (actionableUsers.length === 0) {
-      setNotice(t("ownerCannotChange"));
-      return;
-    }
-
-    const targets = actionableUsers.filter((user) => user.status !== status);
-    if (targets.length === 0) {
-      setNotice(t("selectedAlready", { status }));
-      return;
-    }
-
-    setNotice(null);
-    setPendingIds((current) => new Set([...current, ...targets.map((user) => user.id)]));
-    const results = await Promise.allSettled(
-      targets.map((user) => usersState.toggleSuspension(user)),
-    );
-    const succeeded = results.filter((result) => result.status === "fulfilled").length;
-    const failed = results.length - succeeded;
-    setPendingIds((current) => {
-      const next = new Set(current);
-      targets.forEach((user) => next.delete(user.id));
-      return next;
-    });
-    setSelectedIds(new Set());
-    setNotice(
-      failed === 0
-        ? t("usersUpdated", { count: succeeded, status })
-        : t("usersPartiallyUpdated", { succeeded, failed }),
-    );
-  }
-
   function exportVisibleUsers() {
-    if (usersState.users.length === 0) {
-      setNotice(t("noUsersToExport"));
+    if (page.items.length === 0) {
+      store.getState().setNotice({ code: "noUsersToExport" });
       return;
     }
 
     const header = [t("user"), t("email"), t("role"), t("status"), t("lastActive"), t("joined")];
-    const rows = usersState.users.map((user) => [
+    const rows = page.items.map((user) => [
       user.name,
       user.email,
       formatAdminRole(user.role, t),
@@ -118,82 +76,39 @@ export function UserDirectory({ client = adminUsersClient }: { client?: AdminUse
     link.href = url;
     link.click();
     URL.revokeObjectURL(url);
-    setNotice(t("usersExported", { count: usersState.users.length }));
+    store.getState().setNotice({ code: "usersExported", values: { count: page.items.length } });
   }
 
   return (
     <>
-      <MetricGrid isLoading={usersState.isLoading} users={usersState.users} />
+      <MetricGrid isLoading={false} users={page.items} />
       <section className="overflow-hidden rounded-xl border bg-card">
         <DirectoryToolbar
           onExport={exportVisibleUsers}
-          query={usersState.query}
-          role={usersState.role}
-          setQuery={usersState.setQuery}
-          setRole={usersState.setRole}
-          setStatus={usersState.setStatus}
-          status={usersState.status}
+          query={search.query ?? ""}
+          role={search.role}
+          setQuery={(query) => onSearch({ query, cursor: undefined })}
+          setRole={(role) => onSearch({ role, cursor: undefined })}
+          setStatus={(status) => onSearch({ status, cursor: undefined })}
+          status={search.status}
         />
 
-        {selectedIds.size > 0 ? (
-          <div className="flex min-h-12 flex-wrap items-center gap-2 border-b bg-muted/30 px-4 py-2">
-            <span className="mr-auto text-xs font-medium">
-              {t("selectedCount", { count: selectedIds.size })}
-              {selectedUsers.some((user) => user.role === "owner") ? (
-                <span className="ml-2 text-muted-foreground">{t("ownerProtected")}</span>
-              ) : null}
-            </span>
-            <Button
-              disabled={pendingIds.size > 0 || actionableUsers.length === 0}
-              onClick={() => void updateSelected("suspended")}
-              size="sm"
-              variant="outline"
-            >
-              {t("suspendSelected")}
-            </Button>
-            <Button
-              disabled={pendingIds.size > 0 || actionableUsers.length === 0}
-              onClick={() => void updateSelected("active")}
-              size="sm"
-              variant="outline"
-            >
-              {t("activateSelected")}
-            </Button>
-            <Button onClick={() => setSelectedIds(new Set())} size="sm" variant="ghost">
-              {t("clear")}
-            </Button>
-          </div>
-        ) : null}
-
-        {usersState.error ? (
-          <div className="flex items-center justify-between gap-3 border-b bg-muted/40 px-4 py-3 text-sm">
-            <p className="m-0" role="alert">
-              {t(usersState.error)}
-            </p>
-            <Button onClick={usersState.retry} size="sm" variant="outline">
-              {t("retry")}
-            </Button>
-          </div>
-        ) : null}
+        <DirectoryActions users={page.items} client={client} reload={reload} />
 
         <UserTable
-          isLoading={usersState.isLoading}
-          onSelect={setSelected}
-          onSelectAll={setAllSelected}
+          isLoading={false}
           onToggle={(user) => void toggleUser(user)}
-          pendingIds={pendingIds}
-          selectedIds={selectedIds}
-          users={usersState.users}
+          users={page.items}
         />
         <footer className="flex min-h-14 items-center justify-between gap-3 border-t px-4 font-mono text-[0.7rem] text-muted-foreground max-[480px]:items-start max-[480px]:py-3">
-          <span>{t("showingUsers", { count: usersState.users.length })}</span>
-          <span className="text-right">{t("resultsLimited")}</span>
+          <span>{t("showingUsers", { count: page.items.length })}</span>
+          <PageNavigation
+            cursor={search.cursor}
+            nextCursor={page.nextCursor}
+            onNavigate={(cursor) => onSearch({ cursor })}
+          />
         </footer>
-        {notice ? (
-          <p aria-live="polite" className="m-0 border-t px-4 py-2 text-xs text-muted-foreground">
-            {notice}
-          </p>
-        ) : null}
+        <DirectoryFeedback />
       </section>
     </>
   );

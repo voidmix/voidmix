@@ -1,5 +1,5 @@
 import { CaretDown, DownloadSimple, FunnelSimple, MagnifyingGlass } from "@phosphor-icons/react";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
+import type { ReactNode } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   DropdownMenu,
@@ -30,11 +30,11 @@ export function DirectoryToolbar({
   onExport,
 }: {
   query: string;
-  setQuery: Dispatch<SetStateAction<string>>;
+  setQuery: (query: string) => void;
   status: UserStatus | undefined;
-  setStatus: Dispatch<SetStateAction<UserStatus | undefined>>;
+  setStatus: (status: UserStatus | undefined) => void;
   role: UserRole | undefined;
-  setRole: Dispatch<SetStateAction<UserRole | undefined>>;
+  setRole: (role: UserRole | undefined) => void;
   onExport: () => void;
 }) {
   const t = useTranslations("admin");

@@ -11,7 +11,10 @@ import { loadProjects, createProject } from "../../lib/projects";
 
 export const Route = createFileRoute("/projects/")({
   ssr: false,
-  loader: ({ abortController }) => loadProjects(abortController.signal),
+  validateSearch: (input: Record<string, unknown>): { cursor?: string } =>
+    typeof input.cursor === "string" && input.cursor ? { cursor: input.cursor } : {},
+  loaderDeps: ({ search }) => search,
+  loader: ({ abortController, deps }) => loadProjects(abortController.signal, deps),
   component: ProjectsPage,
 });
 
@@ -20,7 +23,10 @@ function ProjectsPage() {
   const errors = useDesktopTranslations("errors");
   const router = useRouter();
   const result = Route.useLoaderData();
-  const projects = result.data ?? [];
+  const projects = result.data?.items ?? [];
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const navigation = useDesktopTranslations("navigation");
   const [title, setTitle] = useState("");
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -82,6 +88,21 @@ function ProjectsPage() {
       {result.status === "unavailable" ? (
         <p className="empty-copy">{t("unavailableDescription")}</p>
       ) : null}
+      <nav aria-label={navigation("pagination")} className="mb-4 flex gap-2">
+        {search.cursor ? (
+          <Button variant="outline" onClick={() => void navigate({ search: {} })}>
+            {navigation("first")}
+          </Button>
+        ) : null}
+        {result.data?.nextCursor ? (
+          <Button
+            variant="outline"
+            onClick={() => void navigate({ search: { cursor: result.data!.nextCursor! } })}
+          >
+            {navigation("next")}
+          </Button>
+        ) : null}
+      </nav>
       <div className="project-grid" aria-label={t("projectList")}>
         {projects.map((project) => (
           <article className="project-card" key={project.id}>

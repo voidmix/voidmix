@@ -26,7 +26,8 @@
     "@voidmix/ui": "workspace:*",
     "better-auth": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "zustand": "catalog:frontend"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "catalog:tooling",
