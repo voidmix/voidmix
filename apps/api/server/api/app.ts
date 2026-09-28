@@ -127,7 +127,16 @@ export function createApiApp(options: CreateApiAppOptions) {
     "/rpc/*",
     cors({
       origin: (origin) => (origins.has(origin) ? origin : null),
-      allowHeaders: ["Content-Type", "Authorization", "X-Request-ID", "Accept-Language"],
+      allowHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Request-ID",
+        "Accept-Language",
+        "ORPC-Batch",
+        "Content-Encoding",
+        "Standard-Server",
+      ],
+      exposeHeaders: ["X-Request-ID", "Retry-After", "Standard-Server"],
       allowMethods: ["GET", "POST", "OPTIONS"],
       credentials: true,
     }),
@@ -145,7 +154,16 @@ export function createApiApp(options: CreateApiAppOptions) {
     const request = context.req.raw;
     const headers = new Headers(request.headers);
     headers.set("x-request-id", context.get("requestId"));
-    return options.authHandler(new Request(request, { headers }));
+    // Nitro may provide a Request-compatible wrapper rather than an Undici
+    // instance. Reconstruct from public fields, not Undici private slots.
+    return options.authHandler(
+      new Request(request.url, {
+        method: request.method,
+        headers,
+        signal: request.signal,
+        ...(request.body ? { body: request.body, duplex: "half" as const } : {}),
+      }),
+    );
   });
   app.get("/health", (context) => {
     context.header("Cache-Control", "no-store");

@@ -4,7 +4,6 @@ import {
   BatchLinkPlugin,
   DedupeLinkPlugin,
   RequestCompressionLinkPlugin,
-  ResponseCompressionLinkPlugin,
   RetryAfterLinkPlugin,
   TimeoutLinkPlugin,
 } from "@orpc/client/plugins";
@@ -46,7 +45,8 @@ export function createApiClient(options: CreateApiClientOptions = {}): ApiClient
       new DedupeLinkPlugin({ groups: [readRequestGroup] }),
       new BatchLinkPlugin({ groups: [readRequestGroup], maxSize: 10, mode: "buffered" }),
       new RequestCompressionLinkPlugin({ threshold: 1024 }),
-      new ResponseCompressionLinkPlugin(),
+      // Native fetch decompresses HTTP responses. Applying the oRPC stream
+      // decompressor again corrupts large responses in Node SSR and browsers.
       new RetryAfterLinkPlugin({
         condition: (response, { request }) =>
           (request.method === "GET" || request.method === "QUERY") &&

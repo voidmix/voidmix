@@ -34,6 +34,9 @@ absolute API origin and send credentialed requests.
 - Procedures are never zero-arg. `client.health({})` needs the explicit `{}`.
 - Depend only on `@orpc/client`, `@orpc/contract`, and `@voidmix/contracts`.
   Never import `@voidmix/db`, `@voidmix/core`, or any application.
+- Native fetch owns HTTP response decompression. Do not install the oRPC
+  response decompressor on this Fetch transport; it would decompress twice.
+  Request compression and server response compression remain enabled.
 - Consumers own their own headers. Do not bake actor identity, auth, or
   environment lookups into this package.
 

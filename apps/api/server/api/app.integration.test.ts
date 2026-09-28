@@ -1,3 +1,4 @@
+import { domainFixtures } from "./test-fixtures.js";
 import { createApiClient } from "@voidmix/client";
 import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "@voidmix/db";
 import { createAgentRunApplication, type ProjectApplication } from "@voidmix/application";
@@ -57,7 +58,10 @@ function createProjectApplication(): ProjectApplication {
       actorId === project.personalOwnerId && projectId === project.id
         ? { project, access: "manage" as const }
         : null,
-    listForUser: async (userId) => (userId === project.personalOwnerId ? [project] : []),
+    listForUser: async (userId) => ({
+      items: userId === project.personalOwnerId ? [project] : [],
+      nextCursor: null,
+    }),
     create: async ({ actorId, title, description }) => ({
       ...project,
       id: `${actorId}-created`,
@@ -82,17 +86,6 @@ function createProjectApplication(): ProjectApplication {
     archiveProject: notImplemented,
     restoreProject: notImplemented,
     deleteProject: notImplemented,
-    listReviews: notImplemented,
-    createReview: notImplemented,
-    updateReview: notImplemented,
-    listFeedback: notImplemented,
-    createFeedback: notImplemented,
-    listAssets: notImplemented,
-    createAsset: notImplemented,
-    listAssetVersions: notImplemented,
-    createAssetUpload: notImplemented,
-    completeAssetUpload: notImplemented,
-    listActivity: notImplemented,
   } as ProjectApplication;
 }
 
@@ -133,6 +126,7 @@ function createApp() {
   };
   return createApiApp({
     modules: createApiModules({
+      ...domainFixtures(),
       users: userRepository,
       settings,
       mailFallback,
@@ -164,6 +158,26 @@ function clientFor(userId?: string, role = "user") {
 }
 
 describe("canonical API", () => {
+  it("permits credentialed oRPC batch/compression preflight only from configured origins", async () => {
+    const app = createApp();
+    for (const origin of ["http://voidmix.test", "https://untrusted.test"]) {
+      const response = await app.request("http://voidmix.test/rpc/__batch__", {
+        method: "OPTIONS",
+        headers: {
+          origin,
+          "access-control-request-method": "GET",
+          "access-control-request-headers": "orpc-batch,content-encoding,standard-server",
+        },
+      });
+      expect(response.headers.get("access-control-allow-origin")).toBe(
+        origin === "http://voidmix.test" ? origin : null,
+      );
+      expect(response.headers.get("access-control-allow-credentials")).toBe("true");
+      const allowed = response.headers.get("access-control-allow-headers")!.toLowerCase();
+      for (const header of ["orpc-batch", "content-encoding", "standard-server"])
+        expect(allowed).toContain(header);
+    }
+  });
   it("serves health and public auth capabilities", async () => {
     const client = clientFor();
     expect((await client.health({})).status).toBe("ok");
