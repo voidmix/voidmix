@@ -16,7 +16,8 @@
     "test:component": "vp test --run --passWithNoTests component.test",
     "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
     "build": "tsc --noEmit -p tsconfig.json",
-    "generate": "vmx env -- drizzle-kit generate --config drizzle.config.ts"
+    "generate": "vmx env -- drizzle-kit generate --config drizzle.config.ts",
+    "test:postgres": "vp test --run --config vitest.postgres.config.ts"
   },
   "dependencies": {
     "@voidmix/core": "workspace:*",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",
+    "@voidmix/application": "workspace:*",
     "@voidmix/tsconfig": "workspace:*",
     "drizzle-kit": "catalog:backend"
   }

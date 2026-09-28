@@ -11,18 +11,44 @@ import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { auditEvents, users } from "../schema.js";
 
+const userColumns = {
+  id: users.id,
+  email: users.email,
+  displayName: users.displayName,
+  role: users.role,
+  status: users.status,
+  createdAt: users.createdAt,
+};
+
 export class PostgresUserRepository implements UserRepository {
-  constructor(private readonly db: PostgresJsDatabase) {}
+  constructor(
+    private readonly db: Pick<
+      PostgresJsDatabase,
+      "select" | "insert" | "update" | "execute" | "transaction"
+    >,
+  ) {}
+
+  runAdministration<T>(operation: (users: UserRepository) => Promise<T>): Promise<T> {
+    return this.db.transaction(async (tx) => {
+      // All administrator writers use this lock, including CLI bootstrap.
+      await tx.execute(sql`select pg_advisory_xact_lock(1870034030, 1)`);
+      return operation(new PostgresUserRepository(tx));
+    });
+  }
 
   async list(query: UserListQuery): Promise<UserPage> {
     const offset = parseCursor(query.cursor);
     const search = query.query
       ? or(ilike(users.email, `%${query.query}%`), ilike(users.displayName, `%${query.query}%`))
       : undefined;
-    const where = search ? and(search) : undefined;
+    const where = and(
+      search,
+      query.role ? eq(users.role, query.role) : undefined,
+      query.status ? eq(users.status, query.status) : undefined,
+    );
     const [rows, totals] = await Promise.all([
       this.db
-        .select()
+        .select(userColumns)
         .from(users)
         .where(where)
         .orderBy(desc(users.createdAt), desc(users.id))
@@ -43,13 +69,13 @@ export class PostgresUserRepository implements UserRepository {
   }
 
   async getById(id: string): Promise<User | null> {
-    const [user] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    const [user] = await this.db.select(userColumns).from(users).where(eq(users.id, id)).limit(1);
     return user ?? null;
   }
 
   async getByEmail(email: string): Promise<User | null> {
     const [user] = await this.db
-      .select()
+      .select(userColumns)
       .from(users)
       .where(eq(users.email, email.toLowerCase()))
       .limit(1);
@@ -73,7 +99,7 @@ export class PostgresUserRepository implements UserRepository {
       .update(users)
       .set({ status })
       .where(eq(users.id, id))
-      .returning();
+      .returning(userColumns);
     if (!updated) {
       throw new Error(`Cannot update missing user ${id}`);
     }

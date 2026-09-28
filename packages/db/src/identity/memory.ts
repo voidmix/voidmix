@@ -8,6 +8,7 @@ import type {
 } from "@voidmix/core";
 
 export class InMemoryUserRepository implements UserRepository {
+  private administrationQueue: Promise<void> = Promise.resolve();
   readonly users = new Map<string, User>();
   readonly auditEvents: AuditEvent[] = [];
 
@@ -15,10 +16,45 @@ export class InMemoryUserRepository implements UserRepository {
     for (const user of seed) this.users.set(user.id, { ...user });
   }
 
+  async runAdministration<T>(operation: (users: UserRepository) => Promise<T>): Promise<T> {
+    const previous = this.administrationQueue;
+    let release!: () => void;
+    this.administrationQueue = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await previous;
+    // Preserve injected/subclass repository behavior (including failing audit
+    // sinks), while keeping uncommitted user state invisible to ordinary reads.
+    const tx: InMemoryUserRepository = Object.assign(
+      Object.create(Object.getPrototypeOf(this)),
+      this,
+      {
+        users: new Map([...this.users].map(([id, user]) => [id, { ...user }])),
+        auditEvents: [],
+      },
+    );
+    try {
+      const result = await operation(tx);
+      this.users.clear();
+      for (const [id, user] of tx.users) this.users.set(id, { ...user });
+      this.auditEvents.push(
+        ...tx.auditEvents.map((event) => ({ ...event, metadata: { ...event.metadata } })),
+      );
+      return result;
+    } finally {
+      release();
+    }
+  }
+
   async list(query: UserListQuery): Promise<UserPage> {
     const normalizedQuery = query.query?.toLowerCase();
     const offset = query.cursor ? Number.parseInt(query.cursor, 10) || 0 : 0;
     const matches = [...this.users.values()]
+      .filter(
+        (user) =>
+          (!query.role || user.role === query.role) &&
+          (!query.status || user.status === query.status),
+      )
       .filter(
         (user) =>
           !normalizedQuery ||

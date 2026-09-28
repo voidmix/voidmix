@@ -1,3 +1,6 @@
+import { cursorPage, timestampKey } from "../pagination.js";
+import { projectVisibility } from "./visibility.js";
+import type { VisibleResourceQuery } from "@voidmix/core";
 import { first, inserted } from "./results.js";
 import type {
   OrganizationMemberV2,
@@ -31,20 +34,17 @@ export class PostgresProjectV2Repository implements ProjectV2Repository {
     return first(this.db.select().from(v2Projects).where(eq(v2Projects.id, id)).limit(1));
   }
 
-  async listByPersonalOwner(userId: string): Promise<ProjectV2[]> {
-    return this.db
+  async listVisible(query: VisibleResourceQuery) {
+    const page = cursorPage(query, `projects:${query.actorId}`);
+    const time = timestampKey(v2Projects.updatedAt);
+    let statement = this.db
       .select()
       .from(v2Projects)
-      .where(eq(v2Projects.personalOwnerId, userId))
-      .orderBy(desc(v2Projects.updatedAt), desc(v2Projects.id));
-  }
-
-  async listByOrganization(organizationId: string): Promise<ProjectV2[]> {
-    return this.db
-      .select()
-      .from(v2Projects)
-      .where(eq(v2Projects.organizationId, organizationId))
-      .orderBy(desc(v2Projects.updatedAt), desc(v2Projects.id));
+      .where(and(projectVisibility(query.actorId), page.seek(time, v2Projects.id)))
+      .orderBy(desc(time), desc(v2Projects.id))
+      .$dynamic();
+    if (page.limit !== undefined) statement = statement.limit(page.limit + 1);
+    return page.finish(await statement, (row) => row.updatedAt);
   }
 
   async create(input: Parameters<ProjectV2Repository["create"]>[0]): Promise<ProjectV2> {

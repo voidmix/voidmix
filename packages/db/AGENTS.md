@@ -34,6 +34,13 @@ See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired
   `@voidmix/contracts`.
 - PostgreSQL and in-memory implementations must be updated together when a
   domain repository interface changes.
+- User administration uses one transaction-level advisory lock for bootstrap
+  and status changes. Count, mutation and audit commit together. Memory serializes
+  the same operation and publishes its cloned state only on success.
+- Project visibility SQL must match Core for personal owners/collaborators and
+  organization membership. Resource lists filter in SQL before keyset pagination.
+- No limit/cursor means a complete list. Paged queries sort timestamp + ID;
+  cursors bind to actor and query scope and invalid cursors raise BAD_REQUEST.
 - Queued Agent creation inserts the run and outbox event in the same transaction.
   All statements in that operation use the transaction handle.
 - Legacy table definitions remain for migration stability. They have no runtime
@@ -98,6 +105,7 @@ See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired
 ```bash
 bun run --cwd packages/db check
 bun run --cwd packages/db test
+NODE_ENV=test TEST_DATABASE_URL=postgres://localhost/voidmix_local_test bun run test:postgres
 bun run --cwd packages/db generate   # or repo-wide: bun run generate
 bun run db:migrate
 ```
