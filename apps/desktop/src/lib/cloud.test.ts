@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
-import { demoCloudSnapshot, formatBytes } from "./cloud";
+import { formatBytes } from "./cloud";
+import { demoCloudSnapshot } from "./cloud/demo";
 
 describe("cloud snapshot utilities", () => {
   it("formats binary storage values for compact desktop labels", () => {

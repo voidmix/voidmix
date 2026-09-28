@@ -41,17 +41,20 @@ function SettingToggle({
   preference: DesktopToggle;
 }) {
   const enabled = useDesktopPreferences((state) => state[preference]);
-  const togglePreference = useDesktopPreferences((state) => state.togglePreference);
+
+  const t = useDesktopTranslations("settings");
   return (
     <div className="setting-row">
       <div>
         <strong>{label}</strong>
         <p>{description}</p>
+        <p id={`${preference}-unavailable`}>{t("preferenceUnavailable")}</p>
       </div>
       <Switch
         aria-label={label}
         checked={enabled}
-        onCheckedChange={() => togglePreference(preference)}
+        disabled
+        aria-describedby={`${preference}-unavailable`}
       />
     </div>
   );
@@ -62,6 +65,8 @@ function SettingsPage() {
   const theme = useDesktopPreferences((state) => state.theme);
   const toggleTheme = useDesktopPreferences((state) => state.toggleTheme);
   const [folder, setFolder] = useState("");
+  const [binding, setBinding] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [folderStatus, setFolderStatus] = useState<PiRuntimeStatus | null>(null);
 
   return (
@@ -104,13 +109,21 @@ function SettingsPage() {
               </Field>
               <Button
                 variant="outline"
-                disabled={!folder.trim()}
-                onClick={() => void authorizeProjectFolder(folder.trim()).then(setFolderStatus)}
+                disabled={!folder.trim() || binding}
+                onClick={() => {
+                  setBinding(true);
+                  setFailed(false);
+                  void authorizeProjectFolder(folder.trim())
+                    .then(setFolderStatus)
+                    .catch(() => setFailed(true))
+                    .finally(() => setBinding(false));
+                }}
               >
                 {t("bindFolder")}
               </Button>
             </div>
           </div>
+          {failed ? <p role="alert">{t("folderFailed")}</p> : null}
           {folderStatus?.reason ? (
             <p className="text-xs text-muted-foreground">{folderStatus.reason}</p>
           ) : null}

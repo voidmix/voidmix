@@ -51,7 +51,7 @@ function LocalizedDocument({ children }: { children: ReactNode }) {
   const locale = useLocale();
 
   return (
-    <html dir="ltr" lang={locale} suppressHydrationWarning>
+    <html dir="ltr" lang={locale} className="dark" data-theme="dark" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

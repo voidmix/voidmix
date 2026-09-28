@@ -3,10 +3,9 @@ import { demoCloudSnapshot } from "./demo";
 import { selectCloudSnapshot } from "./source";
 
 describe("cloud source selection", () => {
-  it("uses preview data when no API URL is configured", async () => {
+  it("reports a missing configuration without attaching fixture data", async () => {
     await expect(selectCloudSnapshot()).resolves.toEqual({
-      snapshot: demoCloudSnapshot,
-      source: "demo",
+      source: "unconfigured",
     });
   });
 
@@ -23,14 +22,15 @@ describe("cloud source selection", () => {
   });
 
   it.each([
-    ["invalid_snapshot", "connected"],
-    ["overview_unavailable", "connected"],
-    ["health_check_failed", "demo"],
-  ] as const)("maps %s to the expected fallback source", async (kind, source) => {
+    ["invalid_snapshot", "unavailable"],
+    ["overview_unavailable", "unavailable"],
+    ["health_check_failed", "offline"],
+  ] as const)("reports %s without replacing real data with fixtures", async (kind, source) => {
     const result = await selectCloudSnapshot({
       apiUrl: "https://api.example.test",
       loadRemote: async () => ({ kind }),
     });
-    expect(result).toEqual({ snapshot: demoCloudSnapshot, source });
+    expect(result).toEqual({ source });
+    expect(result).not.toHaveProperty("snapshot");
   });
 });

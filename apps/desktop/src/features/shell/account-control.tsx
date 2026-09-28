@@ -31,8 +31,8 @@ export function AccountControl() {
     : t(
         account.status === "loading"
           ? "accountLoading"
-          : account.status === "preview"
-            ? "previewAccount"
+          : account.status === "unconfigured"
+            ? "accountUnconfigured"
             : account.status === "signed_out"
               ? "signedOut"
               : "accountUnavailable",
@@ -47,7 +47,7 @@ export function AccountControl() {
       )}
       <span aria-live="polite">
         <strong>{label}</strong>
-        <small title={profile?.email}>{profile?.email ?? t("personalStudio")}</small>
+        {profile ? <small title={profile.email}>{profile.email}</small> : null}
       </span>
     </div>
   );

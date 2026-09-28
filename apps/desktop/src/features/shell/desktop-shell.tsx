@@ -1,12 +1,4 @@
-import {
-  Bell,
-  Command,
-  FolderSimple,
-  Gear,
-  House,
-  MagnifyingGlass,
-  Pulse,
-} from "@phosphor-icons/react";
+import { FolderSimple, Gear, House, SidebarSimple, Pulse } from "@phosphor-icons/react";
 import { LOCALE_OPTIONS } from "@voidmix/i18n";
 import { Link, Outlet } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -32,10 +24,6 @@ function WindowActions() {
   return (
     <div className="window-actions">
       {message ? <span className="window-message">{message}</span> : null}
-      <Button size="icon" variant="ghost" aria-label={t("notifications")}>
-        <Bell size={16} weight="regular" />
-        <span className="notification-dot" />
-      </Button>
       <Button
         className="window-hide"
         variant="ghost"
@@ -61,6 +49,7 @@ export function DesktopShell() {
   ] as const;
   const theme = useDesktopPreferences((state) => state.theme);
   const toggleTheme = useDesktopPreferences((state) => state.toggleTheme);
+  const [collapsed, setCollapsed] = useState(false);
   const [runtime, setRuntime] = useState<DesktopRuntime>({
     appVersion: "0.1.0",
     platform: "browser",
@@ -80,11 +69,11 @@ export function DesktopShell() {
   }, [theme]);
 
   return (
-    <div className="desktop-shell">
+    <div className="desktop-shell" data-collapsed={collapsed || undefined}>
       <aside className="sidebar">
-        <div className="brand">
+        <Link to="/projects" className="brand" aria-label={t("projects")}>
           <Logo label="VoidMix" />
-        </div>
+        </Link>
 
         <nav className="primary-nav" aria-label={t("primaryNavigation")}>
           <p className="nav-label">{t("control")}</p>
@@ -92,6 +81,8 @@ export function DesktopShell() {
             <Link
               key={to}
               to={to}
+              aria-label={label}
+              title={label}
               activeOptions={{ exact: to === "/" }}
               activeProps={{ className: "nav-link active" }}
               inactiveProps={{ className: "nav-link" }}
@@ -117,13 +108,16 @@ export function DesktopShell() {
 
       <div className="app-frame">
         <header className="titlebar" data-tauri-drag-region>
-          <Button className="search-trigger" variant="outline">
-            <MagnifyingGlass size={15} weight="regular" />
-            <span>{t("searchProjects")}</span>
-            <kbd>
-              <Command size={11} />K
-            </kbd>
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label={t(collapsed ? "expandNavigation" : "collapseNavigation")}
+            aria-pressed={collapsed}
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            <SidebarSimple aria-hidden="true" />
           </Button>
+          <span className="titlebar-context">{t("control")}</span>
           <Button
             className="window-hide"
             variant="ghost"

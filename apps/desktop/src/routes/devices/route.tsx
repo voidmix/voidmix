@@ -1,7 +1,8 @@
-import { DeviceMobile, Laptop, Monitor, Sparkle, X } from "@phosphor-icons/react";
+import { DeviceMobile, Laptop, Monitor } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@voidmix/ui/components/ui/button";
+import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
+import { RefreshButton } from "../../features/shell/route-state";
 import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { formatCloudTime } from "../../i18n/time";
 import { loadCloudSnapshot, formatBytes } from "../../lib/cloud";
@@ -15,20 +16,20 @@ export const Route = createFileRoute("/devices")({
 function DevicesPage() {
   const t = useDesktopTranslations("devices");
   const formatter = useFormatter();
-  const { snapshot } = Route.useLoaderData();
-  const devices = snapshot.devices;
+  const result = Route.useLoaderData();
+  const devices = result.source === "cloud" ? result.snapshot.devices : [];
   return (
     <div className="page">
       <PageHeader
-        className="mb-7"
         title={t("title")}
         description={t("description")}
-        action={
-          <Button variant="primary">
-            <Sparkle size={14} /> {t("pair")}
-          </Button>
-        }
+        action={<RefreshButton routeId={Route.id} />}
       />
+      {result.source !== "cloud" ? (
+        <EmptyState title={t("unavailable")} description={t("unavailableDescription")} />
+      ) : devices.length === 0 ? (
+        <EmptyState title={t("empty")} description={t("emptyDescription")} />
+      ) : null}
       <section className="device-list" aria-label={t("registered")}>
         {devices.map((device) => {
           const Icon =
@@ -55,9 +56,6 @@ function DevicesPage() {
                 <span>{t("synced")}</span>
                 <strong>{formatBytes(device.syncedBytes, formatter)}</strong>
               </div>
-              <Button size="icon" variant="ghost" aria-label={t("remove", { name: device.name })}>
-                <X size={16} />
-              </Button>
             </article>
           );
         })}

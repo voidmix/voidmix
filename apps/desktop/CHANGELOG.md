@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Unify project lists and task details with the Web workbench.
+- Add collapsible navigation and support 800px native windows.
+- Show explicit unavailable states instead of demo snapshots and fixed activity.
+- Mark runtime-unwired preferences unavailable while preserving saved values.
+- Improve typography, theme contrast, keyboard focus and settings feedback.
 - Add project pagination with URL-backed navigation and route cancellation.
 
 This file exists for `apps/desktop` alone, because it is the only surface with a

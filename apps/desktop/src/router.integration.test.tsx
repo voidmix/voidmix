@@ -16,11 +16,23 @@ const loaders = vi.hoisted(() => ({
   loadProjects: vi.fn(),
   loadProject: vi.fn(),
   createProject: vi.fn(),
+  createTask: vi.fn(),
   loadCloudSnapshot: vi.fn(),
 }));
 
 function project(id: string, title: string) {
-  return { id, title, description: "A focused brief", stage: "draft" };
+  return {
+    id,
+    title,
+    description: "A focused brief",
+    stage: "draft",
+    access: "manage",
+    tasks: [],
+    organizationId: null,
+    deadline: null,
+    createdAt: new Date("2026-09-01"),
+    updatedAt: new Date("2026-09-01"),
+  };
 }
 
 function deferred<Value>() {
@@ -70,7 +82,7 @@ beforeEach(() => {
     status: "loaded",
     data: project("project-1", "Launch film"),
   });
-  loaders.loadCloudSnapshot.mockResolvedValue({ snapshot: demoCloudSnapshot, source: "demo" });
+  loaders.loadCloudSnapshot.mockResolvedValue({ source: "unavailable" });
 });
 
 afterEach(() => {
@@ -95,7 +107,8 @@ describe("Desktop Start routes", () => {
     const setting = await screen.findByRole("switch", {
       name: messages.en.settings.startWithSystem,
     });
-    fireEvent.click(setting);
+    expect(setting.getAttribute("aria-disabled")).toBe("true");
+    act(() => useDesktopPreferences.setState({ startWithSystem: true }));
     fireEvent.click(screen.getByRole("button", { name: "简体中文" }));
     expect(
       (
@@ -111,13 +124,12 @@ describe("Desktop Start routes", () => {
     ).toBe("true");
   });
 
-  it("keeps the sync pause preference after returning to the overview", async () => {
-    const router = renderRoute("/");
-    fireEvent.click(await screen.findByRole("button", { name: "Pause sync" }));
-    await act(() => router.navigate({ to: "/settings" }));
-    await act(() => router.navigate({ to: "/" }));
-    expect(await screen.findByRole("button", { name: "Resume sync" })).toBeDefined();
-    expect(useDesktopPreferences.getState().syncPaused).toBe(true);
+  it("does not present unavailable data as a live sync session", async () => {
+    renderRoute("/");
+    expect(await screen.findByText(messages.en.overview.overviewUnavailable)).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Pause sync" })).toBeNull();
+    expect(screen.queryByText("12,846")).toBeNull();
+    expect(useDesktopPreferences.getState().syncPaused).toBe(false);
   });
 
   it("opens project details without rendering the project list over them", async () => {
@@ -257,16 +269,16 @@ describe("Desktop Start routes", () => {
     );
   });
 
-  it("restores activity filters from navigation history", async () => {
+  it("preserves old activity URLs while clearly reporting unavailable records", async () => {
     const router = renderRoute("/activity?filter=downloads");
-    expect(await screen.findByText(messages.en.activity.productResearch)).toBeDefined();
+    expect(await screen.findByText(messages.en.activity.unavailable)).toBeDefined();
+    expect(screen.queryByText(messages.en.activity.productResearch)).toBeNull();
     expect(screen.queryByText(messages.en.activity.campaignExports)).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Uploads" }));
-    expect(await screen.findByText(messages.en.activity.campaignExports)).toBeDefined();
-    expect(router.state.location.search).toMatchObject({ filter: "uploads" });
-    await act(async () => router.history.back());
-    expect(await screen.findByText(messages.en.activity.productResearch)).toBeDefined();
-    expect(screen.queryByText(messages.en.activity.campaignExports)).toBeNull();
+    expect(router.state.location.search).toMatchObject({ filter: "downloads" });
+    await act(() => router.navigate({ to: "/projects" }));
+    await act(() => router.history.back());
+    expect(await screen.findByText(messages.en.activity.unavailable)).toBeDefined();
+    expect(router.state.location.search).toMatchObject({ filter: "downloads" });
   });
 
   it("recovers a route loader error when retried", async () => {

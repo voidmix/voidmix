@@ -1,13 +1,10 @@
-import { log } from "@voidmix/shared/logger/client";
 import { env } from "../../env.js";
-import { demoCloudSnapshot } from "./demo";
 import { fetchRemoteSnapshot, type RemoteSnapshotResult } from "./remote";
 import type { CloudSnapshot } from "./types";
 
-export interface CloudLoadResult {
-  snapshot: CloudSnapshot;
-  source: "cloud" | "connected" | "demo";
-}
+export type CloudLoadResult =
+  | { source: "cloud"; snapshot: CloudSnapshot }
+  | { source: "unconfigured" | "offline" | "unavailable" };
 
 export type RemoteSnapshotLoader = (
   apiUrl: string,
@@ -23,43 +20,8 @@ export async function selectCloudSnapshot({
   loadRemote?: RemoteSnapshotLoader;
   signal?: AbortSignal;
 } = {}): Promise<CloudLoadResult> {
-  if (!apiUrl) {
-    log.warn({
-      event: "desktop.cloud.snapshot.fallback",
-      source: "demo",
-      reason: "api_url_missing",
-    });
-    return { snapshot: demoCloudSnapshot, source: "demo" };
-  }
-
+  if (!apiUrl) return { source: "unconfigured" };
   const result = await loadRemote(apiUrl, signal);
-  switch (result.kind) {
-    case "loaded":
-      log.info({
-        event: "desktop.cloud.snapshot.loaded",
-        source: "cloud",
-      });
-      return { snapshot: result.snapshot, source: "cloud" };
-    case "invalid_snapshot":
-      log.warn({
-        event: "desktop.cloud.snapshot.fallback",
-        source: "connected",
-        reason: "invalid_snapshot",
-      });
-      return { snapshot: demoCloudSnapshot, source: "connected" };
-    case "overview_unavailable":
-      log.warn({
-        event: "desktop.cloud.snapshot.fallback",
-        source: "connected",
-        reason: "overview_unavailable",
-      });
-      return { snapshot: demoCloudSnapshot, source: "connected" };
-    case "health_check_failed":
-      log.error({
-        event: "desktop.cloud.snapshot.fallback",
-        source: "demo",
-        reason: "health_check_failed",
-      });
-      return { snapshot: demoCloudSnapshot, source: "demo" };
-  }
+  if (result.kind === "loaded") return { source: "cloud", snapshot: result.snapshot };
+  return { source: result.kind === "health_check_failed" ? "offline" : "unavailable" };
 }

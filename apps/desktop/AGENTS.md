@@ -61,6 +61,9 @@ src-tauri/
   or layout, `index.tsx` for its exact page, and `$param.tsx` for dynamic children;
   do not encode nesting in dotted route filenames.
 - Home, Devices, and Project routes load API data in client-only route loaders.
+  Project details include tasks and access capability. Invalid overview responses
+  produce explicit unavailable states, never demo data. Activity is unavailable
+  until recording is connected. Demo snapshots belong to tests only.
   Pages read typed loader data; refresh and successful mutations invalidate
   the owning route. Pass the route abort signal through API requests.
 - Keep `/projects/` in `projects/index.tsx`; `projects/route.tsx` renders an
@@ -105,6 +108,9 @@ src-tauri/
 - `normalizeSnapshot` validates dates, counts, byte units, and job/device
   discriminants once at the remote boundary before data reaches a page.
 - Primary navigation uses Home, Projects, Activity, and Settings. Devices remains reachable from Settings and is not a primary destination. Project loaders use `src/lib/projects.ts` for the shared canonical API client.
+- The renderer and native window both support a minimum width of 800px.
+  Navigation collapse is local shell state. Runtime-unwired settings are disabled
+  with explanatory copy while their stored values remain compatible.
 - Closing the main window hides it instead of exiting; the tray menu shows,
   hides, or quits. `src-tauri/src/lib.rs` owns that behaviour and reports it to
   the renderer as `trayEnabled`, which is false in a plain browser preview.

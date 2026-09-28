@@ -8,8 +8,8 @@ import { loadAccount } from "./account";
 describe("desktop account loader", () => {
   beforeEach(() => createApiClient.mockReset());
 
-  it("keeps browser preview explicit when no cloud URL is configured", async () => {
-    await expect(loadAccount(undefined)).resolves.toEqual({ status: "preview" });
+  it("reports missing configuration without inventing an account", async () => {
+    await expect(loadAccount(undefined)).resolves.toEqual({ status: "unconfigured" });
     expect(createApiClient).not.toHaveBeenCalled();
   });
 

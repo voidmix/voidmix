@@ -4,11 +4,11 @@ import { getDesktopLocaleHeaders } from "../i18n/client";
 
 export type AccountProfile = Awaited<ReturnType<ApiClient["account"]["get"]>>;
 export type AccountState =
-  | { status: "loading" | "preview" | "signed_out" | "unavailable" }
+  | { status: "loading" | "unconfigured" | "signed_out" | "unavailable" }
   | { status: "signed_in"; profile: AccountProfile };
 
 export async function loadAccount(apiUrl = env.VITE_API_URL): Promise<AccountState> {
-  if (!apiUrl) return { status: "preview" };
+  if (!apiUrl) return { status: "unconfigured" };
   try {
     const client = createApiClient({
       baseUrl: apiUrl,
