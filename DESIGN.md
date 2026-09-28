@@ -22,6 +22,9 @@ Use stock component variants, radii, focus rings and sizes. Do not impose a
 minimum height on every control or override component colors in page CSS.
 Coarse-pointer targets are at least 44px. Forms use Field and InputGroup;
 Base UI owns overlays, focus containment, dismissal and keyboard behavior.
+Utility actions such as theme, language and window controls use compact icon
+buttons with accessible names and hover hints. Keep descriptive copy out of
+toolbars; primary business actions retain short, explicit text labels.
 
 Retain the Inter/system Chinese fallback stack without runtime font downloads.
 Application headings are 24–28px, sections 18–20px, body 14px and metadata at

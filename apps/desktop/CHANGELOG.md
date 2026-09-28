@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Replace titlebar theme, language and hide-to-tray text with compact icon buttons and accessible labels.
 - Use shadcn Neutral light and dark themes, consistent controls and neutral status badges.
 - Keep the Logo visible when navigation is collapsed.
 - Keep navigation selection synchronized with the current route.

@@ -1,4 +1,14 @@
-import { FolderSimple, Gear, House, SidebarSimple, Pulse } from "@phosphor-icons/react";
+import {
+  FolderSimple,
+  Gear,
+  House,
+  Moon,
+  SidebarSimple,
+  Sun,
+  Pulse,
+  Translate,
+  TrayArrowDown,
+} from "@phosphor-icons/react";
 import { LOCALE_OPTIONS } from "@voidmix/i18n";
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -25,12 +35,13 @@ function WindowActions() {
     <div className="window-actions">
       {message ? <span className="window-message">{message}</span> : null}
       <Button
-        className="window-hide"
+        size="icon"
         variant="ghost"
         onClick={() => void handleHide()}
+        aria-label={t("hideToTray")}
         title={t("hideToTray")}
       >
-        {t("hideToTray")}
+        <TrayArrowDown aria-hidden="true" />
       </Button>
     </div>
   );
@@ -41,6 +52,7 @@ export function DesktopShell() {
   const themeT = useDesktopTranslations("settings");
   const locale = useLocale();
   const setLocale = useSetLocale();
+  const nextLocale = LOCALE_OPTIONS.find((option) => option.value !== locale)!;
   const pathname = useLocation({ select: (location) => location.pathname });
   const navigation = [
     { to: "/", label: t("home"), icon: House },
@@ -127,21 +139,22 @@ export function DesktopShell() {
           </Button>
           <span className="titlebar-context">{t("control")}</span>
           <Button
-            className="window-hide"
+            size="icon"
             variant="ghost"
             onClick={toggleTheme}
             aria-label={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
             title={theme === "dark" ? themeT("lightTheme") : themeT("darkTheme")}
           >
-            {theme === "dark" ? "☼" : "◐"}
+            {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </Button>
           <Button
-            className="window-hide"
+            size="icon"
             variant="ghost"
-            onClick={() => void setLocale(locale === "en" ? "zh" : "en").catch(() => undefined)}
-            title={t("language")}
+            onClick={() => void setLocale(nextLocale.value).catch(() => undefined)}
+            aria-label={nextLocale.nativeName}
+            title={`${t("language")}: ${nextLocale.nativeName}`}
           >
-            {LOCALE_OPTIONS.find((option) => option.value !== locale)?.nativeName}
+            <Translate aria-hidden="true" />
           </Button>
           <WindowActions />
         </header>
