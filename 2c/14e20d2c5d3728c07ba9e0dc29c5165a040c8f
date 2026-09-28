@@ -1,0 +1,33 @@
+apps/web/src/features/navigation/route-state.tsx
+  s_42000bd424f7f1::t_4b475d727fd658 6,27,32,35,39,41,44,46
+apps/web/src/styles.css
+  s_42000bd424f7f1::t_35df57f3832995 3
+bun.lock
+  s_42000bd424f7f1::t_ed8bfe4deeb98a 357,416,1584-1585,1772-1777
+package.json
+  s_42000bd424f7f1::t_c48b6dcc3c2bdb 48-49
+packages/ui/components.json
+  s_42000bd424f7f1::t_59049e9797f90e 19-21
+packages/ui/package.json
+  s_42000bd424f7f1::t_fe04fb8d18b131 26-30,45-46
+packages/ui/src/lib/beui-motion.ts
+  s_42000bd424f7f1::t_f930aa327ff1a5 1-2
+packages/ui/src/lib/beui-sidebar-context.ts
+  s_42000bd424f7f1::t_4e80959f92caf1 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2c14e20d2c5d3728c07ba9e0dc29c5165a040c8f",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
