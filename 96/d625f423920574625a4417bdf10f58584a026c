@@ -1,0 +1,25 @@
+apps/web/AGENTS.md
+  s_42000bd424f7f1::t_df8d6616e19591 98-100
+apps/web/Dockerfile
+  s_42000bd424f7f1::t_48899c3873fab5 8-13
+docs/architecture/deployment.md
+  s_42000bd424f7f1::t_4775be52ecc3f8 46-76
+docs/development/environment.md
+  s_42000bd424f7f1::t_288ac653246eb2 91-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "96d625f423920574625a4417bdf10f58584a026c",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
