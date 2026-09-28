@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Application-service ownership superseded by [ADR-0014](./0014-domain-services-and-client-state.md). Domain package consolidation remains accepted.
 
 ## Context
 

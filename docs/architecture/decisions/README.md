@@ -45,3 +45,5 @@ source-boundary checks run with `bun run i18n:check` and are the first gate of
 `bun run verify`.
 
 - [ADR-0013: Domain modules and retirement of unused V1 code](./0013-domain-modules-and-retired-code.md)
+
+- [ADR-0014: Domain services and scoped client state](./0014-domain-services-and-client-state.md)
