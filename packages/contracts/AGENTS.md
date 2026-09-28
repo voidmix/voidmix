@@ -41,6 +41,9 @@ See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired
 - The contract tree and `apps/api/server/api`'s router tree must match **exactly**. Adding
   to one without the other is a type error deep inside `os.router()` whose
   message does not point at your edit.
+- Project/library/activity list inputs accept optional limit/cursor; omission
+  preserves complete lists for installed clients. Activity uses an explicit DTO.
+  Admin list adds optional role/status filters without changing its pagination.
 - Public Auth capabilities expose only registration, verification-request, and
   password-reset-request booleans. Never add settings sources, domain lists,
   missing mail fields, or secret state to that public DTO.

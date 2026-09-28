@@ -15,7 +15,14 @@ import {
   PostgresAgentRunV2Repository,
   PostgresActivityV2Repository,
 } from "@voidmix/db";
-import { createAgentRunApplication, createProjectApplication } from "@voidmix/application";
+import {
+  createAgentRunApplication,
+  createProjectApplication,
+  createProjectAccess,
+  createAssetApplication,
+  createReviewApplication,
+  createActivityApplication,
+} from "@voidmix/application";
 import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
 import type { AuthSettings, MailSettingsFallback } from "@voidmix/core";
 import { createLoggerConfig, type EvlogConfig } from "@voidmix/shared/logger";
@@ -113,18 +120,34 @@ export async function createApiRuntime({
       getAuthSettings,
       getMailSettings: async () => (await settings.resolveMailConfiguration(mailFallback)).settings,
     });
-    const v2Projects = createProjectApplication({
+    const projectPorts = {
       projects: new PostgresProjectV2Repository(connection.db),
-      tasks: new PostgresProjectTaskV2Repository(connection.db),
       projectMembers: new PostgresProjectMemberV2Repository(connection.db),
       organizationMembers: new PostgresOrganizationMemberV2Repository(connection.db),
-      reviews: new PostgresReviewV2Repository(connection.db),
-      feedback: new PostgresFeedbackV2Repository(connection.db),
+    };
+    const access = createProjectAccess(projectPorts);
+    const assetVersions = new PostgresAssetVersionV2Repository(connection.db);
+    const v2Projects = createProjectApplication({
+      ...projectPorts,
+      tasks: new PostgresProjectTaskV2Repository(connection.db),
+    });
+    const assets = createAssetApplication({
+      access,
       assets: new PostgresAssetV2Repository(connection.db),
-      assetVersions: new PostgresAssetVersionV2Repository(connection.db),
+      assetVersions,
       blobStorage: environment.BLOB_STORAGE_DIR
         ? new FileSystemBlobStorageRepository(environment.BLOB_STORAGE_DIR)
         : new InMemoryBlobStorageRepository(),
+    });
+    const reviews = createReviewApplication({
+      access,
+      assetVersions,
+      reviews: new PostgresReviewV2Repository(connection.db),
+      feedback: new PostgresFeedbackV2Repository(connection.db),
+    });
+    const activity = createActivityApplication({
+      access,
+      activity: new PostgresActivityV2Repository(connection.db),
     });
     const modules = createApiModules({
       v2Projects,
@@ -132,7 +155,9 @@ export async function createApiRuntime({
         projects: v2Projects,
         runs: new PostgresAgentRunV2Repository(connection.db),
       }),
-      activity: new PostgresActivityV2Repository(connection.db),
+      assets,
+      reviews,
+      activity,
       users: new PostgresUserRepository(connection.db),
       settings,
       mailFallback,

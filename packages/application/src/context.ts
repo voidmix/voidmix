@@ -1,3 +1,4 @@
+import { executionContext } from "./execution.js";
 import {
   canProjectCapabilityV2,
   resolveProjectAccessV2,
@@ -7,10 +8,9 @@ import {
   type ProjectCapabilityV2,
 } from "@voidmix/core";
 import type { ProjectOptions } from "./types.js";
-export function createProjectContext(options: ProjectOptions) {
-  const now = options.now ?? (() => new Date());
-  const id = options.id ?? (() => `project-${now().getTime()}`);
-
+export function createProjectAccess(
+  options: Pick<ProjectOptions, "projects" | "projectMembers" | "organizationMembers">,
+) {
   const accessFor = async (actorId: string, project: ProjectV2): Promise<ProjectAccessV2> => {
     const [projectMember, organizationMember] = await Promise.all([
       options.projectMembers.getByProjectAndUser({ projectId: project.id, userId: actorId }),
@@ -42,9 +42,19 @@ export function createProjectContext(options: ProjectOptions) {
     return project;
   };
 
-  return { options, now, id, accessFor, requireProject };
+  const assertCapability = ({
+    actorId,
+    projectId,
+    capability,
+  }: {
+    actorId: string;
+    projectId: string;
+    capability: ProjectCapabilityV2;
+  }) => requireProject(actorId, projectId, capability, "Project access denied.");
+  return { accessFor, requireProject, assertCapability };
 }
-export type ProjectContext = ReturnType<typeof createProjectContext>;
+export type ProjectContext = ReturnType<typeof createProjectAccess> &
+  ReturnType<typeof executionContext> & { options: ProjectOptions };
 
 /** Missing resources deliberately share the access-denied identity. */
 export function requireResource<T>(value: T | null, message: string): T {

@@ -1,3 +1,4 @@
+import type { CursorQuery, CursorPage } from "@voidmix/core";
 import {
   type ProjectAccessV2,
   type ProjectCapabilityV2,
@@ -32,7 +33,7 @@ type TaskChanges = Omit<Parameters<ProjectTaskV2Repository["update"]>[0], "id" |
 
 export interface ProjectApplication {
   get: ProjectCommand<object, { project: ProjectV2; access: ProjectAccessV2 } | null>;
-  listForUser(userId: string): Promise<ProjectV2[]>;
+  listForUser(userId: string, query?: CursorQuery): Promise<CursorPage<ProjectV2>>;
   create: Command<{ scope: ProjectScope; title: string; description?: string | null }, ProjectV2>;
   assertCapability: ProjectCommand<{ capability: ProjectCapabilityV2 }, ProjectV2>;
   listTasks: ProjectCommand<object, TaskV2[]>;
@@ -46,11 +47,18 @@ export interface ProjectApplication {
   archiveProject: ProjectCommand<object, ProjectV2>;
   restoreProject: ProjectCommand<object, ProjectV2>;
   deleteProject: ProjectCommand<object, void>;
+}
+
+export interface ReviewApplication {
   listReviews: ProjectCommand<object, ReviewV2[]>;
   createReview: ProjectCommand<{ assetVersionId: string | null; title: string }, ReviewV2>;
   updateReview: Command<{ reviewId: string; status: ReviewStatusV2 }, ReviewV2>;
   listFeedback: Command<{ reviewId: string }, FeedbackV2[]>;
   createFeedback: Command<{ reviewId: string; body: string }, FeedbackV2>;
+}
+
+export interface AssetApplication {
+  listLibrary: Command<CursorQuery & { projectId?: string }, CursorPage<AssetV2>>;
   listAssets: ProjectCommand<object, AssetV2[]>;
   createAsset: ProjectCommand<{ name: string }, AssetV2>;
   listAssetVersions: Command<{ assetId: string }, AssetVersionV2[]>;
@@ -69,7 +77,10 @@ export interface ProjectApplication {
     },
     AssetVersionV2
   >;
-  listActivity: Command<{ projectId?: string }, ActivityV2[]>;
+}
+
+export interface ActivityApplication {
+  listActivity: Command<CursorQuery & { projectId?: string }, CursorPage<ActivityV2>>;
 }
 
 export interface ProjectOptions {
@@ -77,12 +88,41 @@ export interface ProjectOptions {
   tasks: ProjectTaskV2Repository;
   projectMembers: ProjectMemberV2Repository;
   organizationMembers: OrganizationMemberV2Repository;
-  reviews: ReviewV2Repository;
-  feedback: FeedbackV2Repository;
+  now?: () => Date;
+  id?: () => string;
+}
+
+export interface ExecutionOptions {
+  now?: () => Date;
+  id?: () => string;
+}
+export interface ProjectAccess {
+  requireProject(
+    this: void,
+    actorId: string,
+    projectId: string,
+    capability: ProjectCapabilityV2,
+    message: string,
+  ): Promise<ProjectV2>;
+  assertCapability(input: {
+    actorId: string;
+    projectId: string;
+    capability: ProjectCapabilityV2;
+  }): Promise<ProjectV2>;
+}
+export interface AssetOptions extends ExecutionOptions {
+  access: ProjectAccess;
   assets: AssetV2Repository;
   assetVersions: AssetVersionV2Repository;
   blobStorage: BlobStorageRepository;
-  now?: () => Date;
-  id?: () => string;
-  activity?: ActivityV2Repository;
+}
+export interface ReviewOptions extends ExecutionOptions {
+  access: ProjectAccess;
+  reviews: ReviewV2Repository;
+  feedback: FeedbackV2Repository;
+  assetVersions: AssetVersionV2Repository;
+}
+export interface ActivityOptions {
+  access: ProjectAccess;
+  activity: ActivityV2Repository;
 }

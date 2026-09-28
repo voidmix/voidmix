@@ -25,11 +25,9 @@ export function createRouterContext(options: CreateApiRouterOptions) {
       if (!hasPermission(context.principal.session, permission)) throw createApiError("FORBIDDEN");
       return next({ context: { principal: context.principal } });
     });
-  const v2Projects = () => {
-    if (!options.modules.v2Projects)
-      throw createApiError("INTERNAL_SERVER_ERROR", "V2_PROJECTS_NOT_CONFIGURED");
-    return options.modules.v2Projects;
-  };
+  const v2Projects = () => options.modules.v2Projects;
+  const assets = () => options.modules.assets;
+  const reviews = () => options.modules.reviews;
   const agentRuns = () => {
     if (!options.modules.v2AgentRuns)
       throw createApiError("INTERNAL_SERVER_ERROR", "V2_AGENT_RUNS_NOT_CONFIGURED");
@@ -66,6 +64,8 @@ export function createRouterContext(options: CreateApiRouterOptions) {
     authenticated: os.use(requireAuthenticated),
     requirePermission,
     v2Projects,
+    assets,
+    reviews,
     agentRuns,
     call,
     command,

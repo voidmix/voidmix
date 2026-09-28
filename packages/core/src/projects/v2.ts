@@ -1,3 +1,4 @@
+import type { CursorPage, VisibleResourceQuery } from "../pagination.js";
 import { DomainError } from "@voidmix/shared";
 
 /** The canonical V2 project lifecycle. */
@@ -51,8 +52,7 @@ export interface OrganizationMemberV2 {
 
 export interface ProjectV2Repository {
   getById(id: string): Promise<ProjectV2 | null>;
-  listByPersonalOwner(userId: string): Promise<ProjectV2[]>;
-  listByOrganization(organizationId: string): Promise<ProjectV2[]>;
+  listVisible(query: VisibleResourceQuery): Promise<CursorPage<ProjectV2>>;
   create(input: {
     id: string;
     createdByUserId: string;

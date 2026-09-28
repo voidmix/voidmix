@@ -22,7 +22,7 @@ const createAdminCommand = contextualCommand("admin create", "database", {
     const [operation, { openPostgresUsers }, domain] = await Promise.all([
       import("./operation.js"),
       import("../database/users.js"),
-      import("@voidmix/core"),
+      import("@voidmix/application"),
     ]);
     await operation.runCreateAdmin(
       operation.resolveAdminCreateInput(args, context.environment),

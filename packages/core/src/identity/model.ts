@@ -38,11 +38,16 @@ export interface UserPage {
 
 export interface UserListQuery {
   query?: string;
+  role?: Role;
+  status?: UserStatus;
   limit: number;
   cursor?: string;
 }
 
-export interface UserRepository {
+export interface UserAdministrationTransaction {
+  runAdministration<T>(operation: (users: UserRepository) => Promise<T>): Promise<T>;
+}
+export interface UserRepository extends UserAdministrationTransaction {
   list(query: UserListQuery): Promise<UserPage>;
   getById(id: string): Promise<User | null>;
   getByEmail(email: string): Promise<User | null>;

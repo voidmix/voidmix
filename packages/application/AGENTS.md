@@ -8,23 +8,33 @@ database, AI SDK, or renderer concerns.
 
 ## Interface
 
-| Path | Purpose                                            |
-| ---- | -------------------------------------------------- |
-| `.`  | V2 Project commands, queries, and repository ports |
+| Path | Purpose                                                                         |
+| ---- | ------------------------------------------------------------------------------- |
+| `.`  | Identity, Projects, Assets, Reviews, Activity services and narrow ProjectAccess |
 
 ## Ownership
 
-- `index.ts` composes commands from `projects.ts`, `members.ts`, `resources.ts`,
-  and `assets.ts`; `context.ts` owns shared resource loading and authorization.
+- `index.ts` composes Projects from lifecycle, member and task commands. Assets,
+  Reviews and Activity have separate factories with only their own ports.
+- `identity.ts` owns user queries, status changes and initial admin creation.
+  Core supplies rules, transaction ports and audit construction.
+- `context.ts` exposes the narrow ProjectAccess interface for cross-domain use.
 - Resolve Project capabilities from personal ownership, Organization membership,
   and project-level grants.
 - Keep command/query orchestration independent of Hono, Drizzle, and React.
-- Leave transactions, persistence, outbox delivery, and provider lifecycle to
-  adapters and the hosting applications.
+- Execute Identity mutations and audit append through the Core administration
+  transaction port; DB implements atomicity. Outbox delivery and provider
+  lifecycle remain with adapters and hosting applications.
 
 ## Constraints
 
 - Depend only on `@voidmix/core`.
+- Non-Agent ports are required; production must never substitute an empty list
+  for a missing repository. Test doubles belong in explicit fixtures.
+- Validate a Review asset version exists and belongs to the requested project.
+  Missing and foreign resources share the existing access-denied error.
+- List queries delegate visibility and pagination to repository ports. Calls
+  without limit/cursor preserve complete-list behavior.
 - Use injected clock and id functions for deterministic tests.
 - A Project operation always loads the Project before checking access; caller
   supplied ownership fields are never authorization input.

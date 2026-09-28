@@ -74,6 +74,7 @@ export {
 } from "./common.js";
 export type { ApiErrorCode, ApiErrorData, ApiProblemDetails } from "./common.js";
 export {
+  activitySchema,
   roleSchema,
   userStatusSchema,
   accountProfileSchema,
@@ -83,6 +84,7 @@ export {
   publicAuthCapabilitiesSchema,
 } from "./account.js";
 export type {
+  ActivityDto,
   AccountProfileDto,
   UserDto,
   UserPageDto,

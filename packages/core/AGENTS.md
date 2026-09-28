@@ -8,15 +8,14 @@ transported or stored.
 
 ## Interface
 
-| Path | Purpose                                                                     |
-| ---- | --------------------------------------------------------------------------- |
-| `.`  | `src/index.ts` — context exports, repository ports, domain errors, usecases |
+| Path | Purpose                                                                                     |
+| ---- | ------------------------------------------------------------------------------------------- |
+| `.`  | `src/index.ts` — domain exports, repository/transaction ports, rules and audit construction |
 
 ## Ownership
 
-- Own user and audit-event types, user listing with cursor pagination, status
-  transitions, self-suspension and final-administrator protection, idempotent
-  initial administrator creation, typed mail and authentication settings rules,
+- Own user and audit-event types, status transition rules, self-suspension and
+  final-administrator protection, administration transaction ports, typed mail and authentication settings rules,
   source/inheritance models, derived public Auth capabilities, and durable
   audit-event creation.
 - Own canonical V2 personal/Organization project access, resource ports,
@@ -35,8 +34,8 @@ transported or stored.
 - Shared primitives are owned by `@voidmix/shared` and re-exported here for
   compatibility.
 - Entities are plain `interface`s with no methods and no classes.
-- Usecases are factory functions returning an object literal
-  (`createUserAdministration({ users, now, id })`), not classes.
+- Identity workflows live in `@voidmix/application`. Core exports pure rules,
+  audit constructors and ports; do not add transport or persistence orchestration.
 - `now` and `id` are injectable with defaults. This is what makes tests
   deterministic — do not reach for `new Date()` or a UUID library inline.
 - `DomainError` is the common business-error base. Each bounded context owns a
@@ -51,9 +50,9 @@ transported or stored.
   self-suspension → last-admin → no-op short-circuit → mutate → `appendAudit`.
   The no-op check comes _after_ the guards, and audit is appended only on a real
   state transition.
-- Audit rows are initiated **here and only here**, in the same logical operation as
-  the mutation. They are durable product records, distinct from `@voidmix/shared/logger`
-  operational events. Never append audit from a handler.
+- Audit events are constructed here. Application appends them inside the same
+  administration transaction as the mutation. They are durable product records,
+  distinct from operational logs. Never append audit from a handler.
 - Runtime authentication uses exact lowercase email domains. An empty allowlist
   permits every domain. Settings administration factories are retired; the
   repository ports remain for Auth/Mail resolution and adapter mutation semantics.

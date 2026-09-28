@@ -42,7 +42,8 @@ export function user(overrides: Partial<User> = {}): User {
 }
 
 export function userRepository(overrides: Partial<UserRepository> = {}): UserRepository {
-  return {
+  const repository: UserRepository = {
+    runAdministration: async (operation) => operation(repository),
     list: vi.fn(async () => ({ items: [], total: 0, nextCursor: null })),
     getById: vi.fn(async () => null),
     getByEmail: vi.fn(async () => null),
@@ -53,6 +54,7 @@ export function userRepository(overrides: Partial<UserRepository> = {}): UserRep
     listAudit: vi.fn(async () => []),
     ...overrides,
   };
+  return repository;
 }
 
 /** Assert both finding cardinality and its stable diagnostic fields. */

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vite-plus/test";
 import {
-  createProjectApplication,
+  createApplicationFixture as createProjectApplication,
   type ProjectOptions,
   type ProjectV2Repository,
-} from "./index.js";
+} from "./test-fixtures.js";
 import type { ProjectMemberV2, ProjectV2 } from "@voidmix/core";
 import type { TaskV2 } from "@voidmix/core";
 
@@ -43,8 +43,7 @@ function projectOptions(overrides: Overrides = {}): ProjectOptions {
   const options: ProjectOptions = {
     projects: {
       getById: async () => project(),
-      listByPersonalOwner: async () => [],
-      listByOrganization: async () => [],
+      listVisible: async () => ({ items: [], nextCursor: null }),
       create: async () => project(),
       update: async () => project(),
       setArchived: async () => project(),
@@ -70,8 +69,17 @@ function projectOptions(overrides: Overrides = {}): ProjectOptions {
       update: async () => null,
     },
     feedback: { listByReview: async () => [], create: unused },
-    assets: { getById: async () => null, listByProject: async () => [], create: unused },
-    assetVersions: { listByAsset: async () => [], create: unused },
+    activity: {
+      listByProject: async () => [],
+      listVisible: async () => ({ items: [], nextCursor: null }),
+    },
+    assets: {
+      listVisible: async () => ({ items: [], nextCursor: null }),
+      getById: async () => null,
+      listByProject: async () => [],
+      create: unused,
+    },
+    assetVersions: { getById: async () => null, listByAsset: async () => [], create: unused },
     blobStorage: {
       createUpload: unused,
       completeUpload: unused,
@@ -91,8 +99,10 @@ function application(overrides: Overrides = {}) {
 describe("V2 project application", () => {
   it("lists more than one personal project for an account", async () => {
     const projects = [project(), project({ id: "project-2", title: "Two projects" })];
-    const app = application({ projects: { listByPersonalOwner: async () => projects } });
-    await expect(app.listForUser("user-1")).resolves.toHaveLength(2);
+    const app = application({
+      projects: { listVisible: async () => ({ items: projects, nextCursor: null }) },
+    });
+    expect((await app.listForUser("user-1")).items).toHaveLength(2);
   });
 
   it("allows a personal project collaborator through its project grant", async () => {
@@ -121,9 +131,7 @@ describe("V2 project application", () => {
       title: "Organization project",
     });
     const repository: Partial<ProjectV2Repository> = {
-      listByPersonalOwner: async () => [personal],
-      listByOrganization: async (organizationId) =>
-        organizationId === "org-1" ? [organization] : [],
+      listVisible: async () => ({ items: [organization, personal], nextCursor: null }),
     };
     const app = application({
       projects: repository,
@@ -134,7 +142,10 @@ describe("V2 project application", () => {
         ],
       },
     });
-    await expect(app.listForUser("user-1")).resolves.toEqual([organization, personal]);
+    await expect(app.listForUser("user-1")).resolves.toEqual({
+      items: [organization, personal],
+      nextCursor: null,
+    });
   });
 
   it("requires project write access to create and update tasks", async () => {

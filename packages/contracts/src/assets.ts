@@ -1,3 +1,4 @@
+import { cursorQueryFields } from "./common.js";
 import { z } from "zod";
 import { authoredResourceFields } from "./common.js";
 import { createCursorPageSchema, procedure } from "./common.js";
@@ -27,7 +28,7 @@ export const v2ListAssets = procedure(
 );
 
 export const listLibraryAssets = procedure(
-  { projectId: z.string().min(1).optional() },
+  { ...cursorQueryFields, projectId: z.string().min(1).optional() },
   createCursorPageSchema(assetV2Schema),
 );
 

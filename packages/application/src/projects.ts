@@ -21,7 +21,6 @@ export function projectsCommands({ options, now, id, accessFor, requireProject }
     | "archiveProject"
     | "restoreProject"
     | "deleteProject"
-    | "listActivity"
   > = {
     async get({ actorId, projectId }) {
       const project = await options.projects.getById(projectId);
@@ -30,24 +29,7 @@ export function projectsCommands({ options, now, id, accessFor, requireProject }
       return access === "none" ? null : { project, access };
     },
 
-    async listForUser(userId) {
-      const personal = await options.projects.listByPersonalOwner(userId);
-      const organizations = await options.organizationMembers.listByUser(userId);
-      const organizationProjects = (
-        await Promise.all(
-          organizations
-            .filter((membership) => membership.status === "active")
-            .map((membership) => options.projects.listByOrganization(membership.organizationId)),
-        )
-      ).flat();
-      const visible = new Map(
-        [...personal, ...organizationProjects].map((project) => [project.id, project]),
-      );
-      return [...visible.values()].sort(
-        (left, right) =>
-          right.updatedAt.getTime() - left.updatedAt.getTime() || right.id.localeCompare(left.id),
-      );
-    },
+    listForUser: (actorId, query = {}) => options.projects.listVisible({ actorId, ...query }),
 
     async create({ actorId, scope, title, description }) {
       assertProjectScopeV2(scope);
@@ -114,18 +96,6 @@ export function projectsCommands({ options, now, id, accessFor, requireProject }
       const deleted = await options.projects.delete(projectId);
       if (!deleted)
         throw new ProjectV2DomainError("PROJECT_ACCESS_DENIED", "Project delete denied.");
-    },
-
-    async listActivity({ actorId, projectId }) {
-      if (!options.activity) return [];
-      if (projectId) {
-        await requireProject(actorId, projectId, "project.read", "Activity access denied.");
-        return options.activity.listByProject(projectId);
-      }
-      const projects = await commands.listForUser(actorId);
-      return (
-        await Promise.all(projects.map((project) => options.activity!.listByProject(project.id)))
-      ).flat();
     },
   };
   return commands;

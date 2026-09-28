@@ -55,3 +55,8 @@ export const authoredResourceFields = {
   ...resourceFields,
   createdByUserId: z.string().min(1),
 };
+
+export const cursorQueryFields = {
+  limit: z.number().int().min(1).max(100).optional(),
+  cursor: z.string().min(1).max(2048).optional(),
+};

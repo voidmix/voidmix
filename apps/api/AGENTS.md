@@ -12,6 +12,7 @@ server/
     router-context.ts  authenticated inputs, optional-field omission, pagination
     canonical-errors.ts centralized transport error conversion
     canonical-router.ts explicit canonical route composition
+    *-handlers.ts domain handlers preserving the public contract tree
   app.ts               Nitro entry delegating to the API runtime
   env.ts               host-specific environment composition (AUTH_URL 3002)
   runtime.ts           memoized runtime and close boundary
@@ -28,6 +29,10 @@ server/
 ## Constraints
 
 - Never import Web, Desktop, Worker, or renderer code.
+- Identity, Projects, Assets, Reviews and Activity services are required. Compose
+  each service with its own ports; only Agent execution remains optional.
+- Library aggregation and activity pagination belong in Application/DB, never
+  a per-project loop or missing-module fallback in an HTTP handler.
 - Initialize exactly one runtime per process and close it idempotently through
   Nitro's `close` hook.
 - Keep the standalone `AUTH_URL` default at `http://localhost:3002`; production

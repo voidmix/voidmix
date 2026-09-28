@@ -1,3 +1,4 @@
+import { domainFixtures } from "./test-fixtures.js";
 import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "@voidmix/db";
 import type { MailSettingsFallback, User } from "@voidmix/core";
 import { describe, expect, it } from "vite-plus/test";
@@ -28,6 +29,7 @@ describe("createApiModules", () => {
     const repository = new InMemoryUserRepository(users);
     const settings = new InMemorySystemSettingsRepository({ auditEvents: repository.auditEvents });
     const modules = createApiModules({
+      ...domainFixtures(),
       users: repository,
       settings,
       mailFallback: fallback,

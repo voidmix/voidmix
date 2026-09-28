@@ -23,7 +23,7 @@ const seedCommand = contextualCommand("db seed", "database", {
     const [{ runSeed }, { openPostgresUsers }, domain] = await Promise.all([
       import("./operation.js"),
       import("./users.js"),
-      import("@voidmix/core"),
+      import("@voidmix/application"),
     ]);
     await runSeed(context.environment, {
       createAdministration: domain.createUserAdministration,

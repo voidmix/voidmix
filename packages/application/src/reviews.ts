@@ -1,51 +1,10 @@
-import type { ProjectApplication } from "./types.js";
-import { requireResource, requiredText, type ProjectContext } from "./context.js";
-export function resourcesCommands({ options, now, id, requireProject }: ProjectContext) {
-  const commands: Pick<
-    ProjectApplication,
-    | "listTasks"
-    | "createTask"
-    | "updateTask"
-    | "listReviews"
-    | "createReview"
-    | "updateReview"
-    | "listFeedback"
-    | "createFeedback"
-  > = {
-    async listTasks({ actorId, projectId }) {
-      await requireProject(actorId, projectId, "project.read", "Task access denied.");
-      return options.tasks.listByProject(projectId);
-    },
-
-    async createTask({ actorId, projectId, title }) {
-      const project = await requireProject(
-        actorId,
-        projectId,
-        "project.write",
-        "Task access denied.",
-      );
-      const trimmed = requiredText(title, "Task title");
-      return options.tasks.create({
-        id: id(),
-        projectId: project.id,
-        createdByUserId: actorId,
-        title: trimmed,
-        now: now(),
-      });
-    },
-
-    async updateTask({ actorId, taskId, title, status }) {
-      const task = requireResource(await options.tasks.getById(taskId), "Task access denied.");
-      await requireProject(actorId, task.projectId, "project.write", "Task access denied.");
-      const updated = await options.tasks.update({
-        id: taskId,
-        ...(title !== undefined ? { title: title.trim() } : {}),
-        ...(status !== undefined ? { status } : {}),
-        now: now(),
-      });
-      return requireResource(updated, "Task access denied.");
-    },
-
+import type { ReviewApplication, ReviewOptions } from "./types.js";
+import { executionContext } from "./execution.js";
+import { requireResource, requiredText } from "./context.js";
+export function createReviewApplication(options: ReviewOptions): ReviewApplication {
+  const { now, id } = executionContext(options);
+  const { requireProject } = options.access;
+  return {
     async listReviews({ actorId, projectId }) {
       await requireProject(actorId, projectId, "project.read", "Review access denied.");
       return options.reviews.listByProject(projectId);
@@ -53,6 +12,16 @@ export function resourcesCommands({ options, now, id, requireProject }: ProjectC
 
     async createReview({ actorId, projectId, assetVersionId, title }) {
       await requireProject(actorId, projectId, "project.write", "Review creation denied.");
+      if (assetVersionId !== null) {
+        const version = requireResource(
+          await options.assetVersions.getById(assetVersionId),
+          "Review creation denied.",
+        );
+        requireResource(
+          version.projectId === projectId ? version : null,
+          "Review creation denied.",
+        );
+      }
       const normalizedTitle = requiredText(title, "Review title");
       return options.reviews.create({
         id: id(),
@@ -105,5 +74,4 @@ export function resourcesCommands({ options, now, id, requireProject }: ProjectC
       });
     },
   };
-  return commands;
 }

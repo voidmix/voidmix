@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:tooling",
+    "@voidmix/application": "workspace:*",
     "@voidmix/core": "workspace:*",
     "@voidmix/db": "workspace:*",
     "@voidmix/i18n": "workspace:*",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:tooling",
+    "@voidmix/contracts": "workspace:*",
     "@voidmix/tsconfig": "workspace:*"
   }
 }

@@ -1,3 +1,4 @@
+import { cursorQueryFields } from "./common.js";
 import { z } from "zod";
 import { authoredResourceFields } from "./common.js";
 import { createCursorPageSchema, procedure } from "./common.js";
@@ -69,7 +70,7 @@ export const projectTaskV2Schema = z.object({
 
 export const v2ProjectPage = createCursorPageSchema(projectV2Schema);
 
-export const v2ListProjects = procedure({}, v2ProjectPage);
+export const v2ListProjects = procedure(cursorQueryFields, v2ProjectPage);
 
 export const v2GetProject = procedure(
   { projectId: z.string().min(1) },

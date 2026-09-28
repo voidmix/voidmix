@@ -1,3 +1,4 @@
+import { cursorQueryFields } from "./common.js";
 import { procedure } from "./common.js";
 import { z } from "zod";
 
@@ -55,6 +56,8 @@ export const health = procedure(
 
 export const listUsers = procedure(
   {
+    role: roleSchema.optional(),
+    status: userStatusSchema.optional(),
     query: z.string().trim().min(1).max(200).optional(),
     limit: z.number().int().min(1).max(100).default(20),
     cursor: z.string().optional(),
@@ -81,9 +84,19 @@ export const getPublicAuthCapabilities = procedure({}, publicAuthCapabilitiesSch
 
 export const getAccountProfile = procedure({}, accountProfileSchema);
 
+export const activitySchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  actorId: z.string(),
+  type: z.string(),
+  payload: z.record(z.string(), z.unknown()),
+  occurredAt: z.date(),
+});
+export type ActivityDto = z.infer<typeof activitySchema>;
+
 export const listActivity = procedure(
-  { projectId: z.string().min(1).optional() },
-  z.object({ items: z.array(z.unknown()), nextCursor: z.string().nullable() }),
+  { ...cursorQueryFields, projectId: z.string().min(1).optional() },
+  z.object({ items: z.array(activitySchema), nextCursor: z.string().nullable() }),
 );
 
 export type AccountProfileDto = z.infer<typeof accountProfileSchema>;

@@ -1,16 +1,21 @@
 import {
   createPublicAuthCapabilities,
-  createUserAdministration,
   type AuthSettings,
   type MailSettingsFallback,
   type SystemSettingsRepository,
   type UserRepository,
-  type ActivityV2Repository,
 } from "@voidmix/core";
-import type { AgentRunApplication, ProjectApplication } from "@voidmix/application";
+import {
+  createUserAdministration,
+  type AgentRunApplication,
+  type ProjectApplication,
+  type AssetApplication,
+  type ReviewApplication,
+  type ActivityApplication,
+} from "@voidmix/application";
 
 export interface CreateApiModulesOptions {
-  v2Projects?: ProjectApplication;
+  v2Projects: ProjectApplication;
   v2AgentRuns?: AgentRunApplication;
   users: UserRepository;
   settings: SystemSettingsRepository;
@@ -18,20 +23,27 @@ export interface CreateApiModulesOptions {
   now?: () => Date;
   id?: () => string;
   resolveAuthSettings?: () => Promise<AuthSettings>;
-  activity?: ActivityV2Repository;
+  assets: AssetApplication;
+  reviews: ReviewApplication;
+  activity: ActivityApplication;
 }
 
 export interface ApiModules {
-  v2Projects?: ProjectApplication;
+  v2Projects: ProjectApplication;
   v2AgentRuns?: AgentRunApplication;
   users: ReturnType<typeof createUserAdministration>;
   publicAuthCapabilities: ReturnType<typeof createPublicAuthCapabilities>;
-  activity?: ActivityV2Repository;
+  assets: AssetApplication;
+  reviews: ReviewApplication;
+  activity: ActivityApplication;
 }
 
 export function createApiModules(options: CreateApiModulesOptions): ApiModules {
   return {
-    ...(options.v2Projects ? { v2Projects: options.v2Projects } : {}),
+    v2Projects: options.v2Projects,
+    assets: options.assets,
+    reviews: options.reviews,
+    activity: options.activity,
     ...(options.v2AgentRuns ? { v2AgentRuns: options.v2AgentRuns } : {}),
     users: createUserAdministration({
       users: options.users,
@@ -43,6 +55,5 @@ export function createApiModules(options: CreateApiModulesOptions): ApiModules {
       mailFallback: options.mailFallback,
       ...(options.resolveAuthSettings ? { resolveAuthSettings: options.resolveAuthSettings } : {}),
     }),
-    ...(options.activity ? { activity: options.activity } : {}),
   };
 }

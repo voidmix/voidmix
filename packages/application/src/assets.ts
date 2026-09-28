@@ -1,10 +1,20 @@
-import type { ProjectApplication } from "./types.js";
-import { requireResource, requiredText, type ProjectContext } from "./context.js";
-export function assetsCommands({ options, now, id, requireProject }: ProjectContext) {
-  const commands: Pick<
-    ProjectApplication,
-    "listAssets" | "createAsset" | "listAssetVersions" | "createAssetUpload" | "completeAssetUpload"
-  > = {
+import type { AssetApplication, AssetOptions } from "./types.js";
+import { executionContext } from "./execution.js";
+import { requireResource, requiredText } from "./context.js";
+export function createAssetApplication(options: AssetOptions): AssetApplication {
+  const { now, id } = executionContext(options);
+  const { requireProject } = options.access;
+  return {
+    async listLibrary(input) {
+      if (input.projectId)
+        await requireProject(
+          input.actorId,
+          input.projectId,
+          "project.read",
+          "Asset access denied.",
+        );
+      return options.assets.listVisible(input);
+    },
     async listAssets({ actorId, projectId }) {
       await requireProject(actorId, projectId, "project.read", "Asset access denied.");
       return options.assets.listByProject(projectId);
@@ -71,5 +81,4 @@ export function assetsCommands({ options, now, id, requireProject }: ProjectCont
       });
     },
   };
-  return commands;
 }
