@@ -53,18 +53,39 @@ need explicit classification in [`knip.json`](../../knip.json). Once that
 baseline is clean, dependency and duplicate-export findings can be promoted to
 the verification gate independently.
 
-CI runs `bun run knip:report` and `bun run verify`, then adds only what the
-verification command cannot contain: a
-`git diff --exit-code` after the build and after `bun run generate`, because
-those need a clean git tree; the three layer scripts, because `bun run test`
-passes whether or not their filters match anything; `test:coverage` for the
-uploaded artifact; and the PostgreSQL, E2E and Desktop jobs, which need a database,
-browser and other operating systems. The CI generate step supplies a non-routable
-`DATABASE_URL`; Drizzle validates its configuration while loading it, but
-generation does not connect to PostgreSQL.
+## GitHub Actions
+
+[CI](../../.github/workflows/ci.yml) runs automatically on pull requests and pushes
+to `canary`, and can also be started with **Run workflow**. It needs no repository
+Secrets, Variables, `.env` file, or external database. Node and Bun versions come
+from the root `package.json`; dependencies use the frozen lockfile.
+
+There are two job definitions (three runners):
+
+- `typescript` uses Ubuntu 24.04 and one disposable PostgreSQL 17 service. It runs
+  `bun run verify`, Drizzle generation, real database tests and Chromium E2E.
+  Database and browser tests run sequentially against the same test database;
+  each suite resets its fixtures. The final clean-tree check catches both changed
+  tracked files and newly generated untracked files, including route/Drizzle drift.
+- `desktop` builds native packages on macOS and Windows, retaining the Rust cache.
+  Tauri's `beforeBuildCommand` already checks and builds the frontend. Its Vitest
+  tests run once with all other workspace tests in the Linux verification job.
+
+A newer push cancels the previous run for the same branch or pull request. Each
+job has a 30-minute timeout. Browser failure reports and traces are uploaded for
+seven days. The generate step uses a non-routable `DATABASE_URL`; it validates the
+configuration without connecting to PostgreSQL. Only the database/browser test
+step sets `NODE_ENV=test`, leaving production builds and runtime probes intact.
+
+The full Vitest suite runs once inside `verify`. Layer commands remain available
+for focused local checks, and policy enforces their canonical substring filters;
+CI no longer repeats those tests in three layers and again for coverage. Run
+`bun run test:coverage` explicitly when a coverage report is needed (there is no
+minimum coverage threshold). Knip remains a local advisory command, outside the
+required pipeline, so its framework/config discovery cannot block verification.
 
 `bun run test:e2e` starts API, Web and Desktop preview servers itself.
-It runs the `web`, `admin`, `authenticated`, `redesign`, `beui` and `desktop` projects. Configure the
+It runs the `web`, `admin`, `authenticated`, `redesign`, `homepage`, `workbench` and `desktop` projects. Configure the
 dedicated database as described below. Set `VOIDMIX_E2E_PORT` to
 choose the Web port (default 3000); Desktop uses +1 and API +2. The retired Project Studio suite and its
 mock API fixture have been removed; Web still checks the sign-in redirect for
@@ -77,7 +98,7 @@ bun run --cwd e2e playwright install chromium
 
 CI installs Chromium and its Linux dependencies with the workspace-local
 `bun run --cwd e2e playwright install --with-deps chromium` command before
-running the E2E job.
+running the browser tests in the Linux job.
 
 Desktop native checks:
 
@@ -212,10 +233,10 @@ bun run --cwd e2e test:report
   mail-dependent Auth operations return `MAIL_NOT_CONFIGURED` with HTTP 503.
 - Database scripts are tested against disposable development/test data.
 - CI builds Web/API on Linux and Desktop packages on macOS and Windows.
-- CI runs each Vitest layer separately and uploads workspace coverage reports as
-  an artifact without enforcing a minimum threshold.
-- CI runs Web, Admin and Desktop Playwright smoke tests in a separate Linux
-  E2E job after installing Chromium.
+- CI runs all Vitest layers once through `verify`; focused layer and coverage
+  commands remain available locally.
+- CI runs real PostgreSQL tests followed by Web, Admin and Desktop Playwright
+  tests in the same Linux job after installing Chromium.
 
 ## Real database and authenticated browser gates
 
@@ -229,8 +250,8 @@ NODE_ENV=test TEST_DATABASE_URL=postgres://localhost/voidmix_e2e_test bun run te
 Both require an explicit dedicated database named `voidmix_*test`; missing or
 unsafe configuration fails. Each suite applies committed migrations and resets
 its own fixture data. Never point these commands at development or production
-data. Use separate databases when running both simultaneously. CI supplies a
-PostgreSQL 17 service per job. `VOIDMIX_E2E_PORT` reserves Web/Desktop/API on three
+data. Use separate databases when running both simultaneously. CI supplies one
+PostgreSQL 17 service for the sequential Linux database and browser tests. `VOIDMIX_E2E_PORT` reserves Web/Desktop/API on three
 consecutive ports for concurrent local development.
 
 Database coverage includes Core/SQL visibility parity, keyset pagination,

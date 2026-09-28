@@ -350,4 +350,6 @@ Browser tests are not part of the default `bun run test` graph. Use
 `bun run --cwd e2e playwright install chromium`
 when running locally. CI uses the same pinned catalog version and invokes the
 workspace-local Playwright binary to install Linux browser dependencies before
-the E2E job.
+the browser tests in the combined Linux CI job. See
+[Testing and verification](../development/testing.md#github-actions) for the
+zero-secret workflow and optional local diagnostics.

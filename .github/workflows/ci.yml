@@ -4,98 +4,67 @@ on:
   pull_request:
   push:
     branches: [canary]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   typescript:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: voidmix_test
+          POSTGRES_PASSWORD: voidmix_test
+          POSTGRES_DB: voidmix_ci_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U voidmix_test -d voidmix_ci_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://voidmix_test:voidmix_test@127.0.0.1:5432/voidmix_ci_test
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.0
+          bun-version-file: package.json
       - run: bun install --frozen-lockfile
-      # Advisory until framework entrypoints and public exports are fully
-      # classified in knip.json; the command always emits its report.
-      - run: bun run knip:report
-      # The same command a contributor runs before opening a pull request:
-      # policy, format, lint, per-workspace checks, tests, builds, and the Nitro
-      # runtime probe. CI adds only what needs a clean git tree, a browser, or
-      # another operating system.
       - run: bun run verify
-      - run: git diff --exit-code # route trees must match the Start plugin's output
       - run: bun run generate
         env:
-          # Drizzle validates its config at import time; generation does not
-          # connect to PostgreSQL, so a non-routable URL is sufficient here.
+          # Generation validates the URL but never connects to a database.
           DATABASE_URL: postgres://voidmix:ci@example.invalid:5432/voidmix
-      - run: git diff --exit-code # Drizzle artifacts must be committed
-      # The layer scripts are the only thing that exercises layer selection.
-      # `bun run test` inside verify passes whether or not these filters match,
-      # which is how a glob that selected nothing survived in twelve manifests.
-      - run: bun run test:unit
-      - run: bun run test:integration
-      - run: bun run test:component
-      - run: bun run test:coverage
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: coverage
-          path: "**/coverage"
-          if-no-files-found: warn
-
-  postgres:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_USER: voidmix_test
-          POSTGRES_PASSWORD: voidmix_test
-          POSTGRES_DB: voidmix_ci_test
-        ports: [5432:5432]
-        options: >-
-          --health-cmd "pg_isready -U voidmix_test -d voidmix_ci_test"
-          --health-interval 10s --health-timeout 5s --health-retries 5
-    env:
-      NODE_ENV: test
-      TEST_DATABASE_URL: postgres://voidmix_test:voidmix_test@127.0.0.1:5432/voidmix_ci_test
-    steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.0
-      - run: bun install --frozen-lockfile
-      - run: bun run test:postgres
-
-  e2e:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_USER: voidmix_test
-          POSTGRES_PASSWORD: voidmix_test
-          POSTGRES_DB: voidmix_ci_test
-        ports: [5432:5432]
-        options: >-
-          --health-cmd "pg_isready -U voidmix_test -d voidmix_ci_test"
-          --health-interval 10s --health-timeout 5s --health-retries 5
-    env:
-      NODE_ENV: test
-      TEST_DATABASE_URL: postgres://voidmix_test:voidmix_test@127.0.0.1:5432/voidmix_ci_test
-    steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.4.0
-      - run: bun install --frozen-lockfile
       - run: bun run --cwd e2e playwright install --with-deps chromium
-      - run: bun run test:e2e
+      # Both suites reset fixtures; run them sequentially in the disposable DB.
+      - name: Test PostgreSQL and browsers
+        run: |
+          bun run test:postgres
+          bun run test:e2e
         env:
-          CI: true
+          NODE_ENV: test
+      - name: Check generated files
+        run: |
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-failure
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          if-no-files-found: ignore
+          retention-days: 7
 
   desktop:
     strategy:
@@ -103,16 +72,19 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.0
+          bun-version-file: package.json
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: apps/desktop/src-tauri
       - run: bun install --frozen-lockfile
-      - run: bun run --cwd apps/desktop check
-      - run: bun run --cwd apps/desktop test
+      # beforeBuildCommand already checks and builds the frontend.
       - run: bun run --cwd apps/desktop tauri:build
