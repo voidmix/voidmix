@@ -1,0 +1,23 @@
+docs/architecture/decisions/0008-domain-contexts-stay-in-core.md
+  s_42000bd424f7f1::t_161d500d5498e2 5
+docs/architecture/decisions/0014-domain-services-and-client-state.md
+  s_42000bd424f7f1::t_844d98d8aaccf9 1-53
+docs/architecture/decisions/README.md
+  s_42000bd424f7f1::t_7eabe76204b0b3 48-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8a08a679db8f4b7b0d0865680a15c6343f8344f6",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
