@@ -88,6 +88,9 @@ the browser module graph. Web and Desktop use the explicit `VITE_API_URL` API
 origin for Better Auth and authenticated requests. Auth cookies are HTTP-only
 and requests include credentials.
 
-Local Web defaults `VITE_API_URL` to `http://localhost:3002`; the standalone API
-defaults `AUTH_URL` to `http://localhost:3002`. Set both public origins
-explicitly in production.
+The example environment sets `VITE_API_URL=http://localhost:3002`; Web has no
+implicit local API default. The standalone API defaults `AUTH_URL` to
+`http://localhost:3002`. Set both public origins explicitly in production.
+Web's Docker build requires `VITE_API_URL` as a build argument; setting it only
+when the finished container starts does not configure the browser. See
+[deployment](../architecture/deployment.md#containers-and-railway).

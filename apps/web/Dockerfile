@@ -5,7 +5,12 @@ WORKDIR /app
 
 COPY . .
 RUN bun install --frozen-lockfile
-RUN bun run --cwd apps/web build
+
+# Railway passes service variables as build args only when declared here.
+# Vite embeds this public origin in both the browser and SSR output.
+ARG VITE_API_URL
+RUN : "${VITE_API_URL:?Set VITE_API_URL to the standalone API origin before building Web}" \
+    && bun run --cwd apps/web build
 
 FROM node:24.18.0-alpine AS runtime
 ENV NODE_ENV=production

@@ -95,6 +95,9 @@ server/
 - Web owns only the liveness `/health` route; never add a catch-all API handler
   that can swallow TanStack routes.
 - Web does not initialize a database or API runtime.
+- The Docker build requires the public `VITE_API_URL` build argument. Keep its
+  declaration and missing-value guard: runtime-only variables cannot repair an
+  already-built browser bundle, and Web does not serve same-origin RPC/Auth.
 - `server/env.ts` is never imported by browser modules. Keep database, Auth, mail,
   and allowed-origin values on the server side of the Web bundle.
 - `(app)/route.tsx` uses account.get as a navigation aid and
