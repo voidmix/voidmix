@@ -1,0 +1,91 @@
+DESIGN.md
+  s_42000bd424f7f1::t_3f01b6662644d4 28-32
+apps/desktop/CHANGELOG.md
+  s_42000bd424f7f1::t_aa7511acd4e780 5
+apps/desktop/messages/en.json
+  s_42000bd424f7f1::t_06df6bec527a1c 164-166
+apps/desktop/messages/zh.json
+  s_42000bd424f7f1::t_55c264d447dfa6 164-166
+apps/desktop/src/features/shell/desktop-shell.tsx
+  s_42000bd424f7f1::t_4e263fcbaaa9fa 14,37,41,44,130,133,138,140,144,147-148,152-153,156
+apps/desktop/src/features/shell/route-state.tsx
+  s_42000bd424f7f1::t_9a6e8f77edda27 6,17-18,24-28
+apps/desktop/src/routes/__root.tsx
+  s_42000bd424f7f1::t_162a31b34cdba0 1,61
+apps/desktop/src/routes/activity/route.tsx
+  s_42000bd424f7f1::t_17855e22c2de47 20
+apps/desktop/src/routes/projects/$projectId.tsx
+  s_42000bd424f7f1::t_9f122b3ddd58dd 142-144
+apps/desktop/src/routes/projects/index.tsx
+  s_42000bd424f7f1::t_00a223e917cb08 5-6,160-166,169-170,174-175
+apps/desktop/src/routes/settings/route.tsx
+  s_42000bd424f7f1::t_6177711f3a6b4c 7-10,42,47,51,54,56,58,74,82-88,97-104,143-153,161
+apps/storybook/.storybook/preview.tsx
+  s_42000bd424f7f1::t_f7c9332d7b6e6f 1,17-19
+apps/storybook/package.json
+  s_42000bd424f7f1::t_f8047416d1023b 17
+apps/storybook/src/utility-controls.stories.tsx
+  s_42000bd424f7f1::t_07a6af965593f0 1-40
+apps/web/messages/en.json
+  s_42000bd424f7f1::t_18bba36452f6e4 820,825,828,830,832,840
+apps/web/messages/zh.json
+  s_42000bd424f7f1::t_541b0de6f98b96 820,825,828,830,832,840
+apps/web/src/components/language-switcher.tsx
+  s_42000bd424f7f1::t_f08a956dcf9978 6,35-36,44,48
+apps/web/src/components/theme-switcher.tsx
+  s_42000bd424f7f1::t_5f976fe4d0bb10 5,54,56,70,74
+apps/web/src/features/admin/users/directory-actions.tsx
+  s_42000bd424f7f1::t_3387196325ce00 2-3,49-51
+apps/web/src/features/admin/users/directory-toolbar.tsx
+  s_42000bd424f7f1::t_6575b2f6c06153 4,102,104
+apps/web/src/features/auth/password-field.tsx
+  s_42000bd424f7f1::t_65f718fd818295 2,31-32,39
+apps/web/src/features/navigation/account-menu.tsx
+  s_42000bd424f7f1::t_0257cdeaa75ae8 7,51-52,59
+apps/web/src/features/navigation/app-shell.tsx
+  s_42000bd424f7f1::t_ec3fb02d36f6f2 1,4,76,78,94-99
+apps/web/src/features/navigation/route-state.tsx
+  s_42000bd424f7f1::t_8eaecf1eb0957e 2-3,41-43,46-48
+apps/web/src/routes/(app)/projects.$projectId.tsx
+  s_42000bd424f7f1::t_472206ee9e6c13 90-92
+apps/web/src/routes/__root.tsx
+  s_42000bd424f7f1::t_69de29fae0aaea 1,230
+bun.lock
+  s_42000bd424f7f1::t_8f471bfa2d4934 89
+docs/architecture/design.md
+  s_42000bd424f7f1::t_4b26db63c0c996 65-70
+e2e/tests/desktop.spec.ts
+  s_42000bd424f7f1::t_286adcbc8b97d5 8,24-25,28-31,33-34,47
+packages/ui/AGENTS.md
+  s_42000bd424f7f1::t_01a7256d74165a 10-22,55-57
+packages/ui/package.json
+  s_42000bd424f7f1::t_b0a13736fab562 38-42
+packages/ui/shadcn-components.json
+  s_42000bd424f7f1::t_e03b3d7afd627f 16,25-26
+packages/ui/src/components/ui/popover.tsx
+  s_42000bd424f7f1::t_fda9325abfcc85 1-76
+packages/ui/src/components/ui/tooltip.tsx
+  s_42000bd424f7f1::t_49df2830dcc23e 1-51
+packages/ui/src/help-hint.tsx
+  s_42000bd424f7f1::t_a0e9668ed33e74 1-26
+packages/ui/src/icon-button.tsx
+  s_42000bd424f7f1::t_e5321608af1eb0 1-37
+packages/ui/src/utility-controls.component.test.tsx
+  s_42000bd424f7f1::t_539c0f713e6d20 1-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b47bbaeefd6276c8bce828eb1cbe56802d4f7f4e",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
