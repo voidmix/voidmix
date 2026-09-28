@@ -1,0 +1,59 @@
+.github/workflows/ci.yml
+  s_42000bd424f7f1::t_34213690beabfe 49-72,75-88
+AGENTS.md
+  s_42000bd424f7f1::t_c20aae621a2eae 135-138
+bun.lock
+  s_42000bd424f7f1::t_baf079d8976dbb 115,153,155-156,252,305,316
+docs/README.md
+  s_42000bd424f7f1::t_4173bc5c13b683 12-13
+docs/architecture/applications.md
+  s_42000bd424f7f1::t_f3b11cf039109b 33-43
+docs/architecture/domain-services.md
+  s_42000bd424f7f1::t_9bd9bb5a1027b3 1-124
+docs/architecture/packages.md
+  s_42000bd424f7f1::t_58566939e1b6f5 20-24,98-100,103
+docs/development/agents.md
+  s_42000bd424f7f1::t_b5d30ab3f42701 68-70
+docs/development/testing.md
+  s_42000bd424f7f1::t_83c4cdbf26ffcc 43-46,61-62,67-68,183,219-240
+e2e/AGENTS.md
+  s_42000bd424f7f1::t_cd76c048702a12 14-15,41-43,53
+e2e/database.ts
+  s_42000bd424f7f1::t_d81e1ba97bc6fe 1-74
+e2e/package.json
+  s_42000bd424f7f1::t_02e29e3d9bb1fb 15,17-18
+e2e/playwright.config.ts
+  s_42000bd424f7f1::t_0f05018e34ab50 1,22,33,41-42
+e2e/tests/authenticated-web.spec.ts
+  s_42000bd424f7f1::t_ad0569fa68f75a 1-96
+package.json
+  s_42000bd424f7f1::t_d7ae94993767f0 121-122
+packages/scripts/AGENTS.md
+  s_42000bd424f7f1::t_20314f3348d4c5 64-67
+packages/scripts/src/policy/checks.ts
+  s_42000bd424f7f1::t_7c9c36e1ea8247 1,98
+packages/scripts/src/policy/checks/architecture.test.ts
+  s_42000bd424f7f1::t_fd044a210a9c30 1-92
+packages/scripts/src/policy/checks/architecture.ts
+  s_42000bd424f7f1::t_a5abfa5b30fee1 1-183
+packages/scripts/src/policy/enums.test.ts
+  s_42000bd424f7f1::t_02cf80b14ed95f 1-113
+skills/voidmix-infra/references/orpc-procedures.md
+  s_42000bd424f7f1::t_3812dc465892e0 49,56-58,90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e1406b9e1b09ca5cd0802f69855aaf0dac7ab47a",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
