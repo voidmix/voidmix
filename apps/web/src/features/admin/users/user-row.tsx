@@ -21,20 +21,22 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
   const actionLabel = user.status === "suspended" ? t("activate") : t("suspend");
   const isOwner = user.role === "owner";
   return (
-    <tr>
+    <tr data-selected={selected || undefined}>
       <td className="w-11 border-b py-3 pr-4 pl-5 text-sm text-muted-foreground">
-        <input
-          aria-label={`${t("selectUser")} ${user.name}`}
-          checked={selected}
-          className="size-3.5 accent-primary"
-          onChange={(event) => store.getState().select(user.id, event.currentTarget.checked)}
-          type="checkbox"
-        />
+        <label className="directory-checkbox">
+          <input
+            aria-label={`${t("selectUser")} ${user.name}`}
+            checked={selected}
+            className="size-4 accent-primary"
+            onChange={(event) => store.getState().select(user.id, event.currentTarget.checked)}
+            type="checkbox"
+          />
+        </label>
       </td>
       <td className="border-b px-4 py-3 text-sm text-muted-foreground">
         <div className="flex items-center gap-3">
           <Avatar name={user.name} />
-          <div className="flex flex-col gap-0.5">
+          <div className="flex min-w-0 flex-col gap-0.5 [overflow-wrap:anywhere]">
             <strong className="text-sm text-foreground">{user.name}</strong>
             <span className="text-xs text-muted-foreground">{user.email}</span>
           </div>

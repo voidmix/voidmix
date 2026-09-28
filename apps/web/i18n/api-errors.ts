@@ -8,6 +8,11 @@ import type { WebTranslator } from "../src/i18n/client";
  * code missing from this map costs the user the reason for the rejection.
  */
 const ERROR_KEYS = {
+  UNAUTHORIZED: "signInRequired",
+  FORBIDDEN: "accessDenied",
+  PROJECT_ACCESS_DENIED: "accessDenied",
+  NOT_FOUND: "resourceNotFound",
+  PROJECT_NOT_FOUND: "projectNotFound",
   USER_NOT_FOUND: "userNotFound",
   MAIL_NOT_CONFIGURED: "mailNotConfigured",
   REGISTRATION_DISABLED: "registrationDisabled",

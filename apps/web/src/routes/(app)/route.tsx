@@ -1,7 +1,7 @@
+import { AppShell } from "../../features/navigation/app-shell";
 import { useEffect } from "react";
 import {
   Navigate,
-  Outlet,
   createFileRoute,
   redirect,
   useLocation,
@@ -64,5 +64,5 @@ function AuthenticatedAppLayout() {
     return <Navigate replace to="/login" {...(redirect ? { search: { redirect } } : {})} />;
   }
 
-  return <Outlet />;
+  return <AppShell />;
 }

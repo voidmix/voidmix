@@ -5,7 +5,6 @@ import { useFormatter, useTranslations } from "../../../i18n/client";
 
 import { adminUsersClient, type AdminUsersClient } from "./client";
 import { DirectoryToolbar } from "./directory-toolbar";
-import { MetricGrid } from "./metric-grid";
 import { useDirectoryStore } from "./store-provider";
 import { changeUserStatus } from "./operations";
 import type { AdminUsersPage, UserListInput, UserRole, UserStatus } from "./types";
@@ -81,8 +80,7 @@ export function UserDirectory({
 
   return (
     <>
-      <MetricGrid isLoading={false} users={page.items} />
-      <section className="overflow-hidden rounded-xl border bg-card">
+      <section className="directory-panel rounded-xl border bg-card">
         <DirectoryToolbar
           onExport={exportVisibleUsers}
           query={search.query ?? ""}
@@ -95,12 +93,13 @@ export function UserDirectory({
 
         <DirectoryActions users={page.items} client={client} reload={reload} />
 
+        <DirectoryFeedback />
         <UserTable
           isLoading={false}
           onToggle={(user) => void toggleUser(user)}
           users={page.items}
         />
-        <footer className="flex min-h-14 items-center justify-between gap-3 border-t px-4 font-mono text-[0.7rem] text-muted-foreground max-[480px]:items-start max-[480px]:py-3">
+        <footer className="flex min-h-14 items-center justify-between gap-3 border-t px-4 text-xs text-muted-foreground max-[480px]:items-start max-[480px]:py-3">
           <span>{t("showingUsers", { count: page.items.length })}</span>
           <PageNavigation
             cursor={search.cursor}
@@ -108,7 +107,6 @@ export function UserDirectory({
             onNavigate={(cursor) => onSearch({ cursor })}
           />
         </footer>
-        <DirectoryFeedback />
       </section>
     </>
   );

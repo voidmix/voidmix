@@ -8,7 +8,7 @@ import { I18nProvider } from "@voidmix/i18n/client";
 import { ThemeProvider } from "@voidmix/ui/theme";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
-import { messages } from "../../../../tests/fixtures/messages";
+import { messages } from "../../../tests/fixtures/messages";
 
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -26,16 +26,18 @@ vi.mock("@tanstack/react-router", () => ({
       {children}
     </a>
   ),
-  useMatchRoute: () => () => false,
+  Outlet: () => <p>Directory</p>,
+  useLocation: () => "/projects",
+  useRouterState: () => false,
   useNavigate: () => mocks.navigate,
 }));
 
-vi.mock("../../../lib/auth-client", () => ({
+vi.mock("../../lib/auth-client", () => ({
   signOut: mocks.signOut,
   useSession: () => mocks.session,
 }));
 
-const { AdminShell } = await import("./index");
+const { AppShell } = await import("./app-shell");
 
 // jsdom ships no matchMedia, and the theme provider resolves "system" through it.
 beforeEach(() => {
@@ -60,14 +62,12 @@ function renderShell() {
   render(
     <I18nProvider locale="en" messages={messages}>
       <ThemeProvider disableScript defaultTheme="system" storageKey={false}>
-        <AdminShell>
-          <p>Directory</p>
-        </AdminShell>
+        <AppShell />
       </ThemeProvider>
     </I18nProvider>,
   );
   return {
-    trigger: screen.getByRole("button", { name: "Open account menu" }),
+    trigger: screen.getAllByRole("button", { name: "Open account menu" })[0]!,
     user: userEvent.setup(),
   };
 }
@@ -124,7 +124,16 @@ describe("admin shell account menu", () => {
     renderShell();
 
     const account = screen.getByRole("img", { name: "Ada Lovelace" }).parentElement;
-    expect(account).toHaveClass("grid-cols-[auto_1fr_auto]");
+    expect(account).toHaveClass("workbench-account");
     expect(account?.children).toHaveLength(3);
   });
+});
+
+it("offers projects to every account and hides administrator navigation from members", () => {
+  mocks.session.data = { user: { name: "Member", role: "user" } };
+  renderShell();
+  expect(screen.getAllByRole("link", { name: "Projects" }).length).toBeGreaterThan(0);
+  expect(screen.queryByRole("link", { name: "User management" })).not.toBeInTheDocument();
+  expect(screen.queryByText(/Production online|42 ms/)).not.toBeInTheDocument();
+  mocks.session.data = { user: { name: "Ada Lovelace", role: "owner" } };
 });

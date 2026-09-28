@@ -28,23 +28,25 @@ export function UserTable({
   }, [someSelected]);
 
   return (
-    <div className="relative overflow-x-auto">
-      <table className="w-full min-w-[52rem] border-collapse">
-        <thead className="bg-muted/40">
+    <div className="directory-table-wrap">
+      <table className="directory-table w-full border-collapse">
+        <thead className="bg-muted">
           <tr>
-            <th className="w-11 border-b py-3 pr-4 pl-5 text-left font-mono text-[0.65rem] font-semibold text-muted-foreground uppercase">
-              <input
-                aria-label={t("selectAllUsers")}
-                checked={allSelected}
-                className="size-3.5 accent-primary"
-                onChange={(event) =>
-                  store
-                    .getState()
-                    .selectAll(event.currentTarget.checked ? users.map((user) => user.id) : [])
-                }
-                ref={selectAllRef}
-                type="checkbox"
-              />
+            <th className="w-11 border-b py-3 pr-4 pl-5 text-left text-xs font-semibold text-muted-foreground">
+              <label className="directory-checkbox">
+                <input
+                  aria-label={t("selectAllUsers")}
+                  checked={allSelected}
+                  className="size-4 accent-primary"
+                  onChange={(event) =>
+                    store
+                      .getState()
+                      .selectAll(event.currentTarget.checked ? users.map((user) => user.id) : [])
+                  }
+                  ref={selectAllRef}
+                  type="checkbox"
+                />
+              </label>
             </th>
             <TableHeading>{t("user")}</TableHeading>
             <TableHeading>{t("role")}</TableHeading>
@@ -74,7 +76,7 @@ export function UserTable({
 
 function TableHeading({ children }: { children: React.ReactNode }) {
   return (
-    <th className="border-b px-4 py-3 text-left font-mono text-[0.65rem] font-semibold text-muted-foreground uppercase">
+    <th className="border-b px-4 py-3 text-left text-xs font-semibold text-muted-foreground">
       {children}
     </th>
   );

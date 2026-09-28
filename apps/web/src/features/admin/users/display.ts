@@ -17,9 +17,10 @@ export function formatAdminStatus(status: UserStatus, translate: WebTranslator<"
 /** Format the small set of preview/API activity values at the locale boundary. */
 export function formatAdminLastActive(
   value: AdminLastActive,
-  translate: (key: "connected") => string,
+  translate: (key: "connected" | "notAvailable") => string,
   formatter: Formatter,
 ): string {
+  if (value.kind === "unknown") return translate("notAvailable");
   return value.kind === "connected"
     ? translate("connected")
     : formatter.relativeTime(value.value, value.unit, "numeric");

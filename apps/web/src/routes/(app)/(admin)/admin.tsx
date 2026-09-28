@@ -4,9 +4,8 @@ import { createApiUsersAdapter } from "../../../features/admin/users/api-adapter
 import { createRouteApiClient } from "../../../lib/route-api";
 import { useSession } from "../../../lib/auth-client";
 import { RoutePending, RouteError } from "../../../features/navigation/route-state";
-import { UserPlus } from "@phosphor-icons/react";
 import { createFileRoute, useRouter, useLocation } from "@tanstack/react-router";
-import { Button } from "@voidmix/ui/components/ui/button";
+import { PageHeader } from "@voidmix/ui/page-header";
 
 import { UserDirectory } from "../../../features/admin/users/directory";
 import { useTranslations } from "../../../i18n/client";
@@ -36,30 +35,16 @@ function AdminUsersRoute() {
   const router = useRouter();
   const session = useSession();
   return (
-    <>
-      <header className="flex items-end justify-between py-9 pt-14 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-6 max-[760px]:pt-10">
-        <div>
-          <span className="text-xs font-semibold text-muted-foreground">
-            {t("controlUserOperations")}
+    <div className="project-page">
+      <PageHeader
+        title={t("userDirectory")}
+        description={t("userDirectoryDescription")}
+        action={
+          <span className="text-sm text-muted-foreground">
+            {t("matchingUsers", { count: page.total })}
           </span>
-          <h1 className="mt-3 text-[clamp(2.1rem,4vw,3.6rem)] leading-none font-bold tracking-[-0.04em]">
-            {t("userDirectory")}
-          </h1>
-          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-            {t("userDirectoryDescription")}
-          </p>
-        </div>
-        <div className="flex gap-2.5 max-[480px]:w-full">
-          <Button
-            aria-describedby="invite-user-note"
-            className="max-[480px]:flex-1"
-            disabled
-            title={t("inviteUnavailable")}
-          >
-            <UserPlus data-icon="inline-start" weight="regular" /> {t("inviteUser")}
-          </Button>
-        </div>
-      </header>
+        }
+      />
       <DirectoryProvider key={session.data?.user.id ?? "anonymous"}>
         <UserDirectory
           page={page}
@@ -75,9 +60,6 @@ function AdminUsersRoute() {
           }}
         />
       </DirectoryProvider>
-      <p className="sr-only" id="invite-user-note">
-        {t("inviteUnavailableNote")}
-      </p>
-    </>
+    </div>
   );
 }

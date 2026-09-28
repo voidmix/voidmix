@@ -1,4 +1,7 @@
-import { DotsThree, SignOut } from "@phosphor-icons/react";
+import { DotsThree, SignOut, Globe } from "@phosphor-icons/react";
+import { LOCALE_OPTIONS } from "@voidmix/i18n";
+import { Link } from "@tanstack/react-router";
+import { useLocale, useSetLocale } from "../../i18n/client";
 import { Suspense, useState } from "react";
 
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -12,8 +15,8 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@voidmix/ui/components/ui/dropdown-menu";
-import { LazyThemeMenuItems, loadThemeMenuItems } from "../../../components/theme-menu-lazy";
-import { useTranslations } from "../../../i18n/client";
+import { LazyThemeMenuItems, loadThemeMenuItems } from "../../components/theme-menu-lazy";
+import { useTranslations } from "../../i18n/client";
 
 export function AccountMenu({
   name,
@@ -24,8 +27,11 @@ export function AccountMenu({
   role: string | undefined;
   onSignOut: () => Promise<void>;
 }) {
+  const locale = useLocale();
+  const setLocale = useSetLocale();
+  const [changing, setChanging] = useState(false);
   const [open, setOpen] = useState(false);
-  const t = useTranslations("admin");
+  const t = useTranslations("navigation");
   const prefetchThemeMenu = () => {
     void loadThemeMenuItems().catch(() => undefined);
   };
@@ -74,6 +80,28 @@ export function AccountMenu({
 
         <DropdownMenuSeparator />
 
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{t("language")}</DropdownMenuLabel>
+          {LOCALE_OPTIONS.map((option) => (
+            <DropdownMenuItem
+              key={option.value}
+              disabled={changing || locale === option.value}
+              onClick={() => {
+                setChanging(true);
+                void setLocale(option.value)
+                  .catch(() => undefined)
+                  .finally(() => setChanging(false));
+              }}
+            >
+              {option.nativeName}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link to="/" />}>
+          <Globe aria-hidden="true" />
+          {t("website")}
+        </DropdownMenuItem>
         <DropdownMenuItem variant="destructive" onClick={() => void onSignOut()}>
           <SignOut aria-hidden="true" />
           {t("signOut")}

@@ -8,13 +8,13 @@ describe("web root route", () => {
   it.each([
     [
       "en",
-      "Voidmix | Creative work, one live signal",
-      "Voidmix keeps briefs, feedback, decisions, people, and delivery visible in one live creative workspace.",
+      "Voidmix | Your project workbench",
+      "Give every project a place. Organize tasks, see what needs attention, and keep your work in context on Web and Desktop.",
     ],
     [
       "zh",
-      "Voidmix | 创意工作，一个实时信号",
-      "Voidmix 让简报、反馈、决策、协作者和交付状态在一个实时创意工作空间中清晰可见。",
+      "Voidmix | 让项目工作，清晰有序",
+      "让每个项目都有清晰的位置。组织任务、查看进展，在 Web 与 Desktop 中接续工作。",
     ],
   ] as const)(
     "defines the root route and %s public metadata",

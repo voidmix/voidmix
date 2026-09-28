@@ -11,6 +11,7 @@ imported by a package.
 src/
   env.ts             browser-safe Web configuration and logger values
   router.tsx         getRouter(), scroll restoration, preload defaults, Register
+  start.ts           SSR serialization of public API error codes
   routeTree.gen.ts   generated — do not edit
   routes/
     __root.tsx       createRootRoute with head() and shellComponent
@@ -19,14 +20,14 @@ src/
     (auth)/route.tsx public authentication group layout
     (auth)/          login, signup, reset, and verification routes
     (app)/route.tsx  authenticated group layout and session gate
-    (app)/(admin)/route.tsx  AdminShell layout within the authenticated group
+    (app)/(admin)/route.tsx  Admin route group within the shared AppShell
     (app)/(admin)/admin.tsx  protected Admin user-directory mount at /admin
     (app)/projects.index.tsx canonical project list route and page
     (app)/projects.$projectId.tsx canonical project detail route and page
   features/auth/     Better Auth forms, shared inputs, links and submission lifecycle
   features/projects/ shared project/task title form
-  features/admin/    Admin shell, users adapters, scoped Zustand, views and tests
-  features/navigation/ shared pending/error/retry and page navigation
+  features/admin/    users adapters, scoped Zustand, views and tests
+  features/navigation/ AppShell, account menu, pending/error/retry and pagination
   lib/route-api.ts    request-scoped SSR client and credentialed browser client
   i18n/              catalog loaders, API error codes, recovery copy
 scripts/             read-only production bundle analysis
@@ -37,6 +38,8 @@ server/
 
 ## Ownership
 
+- Product images are captures of actual routes using synthetic test data;
+  regenerate them with the E2E workspace capture command.
 - Own public pages, authentication UI, protected Admin routes, React
   composition, SSR shell, and application-specific visual composition.
 - Own no shared primitive — those belong in `@voidmix/ui`.
@@ -49,6 +52,8 @@ server/
   invalidation. URL search owns filters and cursor; lists explicitly request 50.
 - SSR forwards only Better Auth cookies to the configured API. Protected loader
   data carries accountId; account changes hide stale data and clear route caches.
+- `start.ts` preserves public API error codes across hydration. Never serialize
+  backend error messages, causes, stacks or request context in this adapter.
 - Admin DirectoryProvider creates one non-persisted Zustand store per page and
   account. It owns selection, pending IDs and untranslated notice descriptors.
   Filters/pages reset selection; disposal rejects late operation feedback.
@@ -96,7 +101,9 @@ server/
   retains the client-side session gate for hydration and stale-cookie recovery.
   It is navigation aid, not authorization enforcement; the API remains the
   final authorization boundary.
-- `(app)/(admin)/route.tsx` owns the AdminShell layout. The canonical release exposes the user directory and audit views; system mail/auth settings routes are intentionally absent.
+- `(app)/route.tsx` owns AppShell, shared by projects and Admin. The Admin group
+  exposes the user directory; its navigation entry is visible only to owners
+  and admins. API authorization remains authoritative.
 - Public Auth pages consume only `auth.capabilities.get`. Registration and
   tokenless reset entry points follow those booleans, an existing reset token
   remains usable, and capability-request failures fail open so the server remains

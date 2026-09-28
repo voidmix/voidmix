@@ -1,14 +1,34 @@
-import { Outlet } from "@tanstack/react-router";
-
+import { Link, Outlet } from "@tanstack/react-router";
+import { Logo } from "@voidmix/ui/logo";
 import { ThemeSwitcher } from "../../components/theme-switcher";
+import { LanguageSwitcher } from "../../components/language-switcher";
+import { ProductImage } from "../marketing/product-image";
+import { useTranslations } from "../../i18n/client";
 
 export function AuthLayout() {
+  const t = useTranslations("marketing");
   return (
-    <main className="relative flex min-h-svh items-center justify-center bg-background px-4 py-16 text-foreground sm:px-6">
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-        <ThemeSwitcher />
-      </div>
-      <Outlet />
+    <main className="auth-layout">
+      <section className="auth-brand" aria-label={t("projectWorkbench")}>
+        <Link to="/" aria-label={t("homeLabel")}>
+          <Logo />
+        </Link>
+        <div>
+          <h2>{t("workHeroTitle")}</h2>
+          <p>{t("workHeroDescription")}</p>
+        </div>
+        <figure>
+          <ProductImage />
+          <figcaption>{t("sampleProject")}</figcaption>
+        </figure>
+      </section>
+      <section className="auth-form-area">
+        <div className="auth-preferences">
+          <LanguageSwitcher />
+          <ThemeSwitcher />
+        </div>
+        <Outlet />
+      </section>
     </main>
   );
 }

@@ -29,18 +29,16 @@ export function AuthCard({ children, description, footer, title }: AuthCardProps
         >
           <Logo className="text-sm" />
         </Link>
-        <div className="space-y-1.5">
-          <h1 className="text-xl leading-tight font-semibold tracking-tight text-balance">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl leading-tight font-semibold tracking-tight text-balance">
             {title}
           </h1>
-          <CardDescription className="text-[0.8125rem] leading-5 text-pretty">
-            {description}
-          </CardDescription>
+          <CardDescription className="text-sm leading-5 text-pretty">{description}</CardDescription>
         </div>
       </CardHeader>
       <CardContent className="pb-(--card-spacing)">{children}</CardContent>
       {footer ? (
-        <CardFooter className="justify-center rounded-b-xl bg-muted/40 py-4 text-center text-[0.8125rem] text-muted-foreground">
+        <CardFooter className="justify-center rounded-b-xl bg-muted/40 py-4 text-center text-sm text-muted-foreground">
           {footer}
         </CardFooter>
       ) : null}

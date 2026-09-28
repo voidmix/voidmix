@@ -19,7 +19,7 @@ describe("admin user API mapping", () => {
       email: "ada@example.com",
       role: "admin",
       status: "active",
-      lastActive: { kind: "connected" },
+      lastActive: { kind: "unknown" },
       joinedAt: new Date("2026-01-02T00:00:00.000Z"),
     });
   });

@@ -20,7 +20,7 @@ export function toAdminUser(user: ApiUser): AdminUser {
     role: user.role,
     status: user.status,
     // Keep display values locale-neutral; UserRow formats them at render time.
-    lastActive: { kind: "connected" },
+    lastActive: { kind: "unknown" },
     joinedAt: user.createdAt,
   };
 }

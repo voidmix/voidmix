@@ -51,6 +51,8 @@ export function CreateTitleForm({
               className="min-w-0 flex-1 basis-48"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
+              autoFocus
+              maxLength={500}
               required
               disabled={saving}
               aria-describedby={failed ? errorId : undefined}

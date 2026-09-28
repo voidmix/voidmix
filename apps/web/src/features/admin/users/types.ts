@@ -3,6 +3,7 @@ export type UserStatus = "active" | "suspended";
 export type AdminUsersError = "directoryLoadFailed";
 
 export type AdminLastActive =
+  | { kind: "unknown" }
   | { kind: "connected" }
   | { kind: "relative"; value: number; unit: "second" | "minute" | "hour" | "day" };
 

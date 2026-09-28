@@ -21,7 +21,7 @@ export function DirectoryActions({
   const updateSelected = (status: UserStatus) =>
     changeUserStatus({ store, client, users: selectedUsers, status, reload });
   return selectedIds.size > 0 ? (
-    <div className="flex min-h-12 flex-wrap items-center gap-2 border-b bg-muted/30 px-4 py-2">
+    <div className="directory-selection flex min-h-12 flex-wrap items-center gap-2 border-b bg-secondary px-4 py-2">
       <span className="mr-auto text-xs font-medium">
         {t("selectedCount", { count: selectedIds.size })}
         {selectedUsers.some((user) => user.role === "owner") ? (

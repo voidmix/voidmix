@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Plus } from "@phosphor-icons/react";
 import { CreateTitleForm } from "../../features/projects/create-title-form";
 import { ProjectStatus } from "../../features/projects/project-status";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
@@ -6,7 +8,7 @@ import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
 import { SectionHeading } from "@voidmix/ui/section-heading";
 import { StatusBadge } from "@voidmix/ui/status-badge";
-import { useTranslations } from "../../i18n/client";
+import { useFormatter, useTranslations } from "../../i18n/client";
 import { createRouteApiClient } from "../../lib/route-api";
 import { RoutePending, RouteError } from "../../features/navigation/route-state";
 
@@ -32,42 +34,69 @@ function ProjectDetailRoute() {
 
 function ProjectDetail({ projectId }: { projectId: string }) {
   const t = useTranslations("projects");
+  const formatter = useFormatter();
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const { result, tasks } = Route.useLoaderData();
   const router = useRouter();
   async function createTask(title: string) {
-    await createRouteApiClient().projects.tasks.create({ projectId, title });
-    await router.invalidate({ filter: (match) => match.routeId === Route.id, sync: true });
+    setSaving(true);
+    try {
+      await createRouteApiClient().projects.tasks.create({ projectId, title });
+      await router.invalidate({ filter: (match) => match.routeId === Route.id, sync: true });
+      setCreating(false);
+    } finally {
+      setSaving(false);
+    }
   }
 
+  const { project, access } = result;
+  const writable = access === "write" || access === "manage";
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-12">
-      <Button
-        nativeButton={false}
-        render={<Link to="/projects" />}
-        variant="link"
-        className="w-fit"
+    <div className="project-page">
+      <nav
+        aria-label={t("breadcrumb")}
+        className="flex min-w-0 items-center gap-3 text-xs text-muted-foreground"
       >
-        ← {t("title")}
-      </Button>
-      <>
-        <PageHeader
-          title={result.project.title}
-          description={result.project.description ?? t("noDescription")}
-          action={<ProjectStatus stage={result.project.stage} />}
-        />
-        <section className="flex flex-col gap-4" aria-labelledby="tasks-heading">
+        <Link to="/projects">{t("title")}</Link>
+        <span aria-hidden="true">/</span>
+        <span className="truncate">{project.title}</span>
+      </nav>
+      <PageHeader
+        title={project.title}
+        description={project.description ?? t("noDescription")}
+        action={<ProjectStatus stage={project.stage} />}
+      />
+      <div className="project-detail-grid">
+        <section className="flex min-w-0 flex-col gap-5" aria-labelledby="tasks-heading">
           <SectionHeading
             titleId="tasks-heading"
-            title={t("tasks")}
-            action={<span className="text-sm text-muted-foreground">{tasks.length}</span>}
+            title={t("tasksCount", { count: tasks.length })}
+            action={
+              writable ? (
+                <Button
+                  variant="outline"
+                  disabled={saving}
+                  aria-expanded={creating}
+                  onClick={() => setCreating(!creating)}
+                >
+                  <Plus data-icon="inline-start" />
+                  {t(creating ? "close" : "addTask")}
+                </Button>
+              ) : undefined
+            }
           />
-          <CreateTitleForm kind="task" onCreate={createTask} />
+          {creating && writable ? <CreateTitleForm kind="task" onCreate={createTask} /> : null}
+          {!writable ? <p className="text-sm text-muted-foreground">{t("readOnly")}</p> : null}
           {!tasks.length ? (
-            <EmptyState title={t("emptyTasks")} description={t("taskPlaceholder")} />
+            <EmptyState
+              title={t("emptyTasks")}
+              description={t(writable ? "taskPlaceholder" : "readOnly")}
+            />
           ) : (
-            <ul className="divide-y rounded-lg border">
+            <ul className="project-task-list">
               {tasks.map((task) => (
-                <li key={task.id} className="flex items-center justify-between gap-3 p-4 text-sm">
+                <li key={task.id}>
                   <span className="min-w-0 [overflow-wrap:anywhere]">{task.title}</span>
                   <StatusBadge
                     label={t(task.status === "in_progress" ? "inProgress" : task.status)}
@@ -86,7 +115,27 @@ function ProjectDetail({ projectId }: { projectId: string }) {
             </ul>
           )}
         </section>
-      </>
-    </main>
+        <dl className="project-facts" aria-label={t("projectInfo")}>
+          <div>
+            <dt>{t("ownership")}</dt>
+            <dd>{t(project.organizationId ? "organization" : "personal")}</dd>
+          </div>
+          <div>
+            <dt>{t("deadline")}</dt>
+            <dd>
+              {project.deadline ? formatter.dateTime(project.deadline, "short") : t("noDeadline")}
+            </dd>
+          </div>
+          <div>
+            <dt>{t("updated")}</dt>
+            <dd>{formatter.dateTime(project.updatedAt, "short")}</dd>
+          </div>
+          <div>
+            <dt>{t("created")}</dt>
+            <dd>{formatter.dateTime(project.createdAt, "short")}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
   );
 }
