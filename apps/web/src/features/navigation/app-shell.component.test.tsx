@@ -143,7 +143,7 @@ it("offers projects to every account and hides administrator navigation from mem
 });
 
 it.each(["/projects", "/projects/", "/projects/example", "/admin"])(
-  "scopes the pilot to the project index: %s",
+  "shares the workbench shell across protected routes: %s",
   (pathname) => {
     mocks.pathname = pathname;
     const { container } = render(
@@ -153,8 +153,7 @@ it.each(["/projects", "/projects/", "/projects/example", "/admin"])(
         </ThemeProvider>
       </I18nProvider>,
     );
-    expect(container.querySelector(".beui-theme") !== null).toBe(
-      pathname === "/projects" || pathname === "/projects/",
-    );
+    expect(container.querySelector(".workbench-shell")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toHaveTextContent("Directory");
   },
 );

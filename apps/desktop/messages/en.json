@@ -231,7 +231,8 @@
     "signedOut": "Sign-in required",
     "signedOutDescription": "Your session is missing or has expired. Sign in to the configured service, then retry.",
     "accessDenied": "Project access denied",
-    "accessDeniedDescription": "Your account does not have permission to view this project."
+    "accessDeniedDescription": "Your account does not have permission to view this project.",
+    "stage": "Stage"
   },
   "library": {
     "title": "Library",

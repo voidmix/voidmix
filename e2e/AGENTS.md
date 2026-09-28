@@ -14,7 +14,8 @@ tests/admin.spec.ts    Admin smoke project
 tests/authenticated-web.spec.ts real login, SSR isolation, project and Admin flows
 capture-product.ts    real-route product screenshots with guarded synthetic seed
 tests/redesign.spec.ts responsive, theme, locale and navigation coverage
-tests/beui.spec.ts     project-index pilot, portal focus, failure/retry and cancellation
+tests/workbench.spec.ts portal focus, failure/retry and cancellation
+tests/homepage.spec.ts keyboard Tabs, theme/locale images and responsive containment
 database.ts           isolated migration/seed with synthetic credential accounts
 tests/desktop.spec.ts  Desktop theme, locale, navigation, settings and keyboard checks
 ```
@@ -26,7 +27,7 @@ Scripts: `e2e` (the run), `test:ui`, `test:report`, `check`.
 - Own Playwright projects and startup for API, Web and the Desktop browser preview.
 - `capture:product` requires the same guarded test database and already-running
   loopback API/Web servers (ports selected by VOIDMIX_E2E_PORT). It upserts only
-  dedicated visual-example records and writes Web public product images.
+  dedicated visual-example records and writes Web public product WebP images and their measured size manifest.
 - Own no unit or integration coverage. Those live beside the code they test.
 
 ## Constraints

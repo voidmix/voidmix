@@ -89,7 +89,7 @@ test("cancel a pending list navigation and preserve the destination", async ({ p
   await failed;
   release();
   await expect(page.getByRole("heading", { name: "User directory", exact: true })).toBeVisible();
-  await expect(page.locator(".beui-workbench")).toHaveCount(0);
+  await expect(page.locator(".workbench-shell")).toBeVisible();
 });
 
 test("list failure has a real retry and an expired session returns to login", async ({ page }) => {
@@ -118,7 +118,7 @@ for (const scenario of [
   { width: 1280, locale: "zh", theme: "light" },
   { width: 1440, locale: "en", theme: "dark" },
 ] as const) {
-  test(`beUI focus, portal theme and containment at ${scenario.width}/${scenario.locale}/${scenario.theme}`, async ({
+  test(`neutral workbench focus, portal theme and containment at ${scenario.width}/${scenario.locale}/${scenario.theme}`, async ({
     page,
     baseURL,
   }, info) => {
@@ -129,7 +129,7 @@ for (const scenario of [
     await page.emulateMedia({ colorScheme: scenario.theme, reducedMotion: "reduce" });
     await login(page, "member");
     await page.goto("/projects");
-    await expect(page.locator(".beui-project-row").first()).toBeVisible();
+    await expect(page.locator(".project-row").first()).toBeVisible();
     if (scenario.width >= 768) await expect(page.locator('[data-slot="logo-mark"]')).toBeVisible();
     expect(
       await page
@@ -144,7 +144,7 @@ for (const scenario of [
     const dialog = page.getByRole("dialog", { name });
     await expect(dialog.getByRole("textbox")).toBeFocused();
     const scopeColor = await page
-      .locator(".beui-workbench")
+      .locator(".workbench-shell")
       .evaluate((node) =>
         node.ownerDocument.defaultView!.getComputedStyle(node).getPropertyValue("--primary").trim(),
       );

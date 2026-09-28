@@ -1,5 +1,5 @@
 import { CaretDown, DownloadSimple, FunnelSimple, MagnifyingGlass } from "@phosphor-icons/react";
-import type { ReactNode } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@voidmix/ui/components/ui/toggle-group";
 import { Button } from "@voidmix/ui/components/ui/button";
 import {
   DropdownMenu,
@@ -52,17 +52,21 @@ export function DirectoryToolbar({
           value={query}
         />
       </InputGroup>
-      <div aria-label={t("filterStatus")} className="ml-auto flex gap-1 max-[760px]:ml-0">
-        <FilterButton active={status === undefined} onClick={() => setStatus(undefined)}>
-          {t("allStatuses")}
-        </FilterButton>
-        <FilterButton active={status === "active"} onClick={() => setStatus("active")}>
-          {t("active")}
-        </FilterButton>
-        <FilterButton active={status === "suspended"} onClick={() => setStatus("suspended")}>
-          {t("suspended")}
-        </FilterButton>
-      </div>
+      <ToggleGroup
+        aria-label={t("filterStatus")}
+        size="sm"
+        spacing={0}
+        variant="outline"
+        value={[status ?? "all"]}
+        onValueChange={(values) => {
+          const value = values[0];
+          if (value) setStatus(value === "all" ? undefined : (value as UserStatus));
+        }}
+      >
+        <ToggleGroupItem value="all">{t("allStatuses")}</ToggleGroupItem>
+        <ToggleGroupItem value="active">{t("active")}</ToggleGroupItem>
+        <ToggleGroupItem value="suspended">{t("suspended")}</ToggleGroupItem>
+      </ToggleGroup>
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
@@ -72,9 +76,9 @@ export function DirectoryToolbar({
               size="sm"
               variant={role ? "secondary" : "outline"}
             >
-              <FunnelSimple aria-hidden="true" weight="regular" />
+              <FunnelSimple aria-hidden="true" data-icon="inline-start" />
               {role ? formatAdminRole(role, t) : t("role")}
-              <CaretDown aria-hidden="true" className="size-3" weight="bold" />
+              <CaretDown aria-hidden="true" data-icon="inline-end" />
             </Button>
           }
         />
@@ -99,26 +103,5 @@ export function DirectoryToolbar({
         <span className="max-[480px]:hidden">{t("export")}</span>
       </Button>
     </div>
-  );
-}
-
-function FilterButton({
-  active,
-  children,
-  onClick,
-}: {
-  active: boolean;
-  children: ReactNode;
-  onClick: () => void;
-}) {
-  return (
-    <Button
-      aria-pressed={active}
-      onClick={onClick}
-      size="sm"
-      variant={active ? "primary" : "ghost"}
-    >
-      {children}
-    </Button>
   );
 }

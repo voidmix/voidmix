@@ -1,4 +1,4 @@
-import { Plus } from "@phosphor-icons/react";
+import { FolderSimple, Plus } from "@phosphor-icons/react";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -107,11 +107,29 @@ function ProjectsPage() {
         />
       ) : null}
       <section className="project-list" aria-label={t("projectList")}>
+        {projects.length ? (
+          <div className="project-columns" aria-hidden="true">
+            <span>{t("name")}</span>
+            <span>{t("stage")}</span>
+            <span>{t("ownership")}</span>
+            <span>{t("updated")}</span>
+          </div>
+        ) : null}
         {projects.map((project) => (
-          <Link key={project.id} to="/projects/$projectId" params={{ projectId: project.id }}>
-            <div className="min-w-0">
-              <h2 className="truncate">{project.title}</h2>
-              <p className="line-clamp-1">{project.description ?? t("noDescription")}</p>
+          <Link
+            className="project-row"
+            key={project.id}
+            to="/projects/$projectId"
+            params={{ projectId: project.id }}
+          >
+            <div className="project-identity">
+              <FolderSimple aria-hidden="true" />
+              <div className="min-w-0">
+                <h2 className="truncate" title={project.title}>
+                  {project.title}
+                </h2>
+                <p className="line-clamp-1">{project.description ?? t("noDescription")}</p>
+              </div>
             </div>
             <StatusBadge
               label={t(project.stage)}
@@ -127,7 +145,7 @@ function ProjectsPage() {
               {t(project.organizationId ? "organization" : "personal")}
             </span>
             <time
-              className="text-xs text-muted-foreground"
+              className="project-updated text-xs text-muted-foreground"
               dateTime={project.updatedAt.toISOString()}
             >
               {formatter.dateTime(project.updatedAt, "short")}
@@ -135,7 +153,7 @@ function ProjectsPage() {
           </Link>
         ))}
       </section>
-      <nav aria-label={navigation("pagination")} className="mb-4 flex gap-2">
+      <nav aria-label={navigation("pagination")} className="mb-4 flex justify-end gap-2">
         {search.cursor ? (
           <Button variant="outline" onClick={() => void navigate({ search: {} })}>
             {navigation("first")}

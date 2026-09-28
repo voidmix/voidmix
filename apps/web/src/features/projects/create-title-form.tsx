@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
@@ -12,11 +12,9 @@ const copy = {
 export function CreateTitleForm({
   kind,
   onCreate,
-  renderSubmit,
 }: {
   kind: keyof typeof copy;
   onCreate(title: string): Promise<void>;
-  renderSubmit?: (props: { type: "submit"; disabled: boolean; children: ReactNode }) => ReactNode;
 }) {
   const t = useTranslations("projects");
   const [title, setTitle] = useState("");
@@ -60,17 +58,9 @@ export function CreateTitleForm({
               aria-describedby={failed ? errorId : undefined}
               placeholder={t(labels.label)}
             />
-            {renderSubmit ? (
-              renderSubmit({
-                type: "submit",
-                disabled: saving || !title.trim(),
-                children: saving ? t("saving") : t(labels.submit),
-              })
-            ) : (
-              <Button type="submit" disabled={saving || !title.trim()}>
-                {saving ? t("saving") : t(labels.submit)}
-              </Button>
-            )}
+            <Button type="submit" disabled={saving || !title.trim()}>
+              {saving ? t("saving") : t(labels.submit)}
+            </Button>
           </div>
           {failed ? <FieldError id={errorId}>{t(labels.error)}</FieldError> : null}
         </Field>

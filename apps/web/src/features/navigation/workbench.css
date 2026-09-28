@@ -1,6 +1,6 @@
 .workbench-shell {
   display: grid;
-  grid-template-columns: 224px minmax(0, 1fr);
+  grid-template-columns: 232px minmax(0, 1fr);
   min-height: 100svh;
 }
 .workbench-sidebar {
@@ -12,7 +12,7 @@
   gap: 32px;
   padding: 28px 16px 16px;
   border-right: 1px solid var(--border);
-  background: var(--card);
+  background: var(--sidebar);
 }
 .workbench-brand {
   display: flex;
@@ -46,7 +46,7 @@
   color: var(--foreground);
 }
 .workbench-nav a[aria-current="page"] {
-  color: var(--primary);
+  color: var(--foreground);
   background: var(--secondary);
 }
 .workbench-account {
@@ -94,41 +94,6 @@
 .skip-link:focus {
   transform: translateY(0);
 }
-.project-page {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-.project-list {
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card);
-}
-.project-list > a {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px 100px 110px;
-  align-items: center;
-  gap: 20px;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-  transition: background-color 180ms;
-}
-.project-list > a:last-child {
-  border-bottom: 0;
-}
-.project-list > a:hover {
-  background: var(--muted);
-}
-.project-list h2 {
-  font-size: 14px;
-  font-weight: 600;
-}
-.project-list p {
-  margin-top: 4px;
-  color: var(--muted-foreground);
-  font-size: 12px;
-}
 .project-detail-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 288px;
@@ -172,7 +137,7 @@
     padding-inline: 12px;
   }
   .workbench-sidebar .workbench-nav span,
-  .workbench-brand span,
+  .workbench-brand [data-slot="logo"] > span,
   .workbench-account > span:not([data-slot="avatar"]),
   .workbench-account > div:first-child {
     display: none;
@@ -195,10 +160,6 @@
     border-bottom: 1px solid var(--border);
     padding: 0 0 20px;
   }
-  .project-list > a {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px;
-  }
 }
 @media (max-width: 767px) {
   .workbench-shell {
@@ -215,9 +176,6 @@
   }
   .workbench-content {
     padding: 24px 16px;
-  }
-  .project-list > a {
-    padding: 16px;
   }
   .workbench-nav a {
     min-height: 44px;

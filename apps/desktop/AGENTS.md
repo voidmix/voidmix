@@ -117,7 +117,7 @@ src-tauri/
 - This is the only workspace with a user-visible version. Record user-facing
   changes in [`CHANGELOG.md`](./CHANGELOG.md) and keep the version in
   `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` in step.
-- Use `@voidmix/ui` primitives and Phosphor icons; the same no-Radix, no-Lucide
+- Use shared shadcn Neutral tokens and `@voidmix/ui` primitives with Phosphor; the same no-Radix, no-Lucide
   rule applies here.
 
 ## Verification

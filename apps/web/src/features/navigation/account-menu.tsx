@@ -22,12 +22,10 @@ export function AccountMenu({
   name,
   role,
   onSignOut,
-  surfaceClassName,
 }: {
   name: string;
   role: string | undefined;
   onSignOut: () => Promise<void>;
-  surfaceClassName?: string;
 }) {
   const locale = useLocale();
   const setLocale = useSetLocale();
@@ -61,12 +59,7 @@ export function AccountMenu({
           </Button>
         }
       />
-      <DropdownMenuContent
-        align="end"
-        className={`min-w-44 ${surfaceClassName ?? ""}`}
-        side="top"
-        sideOffset={8}
-      >
+      <DropdownMenuContent align="end" className="min-w-44" side="top" sideOffset={8}>
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center gap-2">
             <span className="truncate text-foreground">{name}</span>

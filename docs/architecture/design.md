@@ -45,8 +45,8 @@ stored values survive for compatibility. No new native permissions are granted.
 ## Product imagery
 
 `e2e/capture-product.ts` seeds dedicated synthetic accounts into the guarded test
-database and captures the actual project routes in English and Chinese. Only
-loopback servers are used. The resulting PNGs are served locally by Web and
+database and captures the actual project routes in English and Chinese, both themes and desktop/mobile sizes. Only
+loopback servers are used. The resulting WebP images are served locally by Web and
 labelled as examples; there are no third-party image or font requests.
 
 ## Verification
@@ -55,9 +55,12 @@ labelled as examples; there are no third-party image or font requests.
 provenance and results. Shared primitives have deterministic Storybook examples;
 product flows use the real test API and PostgreSQL in Playwright.
 
-## beUI pilot
+## Neutral component baseline
 
-The Web project index opts into neutral page tokens and adapted public beUI
-primitives. Other routes retain their current visual language, including the
-original Logo. See the [pilot guide](../development/beui-pilot.md) for source
-provenance, theme boundaries and validation.
+All shipped surfaces use shadcn base-nova Neutral light/dark tokens. One Web
+shell serves project lists, details and Admin. The historical beUI route variant
+has been retired. Standard shadcn components provide keyboard Tabs, Dialog/Sheet,
+Table/Checkbox, ToggleGroup and state presentation. Page layout stays app-local.
+
+[Neutral UI delivery](../development/neutral-ui.md) records migration details,
+responsive image generation and verification evidence.

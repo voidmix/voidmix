@@ -22,11 +22,13 @@ Calm, precise, technical, and collaborative. VoidMix should feel like an Agent S
 
 ## Visual Direction
 
-- Desktop defaults to `#0B1020` dark; Web defaults to `#F7F9FC` light, with both themes supported across shared components.
-- Brand signal uses blue `#5865F2`, violet `#8B6CFF`, and cyan `#36C5D8`.
-- PM, Dev, QA, Designer, and Data Agent roles have stable identity colors; color is always paired with text and icons for status.
-- Use card-based but structured layouts, readable conversation logs, role cards, segmented progress, restrained shadows, 8–16px radii, and 160–220ms motion.
-- Support keyboard focus, WCAG 2.2 AA contrast, responsive Web layouts, and `prefers-reduced-motion`.
+- Use shadcn base-nova Neutral in light and dark modes across all shipped surfaces.
+- Preserve the original Logo, favicon and native application icons and their colors.
+- Primary actions are black on light surfaces and light on dark surfaces. Ordinary
+  statuses use neutral badges plus text/icons; errors use the destructive role.
+- Refine typography, alignment, lists, form feedback and real product imagery.
+- Support keyboard focus, WCAG 2.2 AA contrast, responsive Web layouts and reduced motion.
+- The exact shipped patterns are recorded in [DESIGN.md](DESIGN.md).
 
 ## Anti-references
 

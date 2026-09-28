@@ -140,7 +140,7 @@ function RootErrorPage({ error, reset }: ErrorComponentProps) {
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Button
             onClick={chunkLoadFailed ? () => window.location.reload() : reset}
-            variant="primary"
+            variant="default"
           >
             {chunkLoadFailed ? t("reload") : t("tryAgain")}
           </Button>

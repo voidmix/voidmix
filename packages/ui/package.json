@@ -5,7 +5,8 @@
   "type": "module",
   "imports": {
     "#lib/*": "./src/lib/*.ts",
-    "#components/*": "./src/components/*.tsx"
+    "#components/*": "./src/components/*.tsx",
+    "#hooks/*": "./src/hooks/*.ts"
   },
   "exports": {
     "./page-header": "./src/page-header.tsx",
@@ -24,10 +25,17 @@
     "./lib/*": "./src/lib/*.ts",
     "./modal": "./src/modal.tsx",
     "./loading-state": "./src/loading-state.tsx",
-    "./beui-button": "./src/beui-button.tsx",
-    "./beui-badge": "./src/beui-badge.tsx",
-    "./beui-sidebar": "./src/beui-sidebar.tsx",
-    "./beui-sidebar-navigation": "./src/beui-sidebar-navigation.tsx"
+    "./components/ui/tabs": "./src/components/ui/tabs.tsx",
+    "./components/ui/skeleton": "./src/components/ui/skeleton.tsx",
+    "./components/ui/empty": "./src/components/ui/empty.tsx",
+    "./components/ui/alert": "./src/components/ui/alert.tsx",
+    "./components/ui/separator": "./src/components/ui/separator.tsx",
+    "./components/ui/dialog": "./src/components/ui/dialog.tsx",
+    "./components/ui/sheet": "./src/components/ui/sheet.tsx",
+    "./components/ui/checkbox": "./src/components/ui/checkbox.tsx",
+    "./components/ui/table": "./src/components/ui/table.tsx",
+    "./components/ui/toggle": "./src/components/ui/toggle.tsx",
+    "./components/ui/toggle-group": "./src/components/ui/toggle-group.tsx"
   },
   "scripts": {
     "check": "tsc --noEmit -p tsconfig.json",
@@ -42,8 +50,7 @@
     "@base-ui/react": "catalog:frontend",
     "@phosphor-icons/react": "catalog:frontend",
     "class-variance-authority": "catalog:frontend",
-    "cn": "catalog:frontend",
-    "motion": "catalog:frontend"
+    "cn": "catalog:frontend"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "catalog:tooling",

@@ -1,5 +1,8 @@
 # Unified workbench visual audit
 
+This is the historical blue/violet redesign record. The current visual baseline
+and verification results are in [Neutral UI delivery](./neutral-ui.md).
+
 The September 28, 2026 redesign covers the website, authentication, Web projects,
 Admin and Desktop. It follows [DESIGN.md](../../DESIGN.md) and
 [the design architecture](../architecture/design.md). Agent execution, upload

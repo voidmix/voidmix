@@ -148,6 +148,7 @@ for (const scenario of [
       await page.getByRole("button", { name: "新建项目" }).click();
       await expect(page.getByRole("dialog", { name: "新建项目" })).toBeVisible();
       await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog", { name: "新建项目" })).toHaveCount(0);
       await expect(page.getByRole("button", { name: "新建项目" })).toBeFocused();
     }
   });

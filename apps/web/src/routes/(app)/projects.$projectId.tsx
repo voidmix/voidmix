@@ -104,7 +104,7 @@ function ProjectDetail({ projectId }: { projectId: string }) {
                       task.status === "done"
                         ? "success"
                         : task.status === "blocked"
-                          ? "danger"
+                          ? "warning"
                           : task.status === "in_progress"
                             ? "info"
                             : "neutral"

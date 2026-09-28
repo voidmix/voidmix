@@ -1,6 +1,6 @@
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
 import { cn } from "#lib/utils";
 
@@ -24,7 +24,8 @@ const badgeVariants = cva(
   },
 );
 
-export type BadgeProps = useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>;
+export type BadgeVariant = "default" | "secondary" | "destructive" | "outline" | "ghost" | "link";
+export type BadgeProps = useRender.ComponentProps<"span"> & { variant?: BadgeVariant };
 
 function Badge({ className, variant = "default", render, ...props }: BadgeProps) {
   return useRender({

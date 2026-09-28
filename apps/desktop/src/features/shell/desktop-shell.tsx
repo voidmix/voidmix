@@ -1,6 +1,6 @@
 import { FolderSimple, Gear, House, SidebarSimple, Pulse } from "@phosphor-icons/react";
 import { LOCALE_OPTIONS } from "@voidmix/i18n";
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { Logo } from "@voidmix/ui/logo";
 import { useEffect, useState } from "react";
@@ -41,6 +41,7 @@ export function DesktopShell() {
   const themeT = useDesktopTranslations("settings");
   const locale = useLocale();
   const setLocale = useSetLocale();
+  const pathname = useLocation({ select: (location) => location.pathname });
   const navigation = [
     { to: "/", label: t("home"), icon: House },
     { to: "/projects", label: t("projects"), icon: FolderSimple },
@@ -77,20 +78,27 @@ export function DesktopShell() {
 
         <nav className="primary-nav" aria-label={t("primaryNavigation")}>
           <p className="nav-label">{t("control")}</p>
-          {navigation.map(({ to, label, icon: Icon }) => (
-            <Link
-              key={to}
-              to={to}
-              aria-label={label}
-              title={label}
-              activeOptions={{ exact: to === "/" }}
-              activeProps={{ className: "nav-link active" }}
-              inactiveProps={{ className: "nav-link" }}
-            >
-              <Icon size={16} weight="regular" />
-              <span>{label}</span>
-            </Link>
-          ))}
+          {navigation.map(({ to, label, icon: Icon }) => {
+            const active =
+              to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(`${to}/`);
+            const stateProps = {
+              className: active ? "nav-link active" : "nav-link",
+              "aria-current": active ? ("page" as const) : undefined,
+            };
+            return (
+              <Link
+                key={to}
+                to={to}
+                aria-label={label}
+                title={label}
+                activeProps={stateProps}
+                inactiveProps={stateProps}
+              >
+                <Icon size={16} weight="regular" />
+                <span>{label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="sidebar-spacer" />

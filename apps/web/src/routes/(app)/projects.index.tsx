@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FolderSimple, Plus } from "@phosphor-icons/react";
-import { BeuiButton } from "@voidmix/ui/beui-button";
+import { Button } from "@voidmix/ui/components/ui/button";
+import { Skeleton } from "@voidmix/ui/components/ui/skeleton";
 import { Modal } from "@voidmix/ui/modal";
 import { CreateTitleForm } from "../../features/projects/create-title-form";
 import { ProjectStatus } from "../../features/projects/project-status";
@@ -41,7 +42,7 @@ function ProjectsPage() {
   }
 
   return (
-    <div className="beui-project-page">
+    <div className="project-page">
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -51,19 +52,17 @@ function ProjectsPage() {
             description={t("createDescription")}
             closeLabel={t("close")}
             busy={saving}
-            surfaceClassName="beui-theme"
             open={creating}
             onOpenChange={setCreating}
             trigger={
-              <BeuiButton>
+              <Button>
                 <Plus data-icon="inline-start" />
                 {t("newProject")}
-              </BeuiButton>
+              </Button>
             }
           >
             <CreateTitleForm
               kind="project"
-              renderSubmit={(props) => <BeuiButton {...props} />}
               onCreate={async (title) => {
                 setSaving(true);
                 try {
@@ -78,16 +77,16 @@ function ProjectsPage() {
         }
       />
       {!projects.length ? (
-        <div className="beui-project-empty">
-          <FolderSimple aria-hidden="true" />
+        <div className="project-empty">
           <EmptyState
+            icon={<FolderSimple aria-hidden="true" />}
             title={t("empty")}
             description={search.cursor ? t("emptyPage") : t("emptyDescription")}
           />
         </div>
       ) : (
-        <section className="beui-project-list" aria-label={t("projectList")}>
-          <div className="beui-project-columns" aria-hidden="true">
+        <section className="project-list" aria-label={t("projectList")}>
+          <div className="project-columns" aria-hidden="true">
             <span>{t("projectName")}</span>
             <span>{t("stage")}</span>
             <span>{t("ownership")}</span>
@@ -95,13 +94,13 @@ function ProjectsPage() {
           </div>
           {projects.map((project) => (
             <Link
-              className="beui-project-row"
+              className="project-row"
               key={project.id}
               to="/projects/$projectId"
               params={{ projectId: project.id }}
             >
-              <div className="beui-project-identity">
-                <span className="beui-project-icon">
+              <div className="project-identity">
+                <span className="project-icon">
                   <FolderSimple aria-hidden="true" />
                 </span>
                 <div className="min-w-0">
@@ -109,12 +108,12 @@ function ProjectsPage() {
                   <p className="line-clamp-1">{project.description ?? t("noDescription")}</p>
                 </div>
               </div>
-              <ProjectStatus stage={project.stage} appearance="beui" />
-              <span className="beui-project-owner text-xs text-muted-foreground">
+              <ProjectStatus stage={project.stage} />
+              <span className="project-owner text-xs text-muted-foreground">
                 {t(project.organizationId ? "organization" : "personal")}
               </span>
               <time
-                className="beui-project-updated text-xs text-muted-foreground"
+                className="project-updated text-xs text-muted-foreground"
                 dateTime={project.updatedAt.toISOString()}
               >
                 {formatter.dateTime(project.updatedAt, "short")}
@@ -124,7 +123,6 @@ function ProjectsPage() {
         </section>
       )}
       <PageNavigation
-        appearance="beui"
         cursor={search.cursor}
         nextCursor={nextCursor}
         onNavigate={(cursor) => void navigate({ search: cursor ? { cursor } : {} })}
@@ -137,14 +135,14 @@ function ProjectsPending() {
   const t = useTranslations("projects");
   const navigation = useTranslations("navigation");
   return (
-    <div className="beui-project-page" aria-busy="true">
+    <div className="project-page" aria-busy="true">
       <PageHeader title={t("title")} description={t("description")} />
-      <div role="status" aria-label={navigation("loading")} className="beui-project-skeleton">
+      <div role="status" aria-label={navigation("loading")} className="project-skeleton">
         {[0, 1, 2, 3, 4].map((row) => (
           <div key={row} aria-hidden="true">
-            <span />
-            <span />
-            <span />
+            <Skeleton className="h-3.5" />
+            <Skeleton className="h-3.5" />
+            <Skeleton className="h-3.5" />
           </div>
         ))}
       </div>

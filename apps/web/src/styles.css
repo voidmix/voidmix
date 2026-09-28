@@ -1,6 +1,6 @@
 @import "@voidmix/ui/styles.css";
 @import "./features/navigation/workbench.css";
-@import "./features/navigation/beui-workbench.css";
+@import "./features/projects/projects.css";
 @import "./features/marketing/marketing.css";
 @import "./features/auth/auth.css";
 

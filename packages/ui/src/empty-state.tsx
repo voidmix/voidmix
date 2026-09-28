@@ -1,27 +1,37 @@
 import type { ReactNode } from "react";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "./components/ui/empty";
 import { cn } from "./lib/utils";
 
 export function EmptyState({
   title,
   description,
   action,
+  icon,
   className,
 }: {
   title: string;
   description: string;
   action?: ReactNode;
+  icon?: ReactNode;
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "grid justify-items-center gap-3 rounded-lg border border-dashed border-border px-5 py-12 text-center",
-        className,
-      )}
-    >
-      <h2 className="text-base font-medium">{title}</h2>
-      <p className="max-w-sm text-sm leading-6 text-muted-foreground">{description}</p>
-      {action}
-    </div>
+    <Empty className={cn("py-12", className)}>
+      <EmptyHeader>
+        {icon ? <EmptyMedia variant="icon">{icon}</EmptyMedia> : null}
+        <EmptyTitle>
+          <h2>{title}</h2>
+        </EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+      {action ? <EmptyContent>{action}</EmptyContent> : null}
+    </Empty>
   );
 }

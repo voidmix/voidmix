@@ -1,4 +1,6 @@
 import { useDirectoryStore, useDirectorySelector } from "./store-provider";
+import { Checkbox } from "@voidmix/ui/components/ui/checkbox";
+import { TableCell, TableRow } from "@voidmix/ui/components/ui/table";
 import { Avatar } from "@voidmix/ui/avatar";
 import { Badge } from "@voidmix/ui/components/ui/badge";
 import { Button } from "@voidmix/ui/components/ui/button";
@@ -21,19 +23,17 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
   const actionLabel = user.status === "suspended" ? t("activate") : t("suspend");
   const isOwner = user.role === "owner";
   return (
-    <tr data-selected={selected || undefined}>
-      <td className="w-11 border-b py-3 pr-4 pl-5 text-sm text-muted-foreground">
+    <TableRow data-selected={selected || undefined} data-state={selected ? "selected" : undefined}>
+      <TableCell className="w-12 px-4 py-4">
         <label className="directory-checkbox">
-          <input
+          <Checkbox
             aria-label={`${t("selectUser")} ${user.name}`}
             checked={selected}
-            className="size-4 accent-primary"
-            onChange={(event) => store.getState().select(user.id, event.currentTarget.checked)}
-            type="checkbox"
+            onCheckedChange={(checked) => store.getState().select(user.id, checked)}
           />
         </label>
-      </td>
-      <td className="border-b px-4 py-3 text-sm text-muted-foreground">
+      </TableCell>
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
         <div className="flex items-center gap-3">
           <Avatar name={user.name} />
           <div className="flex min-w-0 flex-col gap-0.5 [overflow-wrap:anywhere]">
@@ -41,20 +41,20 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
             <span className="text-xs text-muted-foreground">{user.email}</span>
           </div>
         </div>
-      </td>
-      <td className="border-b px-4 py-3 text-sm text-muted-foreground">
+      </TableCell>
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
         <span>{formatAdminRole(user.role, t)}</span>
-      </td>
-      <td className="border-b px-4 py-3 text-sm text-muted-foreground">
+      </TableCell>
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
         <Badge variant={tone}>{formatAdminStatus(user.status, t)}</Badge>
-      </td>
-      <td className="border-b px-4 py-3 text-sm text-muted-foreground">
+      </TableCell>
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
         {formatAdminLastActive(user.lastActive, t, formatter)}
-      </td>
-      <td className="border-b px-4 py-3 text-sm text-muted-foreground">
+      </TableCell>
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
         {formatAdminJoinedAt(user.joinedAt, formatter, t("notAvailable"))}
-      </td>
-      <td className="border-b px-4 py-3 text-sm text-muted-foreground">
+      </TableCell>
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
         <Button
           aria-label={`${actionLabel} ${user.name}`}
           disabled={isOwner || isPending}
@@ -65,11 +65,11 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
         >
           {isPending ? t("saving") : actionLabel}
         </Button>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }
 
-function statusTone(status: UserStatus): "secondary" | "destructive" {
-  return status === "active" ? "secondary" : "destructive";
+function statusTone(status: UserStatus): "secondary" | "outline" {
+  return status === "active" ? "secondary" : "outline";
 }

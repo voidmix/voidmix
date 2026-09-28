@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from "@voidmix/ui/components/ui/alert";
 import { LoadingState } from "@voidmix/ui/loading-state";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { ArrowsClockwise } from "@phosphor-icons/react";
@@ -39,7 +40,9 @@ export function DesktopRouteError() {
   const router = useRouter();
   return (
     <div className="page">
-      <p role="alert">{errors("unknown")}</p>
+      <Alert variant="destructive">
+        <AlertDescription>{errors("unknown")}</AlertDescription>
+      </Alert>
       <Button variant="secondary" onClick={() => void router.invalidate()}>
         {t("retry")}
       </Button>

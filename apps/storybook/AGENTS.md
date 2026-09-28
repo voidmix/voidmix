@@ -21,7 +21,8 @@ visual documentation without becoming a product application.
 
 ## Constraints
 
-- Keep stories deterministic and network-free.
+- Keep stories deterministic and network-free. Neutral workbench stories cover
+  both themes, long headings, loading/error feedback and keyboard Tabs.
 - Use the shared `@voidmix/ui/styles.css` entry so the base-nova Tailwind
   tokens and primitive styles match the applications.
 - Add stories for reusable UI primitives before adding stories for application

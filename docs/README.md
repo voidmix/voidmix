@@ -63,4 +63,5 @@ deployment boundaries, and coding-agent guidance.
 Repository-level product and visual context also lives in
 [PRODUCT.md](../PRODUCT.md) and [DESIGN.md](../DESIGN.md).
 
-- [beUI project index pilot](development/beui-pilot.md): sources, boundaries, updates and validation.
+- [Neutral UI delivery](development/neutral-ui.md): global shadcn styling, captures and verification.
+- [Historical beUI project index pilot](development/beui-pilot.md): sources, boundaries, updates and validation.

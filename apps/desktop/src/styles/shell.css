@@ -54,7 +54,7 @@
 }
 .nav-link.active {
   background: var(--secondary);
-  color: var(--primary);
+  color: var(--foreground);
 }
 .sidebar-spacer {
   flex: 1;
@@ -151,7 +151,7 @@
 }
 .desktop-shell[data-collapsed] .nav-label,
 .desktop-shell[data-collapsed] .nav-link span,
-.desktop-shell[data-collapsed] .brand span,
+.desktop-shell[data-collapsed] .brand [data-slot="logo"] > span,
 .desktop-shell[data-collapsed] .account-control,
 .desktop-shell[data-collapsed] .runtime-status {
   display: none;

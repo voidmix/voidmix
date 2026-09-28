@@ -8,6 +8,34 @@ async function login(page: Page, account: keyof typeof accounts) {
   });
   expect(response.ok()).toBe(true);
 }
+test("Admin batch keeps successful writes and explains a partial failure", async ({
+  page,
+}, info) => {
+  await login(page, "admin");
+  await page.goto("/admin");
+  for (const name of ["Directory person 118", "Directory person 119"]) {
+    await page.getByRole("checkbox", { name: `Select ${name}`, exact: true }).check();
+  }
+  await page.route(
+    "**/rpc/admin/users/updateStatus**",
+    (route) => route.fulfill({ status: 503, body: "Unavailable" }),
+    { times: 1 },
+  );
+  await page.getByRole("button", { name: "Suspend selected", exact: true }).click();
+  await expect(page.getByText("1 updated, 1 could not be changed.", { exact: true })).toBeVisible();
+  const activate = page.getByRole("button", { name: /^Activate Directory person 11[89]$/ });
+  await expect(activate).toHaveCount(1);
+  await expect(page.getByRole("button", { name: /^Suspend Directory person 11[89]$/ })).toHaveCount(
+    1,
+  );
+  await page.screenshot({ path: info.outputPath("admin-partial-failure.png") });
+  await page.reload();
+  await expect(activate).toHaveCount(1);
+  await activate.click();
+  await expect(page.getByRole("button", { name: /^Suspend Directory person 11[89]$/ })).toHaveCount(
+    2,
+  );
+});
 test("real login, project creation, task creation, refresh and paginated history", async ({
   page,
 }) => {

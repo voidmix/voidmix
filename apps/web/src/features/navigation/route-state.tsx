@@ -1,9 +1,10 @@
+import { Alert, AlertDescription } from "@voidmix/ui/components/ui/alert";
+import { WarningCircle } from "@phosphor-icons/react";
 import { LoadingState } from "@voidmix/ui/loading-state";
 import { translateKnownApiError } from "../../../i18n/api-errors";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { useRouter } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
-import { BeuiButton } from "@voidmix/ui/beui-button";
 import { useTranslations } from "../../i18n/client";
 export function RoutePending() {
   const t = useTranslations("navigation");
@@ -15,7 +16,10 @@ export function RouteError({ error }: ErrorComponentProps) {
   const errors = useTranslations("errors");
   return (
     <div className="flex flex-col items-start gap-4 py-8">
-      <p role="alert">{translateKnownApiError(error, errors) ?? t("failed")}</p>
+      <Alert variant="destructive">
+        <WarningCircle aria-hidden="true" />
+        <AlertDescription>{translateKnownApiError(error, errors) ?? t("failed")}</AlertDescription>
+      </Alert>
       <Button onClick={() => void router.invalidate()}>{t("retry")}</Button>
     </div>
   );
@@ -24,26 +28,23 @@ export function PageNavigation({
   nextCursor,
   cursor,
   onNavigate,
-  appearance,
 }: {
   nextCursor: string | null;
   cursor?: string | undefined;
   onNavigate: (cursor?: string) => void;
-  appearance?: "beui";
 }) {
   const t = useTranslations("navigation");
-  const Action = appearance === "beui" ? BeuiButton : Button;
   return (
     <nav aria-label={t("pagination")} className="flex justify-end gap-2">
       {cursor ? (
-        <Action variant="outline" onClick={() => onNavigate()}>
+        <Button variant="outline" onClick={() => onNavigate()}>
           {t("first")}
-        </Action>
+        </Button>
       ) : null}
       {nextCursor ? (
-        <Action variant="outline" onClick={() => onNavigate(nextCursor)}>
+        <Button variant="outline" onClick={() => onNavigate(nextCursor)}>
           {t("next")}
-        </Action>
+        </Button>
       ) : null}
     </nav>
   );

@@ -1,6 +1,8 @@
-import { ArrowRight, GithubLogo } from "@phosphor-icons/react";
+import { ArrowRight, Desktop, FolderSimple, GithubLogo, ListChecks } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@voidmix/ui/components/ui/tabs";
+import { Separator } from "@voidmix/ui/components/ui/separator";
 import { Logo } from "@voidmix/ui/logo";
 import { useTranslations } from "../../i18n/client";
 import { LanguageSwitcher } from "../../components/language-switcher";
@@ -19,70 +21,110 @@ export function PublicHome() {
           <a href="#product">{t("product")}</a>
           <a href="#workflow">{t("workflow")}</a>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="public-nav-actions">
           <LanguageSwitcher />
-          <ThemeSwitcher />
-          <Link to="/login" className="public-login">
+          <div className="public-header-theme">
+            <ThemeSwitcher />
+          </div>
+          <Button variant="ghost" nativeButton={false} role="link" render={<Link to="/login" />}>
             {t("login")}
-          </Link>
-          <Button nativeButton={false} render={<Link to="/projects" />}>
+          </Button>
+          <Button nativeButton={false} role="link" render={<Link to="/projects" />}>
             {t("openWorkbench")}
           </Button>
         </div>
       </nav>
       <section className="public-hero" aria-labelledby="hero-title">
-        <div className="public-hero-copy">
-          <span className="public-wordmark">{t("projectWorkbench")}</span>
-          <h1 id="hero-title">{t("workHeroTitle")}</h1>
-          <p>{t("workHeroDescription")}</p>
-          <div className="flex flex-wrap gap-3">
-            <Button size="lg" nativeButton={false} render={<Link to="/projects" />}>
-              {t("openWorkbench")}
-              <ArrowRight data-icon="inline-end" />
-            </Button>
-            <Button variant="outline" nativeButton={false} render={<a href="#product" />}>
-              {t("seeProduct")}
-            </Button>
-          </div>
-          <p className="public-hero-note">{t("workHeroNote")}</p>
+        <p className="public-intro">
+          <FolderSimple aria-hidden="true" />
+          {t("projectWorkbench")}
+        </p>
+        <h1 id="hero-title">{t("workHeroTitle")}</h1>
+        <p className="public-hero-description">{t("workHeroDescription")}</p>
+        <div className="public-hero-actions">
+          <Button size="lg" nativeButton={false} role="link" render={<Link to="/projects" />}>
+            {t("openWorkbench")}
+            <ArrowRight data-icon="inline-end" />
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            nativeButton={false}
+            role="link"
+            render={<a href="#product" />}
+          >
+            {t("seeProduct")}
+          </Button>
         </div>
-        <figure className="public-hero-image">
-          <ProductImage />
-          <figcaption>{t("sampleProject")}</figcaption>
-        </figure>
+        <p className="public-hero-note">{t("workHeroNote")}</p>
       </section>
-      <section id="product" className="public-product" aria-labelledby="product-title">
-        <div className="public-section-heading">
-          <h2 id="product-title">{t("productTitle")}</h2>
-          <p>{t("productDescription")}</p>
-        </div>
-        <figure className="public-product-image">
-          <ProductImage detail />
-          <figcaption>{t("sampleProject")}</figcaption>
-        </figure>
+      <section id="product" className="public-product" aria-label={t("product")}>
+        <Tabs defaultValue="projects" className="gap-5">
+          <div className="public-preview-toolbar">
+            <TabsList aria-label={t("previewLabel")}>
+              <TabsTrigger value="projects">
+                <FolderSimple aria-hidden="true" />
+                {t("projectsTab")}
+              </TabsTrigger>
+              <TabsTrigger value="detail">
+                <ListChecks aria-hidden="true" />
+                {t("detailTab")}
+              </TabsTrigger>
+            </TabsList>
+            <span>{t("sampleProject")}</span>
+          </div>
+          <TabsContent value="projects">
+            <figure className="public-product-frame">
+              <ProductImage priority />
+            </figure>
+          </TabsContent>
+          <TabsContent value="detail">
+            <figure className="public-product-frame">
+              <ProductImage detail />
+            </figure>
+          </TabsContent>
+        </Tabs>
       </section>
       <section id="workflow" className="public-workflow" aria-labelledby="workflow-title">
-        <h2 id="workflow-title">{t("workflowTitle")}</h2>
-        <ol>
-          {(["create", "organize", "access"] as const).map((step, index) => (
-            <li key={step}>
-              <span className="public-step-number" aria-hidden="true">
-                {index + 1}
-              </span>
-              <div>
-                <h3>{t(`${step}Title`)}</h3>
-                <p>{t(`${step}Description`)}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <div className="public-section-heading">
+          <h2 id="workflow-title">{t("workflowTitle")}</h2>
+          <p>{t("workflowDescription")}</p>
+        </div>
+        <article className="public-detail">
+          <div className="public-detail-copy">
+            <FolderSimple aria-hidden="true" />
+            <h3>{t("createTitle")}</h3>
+            <p>{t("createDescription")}</p>
+            <p className="public-detail-note">{t("projectFields")}</p>
+          </div>
+          <figure className="public-detail-frame">
+            <ProductImage variant="project-focus" />
+          </figure>
+        </article>
+        <article className="public-detail public-detail-reverse">
+          <div className="public-detail-copy">
+            <ListChecks aria-hidden="true" />
+            <h3>{t("organizeTitle")}</h3>
+            <p>{t("organizeDescription")}</p>
+            <p className="public-detail-note">{t("taskContext")}</p>
+          </div>
+          <figure className="public-detail-frame">
+            <ProductImage variant="task-focus" />
+          </figure>
+        </article>
+        <div className="public-access">
+          <Desktop aria-hidden="true" />
+          <div>
+            <h3>{t("accessTitle")}</h3>
+            <p>{t("accessDescription")}</p>
+          </div>
+        </div>
       </section>
       <section className="public-cta">
-        <div>
-          <h2>{t("ctaTitle")}</h2>
-          <p>{t("ctaDescription")}</p>
-        </div>
-        <Button size="lg" nativeButton={false} render={<Link to="/projects" />}>
+        <Separator />
+        <h2>{t("ctaTitle")}</h2>
+        <p>{t("ctaDescription")}</p>
+        <Button size="lg" nativeButton={false} role="link" render={<Link to="/projects" />}>
           {t("openWorkbench")}
           <ArrowRight data-icon="inline-end" />
         </Button>
@@ -90,6 +132,9 @@ export function PublicHome() {
       <footer className="public-footer">
         <Logo />
         <span>{t("workHeroNote")}</span>
+        <div className="public-footer-theme">
+          <ThemeSwitcher />
+        </div>
         <a href="https://github.com/voidmix/voidmix">
           <GithubLogo aria-hidden="true" />
           {t("github")}

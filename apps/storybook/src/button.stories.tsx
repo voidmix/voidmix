@@ -7,7 +7,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     children: "Continue",
-    variant: "primary",
+    variant: "default",
     size: "default",
   },
 } satisfies Meta<typeof Button>;
@@ -27,7 +27,7 @@ export const Secondary: Story = {
 export const Destructive: Story = {
   args: {
     children: "Delete account",
-    variant: "danger",
+    variant: "destructive",
   },
 };
 

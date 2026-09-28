@@ -4,18 +4,13 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { I18nProvider } from "@voidmix/i18n/client";
 import { afterEach, expect, it, vi } from "vite-plus/test";
 import { messages } from "../../../tests/fixtures/messages";
-import { BeuiButton } from "@voidmix/ui/beui-button";
 import { CreateTitleForm } from "./create-title-form";
 
 afterEach(cleanup);
 
-it.each([
-  { kind: "project", beui: false },
-  { kind: "task", beui: false },
-  { kind: "project", beui: true },
-] as const)(
-  "preserves $kind drafts after failure and prevents duplicate submits (beui=$beui)",
-  async ({ kind, beui }) => {
+it.each(["project", "task"] as const)(
+  "preserves %s drafts after failure and prevents duplicate submits",
+  async (kind) => {
     let finish!: () => void;
     const onCreate = vi
       .fn()
@@ -28,11 +23,7 @@ it.each([
       );
     render(
       <I18nProvider locale="en" messages={messages}>
-        <CreateTitleForm
-          kind={kind}
-          onCreate={onCreate}
-          {...(beui ? { renderSubmit: (props) => <BeuiButton {...props} /> } : {})}
-        />
+        <CreateTitleForm kind={kind} onCreate={onCreate} />
       </I18nProvider>,
     );
     const input = screen.getByRole("textbox");

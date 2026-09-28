@@ -231,7 +231,8 @@
     "signedOut": "需要登录",
     "signedOutDescription": "登录会话不存在或已过期。请登录已配置的服务后重试。",
     "accessDenied": "无权访问该项目",
-    "accessDeniedDescription": "当前账号没有查看该项目的权限。"
+    "accessDeniedDescription": "当前账号没有查看该项目的权限。",
+    "stage": "阶段"
   },
   "library": {
     "title": "素材库",

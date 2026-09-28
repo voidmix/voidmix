@@ -7,154 +7,82 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * VoidMix shared visual language: Soft Signal.
- *
- * Surfaces stay quiet and easy to scan. Blue is the main action signal, while
- * violet and cyan are reserved for collaboration and live system feedback.
- * The same semantic names are used by Web and Desktop so a state keeps its
- * meaning when the theme changes.
- */
+/* shadcn base-nova / Neutral. Logo artwork retains its original colors. */
 :root {
-  --control-height: 2.5rem;
-  --brand-signal: #5865f2;
-  --brand-violet: #8b6cff;
-  --background: #f7f9fc;
-  --foreground: #172033;
-  --card: #ffffff;
-  --card-foreground: #172033;
-  --popover: #ffffff;
-  --popover-foreground: #172033;
-  --primary: #4d58d8;
-  --primary-foreground: #ffffff;
-  --secondary: #eef1ff;
-  --secondary-foreground: #26315f;
-  --muted: #f1f4f8;
-  --muted-foreground: #5a667a;
-  --accent: #e7f8fb;
-  --accent-foreground: #14515d;
-  --destructive: #b82f45;
-  --destructive-foreground: #ffffff;
-  --success: #087f5b;
-  --success-foreground: #ffffff;
-  --warning: #a06412;
-  --warning-foreground: #ffffff;
-  --info: #2563b8;
-  --info-foreground: #ffffff;
-  --border: #dce3ef;
-  --input: #8491a5;
-  --ring: #5865f2;
-  --surface-subtle: #fbfcfe;
-  --surface-sunken: #eef2f7;
-  --shadow-soft-value: 0 2px 8px rgb(23 32 51 / 8%);
-  --shadow-popover-value: 0 8px 24px rgb(23 32 51 / 14%);
-  --chart-1: #5865f2;
-  --chart-2: #8b6cff;
-  --chart-3: #36c5d8;
-  --chart-4: #20b486;
-  --chart-5: #e8a33d;
-  --radius: 0.75rem;
-  --sidebar: #f1f4fa;
-  --sidebar-foreground: #172033;
-  --sidebar-primary: #5865f2;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e7ebff;
-  --sidebar-accent-foreground: #26315f;
-  --sidebar-border: #dce3ef;
-  --sidebar-ring: #5865f2;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --radius: 0.625rem;
+  /* Compatibility roles use the same neutral system as the stock primitives. */
+  --success: var(--foreground);
+  --warning: var(--foreground);
+  --info: var(--foreground);
+  --success-foreground: var(--background);
+  --warning-foreground: var(--background);
+  --info-foreground: var(--background);
+  --surface-subtle: var(--background);
+  --surface-sunken: var(--muted);
+  --shadow-soft-value: 0 1px 2px rgb(0 0 0 / 5%);
+  --shadow-popover-value: 0 4px 8px rgb(0 0 0 / 10%);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.708 0 0);
+  --chart-3: oklch(0.556 0 0);
+  --chart-4: oklch(0.439 0 0);
+  --chart-5: oklch(0.269 0 0);
 }
 
 .dark,
 [data-theme="dark"] {
-  --background: #0b1020;
-  --foreground: #f7f9fc;
-  --card: #151d31;
-  --card-foreground: #f7f9fc;
-  --popover: #151d31;
-  --popover-foreground: #f7f9fc;
-  --primary: #7c88ff;
-  --primary-foreground: #0b1020;
-  --secondary: #202a44;
-  --secondary-foreground: #e9edff;
-  --muted: #1a2438;
-  --muted-foreground: #aab7cb;
-  --accent: #123840;
-  --accent-foreground: #8de5ef;
-  --destructive: #f27886;
-  --destructive-foreground: #28080e;
-  --success: #37d09d;
-  --success-foreground: #052a1f;
-  --warning: #f4bb62;
-  --warning-foreground: #352108;
-  --info: #78b2ff;
-  --info-foreground: #061b38;
-  --border: #2b3850;
-  --input: #66748e;
-  --ring: #7c88ff;
-  --surface-subtle: #11192b;
-  --surface-sunken: #080d19;
-  --shadow-soft-value: 0 2px 8px rgb(0 0 0 / 24%);
-  --shadow-popover-value: 0 8px 24px rgb(0 0 0 / 36%);
-  --chart-1: #7c88ff;
-  --chart-2: #b09cff;
-  --chart-3: #66dce8;
-  --chart-4: #37d09d;
-  --chart-5: #f4bb62;
-  --sidebar: #11192b;
-  --sidebar-foreground: #e9edff;
-  --sidebar-primary: #7c88ff;
-  --sidebar-primary-foreground: #0b1020;
-  --sidebar-accent: #202a44;
-  --sidebar-accent-foreground: #e9edff;
-  --sidebar-border: #2b3850;
-  --sidebar-ring: #7c88ff;
-}
-
-/* beUI pilot: opt-in scope, also applied to portal surfaces. Logo assets are unchanged. */
-.beui-theme {
-  --background: #f7f7f7;
-  --foreground: #202020;
-  --card: #ffffff;
-  --card-foreground: #202020;
-  --popover: #ffffff;
-  --popover-foreground: #202020;
-  --primary: #242424;
-  --primary-foreground: #ffffff;
-  --secondary: #ededed;
-  --secondary-foreground: #404040;
-  --muted: #f0f0f0;
-  --muted-foreground: #626262;
-  --accent: #e8e8e8;
-  --accent-foreground: #242424;
-  --border: #e0e0e0;
-  --input: #868686;
-  --ring: #626262;
-  --success: #087553;
-  --warning: #8a580c;
-  --destructive: #b52d42;
-}
-.dark .beui-theme,
-[data-theme="dark"] .beui-theme {
-  --background: #171717;
-  --foreground: #f4f4f4;
-  --card: #1e1e1e;
-  --card-foreground: #f4f4f4;
-  --popover: #242424;
-  --popover-foreground: #f4f4f4;
-  --primary: #eeeeee;
-  --primary-foreground: #202020;
-  --secondary: #303030;
-  --secondary-foreground: #dedede;
-  --muted: #2b2b2b;
-  --muted-foreground: #b2b2b2;
-  --accent: #383838;
-  --accent-foreground: #f4f4f4;
-  --border: #3b3b3b;
-  --input: #808080;
-  --ring: #c1c1c1;
-  --success: #62d5aa;
-  --warning: #edbe73;
-  --destructive: #f08a99;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.922 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-ring: oklch(0.556 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --destructive: oklch(0.704 0.191 22.216);
 }
 
 @theme inline {
@@ -202,22 +130,18 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: 0.5rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: 1rem;
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
 @layer base {
   * {
     border-color: var(--border);
-  }
-
-  :where(button, a, input, textarea, select):focus-visible {
-    outline: none;
   }
 }
 
@@ -235,24 +159,21 @@
   :where(button, input, select, textarea) {
     font-family: inherit;
   }
-  :where(a, button, input, select, textarea):focus-visible {
+  :where(
+    a:not([data-slot]),
+    button:not([data-slot]),
+    input:not([data-slot]),
+    select,
+    textarea:not([data-slot])
+  ):focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 3px;
-  }
-  [data-slot="button"],
-  [data-slot="input"],
-  [data-slot="input-group"] {
-    min-height: var(--control-height);
-  }
-  [data-slot="button"] {
-    transition-duration: 180ms;
-  }
-  [data-slot="button"]:has(> svg:only-child) {
-    min-width: var(--control-height);
   }
   @media (pointer: coarse) {
     [data-slot="button"],
     [data-slot="input"],
+    [data-slot="toggle-group-item"],
+    [data-slot="tabs-trigger"],
     select {
       min-height: 44px;
     }
@@ -266,6 +187,12 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    [data-slot="button"]:active {
+      transform: none !important;
+    }
+    [data-slot="sheet-content"] {
+      translate: none !important;
+    }
     *,
     *::before,
     *::after {

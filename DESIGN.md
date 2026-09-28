@@ -1,87 +1,81 @@
 ---
 name: Voidmix
-description: A calm, precise project workbench across Web and Desktop.
+description: A precise project workbench using shadcn Neutral across every surface.
 ---
 
 # Voidmix visual system
 
-The shipped interface centers on projects and tasks. The longer-term product
-vision remains in [PRODUCT.md](PRODUCT.md); it must never imply that an
-unavailable runtime or data source is already connected.
+The shipped product organizes projects and tasks. The longer-term roadmap in
+[PRODUCT.md](PRODUCT.md) does not describe capabilities that the current UI can
+promise. Product captures use labelled synthetic examples of actual routes.
 
-## Surface roles
+## Foundation
 
-- **Public website:** explain the product through actual, clearly labelled
-  screenshots. A split hero leads into a project detail view and the three-step
-  workflow: create a project, organize tasks, continue on either surface.
-- **Authentication:** one brand panel and one 400px form; below 900px only the
-  form remains. Registration and password reset follow server capabilities.
-- **Web workbench:** a 224px persistent navigation rail, 56px context bar and a
-  content area capped at 1400px. Project and Admin pages share this shell.
-- **Desktop:** the same vocabulary with 36px controls and an explicitly
-  collapsible 224px rail. The native and renderer minimum width is 800px.
+Use shadcn `base-nova`, Base UI, Tailwind v4 and Phosphor. The official Neutral
+light/dark theme is the baseline in
+[globals.css](packages/ui/src/styles/globals.css). Do not add a page-specific
+palette or recolor the Logo, favicon or native icons. Light primary actions are
+black; dark primary actions are light. Errors use the stock destructive role.
+Other business states use neutral badges, text and an appropriate icon.
 
-## Typography and geometry
+Use stock component variants, radii, focus rings and sizes. Do not impose a
+minimum height on every control or override component colors in page CSS.
+Coarse-pointer targets are at least 44px. Forms use Field and InputGroup;
+Base UI owns overlays, focus containment, dismissal and keyboard behavior.
 
-Use `Inter, SF Pro Display, Segoe UI, Noto Sans SC, system-ui, sans-serif` with
-system fallbacks, without a runtime font download. Marketing headlines range
-from 40px on small screens to 64px on large screens. Application headings are
-24–28px, section headings 18–20px, body text 14px and metadata at least 12px.
-Monospace is reserved for code and identifiers.
+Retain the Inter/system Chinese fallback stack without runtime font downloads.
+Application headings are 24–28px, sections 18–20px, body 14px and metadata at
+least 12px. Marketing headings are 38px on phones and up to 64px on desktop.
+Align metadata and use tabular numerals for dates and numbers. Long names remain
+accessible in the DOM and through title text when truncated visually.
 
-Use 4px spacing increments, typically 16–32px between related page sections.
-Controls have an 8px radius, panels 12px and dialogs 16px. Web controls are
-40px high, Desktop 36px; coarse pointer targets are at least 44px. Structure
-lists with horizontal dividers and use surfaces only for meaningful groups.
+## Page composition
 
-## Color and interaction
+- **Website:** a 64px navigation bar, centered introduction and a full product
+  view capped at 1200px. Standard Tabs select project lists or task details.
+  Two focused images explain project organization and task context. Mobile
+  shows actual mobile captures; images match locale and theme, including system
+  dark mode before hydration. Theme controls move to the footer on phones.
+- **Authentication:** a quiet product panel and a form capped at 400px. Below
+  900px use one column. Registration and reset follow API capabilities.
+- **Web:** one 232px sidebar for projects, details and Admin, a 56px context bar
+  and content capped at 1400px. Below 1024px use an icon rail; below 768px use
+  a Sheet with focus restoration. The Logo mark remains visible on icon rails.
+- **Projects:** divider rows show name, description, stage, ownership and update
+  date. Creation uses a Dialog. Details put tasks beside 288px of project
+  information; that information moves above tasks on narrow screens.
+- **Admin:** a compact header, filtered API total, filters and a table. Standard
+  ToggleGroup, Checkbox and Table primitives retain page-scoped selection and
+  batch feedback. Mobile rows preserve identity, selection and actions.
+- **Desktop:** the same Neutral components, a collapsible 224px navigation rail,
+  and an 800px native/renderer minimum. Settings group appearance, devices,
+  local folders and preferences. No extra native permissions are introduced.
 
-The canonical tokens live in
-[globals.css](packages/ui/src/styles/globals.css). Light surfaces use `#F7F9FC`
-and white; dark surfaces use `#0B1020` and `#151D31`. Brand blue `#5865F2`
-and violet `#8B6CFF` remain identity colors. The light action token is a darker
-blue `#4D58D8` for accessible small text. Semantic success, warning, info and
-error tokens have separate light/dark foreground pairs.
+## State and interaction
 
-Use color together with labels and, for status, icons. Inputs, links and buttons
-retain visible focus. Motion lasts 150–200ms and communicates state changes;
-reduced motion removes animation and translation. Avoid decorative live dots,
-fake metrics, redundant cards, and controls without handlers.
+Loaders own remote data and retain content during background refresh. URL search
+owns filters and cursors. Admin Zustand remains page/account scoped. Forms and
+overlays stay local; Desktop preferences retain migration and delayed hydration.
 
-## Page patterns
+Distinguish initial empty, empty pagination, filtered-empty, permission failure,
+request failure and unavailable capabilities. Errors retain drafts and offer
+real retry actions. No fabricated data, no-op controls or claimed live activity.
 
-Project lists show name, description, stage, ownership kind and update date.
-Creation is a labelled modal. Details combine tasks with a 288px information
-column; the information reflows above tasks on narrow layouts. Task creation is
-progressively disclosed and respects the returned project access capability.
+Keep transitions short and purposeful. Reduced motion removes movement and
+animation. Use semantic headings, labelled controls, visible focus, and sufficient
+contrast. Keep secondary menus and Toast implementations lazy.
 
-Admin prioritizes filters and the table. The total comes from the API; selection,
-batch actions and export remain current-page-only. Mobile rows retain selection,
-identity, role, status and actions. Unknown activity is never labelled online.
+## Ownership and maintenance
 
-Loading states preserve content geometry. Background refresh keeps current
-content visible. Empty, filtered-empty, failed, forbidden and unavailable states
-are distinct. Desktop overview and device data exist only after a valid remote
-response. Activity recording is explicitly unavailable until it is connected.
+Shared primitives belong in `packages/ui`; navigation and business composition
+belong to their applications. There is one theme and no beUI runtime variant.
+The previous [pilot](docs/development/beui-pilot.md) remains historical evidence.
 
-## Responsive and ownership
+Inspect shadcn upstream diffs before applying an update. Keep the button's safe
+`type="button"` default, public prop types, localized Modal wrapper and lazy
+Toast bridge. The generator manifest describes the installed component set;
+review overwrites as documented in
+[the UI workspace](packages/ui/AGENTS.md).
 
-Web collapses the rail below 1024px and uses a modal navigation drawer below
-768px. Layouts support 375px without page-level horizontal scrolling. The public
-site, authentication and workbench all support English/Chinese and light/dark.
-
-Shared components and tokens belong in `packages/ui`. Business composition and
-navigation stay in each application. Loaders own server data, URL search owns
-filters/cursors, scoped Zustand owns Admin selection and feedback, and local
-React state owns forms and overlays. Device preferences retain validation,
-migration and delayed hydration.
-
-See [product design](docs/architecture/design.md) and the
-[visual implementation audit](docs/development/visual-audit.md) for verification.
-
-## Project index pilot
-
-Web `/projects` uses the [beUI pilot](docs/development/beui-pilot.md): graphite
-and mist-white surfaces, black/white primary actions, restrained 180ms feedback,
-and a 232px navigation rail. This is an opt-in route variant, not a global token
-replacement. Logo artwork and other pages retain the visual language above.
+See [product design](docs/architecture/design.md) and
+[visual verification](docs/development/neutral-ui.md).

@@ -6,6 +6,13 @@ test("navigates Desktop and preserves settings, theme and keyboard controls", as
   const navigation = page.getByRole("navigation", { name: "Primary navigation" });
   await navigation.getByRole("link", { name: "Settings" }).click();
   await expect(page.getByLabel("Project folder")).toBeVisible();
+  await expect(navigation.getByRole("link", { name: "Settings" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(navigation.getByRole("link", { name: "Home", exact: true })).not.toHaveClass(
+    /active/,
+  );
   await page.getByRole("main").getByRole("button", { name: "Light", exact: true }).click();
   await expect(page.locator("html")).not.toHaveClass(/dark/);
   await page.reload();
@@ -29,6 +36,8 @@ test("navigates Desktop and preserves settings, theme and keyboard controls", as
   await page.getByRole("button", { name: "Expand navigation" }).click();
   await navigation.getByRole("link", { name: "Projects" }).click();
   await expect(page.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
+  await expect(navigation.getByRole("link", { name: "Projects" })).toHaveClass(/active/);
   await page.goBack();
   await expect(page.getByLabel("Project folder")).toBeVisible();
+  await expect(navigation.getByRole("link", { name: "Settings" })).toHaveClass(/active/);
 });

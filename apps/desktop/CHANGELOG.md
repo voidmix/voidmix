@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Use shadcn Neutral light and dark themes, consistent controls and neutral status badges.
+- Keep the Logo visible when navigation is collapsed.
+- Keep navigation selection synchronized with the current route.
+
 - Unify project lists and task details with the Web workbench.
 - Add collapsible navigation and support 800px native windows.
 - Show explicit unavailable states instead of demo snapshots and fixed activity.
@@ -23,12 +27,18 @@ user can observe them.
 - Newest release first. Heading format `## <version> — <YYYY-MM-DD>`.
 - Group entries under `Added`, `Changed`, `Fixed`, `Removed`, or `Security`; omit
   the groups that have nothing in them.
-- Keep unreleased work under `## Unreleased` and rename that heading when a
+- Keep unreleased work under `## Unreleased
+
+- Use shadcn Neutral light and dark themes, consistent controls and neutral status badges.
+- Keep the Logo visible when navigation is collapsed.` and rename that heading when a
   release is cut.
 - The version must match `package.json`, `src-tauri/tauri.conf.json`, and
   `src-tauri/Cargo.toml`, which are currently kept in step by hand.
 
 ## Unreleased
+
+- Use shadcn Neutral light and dark themes, consistent controls and neutral status badges.
+- Keep the Logo visible when navigation is collapsed.
 
 ### Added
 

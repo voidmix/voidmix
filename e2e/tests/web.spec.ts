@@ -5,9 +5,9 @@ test("renders the public workspace home", async ({ page }) => {
 
   await expect(page).toHaveTitle(/Voidmix/);
   await expect(
-    page.getByRole("heading", { name: /Your projects.*Clearly in view/i }),
+    page.getByRole("heading", { name: /A clear home for.*projects and tasks/i }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: /Open workspace/i }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open workspace/i }).first()).toBeVisible();
 });
 
 for (const width of [390, 1440]) {
@@ -19,7 +19,7 @@ for (const width of [390, 1440]) {
     await page.getByRole("menuitemradio", { name: "简体中文" }).click();
 
     await expect(page.locator("html")).toHaveAttribute("lang", "zh");
-    await expect(page.getByRole("heading", { name: /让项目工作，\s*清晰有序。/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /让项目与任务，\s*清楚有序。/ })).toBeVisible();
 
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("lang", "zh");
@@ -28,7 +28,7 @@ for (const width of [390, 1440]) {
 
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(
-      page.getByRole("heading", { name: /Your projects.*Clearly in view/i }),
+      page.getByRole("heading", { name: /A clear home for.*projects and tasks/i }),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Language: English" })).toBeVisible();
   });
@@ -61,7 +61,7 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { name: /Your projects.*Clearly in view/i }),
+      page.getByRole("heading", { name: /A clear home for.*projects and tasks/i }),
     ).toBeVisible();
   });
 }

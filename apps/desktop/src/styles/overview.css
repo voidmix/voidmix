@@ -2,9 +2,10 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 28px;
+  padding: 24px;
   border-radius: 12px;
-  background: var(--secondary);
+  border: 1px solid var(--border);
+  background: var(--card);
 }
 .overview-entry > svg {
   flex-shrink: 0;
