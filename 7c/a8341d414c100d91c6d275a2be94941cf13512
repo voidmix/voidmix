@@ -1,0 +1,97 @@
+apps/desktop/AGENTS.md
+  s_42000bd424f7f1::t_af2e1aa88b55da 69-71
+apps/desktop/CHANGELOG.md
+  s_42000bd424f7f1::t_bc7339c6fd5098 3-6
+apps/desktop/messages/en.json
+  s_42000bd424f7f1::t_4c514a96a84fbd 204-211
+apps/desktop/messages/zh.json
+  s_42000bd424f7f1::t_b0cbf6c293a5f6 204-211
+apps/desktop/src/lib/projects.test.ts
+  s_42000bd424f7f1::t_0443e558cbeb8c 14,16-19,21
+apps/desktop/src/lib/projects.ts
+  s_42000bd424f7f1::t_578c3d8b89343e 6,18-21,24-25
+apps/desktop/src/router.integration.test.tsx
+  s_42000bd424f7f1::t_8c22773afc6cd5 65-68,140,144-146,174-198,208
+apps/desktop/src/routes/projects/index.tsx
+  s_42000bd424f7f1::t_84bcbb47074399 14-17,26-29,91-105
+apps/web/AGENTS.md
+  s_42000bd424f7f1::t_9ea52bd2c44d18 28-30,48-56,95
+apps/web/messages/en.json
+  s_42000bd424f7f1::t_60950632210078 837-844
+apps/web/messages/zh.json
+  s_42000bd424f7f1::t_e8ddd63c5c7db8 837-844
+apps/web/package.json
+  s_42000bd424f7f1::t_22f657c9c09e68 29-30
+apps/web/src/features/admin/users/api-adapter.ts
+  s_42000bd424f7f1::t_44d1c308a54b86 1-2,28,30-36
+apps/web/src/features/admin/users/client.test.ts
+  s_42000bd424f7f1::t_3b8364a6d954dd 2-9,11-16,18-20,22-26
+apps/web/src/features/admin/users/client.ts
+  s_42000bd424f7f1::t_e0ff5eb0b731bb 1-7
+apps/web/src/features/admin/users/directory-actions.tsx
+  s_42000bd424f7f1::t_933a709fb2f8c7 1-64
+apps/web/src/features/admin/users/directory-toolbar.tsx
+  s_42000bd424f7f1::t_105ee289964e2d 2,33,35,37
+apps/web/src/features/admin/users/directory.test.tsx
+  s_42000bd424f7f1::t_af453a832556a3 9-18,43-76,79,130
+apps/web/src/features/admin/users/directory.tsx
+  s_42000bd424f7f1::t_54762783222f80 1-2,9-12,21-38,41,43-52,55-56,61,79,84,88-93,96,99,101,104-109,111
+apps/web/src/features/admin/users/operations.ts
+  s_42000bd424f7f1::t_0dfb5fddb3f42a 1-48
+apps/web/src/features/admin/users/preview-adapter.test.ts
+  s_42000bd424f7f1::t_b2a94e6697d642 30-41,62-65
+apps/web/src/features/admin/users/preview-adapter.ts
+  s_42000bd424f7f1::t_58039690a89058 61-69
+apps/web/src/features/admin/users/search.ts
+  s_42000bd424f7f1::t_243cce0ab1c10f 1-10,12-15
+apps/web/src/features/admin/users/store-provider.tsx
+  s_42000bd424f7f1::t_3ca643cf547741 1-7,9-20
+apps/web/src/features/admin/users/store.test.ts
+  s_42000bd424f7f1::t_0b86f901442223 1-107
+apps/web/src/features/admin/users/store.ts
+  s_42000bd424f7f1::t_6704976c422b44 1-80
+apps/web/src/features/admin/users/types.ts
+  s_42000bd424f7f1::t_d343936624200b 20-21,28,31-36
+apps/web/src/features/admin/users/user-row.tsx
+  s_42000bd424f7f1::t_2cd2a1c4b251c6 1,14-17,30
+apps/web/src/features/admin/users/user-table.tsx
+  s_42000bd424f7f1::t_bd1e6a19907dca 1,19-22,40-44,61
+apps/web/src/features/auth/auth-flows/component.test.tsx
+  s_42000bd424f7f1::t_5e1ce69c00765f 31
+apps/web/src/features/auth/auth-form.tsx
+  s_42000bd424f7f1::t_ac4bfb96996c1b 3,27,119,129,149,158
+apps/web/src/features/navigation/route-state.tsx
+  s_42000bd424f7f1::t_9e742d975b0828 1-52
+apps/web/src/lib/api-client.ts
+  s_42000bd424f7f1::t_ca9d10809e9b3c 13
+apps/web/src/lib/route-api.ts
+  s_42000bd424f7f1::t_59b0e716216723 1,3-4,6-9
+apps/web/src/lib/session-headers.test.ts
+  s_42000bd424f7f1::t_d490da5c9d06af 2-17,19-35,37-47
+apps/web/src/lib/session-headers.ts
+  s_42000bd424f7f1::t_d68e5836f04dfe 1-9
+apps/web/src/routes/(app)/(admin)/admin.tsx
+  s_42000bd424f7f1::t_04d7f47aa318e1 1-6,8,16-26,33-37,63-77
+apps/web/src/routes/(app)/projects.$projectId.tsx
+  s_42000bd424f7f1::t_0a51cab3f6d903 3,10-11,13-26,28-30,33,35-36,38-39,52-62,64-89
+apps/web/src/routes/(app)/projects.index.tsx
+  s_42000bd424f7f1::t_8a4ac68af65b65 3,7-13,15-28,32-35,37-38,45-51
+apps/web/src/routes/(app)/route.tsx
+  s_42000bd424f7f1::t_6979c1fa70b918 1-10,15,18-27,29,39-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7ca8341d414c100d91c6d275a2be94941cf13512",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
