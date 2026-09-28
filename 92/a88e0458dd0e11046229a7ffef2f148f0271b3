@@ -1,0 +1,23 @@
+.github/workflows/ci.yml
+  s_42000bd424f7f1::t_ad45cc511771bb 7,12-15,18-19,30,35,37,40,42-46,48-52,54-67,75,78-80,83,89
+docs/architecture/tooling.md
+  s_42000bd424f7f1::t_c282bedb8c795b 353-355
+docs/development/testing.md
+  s_42000bd424f7f1::t_a2b8f6a9cd2553 56-85,88,101,236-239,253-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "92a88e0458dd0e11046229a7ffef2f148f0271b3",
+  "prompts": {},
+  "sessions": {
+    "s_42000bd424f7f1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0dccd-191c-7873-8de7-68e3da9f2daf",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
