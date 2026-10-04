@@ -35,7 +35,8 @@ catalog rather than individual workspace manifests.
 Stable third-party dependencies use caret semver ranges (`^`), including
 `0.x` releases without a pre-release suffix. Vitest coverage is pinned exactly
 to the runner bundled by Vite+. Pre-release dependencies remain exact: oRPC
-beta, Drizzle RC, Nitro beta, and Vite+ RC with its Vite alias.
+beta, Drizzle RC, and Nitro beta. Vite+ and its Vite alias use matching stable
+caret ranges.
 The committed `bun.lock` records the exact resolved versions for frozen installs.
 
 Storybook packages and Lightning CSS also use ranges, but their resolved
@@ -195,9 +196,9 @@ oRPC uses `beta`, and Drizzle Kit/ORM use the same `rc5` build. Their `latest`
 tags still point to older stable lines, so a stable-only scan misses updates.
 Update Drizzle manually from `rc5`; the generic semver scan can recommend an
 older build when its hash happens to sort higher.
-Vite+ `1.0.0-rc.1` bundles Vitest `5.0.1`. The coverage catalog pins
+Vite+ `1.0.0` bundles Vitest `5.0.1`. The coverage catalog pins
 `@vitest/coverage-v8` to `5.0.1` so its exact Vitest peer matches the runner.
-The separately published coverage `5.0.2` must wait for a matching Vite+ release.
+The separately published coverage `5.0.3` must wait for a matching Vite+ release.
 Dependency maintenance excludes the runner and
 coverage package at every major version; upgrade them together with Vite+ and
 the root `vite` alias/override, and verify coverage after resolving the lockfile.

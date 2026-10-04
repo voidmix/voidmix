@@ -1,5 +1,6 @@
 import type { ProjectV2, TaskStatusV2 } from "@voidmix/core";
 import type { ProjectApplication } from "@voidmix/application";
+import type { AgentSession } from "@earendil-works/pi-coding-agent";
 
 export type AiRunEvent =
   | { type: "text_delta"; text: string }
@@ -137,14 +138,10 @@ export function createPiProvider(options: { cwd?: string; agentDir?: string } = 
   const sessions = new Map<
     string,
     {
-      session: {
-        prompt: (prompt: string) => Promise<void>;
-        subscribe: (listener: (event: unknown) => void) => () => void;
-        dispose: () => void;
-        abort: () => Promise<void>;
-        steer: (prompt: string, images?: any[]) => Promise<void>;
-        sessionId: string;
-      };
+      session: Pick<
+        AgentSession,
+        "prompt" | "subscribe" | "dispose" | "abort" | "steer" | "sessionId"
+      >;
       provider: AiSession;
     }
   >();

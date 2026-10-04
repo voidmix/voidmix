@@ -6,6 +6,7 @@ const sdk = vi.hoisted(() => ({
   unsubscribe: vi.fn(),
   abort: vi.fn(async () => {}),
   prompt: vi.fn<(text: string) => Promise<void>>(),
+  steer: vi.fn<(text: string) => Promise<"handled" | "queued">>(),
 }));
 vi.mock("@earendil-works/pi-coding-agent", () => ({
   ModelRuntime: { create: async () => ({}) },
@@ -14,6 +15,7 @@ vi.mock("@earendil-works/pi-coding-agent", () => ({
       sessionId: "pi-1",
       prompt: sdk.prompt,
       abort: sdk.abort,
+      steer: sdk.steer,
       subscribe: (listener: typeof sdk.listener) => {
         sdk.listener = listener;
         return sdk.unsubscribe;
@@ -63,6 +65,22 @@ it("delivers prompt failures and releases the subscription", async () => {
   const { provider, input } = await setup();
   expect(await collectRun(provider, input)).toEqual([{ type: "failed", message: "failed" }]);
   expect(sdk.unsubscribe).toHaveBeenCalledOnce();
+});
+it.each(["handled", "queued"] as const)(
+  "accepts Pi steering disposition %s",
+  async (disposition) => {
+    sdk.steer.mockResolvedValueOnce(disposition);
+    const { provider, input } = await setup();
+    await expect(provider.steer!(input.session.id, "Change direction")).resolves.toBeUndefined();
+    expect(sdk.steer).toHaveBeenCalledWith("Change direction");
+  },
+);
+it("propagates Pi steering failures", async () => {
+  sdk.steer.mockRejectedValueOnce(new Error("Cannot steer"));
+  const { provider, input } = await setup();
+  await expect(provider.steer!(input.session.id, "Change direction")).rejects.toThrow(
+    "Cannot steer",
+  );
 });
 it.each([true, false])("cancels a run (already aborted: %s)", async (alreadyAborted) => {
   const controller = new AbortController();
