@@ -24,13 +24,13 @@ function OverviewPage() {
   const loading = Route.useMatch({ select: (match) => Boolean(match.isFetching) });
   const snapshot = result.source === "cloud" ? result.snapshot : null;
   return (
-    <div className="page overview-page">
+    <div className="page overview-page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <PageHeader
         title={t("title")}
         description={t("workbenchDescription")}
         action={<RefreshButton routeId={Route.id} />}
       />
-      <section className="overview-entry">
+      <section className="overview-entry flex items-center gap-5 p-6 rounded-[12px] border border-border bg-card [&_>_svg]:shrink-0 [&_>_svg]:text-primary [&_>_div]:flex-1 [&_p]:mt-1.5 [&_p]:text-muted-foreground">
         <FolderSimple size={28} aria-hidden="true" />
         <div>
           <h2>{t("projectsTitle")}</h2>
@@ -71,7 +71,7 @@ function OverviewPage() {
               {t("checked", { time: formatCloudTime(formatter, snapshot.lastChecked) })}
             </span>
           </div>
-          <dl className="metric-row">
+          <dl className="metric-row grid grid-cols-3 gap-6 py-6 border-y border-border [&_dt]:text-[12px] [&_dt]:text-muted-foreground [&_span]:text-[12px] [&_span]:text-muted-foreground [&_a]:text-[12px] [&_a]:text-muted-foreground [&_a]:text-primary [&_dd]:text-[24px] [&_dd]:font-semibold [&_dd]:my-2 [&_dd]:mx-0">
             <div>
               <dt>{t("cloudStorage")}</dt>
               <dd>{formatBytes(snapshot.storage.used, formatter)}</dd>
@@ -88,7 +88,10 @@ function OverviewPage() {
               <Link to="/devices">{t("manageDevices")}</Link>
             </div>
           </dl>
-          <section className="overview-queue" aria-labelledby="queue-title">
+          <section
+            className="overview-queue [&_ul]:p-0 [&_ul]:mt-5 [&_ul]:list-none [&_li]:grid [&_li]:grid-cols-[minmax(0,_1fr)_120px_100px] [&_li]:items-center [&_li]:gap-6 [&_li]:py-5 [&_li]:px-0 [&_li]:border-b [&_li]:border-border [&_p]:text-muted-foreground [&_p]:text-[12px] [&_progress]:w-full [&_progress]:accent-primary"
+            aria-labelledby="queue-title"
+          >
             <h2 id="queue-title">{t("transferQueue")}</h2>
             {snapshot.jobs.length ? (
               <ul>

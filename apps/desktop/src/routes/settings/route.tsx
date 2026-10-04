@@ -50,7 +50,7 @@ function SettingToggle({
   const t = useDesktopTranslations("settings");
 
   return (
-    <div className="setting-row">
+    <div className="setting-row flex items-center justify-between gap-6 py-5 px-0 border-b border-border [&_strong]:text-[14px] [&_strong]:font-medium [&_p]:text-muted-foreground [&_p]:text-[12px] [&_p]:mt-1 [@media(max-width:1120px)]:flex-wrap">
       <div className="flex min-w-0 items-center gap-1">
         <strong>{label}</strong>
         <HelpHint label={t("aboutSetting", { name: label })} description={description} />
@@ -70,12 +70,12 @@ function SettingsPage() {
   const [folderStatus, setFolderStatus] = useState<PiRuntimeStatus | null>(null);
 
   return (
-    <div className="page settings-page">
+    <div className="page settings-page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <PageHeader className="mb-7" title={t("title")} />
-      <section className="settings-section">
+      <section className="settings-section max-w-200 [&_h2]:mb-3">
         <h2>{t("theme")}</h2>
         <div className="settings-list">
-          <div className="setting-row">
+          <div className="setting-row flex items-center justify-between gap-6 py-5 px-0 border-b border-border [&_strong]:text-[14px] [&_strong]:font-medium [&_p]:text-muted-foreground [&_p]:text-[12px] [&_p]:mt-1 [@media(max-width:1120px)]:flex-wrap">
             <div>
               <strong>{theme === "dark" ? t("darkTheme") : t("lightTheme")}</strong>
             </div>
@@ -89,10 +89,10 @@ function SettingsPage() {
           </div>
         </div>
       </section>
-      <section className="settings-section">
+      <section className="settings-section max-w-200 [&_h2]:mb-3">
         <h2>{t("localProject")}</h2>
         <div className="settings-list">
-          <div className="setting-row">
+          <div className="setting-row flex items-center justify-between gap-6 py-5 px-0 border-b border-border [&_strong]:text-[14px] [&_strong]:font-medium [&_p]:text-muted-foreground [&_p]:text-[12px] [&_p]:mt-1 [@media(max-width:1120px)]:flex-wrap">
             <div>
               <div className="flex items-center gap-1">
                 <strong>{t("projectFolder")}</strong>
@@ -139,7 +139,7 @@ function SettingsPage() {
         </div>
       </section>
       {sections.map((section) => (
-        <section className="settings-section" key={section.title}>
+        <section className="settings-section max-w-200 [&_h2]:mb-3" key={section.title}>
           <div className="flex items-center gap-2">
             <h2 className="mb-0!">{t(section.title)}</h2>
             <Badge variant="outline">{t("unavailable")}</Badge>
@@ -164,7 +164,7 @@ function SettingsPage() {
           </div>
         </section>
       ))}
-      <section className="settings-section">
+      <section className="settings-section max-w-200 [&_h2]:mb-3">
         <h2>{t("devices")}</h2>
         <Link
           className="inline-flex min-h-8 items-center rounded-lg border border-border px-3 text-sm text-primary hover:bg-muted"

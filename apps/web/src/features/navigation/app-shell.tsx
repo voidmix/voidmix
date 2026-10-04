@@ -24,35 +24,43 @@ export function AppShell() {
     ...(admin ? ([{ to: "/admin", label: t("users"), icon: UsersThree }] as const) : []),
   ] as const;
   const navigation = (
-    <nav aria-label={t("navigation")} className="workbench-nav">
+    <nav aria-label={t("navigation")} className="workbench-nav flex flex-col gap-1.5">
       {items.map(({ to, label, icon: Icon }) => (
         <Link
           key={to}
+          className="flex items-center gap-3 rounded-[8px] px-3 py-2.5 font-medium text-muted-foreground hover:bg-muted hover:text-foreground aria-[current=page]:bg-secondary aria-[current=page]:text-foreground [@media(max-width:767px)]:min-h-11"
           to={to}
           aria-label={label}
           title={label}
           onClick={() => setOpen(false)}
           activeProps={{ "aria-current": "page" }}
         >
-          <Icon aria-hidden="true" />
+          <Icon className="size-5 shrink-0" aria-hidden="true" />
           <span>{label}</span>
         </Link>
       ))}
     </nav>
   );
   return (
-    <div className="workbench-shell">
-      <a className="skip-link" href="#main-content">
+    <div className="workbench-shell grid grid-cols-[232px_minmax(0,_1fr)] min-h-svh [@media(max-width:1023px)]:grid-cols-[72px_minmax(0,_1fr)] [@media(max-width:767px)]:block">
+      <a
+        className="skip-link fixed top-2 left-2 z-60 [transform:translateY(-200%)] py-2 px-4 bg-popover rounded-[8px] [&:focus]:[transform:translateY(0)]"
+        href="#main-content"
+      >
         {t("skipContent")}
       </a>
-      <aside className="workbench-sidebar">
-        <Link to="/projects" className="workbench-brand" aria-label={t("projects")}>
+      <aside className="workbench-sidebar sticky top-0 h-svh flex flex-col gap-8 pt-7 pb-4 px-4 border-r border-border bg-sidebar [@media(max-width:1023px)]:px-3 [@media(max-width:1023px)]:[&_.workbench-nav_span]:hidden [@media(max-width:767px)]:hidden">
+        <Link
+          to="/projects"
+          className="workbench-brand flex py-0 px-3 [&_img]:size-7 [@media(max-width:1023px)]:[&_[data-slot=logo]_>_span]:hidden [@media(max-width:1023px)]:p-0 [@media(max-width:1023px)]:justify-center"
+          aria-label={t("projects")}
+        >
           <Logo />
         </Link>
         {navigation}
-        <div className="workbench-account">
+        <div className="workbench-account mt-auto flex items-center gap-2 border-t border-border pt-4 [@media(max-width:1023px)]:justify-center [@media(max-width:1023px)]:[&>div:first-child]:hidden">
           <Avatar name={name} size="small" />
-          <span className="truncate">{name}</span>
+          <span className="min-w-0 flex-1 truncate [@media(max-width:1023px)]:hidden">{name}</span>
           <AccountMenu
             name={name}
             role={role}
@@ -63,9 +71,9 @@ export function AppShell() {
           />
         </div>
       </aside>
-      <div className="workbench-frame">
-        <header className="workbench-topbar">
-          <div className="workbench-mobile-menu">
+      <div className="workbench-frame min-w-0">
+        <header className="workbench-topbar flex items-center gap-3 h-14 py-0 px-8 border-b border-border bg-card [@media(max-width:767px)]:py-0 [@media(max-width:767px)]:px-4">
+          <div className="workbench-mobile-menu hidden [@media(max-width:767px)]:block">
             <Modal
               title={t("navigation")}
               closeLabel={t("close")}
@@ -100,7 +108,10 @@ export function AppShell() {
             </span>
           ) : null}
         </header>
-        <main id="main-content" className="workbench-content">
+        <main
+          id="main-content"
+          className="workbench-content max-w-350 my-0 mx-auto p-8 [@media(max-width:767px)]:py-6 [@media(max-width:767px)]:px-4"
+        >
           <Outlet />
         </main>
       </div>

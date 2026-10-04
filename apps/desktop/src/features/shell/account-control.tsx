@@ -39,7 +39,10 @@ export function AccountControl() {
       );
 
   return (
-    <div className="account-control" aria-label={t("account")}>
+    <div
+      className="account-control group-data-[collapsed]/desktop-shell:hidden flex items-center gap-2.5 py-3 px-2.5 border-t border-border [&_>_span]:flex [&_>_span]:min-w-0 [&_>_span]:flex-col [&_strong]:truncate [&_strong]:text-[12px] [&_strong]:font-medium [&_small]:wrap-anywhere [&_small]:text-[12px] [&_small]:text-muted-foreground"
+      aria-label={t("account")}
+    >
       {profile ? (
         <Avatar name={profile.displayName} size="small" />
       ) : (

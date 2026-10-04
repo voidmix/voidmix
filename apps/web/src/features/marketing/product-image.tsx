@@ -22,7 +22,7 @@ export function ProductImage({
   const asset = images[key];
   const darkKey = `${view}-${locale}-dark` as keyof typeof images;
   return (
-    <picture className="product-picture">
+    <picture className="product-picture block">
       {theme === "system" ? (
         <>
           <source
@@ -46,6 +46,7 @@ export function ProductImage({
         height={asset.mobile.height}
       />
       <img
+        className="block h-auto w-full"
         src={`/product/${key}.webp`}
         width={asset.desktop.width}
         height={asset.desktop.height}

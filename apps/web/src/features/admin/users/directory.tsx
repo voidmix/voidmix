@@ -80,7 +80,7 @@ export function UserDirectory({
 
   return (
     <>
-      <section className="directory-panel rounded-xl border bg-card">
+      <section className="directory-panel rounded-xl border bg-card min-w-0">
         <DirectoryToolbar
           onExport={exportVisibleUsers}
           query={search.query ?? ""}

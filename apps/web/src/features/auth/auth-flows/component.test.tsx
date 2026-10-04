@@ -150,6 +150,7 @@ describe("authentication forms", () => {
     render(<AuthForm mode="login" />);
 
     expect(screen.queryByRole("link", { name: "Create account" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Already have an account?")).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Forgot password?" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign in" })).toBeVisible();
   });

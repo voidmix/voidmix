@@ -304,7 +304,7 @@
     "registrationUnavailableDescription": "New account registration is not available with the current system and mail configuration.",
     "registrationUnavailableBody": "An administrator can reopen registration after verification email delivery is ready.",
     "backToSignIn": "Back to sign in",
-    "loginDescription": "Enter your account details to continue to the workspace.",
+    "loginDescription": "Sign in to your Voidmix workspace.",
     "signupDescription": "Create an account with your work email to get started.",
     "newToVoidmix": "New to Voidmix?",
     "alreadyHaveAccount": "Already have an account?",

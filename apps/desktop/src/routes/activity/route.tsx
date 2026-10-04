@@ -16,7 +16,7 @@ export const Route = createFileRoute("/activity")({
 function ActivityPage() {
   const t = useDesktopTranslations("activity");
   return (
-    <div className="page">
+    <div className="page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <PageHeader title={t("title")} />
       <EmptyState title={t("unavailable")} description={t("unavailableDescription")} />
     </div>

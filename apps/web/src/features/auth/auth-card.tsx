@@ -1,13 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@voidmix/ui/components/ui/card";
 import { Logo } from "@voidmix/ui/logo";
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { useTranslations } from "../../i18n/client";
 
 interface AuthCardProps {
@@ -19,29 +12,34 @@ interface AuthCardProps {
 
 export function AuthCard({ children, description, footer, title }: AuthCardProps) {
   const t = useTranslations("auth");
+  const titleId = useId();
   return (
-    <Card className="w-full max-w-sm gap-0 py-0 [--card-spacing:--spacing(6)]">
-      <CardHeader className="gap-5 pt-(--card-spacing) pb-5">
+    <section
+      aria-labelledby={titleId}
+      className="auth-card flex w-full max-w-[360px] flex-col gap-7 [@media(pointer:coarse)]:[&_[data-slot=input-group]]:min-h-11"
+    >
+      <header className="flex flex-col gap-6">
         <Link
           aria-label={t("homeLabel")}
-          className="w-fit rounded-lg text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="w-fit rounded-lg text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50 [.auth-form-area_&]:hidden [@media(max-width:900px)]:[.auth-form-area_&]:inline-flex"
           to="/"
         >
           <Logo className="text-sm" />
         </Link>
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl leading-tight font-semibold tracking-tight text-balance">
+          <h1
+            id={titleId}
+            className="text-2xl leading-tight font-semibold tracking-tight text-balance"
+          >
             {title}
           </h1>
-          <CardDescription className="text-sm leading-5 text-pretty">{description}</CardDescription>
+          <p className="text-sm leading-5 text-pretty text-muted-foreground">{description}</p>
         </div>
-      </CardHeader>
-      <CardContent className="pb-(--card-spacing)">{children}</CardContent>
+      </header>
+      {children}
       {footer ? (
-        <CardFooter className="justify-center rounded-b-xl bg-muted/40 py-4 text-center text-sm text-muted-foreground">
-          {footer}
-        </CardFooter>
+        <footer className="text-center text-sm leading-6 text-muted-foreground">{footer}</footer>
       ) : null}
-    </Card>
+    </section>
   );
 }

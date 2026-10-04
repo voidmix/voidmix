@@ -31,7 +31,7 @@ src/
   lib/cloud/        remote normalization, source selection, and types
   lib/desktop.ts    Tauri window/runtime bridge
   lib/folder.ts     Settings folder-authorization bridge
-  styles/          shell, overview, device/activity, project/settings styles
+  App.css          global renderer rules and native window drag regions
   lib/preferences.ts persisted Zustand store for renderer preferences
   router.integration.test.tsx route rendering, loading, refresh, and history tests
   i18n/             static catalogs, locale bootstrap and date formatting
@@ -119,6 +119,8 @@ src-tauri/
   `package.json`, `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml` in step.
 - Use shared shadcn Neutral tokens and `@voidmix/ui` primitives with Phosphor; the same no-Radix, no-Lucide
   rule applies here.
+- Keep page layouts and responsive states in component Tailwind classes. CSS
+  entries retain shared tokens, global renderer rules and native window behavior.
 
 ## Verification
 

@@ -20,13 +20,18 @@ export function PasswordField({ action, id, label, ...props }: PasswordFieldProp
   const t = useTranslations("auth");
 
   return (
-    <Field>
+    <Field data-disabled={props.disabled}>
       <div className="flex items-center justify-between gap-3">
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
         {action}
       </div>
-      <InputGroup className="h-9">
-        <InputGroupInput id={id} type={visible ? "text" : "password"} {...props} />
+      <InputGroup>
+        <InputGroupInput
+          className="h-full rounded-s-[inherit]"
+          id={id}
+          type={visible ? "text" : "password"}
+          {...props}
+        />
         <InputGroupAddon align="inline-end">
           <IconButton
             label={visible ? t("hidePassword") : t("showPassword")}

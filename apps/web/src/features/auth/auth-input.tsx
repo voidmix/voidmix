@@ -8,9 +8,9 @@ export function AuthInput({
   ...props
 }: ComponentProps<typeof Input> & { id: string; label: ReactNode }) {
   return (
-    <Field>
+    <Field data-disabled={props.disabled}>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <Input className="h-9" required id={id} {...props} />
+      <Input required id={id} {...props} />
     </Field>
   );
 }

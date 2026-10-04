@@ -304,7 +304,7 @@
     "registrationUnavailableDescription": "当前系统和邮件配置暂不支持新账号注册。",
     "registrationUnavailableBody": "邮件验证准备就绪后，管理员可以重新开放注册。",
     "backToSignIn": "返回登录",
-    "loginDescription": "输入账号信息以继续进入工作区。",
+    "loginDescription": "登录以继续使用 Voidmix 工作区。",
     "signupDescription": "使用工作邮箱创建账号并开始使用。",
     "newToVoidmix": "第一次使用 Voidmix？",
     "alreadyHaveAccount": "已有账号？",

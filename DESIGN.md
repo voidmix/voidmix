@@ -44,8 +44,10 @@ accessible in the DOM and through title text when truncated visually.
   Two focused images explain project organization and task context. Mobile
   shows actual mobile captures; images match locale and theme, including system
   dark mode before hydration. Theme controls move to the footer on phones.
-- **Authentication:** a quiet product panel and a form capped at 400px. Below
-  900px use one column. Registration and reset follow API capabilities.
+- **Authentication:** a quiet product panel and an unboxed form capped at 360px,
+  with a plain text account link below the primary action. Below 900px use one
+  column and show the Logo above the form. Registration and reset follow API
+  capabilities. Autofill uses the same Neutral surface as the input and its addon.
 - **Web:** one 232px sidebar for projects, details and Admin, a 56px context bar
   and content capped at 1400px. Below 1024px use an icon rail; below 768px use
   a Sheet with focus restoration. The Logo mark remains visible on icon rails.

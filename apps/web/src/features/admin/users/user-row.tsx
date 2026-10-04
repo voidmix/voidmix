@@ -23,9 +23,13 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
   const actionLabel = user.status === "suspended" ? t("activate") : t("suspend");
   const isOwner = user.role === "owner";
   return (
-    <TableRow data-selected={selected || undefined} data-state={selected ? "selected" : undefined}>
-      <TableCell className="w-12 px-4 py-4">
-        <label className="directory-checkbox">
+    <TableRow
+      className="data-[selected]:bg-secondary [@media(max-width:767px)]:grid [@media(max-width:767px)]:grid-cols-[44px_minmax(0,1fr)_auto] [@media(max-width:767px)]:items-center [@media(max-width:767px)]:border-b [@media(max-width:767px)]:border-border [@media(max-width:767px)]:px-2 [@media(max-width:767px)]:py-3"
+      data-selected={selected || undefined}
+      data-state={selected ? "selected" : undefined}
+    >
+      <TableCell className="w-12 px-4 py-4 [@media(max-width:767px)]:col-start-1 [@media(max-width:767px)]:row-span-3 [@media(max-width:767px)]:row-start-1 [@media(max-width:767px)]:border-0 [@media(max-width:767px)]:p-0">
+        <label className="directory-checkbox inline-flex cursor-pointer items-center justify-center [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:min-w-11 [@media(max-width:767px)]:min-h-11 [@media(max-width:767px)]:min-w-11">
           <Checkbox
             aria-label={`${t("selectUser")} ${user.name}`}
             checked={selected}
@@ -33,7 +37,7 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
           />
         </label>
       </TableCell>
-      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums [@media(max-width:767px)]:border-0 [@media(max-width:767px)]:px-2 [@media(max-width:767px)]:py-1 [@media(max-width:767px)]:col-span-2 [@media(max-width:767px)]:col-start-2">
         <div className="flex items-center gap-3">
           <Avatar name={user.name} />
           <div className="flex min-w-0 flex-col gap-0.5 [overflow-wrap:anywhere]">
@@ -42,19 +46,19 @@ export function UserRow({ user, onToggle }: { user: AdminUser; onToggle: () => v
           </div>
         </div>
       </TableCell>
-      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums [@media(max-width:767px)]:border-0 [@media(max-width:767px)]:px-2 [@media(max-width:767px)]:py-1 [@media(max-width:767px)]:col-start-2 [@media(max-width:767px)]:text-[12px]">
         <span>{formatAdminRole(user.role, t)}</span>
       </TableCell>
-      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums [@media(max-width:767px)]:border-0 [@media(max-width:767px)]:px-2 [@media(max-width:767px)]:py-1 [@media(max-width:767px)]:col-start-2">
         <Badge variant={tone}>{formatAdminStatus(user.status, t)}</Badge>
       </TableCell>
-      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums [@media(max-width:767px)]:border-0 [@media(max-width:767px)]:px-2 [@media(max-width:767px)]:py-1 [@media(max-width:767px)]:hidden">
         {formatAdminLastActive(user.lastActive, t, formatter)}
       </TableCell>
-      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums [@media(max-width:767px)]:border-0 [@media(max-width:767px)]:px-2 [@media(max-width:767px)]:py-1 [@media(max-width:767px)]:hidden">
         {formatAdminJoinedAt(user.joinedAt, formatter, t("notAvailable"))}
       </TableCell>
-      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums">
+      <TableCell className="px-4 py-4 text-muted-foreground tabular-nums [@media(max-width:767px)]:border-0 [@media(max-width:767px)]:px-2 [@media(max-width:767px)]:py-1 [@media(max-width:767px)]:col-start-3 [@media(max-width:767px)]:row-span-2 [@media(max-width:767px)]:row-start-2">
         <Button
           aria-label={`${actionLabel} ${user.name}`}
           disabled={isOwner || isPending}

@@ -35,7 +35,7 @@ function AdminUsersRoute() {
   const router = useRouter();
   const session = useSession();
   return (
-    <div className="project-page">
+    <div className="project-page flex flex-col gap-6 [&_h1]:text-[26px] [&_h1]:leading-[1.25] [&_h1]:tracking-[-0.025em] [@media(max-width:767px)]:[&_h1]:text-[24px]">
       <PageHeader
         title={t("userDirectory")}
         description={t("userDirectoryDescription")}

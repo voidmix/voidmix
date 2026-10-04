@@ -32,7 +32,7 @@ export function RefreshButton({ routeId }: { routeId: string }) {
 export function DesktopRoutePending() {
   const t = useDesktopTranslations("common");
   return (
-    <div className="page">
+    <div className="page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <LoadingState label={t("loading")} />
     </div>
   );
@@ -43,7 +43,7 @@ export function DesktopRouteError() {
   const errors = useDesktopTranslations("errors");
   const router = useRouter();
   return (
-    <div className="page">
+    <div className="page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <Alert variant="destructive">
         <AlertDescription>{errors("unknown")}</AlertDescription>
       </Alert>

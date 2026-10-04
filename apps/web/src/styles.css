@@ -1,7 +1,4 @@
 @import "@voidmix/ui/styles.css";
-@import "./features/navigation/workbench.css";
-@import "./features/projects/projects.css";
-@import "./features/marketing/marketing.css";
 @import "./features/auth/auth.css";
 
 :root {
@@ -31,9 +28,11 @@ a:not([data-slot="button"]) {
   text-decoration: none;
 }
 
-svg {
-  height: 1em;
-  width: 1em;
+@layer base {
+  svg {
+    height: 1em;
+    width: 1em;
+  }
 }
 
 a:not([data-slot="button"]):focus-visible {
@@ -50,16 +49,5 @@ a:not([data-slot="button"]):focus-visible {
   *::before,
   *::after {
     transition-duration: 0.01ms !important;
-  }
-}
-
-@media (max-width: 760px) {
-  .home-mobile-navigation {
-    padding-inline-end: max(1rem, env(safe-area-inset-right));
-    padding-inline-start: max(1rem, env(safe-area-inset-left));
-  }
-
-  .home-footer {
-    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
   }
 }

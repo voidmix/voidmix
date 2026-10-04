@@ -92,13 +92,15 @@ export function AuthForm({
     <AuthCard
       description={mode === "login" ? t("loginDescription") : t("signupDescription")}
       footer={
-        mode === "login" && capabilities.registrationAvailable ? (
-          <span>
-            {t("newToVoidmix")}{" "}
-            <AuthLink next={next} to="/signup">
-              {t("createAccount")}
-            </AuthLink>
-          </span>
+        mode === "login" ? (
+          capabilities.registrationAvailable ? (
+            <span>
+              {t("newToVoidmix")}{" "}
+              <AuthLink next={next} to="/signup">
+                {t("createAccount")}
+              </AuthLink>
+            </span>
+          ) : null
         ) : (
           <span>
             {t("alreadyHaveAccount")}{" "}

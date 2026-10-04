@@ -54,7 +54,7 @@ function ProjectsPage() {
     }
   }
   return (
-    <div className="page projects-page">
+    <div className="page projects-page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <PageHeader
         title={t("title")}
         description={t("description")}
@@ -108,9 +108,15 @@ function ProjectsPage() {
           description={t(search.cursor ? "emptyPage" : "emptyDescription")}
         />
       ) : null}
-      <section className="project-list" aria-label={t("projectList")}>
+      <section
+        className="project-list overflow-hidden border border-border rounded-[12px] bg-card [&:empty]:hidden [&_>_a]:grid [&_>_a]:grid-cols-[minmax(0,_1fr)_120px_90px_110px] [&_>_a]:items-center [&_>_a]:gap-4 [&_>_a]:p-5 [&_>_a]:border-b [&_>_a]:border-border [&_>_a]:[transition:background-color_180ms] [&_>_a:last-child]:border-b-0 [&_>_a:hover]:bg-muted [&_h2]:text-[14px] [&_h2]:font-semibold [&_p]:mt-1 [&_p]:text-[12px] [&_p]:text-muted-foreground [@media(max-width:1120px)]:[&_>_a]:grid-cols-[minmax(0,_1fr)_auto] [&_>_a:focus-visible]:[outline-offset:-3px]"
+        aria-label={t("projectList")}
+      >
         {projects.length ? (
-          <div className="project-columns" aria-hidden="true">
+          <div
+            className="project-columns grid grid-cols-[minmax(0,_1fr)_120px_90px_110px] items-center gap-4 p-5 border-b border-border [transition:background-color_180ms] py-3 text-[12px] text-muted-foreground bg-muted [@media(max-width:1120px)]:hidden"
+            aria-hidden="true"
+          >
             <span>{t("name")}</span>
             <span>{t("stage")}</span>
             <span>{t("ownership")}</span>
@@ -124,7 +130,7 @@ function ProjectsPage() {
             to="/projects/$projectId"
             params={{ projectId: project.id }}
           >
-            <div className="project-identity">
+            <div className="project-identity flex items-center gap-3 min-w-0 [&_>_svg]:shrink-0 [&_>_svg]:size-5 [&_>_svg]:text-muted-foreground">
               <FolderSimple aria-hidden="true" />
               <div className="min-w-0">
                 <h2 className="truncate" title={project.title}>
@@ -147,7 +153,7 @@ function ProjectsPage() {
               {t(project.organizationId ? "organization" : "personal")}
             </span>
             <time
-              className="project-updated text-xs text-muted-foreground"
+              className="project-updated text-xs text-muted-foreground text-right tabular-nums"
               dateTime={project.updatedAt.toISOString()}
             >
               {formatter.dateTime(project.updatedAt, "short")}

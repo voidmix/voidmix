@@ -116,6 +116,8 @@ server/
   the final policy boundary.
 - Stylesheets: `src/styles.css` imports `@voidmix/ui/styles.css`, then the root
   route imports that single entry with `?url` and feeds it through `head().links`.
+- Keep page layouts and responsive states in component Tailwind classes. CSS
+  entries retain shared tokens, global document rules and browser autofill fixes.
 - Dev server is `strictPort` on 3000. Vite plugin order is
   evlog → nitro → tailwindcss → tanstackStart → viteReact. RSC stays disabled
   until a measured Server Component migration beats the equivalent client build.

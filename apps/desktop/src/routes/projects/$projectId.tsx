@@ -56,7 +56,7 @@ function ProjectDetail() {
     }
   }
   return (
-    <div className="page project-detail-page">
+    <div className="page project-detail-page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <nav
         aria-label={t("breadcrumb")}
         className="flex min-w-0 items-center gap-3 text-xs text-muted-foreground"
@@ -94,7 +94,7 @@ function ProjectDetail() {
               />
             }
           />
-          <div className="project-detail-grid">
+          <div className="project-detail-grid grid grid-cols-[minmax(0,_1fr)_288px] gap-8 items-start [@media(max-width:1120px)]:grid-cols-1">
             <section className="flex min-w-0 flex-col gap-5" aria-labelledby="tasks-heading">
               <SectionHeading
                 titleId="tasks-heading"
@@ -148,7 +148,7 @@ function ProjectDetail() {
                   description={t(writable ? "taskPlaceholder" : "readOnly")}
                 />
               ) : (
-                <ul className="project-task-list">
+                <ul className="project-task-list border-y border-border [&_li]:flex [&_li]:items-center [&_li]:justify-between [&_li]:gap-4 [&_li]:py-4.5 [&_li]:px-0 [&_li]:border-b [&_li]:border-border [&_li:last-child]:border-b-0">
                   {project.tasks.map((task) => (
                     <li key={task.id}>
                       <span className="min-w-0 [overflow-wrap:anywhere]">{task.title}</span>
@@ -169,7 +169,10 @@ function ProjectDetail() {
                 </ul>
               )}
             </section>
-            <dl className="project-facts" aria-label={t("projectInfo")}>
+            <dl
+              className="project-facts flex flex-col gap-5 border-l border-border pl-6 [&_dt]:text-muted-foreground [&_dt]:text-[12px] [&_dt]:mb-1 [&_dd]:wrap-anywhere [@media(max-width:1120px)]:order-[-1] [@media(max-width:1120px)]:grid [@media(max-width:1120px)]:grid-cols-2 [@media(max-width:1120px)]:pt-0 [@media(max-width:1120px)]:pb-5 [@media(max-width:1120px)]:px-0 [@media(max-width:1120px)]:border-l-0 [@media(max-width:1120px)]:border-b [@media(max-width:1120px)]:border-border"
+              aria-label={t("projectInfo")}
+            >
               <div>
                 <dt>{t("ownership")}</dt>
                 <dd>{t(project.organizationId ? "organization" : "personal")}</dd>
@@ -201,7 +204,7 @@ function ProjectDetail() {
 function ProjectNotFound() {
   const t = useDesktopTranslations("projects");
   return (
-    <div className="page">
+    <div className="page flex flex-col gap-7 w-full max-w-350 m-auto p-8 [&_>_header_h1]:text-[24px] [&_h2]:text-[18px] [&_h2]:font-semibold [&_p]:wrap-anywhere [&_[data-slot=badge]]:text-[12px]">
       <Link to="/projects">{t("backToProjects")}</Link>
       <PageHeader title={t("missing")} />
     </div>

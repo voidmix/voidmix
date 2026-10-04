@@ -15,6 +15,24 @@ Desktop navigation derives its selected item from the current route pathname,
 including nested project routes, so the WebView shell follows navigation and
 history updates.
 
+Authentication uses a 360px form without Card padding or a shaded footer. The
+desktop product panel owns the Logo; the single-column layout shows it above
+the form. Labels, inputs and the primary action share one alignment. The product
+image is capped at 520px and grouped with its introduction. Browser autofill
+uses Neutral tokens for both the input and password addon, preserving the
+group's focus ring. Coarse-pointer password groups retain a 44px touch target.
+When registration is unavailable, login omits the account-switch footer.
+Authentication layout, responsive breakpoints and touch-target sizing use
+Tailwind utilities in the feature components. `auth.css` retains only the
+browser autofill correction.
+Web marketing, navigation, projects and Admin layouts, and Desktop shell and
+route layouts also use colocated Tailwind utilities. The seven former page
+stylesheets have been removed. Semantic classes remain as stable test and state
+hooks; they do not define stylesheet rules. Global CSS retains theme tokens,
+document defaults, reduced motion, autofill and native window drag behavior.
+Web's default SVG sizing lives in the base layer so component utilities can
+specify icon dimensions.
+
 ```mermaid
 flowchart TD
   Tokens[shadcn Neutral tokens] --> UI[Base UI and shared primitives]

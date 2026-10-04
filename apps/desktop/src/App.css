@@ -1,7 +1,3 @@
-@import "./styles/shell.css";
-@import "./styles/overview.css";
-@import "./styles/devices-activity.css";
-@import "./styles/projects-settings.css";
 :root {
   font-family: var(--font-sans);
   color: var(--foreground);
@@ -30,25 +26,6 @@ a {
 button:disabled {
   cursor: not-allowed;
 }
-.page {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  width: 100%;
-  max-width: 1400px;
-  margin: auto;
-  padding: 32px;
-}
-.page > header h1 {
-  font-size: 24px;
-}
-.page h2 {
-  font-size: 18px;
-  font-weight: 600;
-}
-.page p {
-  overflow-wrap: anywhere;
-}
-.page [data-slot="badge"] {
-  font-size: 12px;
+[data-tauri-drag-region] {
+  -webkit-app-region: drag;
 }

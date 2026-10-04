@@ -30,12 +30,12 @@ export function UserTable({
   const someSelected = selectedVisibleCount > 0 && !allSelected;
 
   return (
-    <div className="directory-table-wrap">
-      <Table className="directory-table">
-        <TableHeader>
-          <TableRow>
+    <div className="directory-table-wrap overflow-x-auto">
+      <Table className="directory-table min-w-180 [@media(max-width:767px)]:block [@media(max-width:767px)]:min-w-0">
+        <TableHeader className="sticky top-0 [@media(max-width:767px)]:block">
+          <TableRow className="[@media(max-width:767px)]:flex">
             <TableHead className="w-12 px-4">
-              <label className="directory-checkbox">
+              <label className="directory-checkbox inline-flex cursor-pointer items-center justify-center [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:min-w-11 [@media(max-width:767px)]:min-h-11 [@media(max-width:767px)]:min-w-11">
                 <Checkbox
                   aria-label={t("selectAllUsers")}
                   checked={allSelected}
@@ -56,7 +56,7 @@ export function UserTable({
             </TableHeading>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="[@media(max-width:767px)]:block">
           {users.map((user) => (
             <UserRow key={user.id} onToggle={() => onToggle(user)} user={user} />
           ))}
@@ -73,5 +73,9 @@ export function UserTable({
 }
 
 function TableHeading({ children }: { children: React.ReactNode }) {
-  return <TableHead className="px-4">{children}</TableHead>;
+  return (
+    <TableHead className="px-4 [@media(max-width:767px)]:absolute [@media(max-width:767px)]:size-px [@media(max-width:767px)]:overflow-hidden [@media(max-width:767px)]:[clip-path:inset(50%)]">
+      {children}
+    </TableHead>
+  );
 }
