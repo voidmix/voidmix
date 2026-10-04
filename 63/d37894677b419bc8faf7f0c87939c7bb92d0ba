@@ -1,0 +1,77 @@
+DESIGN.md
+  s_0ed8b5b0959550::t_71b6c0c6ae37f4 47-50
+apps/desktop/AGENTS.md
+  s_6e6ca3d665c920::t_475bd03cf417e3 34,122-123
+apps/desktop/src/App.css
+  s_6e6ca3d665c920::t_7349e1083e6a65 29-30
+apps/desktop/src/features/shell/route-state.tsx
+  s_6e6ca3d665c920::t_731bf924995f29 35,46
+apps/desktop/src/routes/activity/route.tsx
+  s_6e6ca3d665c920::t_64fe6d28ab1249 19
+apps/desktop/src/routes/index.tsx
+  s_6e6ca3d665c920::t_7ab9359811bded 27,33,74,91-94
+apps/desktop/src/routes/projects/$projectId.tsx
+  s_6e6ca3d665c920::t_bd74ea1ba579f6 59,97,151,172-175,207
+apps/desktop/src/routes/projects/index.tsx
+  s_6e6ca3d665c920::t_4b5a0736dac1c3 57,111-114,116-119,133,156
+apps/desktop/src/routes/settings/route.tsx
+  s_6e6ca3d665c920::t_ed7bbf20df36ff 53,73,75,78,92,95,142,167
+apps/web/AGENTS.md
+  s_6e6ca3d665c920::t_164bd56cd4e53e 119-120
+apps/web/messages/en.json
+  s_0ed8b5b0959550::t_9af471eaa6f119 307
+apps/web/messages/zh.json
+  s_0ed8b5b0959550::t_4bee48ee6bcb84 307
+apps/web/src/features/admin/users/directory-actions.tsx
+  s_6e6ca3d665c920::t_d99a5d8c8a4e4b 26
+apps/web/src/features/admin/users/directory.tsx
+  s_6e6ca3d665c920::t_7fc0ae23e2229e 83
+apps/web/src/features/auth/auth-card.tsx
+  s_6e6ca3d665c920::t_fc9a74d8f504fd 3,15,17-21,24,30-33,36,38-39,41,43
+apps/web/src/features/auth/auth-flows/component.test.tsx
+  s_0ed8b5b0959550::t_240ace8398fa4f 153
+apps/web/src/features/auth/auth-form.tsx
+  s_0ed8b5b0959550::t_4d8da0d7e694d7 95-103
+apps/web/src/features/auth/auth-input.tsx
+  s_0ed8b5b0959550::t_a85dd713abc81c 11,13
+apps/web/src/features/auth/auth-layout.tsx
+  s_0ed8b5b0959550::t_6cf2217966db87 11-15,19-33,36-37
+apps/web/src/features/auth/auth.css
+  s_6e6ca3d665c920::t_4b6ad92297d5de 1-9
+apps/web/src/features/auth/password-field.tsx
+  s_0ed8b5b0959550::t_86b65f3fa1b71c 23,28-34
+apps/web/src/routes/(app)/(admin)/admin.tsx
+  s_6e6ca3d665c920::t_0244ed536985d0 38
+apps/web/src/routes/(app)/projects.$projectId.tsx
+  s_6e6ca3d665c920::t_9ea8875ccb7651 56,70,99,120-123
+apps/web/src/routes/(app)/projects.index.tsx
+  s_6e6ca3d665c920::t_40f56c4ee45a5d 45,80,88-95,103,108-109,118,122,144-147,149-153
+apps/web/src/styles.css
+  s_6e6ca3d665c920::t_9cb3d066493c80 31-35
+docs/development/neutral-ui.md
+  s_6e6ca3d665c920::t_9f694588b10e74 18-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "63d37894677b419bc8faf7f0c87939c7bb92d0ba",
+  "prompts": {},
+  "sessions": {
+    "s_0ed8b5b0959550": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0f7e1-98cf-7e32-ae79-1b92c323ef98",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    },
+    "s_6e6ca3d665c920": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a105d9-d29e-70d3-ae7b-9ed34244b25c",
+        "model": "unknown"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
