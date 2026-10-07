@@ -141,12 +141,13 @@ session guidance targets a stack this repository does not use.
 Deliberately **not** adopted. Recording these is the more useful half, because it
 stops the same candidates being re-evaluated every few months:
 
-- `turborepo` — the repository forbids a second task orchestrator
-  ([ADR-0002](../architecture/decisions/0002-vite-plus-sole-orchestrator.md)), so
-  every trigger would be a false positive.
+- `turborepo` — not yet adopted. Turbo now owns the task graph
+  ([ADR-0018](../architecture/decisions/0018-turbo-task-orchestration.md)); review
+  the candidate skill against the pinned tool before installing it.
 - `opentui` — a terminal UI framework; `apps/desktop` is a Tauri webview.
-- `tanstack-query-best-practices` and `tanstack-integration-best-practices` — no
-  TanStack Query dependency exists. Reconsider if one is added.
+- `tanstack-query-best-practices` and `tanstack-integration-best-practices` — not
+  yet adopted. Query is now used for ordinary resource data; review candidates
+  against the installed Router integration and ClientSession ownership first.
 - `migrate-radix-to-base` — a migration this repository never has to perform, and
   the `shadcn` skill already carries the API differences.
 - `impeccable`, `ui-ux-pro-max`, `frontend-design` — overlapping design skills.

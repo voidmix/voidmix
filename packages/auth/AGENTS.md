@@ -29,6 +29,9 @@ the single grant lookup that answers whether a session may do something.
   to `permissions` must never silently expand an existing role.
 - Settings administration is retired in Account-first V2; do not restore its
   unused permission strings. Runtime authentication policy remains API-owned.
+- Cloud operational metadata uses explicit `admin.runs.read` and
+  `admin.usage.read` grants for Admin/Owner. Application rechecks the current
+  database role; these grants do not permit viewing private prompts or files.
 - `hasPermission(session: Session | null, permission)` accepts `null` and returns
   `false` for it. Callers must still distinguish "no session" (401) from
   "insufficient role" (403); `apps/api/server/api`'s `requirePermission` does that.

@@ -12,13 +12,26 @@ frontend: Zod schemas, the oRPC contract tree, and the DTOs derived from them.
 | `.`  | `src/index.ts` — schemas, procedures, `apiContract`, and `*Dto` types |
 
 `src/index.ts` composes the explicit contract tree and public exports. Domain
-schemas and procedures live in `account.ts`, `projects.ts`, `reviews.ts`,
+schemas and procedures live in `cloud.ts`, `account.ts`, `projects.ts`, `reviews.ts`,
 `assets.ts`, and `agents.ts`; `common.ts` owns shared fields, envelopes and
 procedure construction. `methods.ts` owns HTTP method classification for API and client.
 See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired-code.md).
 
 ## Ownership
 
+- `apiContract.cloud` owns the new Conversations, Tasks, Runs, Assets, Usage,
+  Notifications, preferences, capabilities and tool-detail protocol. Conversation
+  streams deliver durable snapshots; Run streams deliver ordered events.
+- Task DTOs expose currentRoundId/goalVersion and immutable Round metadata.
+  startRound resets the goal budget; continueRound and retry preserve it.
+  Revision acceptance supplies round/version for compare-and-set semantics.
+- Run snapshots carry durable message projections, a bounded recent event page,
+  the high-water cursor and an older-history cursor. beforeSequence pages replay
+  older facts in ascending order. Asset metadata reads never return signed URLs.
+- Cloud list/history cursors bind to actor/domain/filter scope. Tool replay events
+  contain bounded summaries; full input/output is only in authorized tool detail.
+  Notifications target a Task or Conversation and expose a permission-filtered
+  unread count.
 - Own the request and response shape of every procedure, and the DTO types that
   consumers import.
 - API failures use the open transport code plus `data.error.code` and optional

@@ -23,3 +23,11 @@ export function createProjectApplication(options: ProjectOptions): ProjectApplic
   const context = { options, ...executionContext(options), ...createProjectAccess(options) };
   return { ...projectsCommands(context), ...membersCommands(context), ...tasksCommands(context) };
 }
+
+export { createExecutionApplication, type ExecutionApplication } from "./agent-execution.js";
+
+export {
+  createCloudApplication,
+  type CloudApplication,
+  type CloudApplicationOptions,
+} from "./cloud.js";

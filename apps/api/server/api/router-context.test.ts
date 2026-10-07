@@ -32,13 +32,12 @@ describe("router boundaries", () => {
     expect(result.code).toBe(code);
     expect(result.data).toEqual({ error: { code: error.code } });
   });
-  it("preserves transport error identity and retains unknown errors as causes", () => {
+  it("preserves transport errors and drops unknown diagnostic causes from transport logging", () => {
     const error = new ORPCError("FORBIDDEN");
     expect(mapDomainError(error)).toBe(error);
     const unknown = new Error("private");
-    expect(mapDomainError(unknown)).toMatchObject({
-      code: "INTERNAL_SERVER_ERROR",
-      cause: unknown,
-    });
+    const mapped = mapDomainError(unknown);
+    expect(mapped.code).toBe("INTERNAL_SERVER_ERROR");
+    expect(mapped.cause).toBeUndefined();
   });
 });

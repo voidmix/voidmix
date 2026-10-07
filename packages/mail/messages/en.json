@@ -31,6 +31,14 @@
     "body": "Your account is ready. You can now sign in and start working with your team.",
     "textIntro": "Welcome to Voidmix. Your account is ready."
   },
+  "taskNotification": {
+    "review_ready": "Your delivery is ready to review.",
+    "run_failed": "Your run stopped. Open Voidmix to review the result and retry.",
+    "waiting_input": "Your task needs additional input.",
+    "task_completed": "Your task is complete.",
+    "subject": "Voidmix update",
+    "button": "Open Voidmix"
+  },
   "test": {
     "subject": "Voidmix mail configuration test",
     "body": "Your Voidmix mail configuration is working."

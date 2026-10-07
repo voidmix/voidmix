@@ -58,6 +58,14 @@ export interface ReviewApplication {
 }
 
 export interface AssetApplication {
+  downloadAssetVersion: Command<
+    { assetVersionId: string },
+    {
+      name: string;
+      version: AssetVersionV2;
+      download: NonNullable<Awaited<ReturnType<BlobStorageRepository["getDownload"]>>>;
+    }
+  >;
   listLibrary: Command<CursorQuery & { projectId?: string }, CursorPage<AssetV2>>;
   listAssets: ProjectCommand<object, AssetV2[]>;
   createAsset: ProjectCommand<{ name: string }, AssetV2>;

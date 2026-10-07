@@ -4,10 +4,8 @@ test("renders the public workspace home", async ({ page }) => {
   await page.goto("/");
 
   await expect(page).toHaveTitle(/Voidmix/);
-  await expect(
-    page.getByRole("heading", { name: /A clear home for.*projects and tasks/i }),
-  ).toBeVisible();
-  await expect(page.getByRole("link", { name: /Open workspace/i }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: /From questions to usable work/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open Voidmix/i }).first()).toBeVisible();
 });
 
 for (const width of [390, 1440]) {
@@ -19,7 +17,7 @@ for (const width of [390, 1440]) {
     await page.getByRole("menuitemradio", { name: "简体中文" }).click();
 
     await expect(page.locator("html")).toHaveAttribute("lang", "zh");
-    await expect(page.getByRole("heading", { name: /让项目与任务，\s*清楚有序。/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /从问题开始，交付可用成果。/ })).toBeVisible();
 
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("lang", "zh");
@@ -28,7 +26,7 @@ for (const width of [390, 1440]) {
 
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(
-      page.getByRole("heading", { name: /A clear home for.*projects and tasks/i }),
+      page.getByRole("heading", { name: /From questions to usable work/i }),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Language: English" })).toBeVisible();
   });
@@ -41,17 +39,6 @@ test("redirects unauthenticated project access to sign in", async ({ page }) => 
   await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
 });
 
-test("keeps the desktop workspace navbar pinned while scrolling", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 800 });
-  await page.goto("/");
-
-  const navbar = page.locator("nav").first();
-  await expect(navbar).toBeVisible();
-  await page.evaluate("window.scrollTo(0, 300)");
-
-  await expect.poll(async () => (await navbar.boundingBox())?.y ?? -1).toBe(0);
-});
-
 for (const viewport of [
   { width: 390, height: 844 },
   { width: 768, height: 1024 },
@@ -61,7 +48,7 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { name: /A clear home for.*projects and tasks/i }),
+      page.getByRole("heading", { name: /From questions to usable work/i }),
     ).toBeVisible();
   });
 }

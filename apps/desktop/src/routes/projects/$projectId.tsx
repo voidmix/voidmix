@@ -11,6 +11,8 @@ import { Field, FieldLabel } from "@voidmix/ui/components/ui/field";
 import { Input } from "@voidmix/ui/components/ui/input";
 import { useDesktopTranslations, useFormatter } from "../../i18n/client";
 import { ProjectUnavailable } from "../../features/shell/project-unavailable";
+import { useDesktopAccount } from "../../features/shell/account-provider";
+import { RunPanel } from "../../features/runs/run-panel";
 
 export const Route = createFileRoute("/projects/$projectId")({
   ssr: false,
@@ -29,6 +31,7 @@ function ProjectDetailRoute() {
 }
 
 function ProjectDetail() {
+  const account = useDesktopAccount();
   const t = useDesktopTranslations("projects");
   const formatter = useFormatter();
   const errors = useDesktopTranslations("errors");
@@ -195,6 +198,14 @@ function ProjectDetail() {
               </div>
             </dl>
           </div>
+          {account.status === "signed_in" ? (
+            <RunPanel
+              accountId={account.profile.id}
+              projectId={project.id}
+              tasks={project.tasks}
+              writable={writable}
+            />
+          ) : null}
         </>
       )}
     </div>

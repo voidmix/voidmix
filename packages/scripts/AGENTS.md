@@ -2,16 +2,16 @@
 
 ## Purpose
 
-The private repository CLI. Vite+ owns the task graph; this package owns
+The private repository CLI. Turbo owns the task graph; this package owns
 procedural operations that understand the repository or the database. It exposes
 the `vmx` bin.
 
 ## Interface
 
 ```text
-src/cli.ts          bin entry; routes `env -- <cmd>` before the citty tree
+src/cli.ts          bin entry; routes `tasks` and `env -- <cmd>` before citty
 src/root.ts         citty command registry
-src/commands/       thin adapters: clean, env, generate, desktop, verify, shadcn
+src/commands/       adapters: tasks, clean, env, generate, desktop, verify, shadcn
 src/runtime/        action boundary, context, env, logger, process, repository
 src/database/       command, operation, policy, PostgreSQL user adapter
 src/admin/          command and administrator operation
@@ -22,10 +22,10 @@ src/policy/         command, orchestration, checks/<rule-domain>, manifest rules
                     fixes, per-convention pure modules, report
 src/i18n/          catalog comparison, Oxc source inspection, rules and reporting
 src/test-fixtures.ts shared isolated repository and injected dependency fixtures
-src/verify/         Nitro runtime verification
+src/verify/         isolated Nitro runtime verification
 ```
 
-Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skills update`, `clean [--dependencies] [--bun-cache]`, `db migrate|seed|studio`,
+Commands: `tasks <task> [Turbo flags]`, `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skills update`, `clean [--dependencies] [--bun-cache]`, `db migrate|seed|studio`,
 `admin create`, `generate`, `desktop build`, `policy`, `verify [--verbose]`,
 `shadcn update`.
 
@@ -33,7 +33,8 @@ Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skill
 
 - Own repository and database automation, environment file loading for
   development and build commands, and diagnostic reporting.
-- Own no product behaviour and no task ordering.
+- Own no product behaviour or workspace task graph. `tasks` injects platform and
+  cache trust policy; `verify` runs ordered task gates plus uncached runtime probes.
 
 ## Constraints
 
@@ -75,6 +76,10 @@ Commands: `env -- <command>`, `doctor`, `deps check|update|dedupe|audit`, `skill
 - Oxc owns JSX/TypeScript parsing; FormatJS through `@voidmix/i18n/testing` owns
   ICU parsing. Keep source exemptions and diagnostic locations covered.
 - Never print secret values loaded by the env runner.
+- Remote cache needs token, team and signature key; untrusted CI strips these.
+  `VMX_REMOTE_CACHE_TRUSTED=true` is set only by the protected CI workflow.
+- `verify` also starts the built Worker with `--check`; this probe needs no
+  database or external providers and validates packaged imports and exporters.
 
 ## Verification
 

@@ -10,3 +10,7 @@ export * from "./identity/index.js";
 export * from "./projects/index.js";
 export * from "./settings/index.js";
 export * from "@voidmix/shared";
+
+export * from "./agents/execution.js";
+
+export * from "./cloud/index.js";

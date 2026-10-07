@@ -42,6 +42,7 @@ export interface BlobStorageRepository {
   }): Promise<BlobUpload>;
   completeUpload(input: {
     uploadId: string;
+    workspaceId?: string;
     actorId: string;
     byteSize: number;
     contentType: string;

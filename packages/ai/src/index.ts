@@ -1,12 +1,36 @@
 import type { ProjectV2, TaskStatusV2 } from "@voidmix/core";
 import type { ProjectApplication } from "@voidmix/application";
-import type { AgentSession } from "@earendil-works/pi-coding-agent";
+export { createModelGateway } from "./model-gateway.js";
+export type { ModelGatewayRequest, ModelGatewayTransport } from "./model-gateway.js";
+export { searchWeb, readPublicSource, isPublicAddress, validateSourceUrl } from "./research.js";
+export { createPiProvider } from "./pi-provider.js";
+export type { PiProviderOptions } from "./pi-provider.js";
+export {
+  createCloudPiAgent,
+  normalizeModelUsage,
+  checkPiRuntime,
+  CloudModelUnavailableError,
+} from "./cloud-pi.js";
+export type {
+  CloudPiAgent,
+  CloudPiOptions,
+  CloudPiRunInput,
+  TrustedAiTool,
+  ModelCallHooks,
+  ModelUsage,
+} from "./cloud-pi.js";
 
 export type AiRunEvent =
   | { type: "text_delta"; text: string }
+  | {
+      type: "message_completed";
+      text: string;
+      stopReason: string;
+      usage?: import("./cloud-pi.js").ModelUsage;
+    }
   | { type: "thinking"; active: boolean }
   | { type: "tool_call"; callId: string; name: string; input: unknown }
-  | { type: "tool_result"; callId: string; name: string; output: unknown }
+  | { type: "tool_result"; callId: string; name: string; output: unknown; isError?: boolean }
   | { type: "completed"; text: string }
   | { type: "failed"; message: string }
   | { type: "cancelled" };
@@ -18,6 +42,7 @@ export interface AiSession {
   cwd?: string;
   roleId?: string;
   roleInstructions?: string;
+  sessionFile?: string;
 }
 
 export interface AiRunInput {
@@ -42,6 +67,8 @@ export interface AiSessionInput {
   thinkingLevel?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
   /** Explicit Pi tool allowlist. Omitted means no tools. */
   tools?: string[];
+  /** Host-owned persisted Pi session; never supplied by the model. */
+  sessionFile?: string;
 }
 
 export interface AiProvider {
@@ -132,168 +159,6 @@ export function createFakeProvider(tools?: AiToolRegistry): AiProvider {
       return sessions.get(sessionId) ?? null;
     },
   };
-}
-
-export function createPiProvider(options: { cwd?: string; agentDir?: string } = {}): AiProvider {
-  const sessions = new Map<
-    string,
-    {
-      session: Pick<
-        AgentSession,
-        "prompt" | "subscribe" | "dispose" | "abort" | "steer" | "sessionId"
-      >;
-      provider: AiSession;
-    }
-  >();
-
-  return {
-    async createSession(input) {
-      const sdk = await import("@earendil-works/pi-coding-agent");
-      const modelRuntime = await sdk.ModelRuntime.create({ allowModelNetwork: false });
-      const selectedModel = input.model
-        ? modelRuntime.getModel(input.model.provider, input.model.id)
-        : undefined;
-      if (input.model && !selectedModel)
-        throw new Error(`Pi model not found: ${input.model.provider}/${input.model.id}`);
-      const result = await sdk.createAgentSession({
-        ...(selectedModel ? { model: selectedModel } : {}),
-        ...((input.cwd ?? options.cwd) ? { cwd: input.cwd ?? options.cwd } : {}),
-        ...(options.agentDir ? { agentDir: options.agentDir } : {}),
-        ...(input.tools && input.tools.length > 0
-          ? { tools: input.tools }
-          : { noTools: "all" as const }),
-        ...(input.thinkingLevel ? { thinkingLevel: input.thinkingLevel } : {}),
-      });
-      const provider = {
-        id: `pis_${crypto.randomUUID()}`,
-        providerSessionId: result.session.sessionId,
-        projectId: input.projectId,
-        ...(input.cwd ? { cwd: input.cwd } : {}),
-        ...(input.role?.id ? { roleId: input.role.id } : {}),
-        ...(input.role?.instructions ? { roleInstructions: input.role.instructions } : {}),
-      };
-      sessions.set(provider.id, { session: result.session, provider });
-      return provider;
-    },
-    async *run(input) {
-      const stored = sessions.get(input.session.id);
-      if (!stored) {
-        yield { type: "failed", message: "AI session not found." };
-        return;
-      }
-      const events: AiRunEvent[] = [];
-      let settled = false;
-      let wake = () => {};
-      const unsubscribe = stored.session.subscribe((event) => {
-        const normalized = normalizePiEvent(event);
-        if (normalized) events.push(normalized);
-        wake();
-      });
-      const onAbort = () => wake();
-      input.signal?.addEventListener("abort", onAbort, { once: true });
-      try {
-        if (!input.signal?.aborted) {
-          const role = stored.provider;
-          const prefix = role.roleId
-            ? `[Agent role: ${role.roleId}]${role.roleInstructions ? `\n${role.roleInstructions}` : ""}\n`
-            : "";
-          void Promise.resolve()
-            .then(() => stored.session.prompt(prefix + input.prompt))
-            .catch((error: unknown) => {
-              events.push({
-                type: "failed",
-                message: error instanceof Error ? error.message : "AI run failed.",
-              });
-            })
-            .finally(() => {
-              settled = true;
-              wake();
-            });
-        }
-        while (!settled || events.length) {
-          if (input.signal?.aborted) {
-            await stored.session.abort();
-            yield { type: "cancelled" };
-            return;
-          }
-          if (events.length) yield events.shift()!;
-          else
-            await new Promise<void>((resolve) => {
-              wake = resolve;
-            });
-        }
-      } finally {
-        unsubscribe();
-        input.signal?.removeEventListener("abort", onAbort);
-      }
-    },
-    async cancel(sessionId) {
-      const stored = sessions.get(sessionId);
-      if (stored) await stored.session.abort();
-    },
-    async disposeSession(sessionId) {
-      sessions.get(sessionId)?.session.dispose();
-      sessions.delete(sessionId);
-    },
-    async steer(sessionId, prompt) {
-      const stored = sessions.get(sessionId);
-      if (!stored) throw new Error("AI session not found.");
-      await stored.session.steer(prompt);
-    },
-    async getSession(sessionId) {
-      return sessions.get(sessionId)?.provider ?? null;
-    },
-  };
-}
-
-function normalizePiEvent(event: unknown): AiRunEvent | null {
-  if (typeof event !== "object" || event === null || !("type" in event)) return null;
-  const value = event as Record<string, unknown>;
-  if (
-    value.type === "message_update" &&
-    typeof value.assistantMessageEvent === "object" &&
-    value.assistantMessageEvent !== null
-  ) {
-    const update = value.assistantMessageEvent as Record<string, unknown>;
-    if (update.type === "text_delta" && typeof update.delta === "string")
-      return { type: "text_delta", text: update.delta };
-    if (update.type === "thinking_start") return { type: "thinking", active: true };
-    if (update.type === "thinking_end") return { type: "thinking", active: false };
-  }
-  if (value.type === "agent_end") {
-    const messages = Array.isArray(value.messages) ? value.messages : [];
-    const text = messages
-      .filter(
-        (message): message is Record<string, unknown> =>
-          typeof message === "object" && message !== null && message.role === "assistant",
-      )
-      .map((message) => (typeof message.content === "string" ? message.content : ""))
-      .join("");
-    return value.willRetry ? null : { type: "completed", text };
-  }
-  if (value.type === "agent_error") {
-    return {
-      type: "failed",
-      message: typeof value.error === "string" ? value.error : "AI run failed.",
-    };
-  }
-  if (value.type === "tool_execution_start" && typeof value.toolName === "string") {
-    return {
-      type: "tool_call",
-      callId: typeof value.toolCallId === "string" ? value.toolCallId : crypto.randomUUID(),
-      name: value.toolName,
-      input: value.args ?? {},
-    };
-  }
-  if (value.type === "tool_execution_end" && typeof value.toolName === "string") {
-    return {
-      type: "tool_result",
-      callId: typeof value.toolCallId === "string" ? value.toolCallId : "unknown",
-      name: value.toolName,
-      output: value.result ?? value.error ?? null,
-    };
-  }
-  return null;
 }
 
 function readString(input: unknown, key: string): string {

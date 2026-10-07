@@ -18,6 +18,14 @@ transported or stored.
   final-administrator protection, administration transaction ports, typed mail and authentication settings rules,
   source/inheritance models, derived public Auth capabilities, and durable
   audit-event creation.
+- Own canonical cloud scopes, Conversations, Tasks, Runs, executions, artifact
+  revisions, usage intents, notification preferences and transactional repository ports.
+- TaskRound freezes its goal, attachments and call/duration budgets. Task points
+  to the current round and goal version; Runs and Revisions retain their round.
+  Execution grants contain only token hashes and bind actions to a Run owner/epoch.
+- Resource owner accounts fund execution, independently of its requesting user.
+  Project spending grants are separate from editing capability. Durable message
+  projections and ordered events represent the same execution facts.
 - Own canonical V2 personal/Organization project access, resource ports,
   Agent cancellation rules, outbox contracts, and the blob-storage port.
 - Ownership is distinct from authorship. Organization capability is a ceiling;

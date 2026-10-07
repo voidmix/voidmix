@@ -67,6 +67,18 @@ export const v2CompleteAssetUpload = procedure(
     byteSize: z.number().int().nonnegative(),
     contentType: z.string().min(1),
     checksum: z.string().regex(/^[a-f0-9]{64}$/),
+    bodyBase64: z.string().max(14_000_000),
   },
   assetVersionV2Schema,
+);
+
+export const downloadAssetVersion = procedure(
+  { assetVersionId: z.string().min(1) },
+  z.object({
+    bodyBase64: z.string(),
+    mediaType: z.string(),
+    byteSize: z.number().int(),
+    checksum: z.string(),
+    name: z.string(),
+  }),
 );

@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 import { checkDocumentationIndex, checkDocumentationLinks } from "./checks/docs.js";
 import { checkWorkspaceManifests } from "./checks/manifests.js";
+import { checkTaskGraph } from "./checks/tasks.js";
 import { checkProjectSkill, checkVendoredSkills } from "./checks/skills.js";
 import { checkTypeScriptConfigs } from "./checks/typescript.js";
 import { checkWorkspaceAgents, checkWorkspaceIgnores } from "./checks/workspace.js";
@@ -95,6 +96,7 @@ export async function runPolicy(dependencies: PolicyDependencies): Promise<Polic
     ),
     ...(await checkWorkspaceIgnores(dependencies, members)),
     ...(await checkWorkspaceManifests(dependencies, members, workspaceFiles)),
+    ...(await checkTaskGraph(dependencies)),
     ...(await checkArchitecture(dependencies, members, workspaceFiles)),
     ...(await checkTypeScriptConfigs(dependencies, members, workspaceFiles)),
     ...(await checkDocumentationLinks(dependencies, files)),

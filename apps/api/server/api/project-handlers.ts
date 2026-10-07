@@ -1,9 +1,10 @@
+import { createExecutionHandlers } from "./execution-handlers.js";
 import { createApiError } from "./canonical-errors.js";
 import { actorInput, type RouterContext } from "./router-context.js";
 import { createReviewsHandlers } from "./reviews-handlers.js";
 import { createAssetsHandlers } from "./assets-handlers.js";
 export function createProjectHandlers(context: RouterContext) {
-  const { authenticated, v2Projects, agentRuns, call, command, list } = context;
+  const { authenticated, v2Projects, call, command, list } = context;
   return {
     list: authenticated.projects.list.handler(({ context, input }) =>
       call(() => v2Projects().listForUser(context.principal.user.id, actorInput(context, input))),
@@ -48,11 +49,6 @@ export function createProjectHandlers(context: RouterContext) {
     },
     reviews: createReviewsHandlers(context),
     assets: createAssetsHandlers(context),
-    agentRuns: {
-      create: authenticated.projects.agentRuns.create.handler(command(() => agentRuns().create)),
-      get: authenticated.projects.agentRuns.get.handler(command(() => agentRuns().get)),
-      cancel: authenticated.projects.agentRuns.cancel.handler(command(() => agentRuns().cancel)),
-      retry: authenticated.projects.agentRuns.retry.handler(command(() => agentRuns().retry)),
-    },
+    agentRuns: createExecutionHandlers(context).agentRuns,
   };
 }

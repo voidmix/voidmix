@@ -1,17 +1,24 @@
+import * as cloud from "./cloud.js";
 import * as identity from "./identity.js";
 import * as projects from "./projects.js";
-import * as resources from "./resources.js";
-import * as legacyProjectTables from "./legacy-projects.js";
-import * as legacyAssets from "./legacy-assets.js";
+import {
+  v2Assets,
+  v2AssetVersions,
+  v2Reviews,
+  v2Feedback,
+  v2Activities,
+  outboxEvents,
+} from "./resources.js";
 
-// The historical scheduled-task table is exported for migrations only. Preserve
-// the existing runtime aggregate while leaving its persisted definition intact.
-const { scheduledTasks: _scheduledTasks, ...legacyProjects } = legacyProjectTables;
-
+/** The runtime graph matches the fresh baseline; retired tables stay in historical modules. */
 export const schema = {
   ...identity,
   ...projects,
-  ...resources,
-  ...legacyProjects,
-  ...legacyAssets,
+  ...cloud,
+  v2Assets,
+  v2AssetVersions,
+  v2Reviews,
+  v2Feedback,
+  v2Activities,
+  outboxEvents,
 };

@@ -2,11 +2,11 @@
 
 ## Users
 
-Developers, AI engineers, product/design teams, and technical operators who need local files, models, GPU resources, and toolchains to work together with cloud-visible tasks and remote control.
+People and teams who research topics, analyze files and turn findings into reviewable reports, spreadsheets and presentations.
 
 ## Product Purpose
 
-VoidMix is a cross-platform AI workbench. Desktop runs Pi-powered Agents beside an authorized local project; Web monitors projects and tasks, adjusts future steps, manages teams, and sends remote or scheduled commands. Cloud data keeps project, task, Agent, event, and artifact state consistent across devices.
+Voidmix starts as a Web-first cloud AI product. Search reads actual sources and returns attributed answers. Computer performs multi-step work with trusted tools and delivers reports, tables and presentations for user review. Desktop becomes a cloud client first; local execution follows. See [the cloud platform](docs/architecture/cloud-platform.md) for the current execution and publication boundaries.
 
 ## Brand Personality
 
@@ -14,11 +14,11 @@ Calm, precise, technical, and collaborative. VoidMix should feel like an Agent S
 
 ## Product Principles
 
-1. **Local power, cloud visibility.** File access, models, GPU, and toolchains stay on Desktop; progress, control, and collaboration travel through Web.
+1. **Research and delivery.** Search explains evidence; Computer creates useful files. A personal task does not require creating a project.
 2. **Show the work.** Agent roles, messages, tool calls, files, steps, and decisions are visible as an understandable conversation, not a black box.
 3. **Truthful state.** Running, queued, waiting, failed, cancelled, offline, and unavailable states are explicit. Preview data is never presented as live.
-4. **One workspace, two densities.** Desktop is a dense dark multi-panel workstation; Web is a lighter monitoring and management surface.
-5. **Safe authority.** Project paths and tool capabilities are explicitly authorized. Remote commands identify target device and impact before they run. Credentials and private content never enter logs.
+4. **Shared behavior, suitable layouts.** Web centers answers and deliveries, with sources and execution details nearby. Desktop later assembles a denser workbench from the same business components.
+5. **Explicit authority and acceptance.** Hosts bind identity and resource scope. Trusted tools use authorized files; the user accepts the current delivery to complete a Task. Credentials, prompts and private file content never enter telemetry.
 
 ## Visual Direction
 
@@ -38,4 +38,4 @@ Calm, precise, technical, and collaborative. VoidMix should feel like an Agent S
 
 ## Scope Boundaries
 
-Pi owns Agent execution, sessions, tools, model runtime, and event streaming. VoidMix owns project/workflow orchestration, authorization, persistence, cross-device synchronization, Web/Desktop composition, remote commands, scheduling, team permissions, and artifact sharing. IM integrations, billing providers, and model credentials remain explicit configuration seams.
+Pi supplies isolated Agent sessions, model invocation and event streaming. Voidmix owns authorization, trusted tools, durable Task/Run state, usage reservations, private file publication, review, notification and Web/Desktop composition. Model and search providers, object storage and telemetry are explicit configuration seams. Sandbox code, browser/GUI operations, local devices, scheduling, payments and real-time editing follow separate stages; the first release does not promise them.

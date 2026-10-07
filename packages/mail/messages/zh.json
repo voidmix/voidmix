@@ -31,6 +31,14 @@
     "body": "你的账号已准备就绪，现在可以登录并开始与团队协作。",
     "textIntro": "欢迎使用 Voidmix。你的账号已准备就绪。"
   },
+  "taskNotification": {
+    "review_ready": "你的交付已准备好，可以开始审阅。",
+    "run_failed": "本次运行已停止，请打开 Voidmix 查看结果并重试。",
+    "waiting_input": "你的任务需要补充输入。",
+    "task_completed": "你的任务已完成。",
+    "subject": "Voidmix 更新",
+    "button": "打开 Voidmix"
+  },
   "test": {
     "subject": "Voidmix 邮件配置测试",
     "body": "你的 Voidmix 邮件配置正常工作。"

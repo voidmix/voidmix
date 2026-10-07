@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
+import { accounts, password } from "../database.js";
 
 test("navigates Desktop and preserves settings, theme and keyboard controls", async ({ page }) => {
+  const api = `http://127.0.0.1:${Number(process.env.VOIDMIX_E2E_PORT ?? 3000) + 2}`;
+  const signedIn = await page.request.post(`${api}/api/auth/sign-in/email`, {
+    data: { email: accounts.member.email, password },
+    headers: { origin: api },
+  });
+  expect(signedIn.ok()).toBe(true);
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Your workbench" })).toBeVisible();
   const navigation = page.getByRole("navigation", { name: "Primary navigation" });

@@ -1,6 +1,11 @@
 import { getMailEnv, type MailEnvironment } from "./env.js";
 import type { Locale } from "@voidmix/i18n/types";
-import { passwordResetEmail, verificationEmail, welcomeEmail } from "./templates/index.js";
+import {
+  passwordResetEmail,
+  verificationEmail,
+  welcomeEmail,
+  taskNotificationEmail,
+} from "./templates/index.js";
 import { createLoggerTransport, createResendTransport } from "./transports/index.js";
 import type {
   MailAddress,
@@ -48,6 +53,7 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
     template: MailTemplateKind,
     to: MailAddress,
     render: (configuration: ResolvedMailConfiguration) => Promise<EmailTemplateResult>,
+    idempotencyKey?: string,
   ): Promise<void> {
     const configuration = await resolveConfiguration();
     const missing = missingConfiguration(configuration);
@@ -62,6 +68,7 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
       from: { email: from, name: configuration.fromName },
       to,
       ...rendered,
+      ...(idempotencyKey ? { idempotencyKey } : {}),
     };
     const transport =
       options.transport ??
@@ -91,6 +98,13 @@ export function createMailer(options: CreateMailerOptions = {}): Mailer {
     sendVerification: sender("email-verification", verificationEmail, "baseUrl"),
     sendPasswordReset: sender("password-reset", passwordResetEmail, "baseUrl"),
     sendWelcome: sender("welcome", welcomeEmail, "appUrl"),
+    sendTaskNotification: (input) =>
+      deliver(
+        "task-notification",
+        address(input.email, input.name),
+        () => taskNotificationEmail(input, input.locale ?? defaultLocale),
+        input.idempotencyKey,
+      ),
   };
 }
 

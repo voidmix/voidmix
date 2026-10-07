@@ -15,7 +15,9 @@ tests/authenticated-web.spec.ts real login, SSR isolation, project and Admin flo
 capture-product.ts    real-route product screenshots with guarded synthetic seed
 tests/redesign.spec.ts responsive, theme, locale and navigation coverage
 tests/workbench.spec.ts portal focus, failure/retry and cancellation
-tests/homepage.spec.ts keyboard Tabs, theme/locale images and responsive containment
+tests/homepage.spec.ts public cloud website, docs/SEO, locales and responsive containment
+tests/cloud.spec.ts   real authorized cloud facts, review, usage and account isolation
+tests/session-revocation-cloud.spec.ts real Better Auth sign-out terminates both private SSE streams
 database.ts           isolated migration/seed with synthetic credential accounts
 tests/desktop.spec.ts  Desktop theme, locale, navigation, settings and keyboard checks
 ```
@@ -49,6 +51,10 @@ Scripts: `e2e` (the run), `test:ui`, `test:report`, `check`.
   Global setup migrates and resets that dedicated database. Real API login uses
   seeded password hashes; do not introduce actor headers or production bypasses.
 - `reuseExistingServer` is off in CI and on locally. Do not invert that.
+- Cloud fixture records are explicitly synthetic persisted facts, created only by
+  the guarded test setup. Production UI uses the real API and never supplies demo
+  data or reports a model execution that did not happen.
+- The reset migrates the fresh cloud schema; it never targets an operator database.
 - Assert through roles and accessible names rather than CSS selectors, so the
   tests keep verifying accessibility alongside behaviour.
 

@@ -21,7 +21,20 @@ describe("hasPermission", () => {
   });
 
   it.each(["admin", "owner"] as const)("grants the active admin surface to %s", (role) => {
-    for (const permission of ["admin.users.read", "admin.users.write", "admin.audit.read"] as const)
+    for (const permission of [
+      "admin.users.read",
+      "admin.users.write",
+      "admin.audit.read",
+      "admin.runs.read",
+      "admin.usage.read",
+    ] as const)
       expect(hasPermission(session(role), permission)).toBe(true);
   });
+  it.each(["admin.runs.read", "admin.usage.read"] as const)(
+    "denies %s without an administrator grant",
+    (permission) => {
+      expect(hasPermission(session("user"), permission)).toBe(false);
+      expect(hasPermission(null, permission)).toBe(false);
+    },
+  );
 });

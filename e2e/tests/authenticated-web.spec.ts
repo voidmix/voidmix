@@ -85,7 +85,11 @@ test("SSR requests isolate sessions and browser account replacement hides old pr
     expect(memberHtml).not.toContain("Admin film");
     await pa.goto("/projects");
     await expect(pa.getByRole("link", { name: /Admin film/ }).first()).toBeVisible();
-    await pa.request.post(`${apiUrl}/api/auth/sign-out`, { headers: { origin: apiUrl } });
+    const signOut = await pa.request.post(`${apiUrl}/api/auth/sign-out`, {
+      data: {},
+      headers: { origin: apiUrl },
+    });
+    expect(signOut.ok()).toBe(true);
     await login(pa, "member");
     await pa.evaluate("document.dispatchEvent(new Event('visibilitychange'))");
     await expect(pa.getByRole("link", { name: /Member private film/ })).toBeVisible();

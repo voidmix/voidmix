@@ -32,6 +32,9 @@ JSON `remember` operation and Better Auth secondary-storage compatibility.
 - Generic cache and Better Auth keys have separate namespaces. `remember` does
   not lock resolvers; simultaneous misses can resolve independently.
 - Redis errors are propagated to callers.
+- Failed owned connections are explicitly disconnected so their retry timers
+  cannot keep a host alive. Owned clients consume raw error events; callers
+  report sanitized metadata through their application logger.
 
 ## Verification
 

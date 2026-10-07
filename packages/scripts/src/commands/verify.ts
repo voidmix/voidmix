@@ -13,25 +13,21 @@ export interface VerifyOptions {
 
 /** Explicit ordered gates keep task selection separate from subprocess execution. */
 const processGates = [
-  { task: "format", command: ["vp", "fmt", "--check"] },
-  { task: "lint", command: ["vp", "lint"] },
-  { task: "shared:build", command: ["vp", "run", "@voidmix/shared#build"] },
-  { task: "check", command: ["vp", "run", "-r", "check"] },
-  { task: "test", command: ["vp", "run", "-r", "test"] },
+  { task: "format", command: ["vmx", "tasks", "format:leaf"] },
+  { task: "lint", command: ["vmx", "tasks", "lint:leaf"] },
+  { task: "check", command: ["vmx", "tasks", "check"] },
   {
-    task: "build",
-    command: [
-      "vp",
-      "run",
-      "--filter",
-      "./apps/*",
-      "--filter",
-      "./packages/*",
-      "--filter",
-      "!@voidmix/shared",
-      "build",
-    ],
-    env: { NITRO_PRESET: "bun" },
+    task: "test",
+    command: ["vmx", "tasks", "test:unit", "test:component", "--filter", "!@voidmix/e2e"],
+  },
+  {
+    task: "integration",
+    command: ["vmx", "tasks", "test:integration", "--filter", "!@voidmix/e2e"],
+  },
+  { task: "build", command: ["vmx", "tasks", "build"] },
+  {
+    task: "worker:runtime",
+    command: ["node", "apps/worker/dist/index.mjs", "--check"],
   },
 ] satisfies Array<{ task: string; command: string[]; env?: NodeJS.ProcessEnv }>;
 
@@ -47,12 +43,12 @@ export async function runVerify(
   dependencies.log("info", "verify.task.started", { task: "policy" });
   await dependencies.verifyPolicy();
 
-  for (const { command, task, env } of processGates) {
+  for (const { command, task } of processGates) {
     dependencies.log("info", "verify.task.started", { task });
     await dependencies.runCommand(command, {
       captureOutput,
       cwd: dependencies.repositoryRoot,
-      env: env ? { ...dependencies.processEnv, ...env } : dependencies.processEnv,
+      env: dependencies.processEnv,
     });
   }
   dependencies.log("info", "verify.task.started", { task: "runtime" });

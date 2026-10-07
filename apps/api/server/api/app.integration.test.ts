@@ -1,14 +1,12 @@
 import { domainFixtures } from "./test-fixtures.js";
 import { createApiClient } from "@voidmix/client";
-import { InMemorySystemSettingsRepository, InMemoryUserRepository } from "@voidmix/db";
-import { createAgentRunApplication, type ProjectApplication } from "@voidmix/application";
 import {
-  ProjectV2DomainError,
-  type AgentRunV2,
-  type AgentRunV2Repository,
-  type MailSettingsFallback,
-  type User,
-} from "@voidmix/core";
+  InMemoryExecutionRepository,
+  InMemorySystemSettingsRepository,
+  InMemoryUserRepository,
+} from "@voidmix/db";
+import { createExecutionApplication, type ProjectApplication } from "@voidmix/application";
+import { ProjectV2DomainError, type MailSettingsFallback, type User } from "@voidmix/core";
 import { describe, expect, it } from "vite-plus/test";
 
 import { createApiApp } from "./app.js";
@@ -102,28 +100,32 @@ function createApp() {
     resendApiKey: { value: null, source: "missing" },
   };
   const projects = createProjectApplication();
-  const runs = new Map<string, AgentRunV2>();
-  const repository: AgentRunV2Repository = {
-    getById: async (id) => runs.get(id) ?? null,
-    create: async ({ now, ...input }) => {
-      const run: AgentRunV2 = {
-        ...input,
-        status: "queued",
-        output: null,
-        error: null,
-        createdAt: now,
-        updatedAt: now,
-      };
-      runs.set(run.id, run);
-      return run;
+  const execution = createExecutionApplication({
+    repository: new InMemoryExecutionRepository(),
+    access: {
+      ...projects,
+      requireProject: async (actorId, projectId, capability) =>
+        projects.assertCapability({ actorId, projectId, capability }),
     },
-    updateStatus: async ({ id, status, now }) => {
-      const run = runs.get(id);
-      if (!run) return null;
-      Object.assign(run, { status, updatedAt: now });
-      return run;
-    },
-  };
+    tasks: {
+      getById: async (id: string) =>
+        id === "task-1"
+          ? {
+              id,
+              projectId: project.id,
+              createdByUserId: "user-1",
+              title: "Goal",
+              status: "todo",
+              createdAt: now,
+              updatedAt: now,
+            }
+          : null,
+    } as never,
+    assetVersions: { getById: async () => null } as never,
+    issueCredential: async (owner, key) => `${owner}:${key}`,
+    hashCredential: async (credential) => credential,
+    now: () => now,
+  });
   return createApiApp({
     modules: createApiModules({
       ...domainFixtures(),
@@ -131,7 +133,7 @@ function createApp() {
       settings,
       mailFallback,
       v2Projects: projects,
-      v2AgentRuns: createAgentRunApplication({ projects, runs: repository, now: () => now }),
+      execution,
       now: () => now,
     }),
     resolveSession: createHeaderSessionResolver(),
@@ -199,23 +201,44 @@ describe("canonical API", () => {
   });
 
   it("creates, cancels and retries Agent runs through command dispatch", async () => {
-    const runs = clientFor("user-1").projects.agentRuns;
+    const client = clientFor("user-1");
+    const { device } = await client.devices.register({
+      name: "Mac",
+      platform: "macos",
+      idempotencyKey: "enrollment",
+    });
+    await client.devices.bindProject({
+      deviceId: device.id,
+      projectId: project.id,
+      localBindingId: "folder-grant",
+    });
+    const runs = client.projects.agentRuns;
     const created = await runs.create({
       projectId: project.id,
+      taskId: "task-1",
+      targetDeviceId: device.id,
+      prompt: "Test",
       idempotencyKey: "first",
       input: {},
     });
     expect(created.status).toBe("queued");
     expect(created.createdAt).toBeInstanceOf(Date);
-    const cancelled = await runs.cancel({ runId: created.id });
-    expect(cancelled.status).toBe("cancelled");
-    const retried = await runs.retry({ runId: cancelled.id });
+    const cancelled = await runs.cancel({ runId: created.id, idempotencyKey: "cancel" });
+    expect(cancelled.run.status).toBe("cancelled");
+    const retried = await runs.retry({ runId: cancelled.run.id, idempotencyKey: "retry" });
     expect(retried).toMatchObject({ status: "queued", attempt: 2, requestedByUserId: "user-1" });
-    await expect(runs.retry({ runId: retried.id })).rejects.toMatchObject({ code: "CONFLICT" });
-    await expect(runs.cancel({ runId: "missing" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    await expect(
+      runs.retry({ runId: retried.id, idempotencyKey: "retry-2" }),
+    ).rejects.toMatchObject({ code: "CONFLICT" });
+    await expect(
+      runs.cancel({ runId: "missing", idempotencyKey: "missing" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
     await expect(
       clientFor("outsider").projects.agentRuns.create({
         projectId: project.id,
+        taskId: "task-1",
+        targetDeviceId: device.id,
+        prompt: "Test",
         idempotencyKey: "denied",
         input: {},
       }),

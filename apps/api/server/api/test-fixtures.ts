@@ -25,6 +25,7 @@ export function domainFixtures(): Pick<
       deleteProject: unused,
     },
     assets: {
+      downloadAssetVersion: unused,
       listLibrary: unused,
       listAssets: unused,
       createAsset: unused,

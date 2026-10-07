@@ -1,4 +1,5 @@
 @import "@voidmix/ui/styles.css";
+@import "@voidmix/agent-ui/styles.css";
 @import "./features/auth/auth.css";
 
 :root {

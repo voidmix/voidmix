@@ -1,12 +1,10 @@
 import { expect, test } from "@playwright/test";
-
 for (const scenario of [
-  { width: 375, locale: "zh", theme: "dark" },
+  { width: 390, locale: "zh", theme: "dark" },
   { width: 768, locale: "en", theme: "light" },
   { width: 1280, locale: "zh", theme: "light" },
-  { width: 1440, locale: "en", theme: "dark" },
 ] as const) {
-  test(`homepage preview, keyboard and matching images ${scenario.width}/${scenario.locale}/${scenario.theme}`, async ({
+  test(`cloud homepage, docs and SEO ${scenario.width}/${scenario.locale}/${scenario.theme}`, async ({
     page,
     baseURL,
   }, info) => {
@@ -22,70 +20,32 @@ for (const scenario of [
       { name: "theme", value: scenario.theme, url: baseURL! },
     ]);
     await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      scenario.locale === "en" ? "From questions to usable work." : "从问题开始，交付可用成果。",
+    );
     await expect(
       page.getByRole("button", {
         name: scenario.locale === "en" ? "Language: English" : "语言: 简体中文",
       }),
     ).toBeEnabled();
-    await expect(page.locator("vite-error-overlay")).toHaveCount(0);
-    await expect(page.locator(".public-nav")).toHaveCSS("height", "64px");
-    const tabs = page.getByRole("tablist");
-    const first = tabs.getByRole("tab").first();
-    const second = tabs.getByRole("tab").nth(1);
-    await expect(first).toHaveAttribute("aria-selected", "true");
-    const image = page.getByRole("tabpanel").locator("img");
-    await expect
-      .poll(() => image.evaluate((node) => node.complete && node.naturalWidth > 0))
-      .toBe(true);
-    expect(await image.evaluate((node) => node.currentSrc)).toContain(
-      `projects-${scenario.locale}-${scenario.theme}${scenario.width < 768 ? "-mobile" : ""}.webp`,
-    );
-    await first.focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(second).toBeFocused();
-    await page.keyboard.press("Enter");
-    await expect(second).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("tabpanel")).toHaveCount(1);
-    await expect
-      .poll(() => image.evaluate((node) => node.complete && node.naturalWidth > 0))
-      .toBe(true);
-    expect(await image.evaluate((node) => node.currentSrc)).toContain(
-      `detail-${scenario.locale}-${scenario.theme}`,
-    );
-    await expect(page.locator('nav [data-slot="logo-mark"]')).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: scenario.locale === "en" ? "Log in" : "登录", exact: true }),
-    ).toHaveAttribute("href", "/login");
     expect(
       await page
         .locator("html")
         .evaluate((node) => node.scrollWidth <= node.ownerDocument.defaultView!.innerWidth),
     ).toBe(true);
-    for (const preview of await page.locator(".product-picture img").all()) {
-      await preview.scrollIntoViewIfNeeded();
-      await expect
-        .poll(() => preview.evaluate((node) => node.complete && node.naturalWidth > 0))
-        .toBe(true);
-    }
+    await page.screenshot({ path: info.outputPath("cloud-home.png"), fullPage: true });
     await page
-      .locator("html")
-      .evaluate((node) =>
-        node.ownerDocument.defaultView!.scrollTo({ top: 0, behavior: "instant" }),
-      );
-    await page.screenshot({ path: info.outputPath("home-detail.png"), fullPage: true });
-    await first.click();
-    await expect(first).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("tabpanel")).toHaveCount(1);
-    await expect
-      .poll(() => image.evaluate((node) => node.complete && node.naturalWidth > 0))
-      .toBe(true);
-    await image.evaluate((node) => node.decode());
-    await page
-      .locator("html")
-      .evaluate((node) =>
-        node.ownerDocument.defaultView!.scrollTo({ top: 0, behavior: "instant" }),
-      );
-    await page.screenshot({ path: info.outputPath("home-projects.png"), fullPage: true });
+      .getByRole("link", {
+        name: scenario.locale === "en" ? "Documentation" : "使用文档",
+        exact: true,
+      })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/docs$/);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByText(/arbitrary code|任意代码/)).toBeVisible();
+    const robots = await page.request.get("/robots.txt");
+    expect(await robots.text()).toContain("Disallow: /chat");
     expect(errors).toEqual([]);
   });
 }

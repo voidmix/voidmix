@@ -5,7 +5,7 @@ import type { MailDeliveryRecorder } from "../types.js";
 export const recordMailDelivery: MailDeliveryRecorder = (event) => {
   const log = logger({
     operation: "mail.delivery",
-    recipient: event.recipient,
+    recipientCount: Array.isArray(event.recipient) ? event.recipient.length : 1,
     template: event.template,
     transport: event.transport,
     outcome: event.outcome,

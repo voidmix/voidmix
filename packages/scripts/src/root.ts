@@ -7,6 +7,10 @@ export const rootCommand = defineCommand({
     description: "Voidmix repository automation",
   },
   subCommands: {
+    // cli.ts intercepts tasks to preserve Turbo flags without Citty parsing.
+    tasks: defineCommand({
+      meta: { name: "tasks", description: "Run the Turbo workspace task graph" },
+    }),
     env: () => import("./commands/env.js").then(({ envCommand }) => envCommand),
     doctor: () => import("./doctor/command.js").then(({ doctorCommand }) => doctorCommand),
     deps: () => import("./deps/command.js").then(({ depsCommand }) => depsCommand),

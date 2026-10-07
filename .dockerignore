@@ -1,6 +1,9 @@
 .git
 .github
 .DS_Store
+.cache
+.turbo
+out
 .env
 .env.*
 !.env.example
@@ -9,6 +12,8 @@
 **/.output
 **/.output/**
 **/coverage
+**/playwright-report
+**/test-results
 **/target
 **/.vite
 *.log

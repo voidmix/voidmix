@@ -3,8 +3,10 @@ import * as projects from "./projects.js";
 import * as reviews from "./reviews.js";
 import * as assets from "./assets.js";
 import * as agents from "./agents.js";
+import { cloudContract } from "./cloud.js";
 
 export const apiContract = {
+  cloud: cloudContract,
   health: account.health,
   account: { get: account.getAccountProfile },
   auth: { capabilities: { get: account.getPublicAuthCapabilities } },
@@ -36,15 +38,35 @@ export const apiContract = {
     assets: {
       list: assets.v2ListAssets,
       create: assets.v2CreateAsset,
-      versions: { list: assets.v2ListAssetVersions },
+      versions: { list: assets.v2ListAssetVersions, download: assets.downloadAssetVersion },
       upload: { create: assets.v2CreateAssetUpload, complete: assets.v2CompleteAssetUpload },
     },
     agentRuns: {
       create: agents.v2CreateAgentRun,
+      list: agents.v2ListAgentRuns,
+      snapshot: agents.getRunSnapshot,
+      events: { list: agents.listRunEvents, stream: agents.streamRunEvents },
+      commands: { create: agents.createRunCommand, list: agents.listRunCommands },
+      artifacts: { list: agents.listRunArtifacts, attach: agents.attachRunArtifact },
       get: agents.v2GetAgentRun,
       cancel: agents.v2CancelAgentRun,
       retry: agents.v2RetryAgentRun,
     },
+  },
+  devices: {
+    register: agents.registerDevice,
+    list: agents.listDevices,
+    revoke: agents.revokeDevice,
+    bindProject: agents.bindDeviceProject,
+    listBindings: agents.listDeviceBindings,
+  },
+  runner: {
+    artifacts: { upload: agents.uploadRunnerArtifact },
+    heartbeat: agents.heartbeatRunner,
+    claim: agents.claimRunnerWork,
+    acknowledge: agents.acknowledgeRunnerWork,
+    events: { append: agents.appendRunnerEvents },
+    commands: { list: agents.listRunnerCommands, acknowledge: agents.acknowledgeRunnerCommand },
   },
   library: {
     assets: { list: assets.listLibraryAssets },
@@ -112,6 +134,26 @@ export type {
 } from "./projects.js";
 export { reviewStatusV2Schema, reviewV2Schema, feedbackV2Schema } from "./reviews.js";
 export { assetV2Schema, assetVersionV2Schema } from "./assets.js";
-export { agentRunStatusV2Schema, agentRunV2Schema } from "./agents.js";
+export {
+  agentRunStatusV2Schema,
+  agentRunV2Schema,
+  deviceSchema,
+  deviceBindingSchema,
+  runEventSchema,
+  runCommandSchema,
+  runArtifactSchema,
+  runSnapshotSchema,
+} from "./agents.js";
+export type {
+  DeviceDto,
+  DeviceBindingDto,
+  AgentRunDto,
+  RunEventDto,
+  RunCommandDto,
+  RunArtifactDto,
+  RunSnapshotDto,
+} from "./agents.js";
 
 export { isMutationProcedure } from "./methods.js";
+
+export * from "./cloud.js";

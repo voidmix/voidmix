@@ -121,14 +121,14 @@ describe("validateWorkspaceManifest", () => {
       },
     },
     {
-      name: "reports a build that can ship an unchecked tree",
+      name: "reports a build that repeats the task graph check",
       content: manifest({
-        scripts: { ...canonicalScripts, check: checkCommand, build: "vp build" },
+        scripts: { ...canonicalScripts, check: checkCommand, build: "bun run check && vp build" },
       }),
       shape: shape(),
       expected: {
-        message: expect.stringContaining("build does not run check first"),
-        fix: expect.stringContaining("bun run check &&"),
+        message: expect.stringContaining("build repeats the check"),
+        fix: expect.stringContaining("remove the bun run check prefix"),
       },
     },
     {
@@ -178,7 +178,7 @@ describe("validateWorkspaceManifest", () => {
       check: "bun run typecheck && bun run typecheck:node",
       typecheck: checkCommand,
       "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
-      build: "bun run check && vmx env -- vp build",
+      build: "vmx env -- vp build",
     };
 
     expect(
@@ -248,11 +248,15 @@ describe("fixWorkspaceManifest", () => {
     expect(fixed).not.toContain("devEngines");
   });
 
-  it("prefixes a build that would ship an unchecked tree", () => {
-    const scripts = { ...canonicalScripts, check: checkCommand, build: "vp build" };
+  it("removes a check prefix already owned by the task graph", () => {
+    const scripts = {
+      ...canonicalScripts,
+      check: checkCommand,
+      build: "bun run check && vp build",
+    };
     const fixed = fix(manifest({ scripts }));
 
-    expect(JSON.parse(fixed).scripts.build).toBe(`bun run check && vp build`);
+    expect(JSON.parse(fixed).scripts.build).toBe("vp build");
     expect(validate(fixed)).toEqual([]);
   });
 

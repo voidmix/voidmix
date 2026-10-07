@@ -12,6 +12,7 @@ const skippedDirectories = new Set([
   ".output",
   ".vite",
   ".vite-plus",
+  ".turbo",
   "coverage",
   "dist",
   "drizzle",

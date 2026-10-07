@@ -1,5 +1,5 @@
 import { AppShell } from "../../features/navigation/app-shell";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Navigate,
   createFileRoute,
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/(app)")({
         {},
         { signal: abortController.signal },
       );
-      return { accountId: account.id };
+      return { accountId: account.id, actorId: account.id };
     } catch (error) {
       if (!(error && typeof error === "object" && "code" in error && error.code === "UNAUTHORIZED"))
         throw error;
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/(app)")({
     }
   },
   component: AuthenticatedAppLayout,
+  head: () => ({ meta: [{ name: "robots", content: "noindex, nofollow" }] }),
 });
 
 function AuthenticatedAppLayout() {
@@ -38,6 +39,7 @@ function AuthenticatedAppLayout() {
   const location = useLocation();
   const router = useRouter();
   const userId = session.data?.user.id ?? null;
+  const previousAccount = useRef<string | null>(Route.useRouteContext().accountId);
   const staleAccount = useRouterState({
     select: (state) =>
       state.matches.some((match) => {
@@ -46,7 +48,17 @@ function AuthenticatedAppLayout() {
       }),
   });
   useEffect(() => {
-    if (session.isPending || !staleAccount) return;
+    if (session.isPending) return;
+    const previous = previousAccount.current;
+    previousAccount.current = userId;
+    if (previous && previous !== userId) {
+      router.options.context.resources.disposeAccount(previous);
+      const predicate = (query: { queryKey: readonly unknown[] }) =>
+        query.queryKey[0] === "cloud" && query.queryKey[2] === previous;
+      void router.options.context.queryClient.cancelQueries({ predicate });
+      router.options.context.queryClient.removeQueries({ predicate });
+    }
+    if (!staleAccount) return;
     router.clearCache({ filter: (match) => match.routeId.startsWith("/(app)") });
     void router.invalidate({ filter: (match) => match.routeId.startsWith("/(app)") });
   }, [router, userId, session.isPending, staleAccount]);
@@ -64,5 +76,5 @@ function AuthenticatedAppLayout() {
     return <Navigate replace to="/login" {...(redirect ? { search: { redirect } } : {})} />;
   }
 
-  return <AppShell />;
+  return <AppShell key={userId} />;
 }

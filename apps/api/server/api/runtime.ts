@@ -1,9 +1,11 @@
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   connectDatabase,
   PostgresSystemSettingsRepository,
   PostgresUserRepository,
   FileSystemBlobStorageRepository,
-  InMemoryBlobStorageRepository,
+  PostgresCloudRepository,
   PostgresOrganizationMemberV2Repository,
   PostgresProjectMemberV2Repository,
   PostgresProjectTaskV2Repository,
@@ -12,29 +14,34 @@ import {
   PostgresFeedbackV2Repository,
   PostgresAssetV2Repository,
   PostgresAssetVersionV2Repository,
-  PostgresAgentRunV2Repository,
   PostgresActivityV2Repository,
 } from "@voidmix/db";
 import {
-  createAgentRunApplication,
+  createCloudApplication,
   createProjectApplication,
   createProjectAccess,
   createAssetApplication,
   createReviewApplication,
   createActivityApplication,
 } from "@voidmix/application";
-import { createRedisCache, type RedisCacheConnection } from "@voidmix/cache";
-import type { AuthSettings, MailSettingsFallback } from "@voidmix/core";
+import type { RedisCacheConnection } from "@voidmix/cache";
+import type { AuthSettings, MailSettingsFallback, ObjectStorage } from "@voidmix/core";
 import { createLoggerConfig, type EvlogConfig } from "@voidmix/shared/logger";
 import { getMailEnv } from "@voidmix/mail/env";
 import { createMailer } from "@voidmix/mail/server";
 
 import { createApiApp } from "./app.js";
+import { createExecutionGateway } from "./execution-gateway.js";
 import { createApiAuth } from "./auth/config.js";
 import type { ApiRuntimeEnvironment } from "./env.js";
 import { createApiModules } from "./modules.js";
 import { createBetterAuthSessionResolver } from "./session.js";
 import { createProblemDetails, problemContentType } from "./problem.js";
+import { createS3Storage, createFilesystemStorage } from "@voidmix/storage";
+import { cloudConfiguration, createCloudAdmission } from "./cloud-config.js";
+import { createErrorReporter } from "./telemetry.js";
+import { connectAdmissionCache } from "./admission-cache.js";
+import { createApiError } from "./canonical-errors.js";
 
 export interface ApiRuntime {
   app: ReturnType<typeof createApiApp>;
@@ -56,11 +63,16 @@ export async function createApiRuntime({
   }),
 }: CreateApiRuntimeOptions): Promise<ApiRuntime> {
   const connection = connectDatabase(environment.DATABASE_URL);
+  const reporter = createErrorReporter({
+    environment: environment.NODE_ENV,
+    ...(environment.SENTRY_DSN ? { dsn: environment.SENTRY_DSN } : {}),
+  });
   let cacheConnection: RedisCacheConnection | undefined;
+  let objectStorage: ObjectStorage | undefined;
 
   try {
     if (environment.REDIS_URL && environment.NODE_ENV !== "test") {
-      cacheConnection = await createRedisCache({
+      cacheConnection = await connectAdmissionCache({
         url: environment.REDIS_URL,
         prefix: environment.CACHE_PREFIX,
         connectTimeoutMs: environment.CACHE_REDIS_CONNECT_TIMEOUT_MS,
@@ -91,29 +103,12 @@ export async function createApiRuntime({
         };
       },
     });
-    const authPolicyKey = "auth-policy:v1";
-    const getAuthSettings = async (): Promise<AuthSettings> => {
-      if (!cacheConnection) return settings.resolveAuthSettings();
-      // AuthSettings contains a native Date, while the generic cache stores
-      // JSON. Convert at the boundary so callers always receive domain types.
-      const cached = await cacheConnection.cache.remember(authPolicyKey, 30, async () => {
-        const resolved = await settings.resolveAuthSettings();
-        return {
-          ...resolved,
-          updatedAt: resolved.updatedAt?.toISOString() ?? null,
-        };
-      });
-      return {
-        ...cached,
-        updatedAt: cached.updatedAt === null ? null : new Date(cached.updatedAt),
-      };
-    };
+    const getAuthSettings = () => settings.resolveAuthSettings();
     const auth = createApiAuth({
       connection,
       environment,
       mailer,
       getAuthSettings,
-      ...(cacheConnection ? { secondaryStorage: cacheConnection.secondaryStorage } : {}),
     });
     const authHandler = createMailProtectedAuthHandler({
       handler: auth.handler,
@@ -131,13 +126,77 @@ export async function createApiRuntime({
       ...projectPorts,
       tasks: new PostgresProjectTaskV2Repository(connection.db),
     });
+    const cloudConfig = cloudConfiguration(environment);
+    if (environment.NODE_ENV === "production" && !environment.S3_BUCKET)
+      throw new Error("S3_BUCKET must configure private production object storage.");
+    objectStorage = environment.S3_BUCKET
+      ? createS3Storage({
+          bucket: environment.S3_BUCKET,
+          region: environment.S3_REGION ?? "us-east-1",
+          ...(environment.S3_ENDPOINT ? { endpoint: environment.S3_ENDPOINT } : {}),
+          forcePathStyle: environment.S3_FORCE_PATH_STYLE ?? false,
+          ...(environment.S3_ACCESS_KEY_ID && environment.S3_SECRET_ACCESS_KEY
+            ? {
+                credentials: {
+                  accessKeyId: environment.S3_ACCESS_KEY_ID,
+                  secretAccessKey: environment.S3_SECRET_ACCESS_KEY,
+                },
+              }
+            : {}),
+        })
+      : createFilesystemStorage({
+          directory: environment.BLOB_STORAGE_DIR ?? join(tmpdir(), "voidmix-cloud-objects"),
+          signingSecret: environment.AUTH_SECRET,
+          publicBaseUrl: environment.AUTH_URL,
+        });
+    const admission = createCloudAdmission({
+      production: environment.NODE_ENV === "production",
+      flags: cloudConfig.flags,
+      requestLimit: environment.CLOUD_REQUEST_LIMIT ?? 20,
+      ...(cacheConnection
+        ? {
+            increment: (key: string, ttl: number) =>
+              cacheConnection!.secondaryStorage.increment(key, ttl),
+          }
+        : {}),
+    });
+    let modelReady = false;
+    const cloud = createCloudApplication({
+      repository: new PostgresCloudRepository(connection.db),
+      limits: cloudConfig.limits,
+      admitRun: async ({ actorId, mode }) => {
+        await admission(actorId, mode);
+        if (!modelReady) throw createApiError("SERVICE_UNAVAILABLE", "CLOUD_MODEL_UNAVAILABLE");
+        if (mode === "search" && !environment.BRAVE_SEARCH_API_KEY)
+          throw createApiError("SERVICE_UNAVAILABLE", "CLOUD_SEARCH_UNAVAILABLE");
+      },
+    });
+    const executionGateway = await createExecutionGateway({
+      app: cloud,
+      storage: objectStorage,
+      ...(environment.CLOUD_MODEL_PROVIDER &&
+      environment.CLOUD_MODEL_ID &&
+      environment.CLOUD_MODEL_API_KEY
+        ? {
+            model: {
+              provider: environment.CLOUD_MODEL_PROVIDER,
+              id: environment.CLOUD_MODEL_ID,
+              apiKey: environment.CLOUD_MODEL_API_KEY,
+            },
+          }
+        : {}),
+      ...(environment.BRAVE_SEARCH_API_KEY
+        ? { searchApiKey: environment.BRAVE_SEARCH_API_KEY }
+        : {}),
+    });
+    modelReady = executionGateway.modelReady;
     const assets = createAssetApplication({
       access,
       assets: new PostgresAssetV2Repository(connection.db),
       assetVersions,
-      blobStorage: environment.BLOB_STORAGE_DIR
-        ? new FileSystemBlobStorageRepository(environment.BLOB_STORAGE_DIR)
-        : new InMemoryBlobStorageRepository(),
+      blobStorage: new FileSystemBlobStorageRepository(
+        environment.BLOB_STORAGE_DIR ?? ".voidmix/blobs",
+      ),
     });
     const reviews = createReviewApplication({
       access,
@@ -151,10 +210,27 @@ export async function createApiRuntime({
     });
     const modules = createApiModules({
       v2Projects,
-      v2AgentRuns: createAgentRunApplication({
-        projects: v2Projects,
-        runs: new PostgresAgentRunV2Repository(connection.db),
-      }),
+      cloud,
+      objectStorage,
+      cloudCapabilities: {
+        ...cloudConfig.flags,
+        search: cloudConfig.flags.search && modelReady && !!environment.BRAVE_SEARCH_API_KEY,
+        computer: cloudConfig.flags.computer && modelReady,
+        unavailableReason:
+          environment.NODE_ENV === "production" && !cacheConnection
+            ? "CLOUD_RATE_LIMIT_UNAVAILABLE"
+            : !cloudConfig.flags.search && !cloudConfig.flags.computer
+              ? "CLOUD_CAPABILITY_DISABLED"
+              : !modelReady
+                ? "CLOUD_MODEL_UNAVAILABLE"
+                : cloudConfig.flags.search &&
+                    !cloudConfig.flags.computer &&
+                    !environment.BRAVE_SEARCH_API_KEY
+                  ? "CLOUD_SEARCH_UNAVAILABLE"
+                  : null,
+      },
+      reportError: reporter.report,
+      traceOperation: reporter.trace,
       assets,
       reviews,
       activity,
@@ -168,22 +244,35 @@ export async function createApiRuntime({
     return {
       app: createApiApp({
         modules,
+        executionGateway,
         allowedOrigins: environment.ALLOWED_ORIGINS,
         authHandler,
         resolveSession: createBetterAuthSessionResolver(auth),
         loggerConfig,
+        ...(!environment.S3_BUCKET
+          ? { localStorage: { storage: objectStorage, signingSecret: environment.AUTH_SECRET } }
+          : {}),
       }),
       close(): Promise<void> {
-        closePromise ??= Promise.all([
-          connection.close(),
-          ...(cacheConnection ? [cacheConnection.close()] : []),
-        ]).then(() => undefined);
+        closePromise ??= executionGateway
+          .close()
+          .then(() =>
+            Promise.all([
+              connection.close(),
+              ...(cacheConnection ? [cacheConnection.close()] : []),
+              reporter.close(),
+              ...(objectStorage?.close ? [objectStorage.close()] : []),
+            ]),
+          )
+          .then(() => undefined);
         return closePromise;
       },
     };
   } catch (error) {
     await cacheConnection?.close().catch(() => undefined);
+    await objectStorage?.close?.().catch(() => undefined);
     await connection.close();
+    await reporter.close();
     throw error;
   }
 }

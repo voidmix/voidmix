@@ -8,6 +8,16 @@ import type { WebTranslator } from "../src/i18n/client";
  * code missing from this map costs the user the reason for the rejection.
  */
 const ERROR_KEYS = {
+  CLOUD_ACCESS_DENIED: "accessDenied",
+  CLOUD_NOT_FOUND: "resourceNotFound",
+  CLOUD_BUDGET_EXCEEDED: "cloudBudgetExceeded",
+  CLOUD_RUN_ACTIVE: "cloudRunActive",
+  CLOUD_RUN_TERMINAL: "cloudRunTerminal",
+  CLOUD_CAPABILITY_DISABLED: "cloudUnavailable",
+  CLOUD_RATE_LIMIT_UNAVAILABLE: "cloudUnavailable",
+  CLOUD_UPLOAD_MISMATCH: "cloudUploadMismatch",
+  CLOUD_REVISION_INVALID: "cloudRevisionInvalid",
+  CLOUD_IDEMPOTENCY_CONFLICT: "cloudIntentConflict",
   UNAUTHORIZED: "signInRequired",
   FORBIDDEN: "accessDenied",
   PROJECT_ACCESS_DENIED: "accessDenied",

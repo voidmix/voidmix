@@ -1,7 +1,7 @@
 import { first, inserted } from "./results.js";
 import type { AgentRunV2, AgentRunV2Repository } from "@voidmix/core";
 import { eq } from "drizzle-orm";
-import { v2AgentRuns, outboxEvents } from "../schema.js";
+import { v2AgentRuns, outboxEvents } from "../schema/resources.js";
 import type { Database } from "./types.js";
 
 export class PostgresAgentRunV2Repository implements AgentRunV2Repository {

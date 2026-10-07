@@ -9,6 +9,7 @@ function mailer(sendWelcome: Mailer["sendWelcome"]): Mailer {
     sendVerification: async () => {},
     sendPasswordReset: async () => {},
     sendWelcome,
+    sendTaskNotification: async () => {},
   };
 }
 

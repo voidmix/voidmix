@@ -13,7 +13,10 @@ export interface NitroRuntimeTarget {
 }
 
 export interface NitroRuntimeProbe {
+  body?: string;
+  expectedStatus?: number;
   expectedText?: string;
+  method?: "GET" | "POST";
   pathname: string;
 }
 
@@ -39,9 +42,21 @@ const defaultTargets: readonly NitroRuntimeTarget[] = [
   {
     directory: "apps/web",
     name: "Web",
-    probes: [{ expectedText: "Ask Voidmix", pathname: "/" }, { pathname: "/health" }],
+    probes: [{ expectedText: "Voidmix", pathname: "/" }, { pathname: "/health" }],
   },
-  { directory: "apps/api", name: "API", probes: [{ pathname: "/health" }] },
+  {
+    directory: "apps/api",
+    name: "API",
+    probes: [
+      { pathname: "/health" },
+      {
+        pathname: "/internal/execution/bootstrap",
+        method: "POST",
+        body: JSON.stringify({ json: {} }),
+        expectedStatus: 401,
+      },
+    ],
+  },
 ];
 
 const nitroProbe = [
@@ -58,9 +73,9 @@ const nitroProbe = [
   "    let completed = false;",
   "    while (Date.now() < deadline) {",
   "      try {",
-  "        const response = await fetch(url, { signal: AbortSignal.timeout(1_000) });",
+  "        const response = await fetch(url, { method: probe.method ?? 'GET', ...(probe.body ? { body: probe.body, headers: { 'Content-Type': 'application/json' } } : {}), signal: AbortSignal.timeout(1_000) });",
   "        const body = await response.text();",
-  "        if (response.status !== 200) {",
+  "        if (response.status !== (probe.expectedStatus ?? 200)) {",
   "          lastFailure = 'received HTTP ' + response.status;",
   "        } else if (probe.expectedText && !body.includes(probe.expectedText)) {",
   "          lastFailure = 'response did not contain expected text';",
@@ -114,6 +129,11 @@ function createRuntimeEnvironment(processEnv: NodeJS.ProcessEnv, port: number): 
   return {
     ...environment,
     DATABASE_URL: "postgres://voidmix:verify@example.invalid:5432/voidmix",
+    S3_BUCKET: "voidmix-runtime-probe",
+    CLOUD_SEARCH_ENABLED: "false",
+    CLOUD_COMPUTER_ENABLED: "false",
+    REDIS_URL: "",
+    SENTRY_DSN: "",
     ALLOWED_ORIGINS: "http://localhost:3000",
     AUTH_SECRET: "verify-only-secret-that-is-long-enough-for-better-auth",
     AUTH_URL: "http://127.0.0.1:" + port,
@@ -153,7 +173,7 @@ async function stageNitroOutput(sourceDirectory: string): Promise<NitroRuntimeSt
   const directory = join(stagingRoot, ".output");
 
   try {
-    await cp(sourceDirectory, directory, { recursive: true });
+    await cp(sourceDirectory, directory, { recursive: true, verbatimSymlinks: true });
   } catch (error) {
     await rm(stagingRoot, { force: true, recursive: true });
     throw error;

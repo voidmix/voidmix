@@ -5,7 +5,13 @@ import en from "../messages/en.json" with { type: "json" };
 import zh from "../messages/zh.json" with { type: "json" };
 
 export const mailMessages = { en, zh } as const;
-export type MailNamespace = "common" | "passwordReset" | "verification" | "welcome" | "test";
+export type MailNamespace =
+  | "common"
+  | "passwordReset"
+  | "verification"
+  | "welcome"
+  | "taskNotification"
+  | "test";
 
 export function createMailTranslator(namespace: MailNamespace, locale: Locale): Translator {
   return createTranslator({

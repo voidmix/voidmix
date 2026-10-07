@@ -1,6 +1,6 @@
 import { chromium, expect } from "@playwright/test";
 import { connectDatabase, migrateDatabase } from "@voidmix/db";
-import { authAccounts, users, v2Projects, v2ProjectTasks } from "@voidmix/db/schema";
+import { authAccounts, users, v2Projects, cloudTasks, cloudTaskRounds } from "@voidmix/db/schema";
 import { hashPassword } from "better-auth/crypto";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -86,19 +86,66 @@ try {
             "Document the final decisions",
           ]
         : ["确认创作方向", "准备第一版方案", "评审视觉参考", "整理最终决策"];
-    for (let index = 0; index < tasks.length; index++)
+    for (let index = 0; index < tasks.length; index++) {
       await connection.db
-        .insert(v2ProjectTasks)
+        .insert(cloudTasks)
         .values({
           id: `${id}-task-${index}`,
           projectId: `${id}-0`,
-          title: tasks[index]!,
-          status: (["done", "in_progress", "todo", "todo"] as const)[index]!,
-          createdByUserId: id,
+          scopeType: "project",
+          actorId: id,
+          status: (["completed", "in_progress", "open", "open"] as const)[index]!,
+          currentRoundId: `${id}-round-${index}`,
+          goalVersion: 1,
+          data: {
+            id: `${id}-task-${index}`,
+            scope: { type: "project", projectId: `${id}-0` },
+            title: tasks[index]!,
+            goal: tasks[index]!,
+            currentRoundId: `${id}-round-${index}`,
+            goalVersion: 1,
+            requestedByUserId: id,
+            status: (["completed", "in_progress", "open", "open"] as const)[index]!,
+            conversationId: null,
+            currentRevisionId: null,
+            acceptedRevisionId: null,
+            idempotencyKey: `${id}-task-${index}`,
+            createdAt: "2026-09-01T00:00:00Z",
+            updatedAt: `2026-09-${28 - index}T08:00:00Z`,
+          },
           createdAt: new Date("2026-09-01T00:00:00Z"),
           updatedAt: new Date(`2026-09-${28 - index}T08:00:00Z`),
         })
         .onConflictDoNothing();
+      await connection.db
+        .insert(cloudTaskRounds)
+        .values({
+          id: `${id}-round-${index}`,
+          scopeType: "project",
+          projectId: `${id}-0`,
+          actorId: id,
+          parentId: `${id}-task-${index}`,
+          taskId: `${id}-task-${index}`,
+          goalVersion: 1,
+          data: {
+            id: `${id}-round-${index}`,
+            scope: { type: "project", projectId: `${id}-0` },
+            taskId: `${id}-task-${index}`,
+            goalVersion: 1,
+            goal: tasks[index]!,
+            attachmentIds: [],
+            callBudget: 40,
+            durationBudgetMs: 20 * 60 * 1000,
+            createdByUserId: id,
+            idempotencyKey: `${id}-round-${index}`,
+            createdAt: "2026-09-01T00:00:00Z",
+            updatedAt: "2026-09-01T00:00:00Z",
+          },
+          createdAt: new Date("2026-09-01T00:00:00Z"),
+          updatedAt: new Date("2026-09-01T00:00:00Z"),
+        })
+        .onConflictDoNothing();
+    }
     for (const theme of ["light", "dark"] as const) {
       for (const size of ["desktop", "mobile"] as const) {
         const context = await browser.newContext({

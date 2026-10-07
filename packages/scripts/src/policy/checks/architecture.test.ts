@@ -9,6 +9,8 @@ function fixture(
       source?: string;
       exports?: Record<string, string>;
       paths?: Record<string, string[]>;
+      imports?: Record<string, string>;
+      sources?: Record<string, string>;
     }
   >,
 ) {
@@ -23,8 +25,11 @@ function fixture(
         (item.dev ?? []).map((n) => [`@voidmix/${n}`, "workspace:*"]),
       ),
       exports: item.exports ?? { ".": "./src/index.ts" },
+      ...(item.imports ? { imports: item.imports } : {}),
     });
     if (item.source) files[`${path}/src/index.ts`] = item.source;
+    for (const [name, source] of Object.entries(item.sources ?? {}))
+      files[`${path}/${name}`] = source;
     if (item.paths)
       files[`${path}/tsconfig.json`] = JSON.stringify({ compilerOptions: { paths: item.paths } });
   }
@@ -88,5 +93,58 @@ describe("architecture boundaries", () => {
         })
       ).some((f) => f.message.includes("declared production dependency")),
     ).toBe(true);
+  });
+  it("permits the execution adapter in the Desktop host but rejects it in the renderer", async () => {
+    const findings = await fixture({
+      "apps/desktop": {
+        deps: ["ai"],
+        sources: {
+          "runtime/main.ts": 'import "@voidmix/ai";',
+          "src/main.ts": 'import "@voidmix/ai";',
+        },
+      },
+      "packages/ai": {},
+    });
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.location).toBe("apps/desktop/src/main.ts");
+  });
+  it.each([
+    ['import "../runtime/main";', undefined],
+    ['import "@host/main";', { "@host/*": ["runtime/*"] }],
+    ['import "#host/main";', undefined],
+  ])("rejects same-workspace renderer/host imports: %s", async (source, paths) => {
+    const findings = await fixture({
+      "apps/desktop": {
+        source,
+        ...(paths ? { paths } : {}),
+        imports: { "#host/*": "./runtime/*.ts" },
+        sources: { "runtime/main.ts": "export {};" },
+      },
+    });
+    expect(
+      findings.some((item) => item.message.includes("renderer must not import local runner")),
+    ).toBe(true);
+  });
+  it("rejects direct provider and Node imports in the renderer and React in the runner", async () => {
+    const findings = await fixture({
+      "apps/desktop": {
+        sources: {
+          "src/main.ts": 'import "node:fs"; import "@earendil-works/pi-coding-agent";',
+          "runtime/main.ts": 'import "react";',
+        },
+      },
+    });
+    expect(findings).toHaveLength(3);
+  });
+  it("permits business UI in applications and rejects transport ownership in the UI package", async () => {
+    const findings = await fixture({
+      "apps/web": { deps: ["agent-ui"] },
+      "packages/agent-ui": { deps: ["ui", "contracts", "client"] },
+      "packages/ui": {},
+      "packages/contracts": {},
+      "packages/client": {},
+    });
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.message).toContain("must not depend on @voidmix/client");
   });
 });

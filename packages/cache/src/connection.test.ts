@@ -5,6 +5,8 @@ const mocks = vi.hoisted(() => ({
   constructorCalls: [] as Array<{ options: Record<string, unknown>; url: string }>,
   ping: vi.fn(async () => "PONG"),
   quit: vi.fn(async () => "OK"),
+  disconnect: vi.fn(),
+  on: vi.fn(),
 }));
 
 vi.mock("ioredis", () => ({
@@ -12,6 +14,8 @@ vi.mock("ioredis", () => ({
     connect = mocks.connect;
     ping = mocks.ping;
     quit = mocks.quit;
+    disconnect = mocks.disconnect;
+    on = mocks.on;
 
     constructor(url: string, options: Record<string, unknown>) {
       mocks.constructorCalls.push({ options, url });
@@ -41,5 +45,6 @@ describe("Redis connection", () => {
 
     await connection.close();
     expect(mocks.quit).toHaveBeenCalledOnce();
+    expect(mocks.disconnect).toHaveBeenCalledOnce();
   });
 });

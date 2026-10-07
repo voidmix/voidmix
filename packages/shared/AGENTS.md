@@ -32,6 +32,9 @@ This is the deepest common workspace in the repository.
 - Browser environment access must reject undeclared and server-only fields.
 - Operational logging owns one central sensitive-field redaction policy. Keep
   operational logs separate from durable audit records.
+- Cloud callers log only operation metadata. Prompts, file content and signed
+  transfer URL fields join credentials in the central redaction policy; raw
+  provider exceptions must be converted to safe error codes before logging.
 - Keep browser logging isolated from server adapters. Hono, oRPC, and Vite are
   optional peer dependencies, and adapters use only their explicit subpaths.
 - Build public imports to ESM and declaration files in `dist/`; keep source
@@ -51,7 +54,7 @@ This is the deepest common workspace in the repository.
 ## Verification
 
 ```bash
-bun run --cwd packages/shared build
+bun run vmx tasks build --filter @voidmix/shared
 bun run --cwd packages/shared check
 bun run --cwd packages/shared test
 ```

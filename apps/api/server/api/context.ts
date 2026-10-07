@@ -4,6 +4,8 @@ import type { Locale } from "@voidmix/i18n/types";
 export interface ApiRequestAuthContext {
   session: Session | null;
   user: Session["user"] | null;
+  /** Long-lived subscriptions must revalidate the original request's session. */
+  revalidateSession?: () => Promise<Session | null>;
 }
 
 export interface ApiRequestContext {

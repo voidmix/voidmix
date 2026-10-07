@@ -16,17 +16,19 @@ scripts over globally installed tooling.
 cp .env.example .env
 bun install
 bun run generate
+bun run db:migrate
 bun run dev
 ```
 
-`DATABASE_URL` is required by the Web/API runtime and should point to the local PostgreSQL
-service or another reachable PostgreSQL instance. Admin authentication uses the
+`DATABASE_URL` is required by API and Worker and must point to a fresh PostgreSQL
+database for the cloud migration baseline. Admin authentication uses the
 Better Auth cookie session; local auth emails are logged when Resend is not
 configured.
 
-Redis is optional for local development. Set `REDIS_URL` when you want to enable
-the Redis cache and Better Auth secondary storage; omit it to use the database-only
-behavior.
+Redis is optional for local development. Production AI admission requires
+`REDIS_URL`; authentication always uses PostgreSQL. See
+[deployment](../architecture/deployment.md) for model, search, storage and
+document converter configuration before enabling Search or Computer.
 
 ## Environment files
 

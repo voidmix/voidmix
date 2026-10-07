@@ -4,7 +4,7 @@ import type { WorkspaceShape } from "../manifests.js";
 
 export const canonicalScripts: Readonly<Record<string, string>> = {
   "test:unit":
-    "vp test --run --passWithNoTests --exclude '**/component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "vp test --run --passWithNoTests --exclude '**/component.test.{ts,tsx}' --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
   "test:integration": "vp test --run --passWithNoTests integration.test",
   "test:component": "vp test --run --passWithNoTests component.test",
   "test:coverage":
@@ -61,7 +61,7 @@ export function validateScripts(
     if (declared === undefined) {
       report(
         location,
-        `does not declare ${name}, so \`vp run -r ${name}\` skips this workspace`,
+        `does not declare ${name}, so Turbo skips this workspace`,
         `add to ${location}: "${name}": "${canonical}"`,
       );
     } else if (declared !== canonical) {
@@ -92,12 +92,18 @@ export function validateScripts(
     }
   }
 
-  const build = expandScript(scripts, "build");
-  if (build !== undefined && check !== undefined && !build.startsWith(check)) {
+  if (Object.values(scripts).some((command) => /\bvp\s+run\b/.test(command))) {
     report(
       location,
-      "build does not run check first, so it can ship an unchecked tree",
-      `prefix the build script in ${location} with: bun run check &&`,
+      "uses a second task runner",
+      "use Turbo for workspace orchestration and Vite+ leaf commands only",
+    );
+  }
+  if (/^bun run check\s*&&/.test(scripts.build ?? "")) {
+    report(
+      location,
+      "build repeats the check owned by the Turbo task graph",
+      `remove the bun run check prefix from ${location}; turbo.json owns the build -> check dependency`,
     );
   }
   return findings;

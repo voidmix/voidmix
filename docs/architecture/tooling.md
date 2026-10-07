@@ -3,27 +3,27 @@
 ## Runtime responsibilities
 
 ```text
-Bun       dependency installation, lockfile, tests, and repository scripts
-Vite+     development commands, task ordering, caching, checks, builds,
-          linting, and formatting
+Bun       dependency installation, lockfile, and repository scripts
+Turbo     workspace task graph, local/remote caching, pruned deployment
+Vite+     leaf dev/build/test/lint/fmt/pack commands
 Nitro     API and Web TanStack Start server build/deployment shell
-Node.js   initial Web and API production runtime
+Node.js   Web, API and Worker production runtime (24.18.0)
 Rust      Tauri native runtime
 ```
 
-Do not add Turborepo alongside Vite+. Runtime services remain on Node.js until
+Turbo replaces the Vite+ task runner; never run both task caches. Runtime services remain on Node.js until
 real compatibility tests and benchmarks justify a change.
 
 ## Bun catalogs
 
 The root `package.json` centralizes versions with Bun catalogs:
 
-| Catalog            | Scope                               | Representative dependencies                                                                                                                       |
-| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `catalog:`         | Shared runtime and contracts        | React, TanStack Router/Start, oRPC, Better Auth, `use-intl`, UUID, Zod, Evlog                                                                     |
-| `catalog:backend`  | Server and data tooling             | Hono, Nitro, Drizzle, PostgreSQL, Redis, Nanoid                                                                                                   |
-| `catalog:frontend` | UI, email, and native surfaces      | Base UI, Phosphor Icons, Tailwind CSS, CVA, `cn`, Tauri, Resend                                                                                   |
-| `catalog:tooling`  | Build, test, and repository tooling | Vite+, Vite alias, TypeScript, Storybook, Knip, `esbuild`, `jiti`, React types/plugin, Oxc transform, Citty, Dotenvx, Vitest coverage, Playwright |
+| Catalog            | Scope                               | Representative dependencies                                                                                                                              |
+| ------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `catalog:`         | Shared runtime and contracts        | React, TanStack Router/Start, oRPC, Better Auth, `use-intl`, UUID, Zod, Evlog                                                                            |
+| `catalog:backend`  | Server and data tooling             | Hono, Nitro, Drizzle, PostgreSQL, Redis, Nanoid                                                                                                          |
+| `catalog:frontend` | UI, email, and native surfaces      | Base UI, Phosphor Icons, Tailwind CSS, CVA, `cn`, Tauri, Resend                                                                                          |
+| `catalog:tooling`  | Build, test, and repository tooling | Turbo, Vite+, Vite alias, TypeScript, Storybook, Knip, `esbuild`, `jiti`, React types/plugin, Oxc transform, Citty, Dotenvx, Vitest coverage, Playwright |
 
 Vitest itself is absent from the catalogs because Vite+ bundles the runner;
 `@vitest/coverage-v8` remains explicit so its version can track that bundled
@@ -32,12 +32,14 @@ runner.
 Internal packages use `workspace:*`. Change third-party versions in the root
 catalog rather than individual workspace manifests.
 
-Stable third-party dependencies use caret semver ranges (`^`), including
+Most stable third-party dependencies use caret semver ranges (`^`), including
 `0.x` releases without a pre-release suffix. Vitest coverage is pinned exactly
 to the runner bundled by Vite+. Pre-release dependencies remain exact: oRPC
 beta, Drizzle RC, and Nitro beta. Vite+ and its Vite alias use matching stable
 caret ranges.
-The committed `bun.lock` records the exact resolved versions for frozen installs.
+Turbo, Pi AI and the Query/Router integration are initially pinned exactly so
+the validated orchestration and SDK combination does not drift. The committed
+`bun.lock` records exact resolved versions for frozen installs.
 
 Storybook packages and Lightning CSS also use ranges, but their resolved
 versions must stay aligned with their companion packages.
@@ -121,7 +123,7 @@ environment-validating Drizzle config. Once that baseline is clean, dependency
 and duplicate-export findings can be promoted to the verification gate
 independently.
 
-`check` stays `vp run -r check` — per-workspace typecheck scripts. Desktop
+`check` is `vmx tasks check` — per-workspace typecheck scripts. Desktop
 and Mail typecheck their statically imported JSON catalogs directly, while Web
 typechecks its explicit locale-to-dynamic-import map. A clean checkout does not
 depend on generated translation files. It is deliberately not repointed at
@@ -145,6 +147,7 @@ uncommitted.
 `@voidmix/scripts` exposes:
 
 ```text
+tasks <task> [flags]   run the Turbo graph with platform and cache trust policy
 env -- <command>       run a child command with root development env files
 doctor                  check core and optional development prerequisites
 deps dedupe             remove duplicate dependency versions from bun.lock
@@ -165,7 +168,7 @@ policy [--fix]         check repository conventions; --fix rewrites the
 generate               regenerate Drizzle artifacts
 desktop build          build the Tauri application
 verify                  run every gate: policy, format, lint, check, test,
-                        build, and the Nitro runtime probe
+                        build, the Worker artifact check, and Nitro runtime probes
 verify --verbose        run every gate with full child-process output
 shadcn update          refresh tracked shadcn/ui components in packages/ui
 ```
@@ -265,7 +268,7 @@ not wait for a build. Distinct from `doctor`, which asserts machine prerequisite
 and therefore cannot run in CI.
 
 `fixes.ts` applies the findings whose remedy is a transformation rather than a
-decision: a canonical test script, a `build` that does not run `check`, a locally
+decision: a canonical test script, a `build` that repeats its graph-owned `check`, a locally
 restated `devEngines`, an unanchored ignore pattern, a duplicated one, and a
 compiler option the preset already provides. Each fixer sits beside its validator
 and shares the same private predicate, so the two cannot disagree about what
@@ -279,8 +282,7 @@ on screen is what still needs a person — a fix that failed shows up rather tha
 being claimed. The rewritten files are handed to `vp fmt`, because a fixer that
 rewrites JSON cannot also be the authority on how JSON is formatted.
 
-Pass the flag without a `--` separator: `vp run @voidmix/scripts#policy --fix`
-reaches the CLI, while `vp run @voidmix/scripts#policy -- --fix` does not.
+Use `bun run policy:fix` for the procedural CLI; it does not enter the task graph.
 
 Scripts filenames use domain directories as naming context (`database/policy.ts`,
 `doctor/checks.ts`, and `runtime/process.ts`) instead of repeating prefixes in
@@ -308,8 +310,8 @@ machine-wide install cache, affecting every checkout on that machine.
 Every root script for this package calls the `vmx` bin directly — `bun run
 db:migrate` is `vmx db migrate` — so the colon-separated names are aliases for
 nested CLI commands, and `bun run vmx <command>` reaches anything without one.
-[ADR-0002](decisions/0002-vite-plus-sole-orchestrator.md) records why they no
-longer route through `vp run`.
+[ADR-0018](decisions/0018-turbo-task-orchestration.md) records why they no
+longer route through a task runner.
 
 Renaming this bin needs `bun.lock` changed with it. The lockfile records the bin
 name as derived metadata and `bun install` links from the lockfile rather than the
@@ -332,7 +334,11 @@ customizations before committing; never run it unattended.
 metadata, required local binaries, or invalid environment schemas. Missing
 Rust/Cargo or Docker tooling is reported as a warning because those workflows
 are optional. `bun run db:studio` and `bun run db:push` are interactive and
-bypass Vite+ task orchestration.
+bypass Turbo task orchestration.
+
+Tauri invokes root `build:desktop:native-prep`: uncached `desktop:prepare`
+creates the pinned native runner resources before `build:desktop` enters Turbo.
+Native packaging itself remains uncached.
 
 The Citty command tree provides `vmx --help`, nested command help such as
 `vmx db --help`, and `vmx --version`.
@@ -354,3 +360,45 @@ workspace-local Playwright binary to install Linux browser dependencies before
 the browser tests in the combined Linux CI job. See
 [Testing and verification](../development/testing.md#github-actions) for the
 zero-secret workflow and optional local diagnostics.
+
+## Turbo task graph and cache trust
+
+Root scripts call `vmx tasks`, which delegates to the local Turbo binary.
+`build` depends on `check`, dependency builds, and transitive source hashes.
+Packages that export TypeScript source have transit nodes rather than fake
+no-emit builds. Shared pack is a prerequisite of consumer checks/tests; build
+scripts no longer rerun checks. Root lint/format checks run once for the whole
+repository. Direct workspace build commands are leaf tools, not shipping gates.
+
+Turbo uses strict environment mode. `VITE_*`, `NODE_ENV`, and `NITRO_PRESET` affect
+build keys. Root config, the shared test config, TS presets, catalogs, lockfile and env files also affect
+hashes. `vmx tasks` fingerprints the actual Node/Bun executable versions, OS,
+architecture and libc so native artifacts cannot cross incompatible hosts.
+Outputs are limited to `dist`, Nitro `.output`, Storybook and explicit coverage;
+never put user inputs, sessions, credentials or signed URLs inside these paths.
+
+Set `TURBO_TOKEN`, `TURBO_TEAM` and `TURBO_REMOTE_CACHE_SIGNATURE_KEY` together for
+Vercel remote caching. There is no login or secret committed by this repository.
+Missing configuration uses local cache only. Signatures authenticate cached
+artifacts; they do not encrypt them. CI remote credentials and cross-run local
+cache are restricted to trusted canary pushes/manual runs. Pull requests never
+receive those credentials. Untrusted CI invocation strips any inherited remote
+credentials and forces local-only mode.
+
+`verify` keeps cheap-to-expensive gates; unit and component tests are cached,
+integration and external effects are not. Real PostgreSQL/E2E, provider calls,
+Node probes, document conversion, migrations and deployment always execute.
+`format:fix`, maintenance and database operations remain direct uncached commands.
+
+Docker prunes with the exact Turbo catalog version. The dependency layer installs
+`out/json` against the canonical lockfile frozen with scripts delayed; the source layer then supplies `out/full`
+and root TS/Vite/Turbo config, runs shared postinstall, and builds via Turbo.
+Builder images contain Node 24.18.0 and Bun 1.4.0. Final images keep only Node
+runtime artifacts; the Worker also keeps its fixed converters and fonts.
+
+Turbo 2.11.7 can omit a development dependency that also appears as an optional
+peer when pruning Bun locks (`@voidmix/shared` / `@orpc/server`). Builders therefore
+overlay the canonical root `bun.lock` before frozen installation. Bun 1.4 skips
+workspaces absent from the pruned manifest and installs only the included closure.
+This keeps exact resolutions and trades some lock-layer cache granularity for
+reproducibility; never regenerate a deployment lock with floating ranges.

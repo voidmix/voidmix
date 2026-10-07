@@ -12,7 +12,7 @@ import { AuthInput } from "./auth-input";
 import { PasswordField } from "./password-field";
 import { createVerificationCallbackUrl, normalizeAuthRedirect } from "./route-search";
 
-const defaultAuthenticatedRoute = "/admin";
+const defaultAuthenticatedRoute = "/chat";
 
 export function AuthForm({
   mode,

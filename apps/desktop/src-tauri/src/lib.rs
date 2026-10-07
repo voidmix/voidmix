@@ -1,10 +1,11 @@
 mod folder;
+mod runner;
 
 use serde::{Deserialize, Serialize};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    AppHandle, Manager, WindowEvent,
+    AppHandle, Manager, RunEvent, WindowEvent,
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -92,14 +93,25 @@ fn hide_main_window(app: AppHandle) -> Result<(), String> {
 pub fn run() {
     tauri::Builder::default()
         .manage(folder::PiState::default())
+        .manage(runner::RunnerState::default())
         .setup(|app| {
             build_tray(app)?;
+            // A missing runner is an explicit unavailable state, never a simulated run.
+            let _ = runner::start(app);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             desktop_runtime,
             hide_main_window,
-            folder::authorize_project_folder
+            folder::authorize_project_folder,
+            runner::runner_status,
+            runner::runner_configure,
+            runner::runner_grant,
+            runner::runner_revoke,
+            runner::runner_cancel,
+            runner::runner_steer,
+            runner::runner_approve,
+            runner::runner_subscribe
         ])
         .on_window_event(|window, event| {
             if let WindowEvent::CloseRequested { api, .. } = event {
@@ -107,6 +119,22 @@ pub fn run() {
                 let _ = window.hide();
             }
         })
-        .run(tauri::generate_context!())
-        .expect("error while running VoidMix desktop application");
+        .build(tauri::generate_context!())
+        .expect("error while building VoidMix desktop application")
+        .run(|app, event| {
+            if let RunEvent::ExitRequested { api, .. } = event {
+                let state = app.state::<runner::RunnerState>();
+                if !state
+                    .quitting
+                    .swap(true, std::sync::atomic::Ordering::SeqCst)
+                {
+                    api.prevent_exit();
+                    let handle = app.clone();
+                    std::thread::spawn(move || {
+                        runner::stop(&handle);
+                        handle.exit(0);
+                    });
+                }
+            }
+        });
 }

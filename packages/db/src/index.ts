@@ -10,7 +10,6 @@ export {
   PostgresFeedbackV2Repository,
   PostgresAssetV2Repository,
   PostgresAssetVersionV2Repository,
-  PostgresAgentRunV2Repository,
   PostgresActivityV2Repository,
 } from "./v2.js";
 export { InMemorySystemSettingsRepository, InMemoryUserRepository } from "./memory.js";
@@ -22,3 +21,9 @@ export {
   PostgresUserRepository,
   type DatabaseConnection,
 } from "./postgres.js";
+
+export { InMemoryExecutionRepository } from "./execution-memory.js";
+
+export { InMemoryCloudRepository } from "./cloud-memory.js";
+export { PostgresCloudRepository } from "./cloud-postgres.js";
+export { acquireCloudWorkerLease } from "./cloud-worker-lease.js";

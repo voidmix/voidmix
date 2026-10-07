@@ -24,6 +24,8 @@ node_modules/
 .cache/
 .vite/
 .vite-plus/
+.turbo/
+out/
 .vite-hooks/_/
 
 # Environment. `*.local` is Vite's convention for machine-local overrides and

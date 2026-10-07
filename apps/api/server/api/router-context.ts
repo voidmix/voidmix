@@ -1,5 +1,6 @@
 import { hasPermission, type Permission } from "@voidmix/auth";
 import { apiContract } from "@voidmix/contracts";
+import { DomainError } from "@voidmix/core";
 import { implement } from "@orpc/server";
 import { evlog as orpcEvlog } from "@voidmix/shared/logger/orpc";
 
@@ -10,10 +11,12 @@ export function createRouterContext(options: CreateApiRouterOptions) {
   const os = implement(apiContract)
     .$context<ApiContext>()
     .use(orpcEvlog())
-    .use(async ({ context, next }) => {
+    .use(async ({ context, next, path }) => {
       context.log?.set({ requestId: context.requestId });
       context.resHeaders?.set("x-request-id", context.requestId);
-      return next();
+      return options.modules.traceOperation
+        ? options.modules.traceOperation(path.join("."), async () => next())
+        : next();
     });
   const requireAuthenticated = os.middleware(async ({ context, next }) => {
     const session = context.auth.session;
@@ -33,10 +36,25 @@ export function createRouterContext(options: CreateApiRouterOptions) {
       throw createApiError("INTERNAL_SERVER_ERROR", "V2_AGENT_RUNS_NOT_CONFIGURED");
     return options.modules.v2AgentRuns;
   };
+  const execution = () => {
+    if (!options.modules.execution)
+      throw createApiError("SERVICE_UNAVAILABLE", "EXECUTION_NOT_CONFIGURED");
+    return options.modules.execution;
+  };
+  const cloud = () => {
+    if (!options.modules.cloud) throw createApiError("SERVICE_UNAVAILABLE", "CLOUD_NOT_CONFIGURED");
+    return options.modules.cloud;
+  };
+  const objectStorage = () => {
+    if (!options.modules.objectStorage)
+      throw createApiError("SERVICE_UNAVAILABLE", "OBJECT_STORAGE_UNAVAILABLE");
+    return options.modules.objectStorage;
+  };
   const call = async <Result>(operation: () => Promise<Result>): Promise<Result> => {
     try {
       return await operation();
     } catch (error) {
+      if (!(error instanceof DomainError)) options.modules.reportError?.(error);
       throw mapDomainError(error);
     }
   };
@@ -67,6 +85,17 @@ export function createRouterContext(options: CreateApiRouterOptions) {
     assets,
     reviews,
     agentRuns,
+    execution,
+    cloud,
+    objectStorage,
+    cloudCapabilities: () =>
+      options.modules.cloudCapabilities ?? {
+        search: false,
+        computer: false,
+        delegation: false,
+        export: false,
+        unavailableReason: "CLOUD_NOT_CONFIGURED",
+      },
     call,
     command,
     list,

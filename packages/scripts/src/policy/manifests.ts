@@ -3,7 +3,6 @@ import type { PolicyFinding } from "./checks.js";
 import {
   canonicalScripts,
   engineFinding,
-  expandScript,
   scriptFinding,
   structureFinding,
   validateDependencies,
@@ -115,7 +114,7 @@ export function validateWorkspaceManifest(
   return findings;
 }
 
-/** Fix only canonical scripts, unchecked builds and repeated devEngines. Preserve bytes on a no-op. */
+/** Fix canonical scripts, repeated checks and repeated devEngines. Preserve bytes on a no-op. */
 export function fixWorkspaceManifest(content: string, shape: WorkspaceShape): string {
   const result = parseJson(content);
   if (!result.valid) {
@@ -147,10 +146,8 @@ export function fixWorkspaceManifest(content: string, shape: WorkspaceShape): st
   }
 
   if (scripts !== undefined) {
-    const check = expandScript(scripts, "check");
-    const build = expandScript(scripts, "build");
-    if (check !== undefined && build !== undefined && !build.startsWith(check)) {
-      scripts.build = `bun run check && ${scripts.build ?? ""}`;
+    if (/^bun run check\s*&&\s*/.test(scripts.build ?? "")) {
+      scripts.build = scripts.build!.replace(/^bun run check\s*&&\s*/, "");
       changed = true;
     }
   }

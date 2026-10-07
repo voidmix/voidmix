@@ -14,9 +14,13 @@ const mocks = vi.hoisted(() => ({
   pathname: "/projects",
   navigate: vi.fn(),
   signOut: vi.fn(),
+  disposeAccount: vi.fn(),
+  cancelQueries: vi.fn(async () => {}),
+  clearQueries: vi.fn(),
+  clearRoutes: vi.fn(),
   session: {
-    data: { user: { name: "Ada Lovelace", role: "owner" } } as
-      | { user: { name: string; role?: string } }
+    data: { user: { id: "account", name: "Ada Lovelace", role: "owner" } } as
+      | { user: { id?: string; name: string; role?: string } }
       | undefined,
   },
 }));
@@ -31,6 +35,15 @@ vi.mock("@tanstack/react-router", () => ({
   useLocation: () => mocks.pathname,
   useRouterState: () => false,
   useNavigate: () => mocks.navigate,
+  useRouter: () => ({
+    options: {
+      context: {
+        resources: { disposeAccount: mocks.disposeAccount },
+        queryClient: { cancelQueries: mocks.cancelQueries, clear: mocks.clearQueries },
+      },
+    },
+    clearCache: mocks.clearRoutes,
+  }),
 }));
 
 vi.mock("../../lib/auth-client", () => ({
@@ -122,6 +135,10 @@ describe.each(["/projects", "/admin"])("account menu at %s", (pathname) => {
 
     await waitFor(() => expect(mocks.signOut).toHaveBeenCalledOnce());
     await waitFor(() => expect(mocks.navigate).toHaveBeenCalledWith({ to: "/" }));
+    expect(mocks.disposeAccount).toHaveBeenCalledWith("account");
+    expect(mocks.cancelQueries).toHaveBeenCalledOnce();
+    expect(mocks.clearQueries).toHaveBeenCalledOnce();
+    expect(mocks.clearRoutes).toHaveBeenCalledOnce();
   });
 
   it("keeps the account block to one child per grid column", () => {

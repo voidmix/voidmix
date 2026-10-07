@@ -16,14 +16,17 @@ type ResendSendResult = {
 
 export type ResendClient = {
   emails: {
-    send(message: {
-      from: string;
-      to: string | string[];
-      subject: string;
-      html: string;
-      text: string;
-      replyTo?: string;
-    }): Promise<ResendSendResult>;
+    send(
+      message: {
+        from: string;
+        to: string | string[];
+        subject: string;
+        html: string;
+        text: string;
+        replyTo?: string;
+      },
+      options?: { idempotencyKey: string },
+    ): Promise<ResendSendResult>;
   };
 };
 
@@ -63,14 +66,17 @@ export function createResendTransport(options: ResendTransportOptions): MailTran
   return {
     async send(message): Promise<MailSendResult> {
       try {
-        const { data, error } = await client.emails.send({
+        const payload = {
           from: formatAddress(message.from),
           to: Array.isArray(message.to) ? message.to.map(formatAddress) : formatAddress(message.to),
           subject: message.subject,
           html: message.html,
           text: message.text,
           ...(message.replyTo ? { replyTo: formatAddress(message.replyTo) } : {}),
-        });
+        };
+        const { data, error } = await (message.idempotencyKey
+          ? client.emails.send(payload, { idempotencyKey: message.idempotencyKey })
+          : client.emails.send(payload));
         if (error) return failure(message, record, error.message);
 
         record({

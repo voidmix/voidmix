@@ -23,6 +23,11 @@ const sensitivePaths = [
   "refreshToken",
   "sessionToken",
   "apiKey",
+  "prompt",
+  "fileContent",
+  "signedUrl",
+  "downloadUrl",
+  "uploadUrl",
   "**.authorization",
   "**.cookie",
   "**.set-cookie",
@@ -34,6 +39,11 @@ const sensitivePaths = [
   "**.refreshToken",
   "**.sessionToken",
   "**.apiKey",
+  "**.prompt",
+  "**.fileContent",
+  "**.signedUrl",
+  "**.downloadUrl",
+  "**.uploadUrl",
 ];
 
 export interface LoggerOptions {

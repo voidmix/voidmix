@@ -5,6 +5,25 @@ export function createAssetApplication(options: AssetOptions): AssetApplication 
   const { now, id } = executionContext(options);
   const { requireProject } = options.access;
   return {
+    async downloadAssetVersion({ actorId, assetVersionId }) {
+      const version = requireResource(
+        await options.assetVersions.getById(assetVersionId),
+        "Asset download denied.",
+      );
+      await requireProject(actorId, version.projectId, "project.read", "Asset download denied.");
+      const asset = requireResource(
+        await options.assets.getById(version.assetId),
+        "Asset download denied.",
+      );
+      const download = requireResource(
+        await options.blobStorage.getDownload({
+          workspaceId: version.projectId,
+          blobHash: version.checksum,
+        }),
+        "Asset content unavailable.",
+      );
+      return { name: asset.name, version, download };
+    },
     async listLibrary(input) {
       if (input.projectId)
         await requireProject(
@@ -63,6 +82,7 @@ export function createAssetApplication(options: AssetOptions): AssetApplication 
       const completed = await options.blobStorage.completeUpload({
         uploadId,
         actorId,
+        workspaceId: asset.projectId,
         byteSize,
         contentType,
         blobHash: checksum,

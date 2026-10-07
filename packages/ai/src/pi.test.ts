@@ -50,15 +50,57 @@ it("drains retry events and completes when the prompt settles", async () => {
       type: "message_update",
       assistantMessageEvent: { type: "text_delta", delta: "Hello" },
     });
-    sdk.listener({ type: "agent_end", messages: [{ role: "assistant", content: "Hello" }] });
+    sdk.listener({
+      type: "message_end",
+      message: {
+        role: "assistant",
+        content: [{ type: "text", text: "Hello" }],
+        stopReason: "stop",
+      },
+    });
+    sdk.listener({ type: "agent_settled" });
   });
   const { provider, input } = await setup();
   expect(await collectRun(provider, input)).toEqual([
     { type: "text_delta", text: "Hello" },
+    { type: "message_completed", text: "Hello", stopReason: "stop" },
     { type: "completed", text: "Hello" },
   ]);
   expect(sdk.prompt).toHaveBeenCalledWith("[Agent role: editor]\nReview\nGo");
   expect(sdk.unsubscribe).toHaveBeenCalledOnce();
+});
+it("does not treat agent_end or a failed assistant as successful completion", async () => {
+  sdk.prompt.mockImplementation(async () => {
+    sdk.listener({ type: "agent_end", willRetry: true });
+    sdk.listener({
+      type: "message_end",
+      message: { role: "assistant", content: [], stopReason: "error" },
+    });
+    sdk.listener({ type: "agent_end", willRetry: false });
+    sdk.listener({ type: "agent_settled" });
+  });
+  const { provider, input } = await setup();
+  const events = await collectRun(provider, input);
+  expect(events.map((event) => event.type)).toEqual(["message_completed", "failed"]);
+});
+it("uses finalized content rather than an incomplete stream", async () => {
+  sdk.prompt.mockImplementation(async () => {
+    sdk.listener({
+      type: "message_update",
+      assistantMessageEvent: { type: "text_delta", delta: "Part" },
+    });
+    sdk.listener({
+      type: "message_end",
+      message: {
+        role: "assistant",
+        content: [{ type: "text", text: "Final" }],
+        stopReason: "stop",
+      },
+    });
+    sdk.listener({ type: "agent_settled" });
+  });
+  const { provider, input } = await setup();
+  expect((await collectRun(provider, input)).at(-1)).toEqual({ type: "completed", text: "Final" });
 });
 it("delivers prompt failures and releases the subscription", async () => {
   sdk.prompt.mockRejectedValueOnce(new Error("failed"));

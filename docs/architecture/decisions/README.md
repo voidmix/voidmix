@@ -28,7 +28,7 @@ implementation detail; put that in the owning workspace's `AGENTS.md` instead.
 ## Records
 
 - [ADR-0001: Base UI and shadcn base-nova over Radix](./0001-base-ui-over-radix.md)
-- [ADR-0002: Vite+ as the only task orchestrator](./0002-vite-plus-sole-orchestrator.md)
+- [ADR-0002: Vite+ as the only task orchestrator (superseded)](./0002-vite-plus-sole-orchestrator.md)
 - [ADR-0003: Three skill discovery roots](./0003-three-skill-discovery-roots.md)
 - [ADR-0004: use-intl facade with static catalogs](./0004-use-intl-static-catalogs.md)
 - [ADR-0005: Recipient locale on mail inputs](./0005-recipient-locale-on-mail-inputs.md)
@@ -47,3 +47,8 @@ source-boundary checks run with `bun run i18n:check` and are the first gate of
 - [ADR-0013: Domain modules and retirement of unused V1 code](./0013-domain-modules-and-retired-code.md)
 
 - [ADR-0014: Domain services and scoped client state](./0014-domain-services-and-client-state.md)
+- [ADR-0015: Local Agent execution and shared business UI](./0015-local-agent-workbench.md)
+- [ADR-0016: Cloud Agent platform and SaaS foundations](./0016-cloud-agent-platform.md)
+- [ADR-0017: Fenced execution Gateway and immutable task rounds](./0017-gateway-and-task-rounds.md)
+
+- [ADR-0018: Turbo task orchestration with Vite+ leaf tools](./0018-turbo-task-orchestration.md)

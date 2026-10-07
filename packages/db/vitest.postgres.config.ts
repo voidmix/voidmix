@@ -1,2 +1,3 @@
 import { workspaceTests } from "../../test.config.js";
-export default workspaceTests({ include: ["tests/**/*.integration.test.ts"] });
+const config = workspaceTests({ include: ["tests/**/*.integration.test.ts"] });
+export default { ...config, test: { ...config.test, fileParallelism: false } };

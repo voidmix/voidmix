@@ -7,7 +7,10 @@ import {
   membershipStatusesV2,
   taskStatusesV2,
   reviewStatusesV2,
-  agentRunStatusesV2,
+  type CloudTaskStatus,
+  type CloudRunStatus,
+  type CloudToolExecution,
+  type CloudCommand,
   type AuditAction,
   type AuditTargetType,
   type User,
@@ -23,7 +26,10 @@ import {
   organizationMemberV2Schema,
   projectTaskStatusV2Schema,
   reviewStatusV2Schema,
-  agentRunStatusV2Schema,
+  cloudTaskStatusSchema,
+  cloudRunStatusSchema,
+  cloudToolExecutionSchema,
+  cloudCommandSchema,
 } from "@voidmix/contracts";
 import {
   roleEnum,
@@ -37,7 +43,10 @@ import {
   organizationMembershipStatusEnum,
   projectTaskStatusEnum,
   v2ReviewStatusEnum,
-  v2AgentRunStatusEnum,
+  cloudTaskStatusEnum,
+  cloudRunStatusEnum,
+  cloudToolStatusEnum,
+  cloudCommandStatusEnum,
 } from "@voidmix/db/schema";
 const roles = { user: true, admin: true, owner: true } satisfies Record<User["role"], true>;
 const actions = {
@@ -47,6 +56,32 @@ const actions = {
   "system.mail.test.sent": true,
 } satisfies Record<AuditAction, true>;
 const targets = { user: true, system_setting: true } satisfies Record<AuditTargetType, true>;
+const cloudTasks = {
+  open: true,
+  in_progress: true,
+  waiting_input: true,
+  review: true,
+  completed: true,
+  cancelled: true,
+} satisfies Record<CloudTaskStatus, true>;
+const cloudRuns = {
+  queued: true,
+  running: true,
+  needs_input: true,
+  succeeded: true,
+  failed: true,
+  cancelled: true,
+} satisfies Record<CloudRunStatus, true>;
+const cloudTools = {
+  running: true,
+  succeeded: true,
+  failed: true,
+  cancelled: true,
+} satisfies Record<CloudToolExecution["status"], true>;
+const cloudCommands = { pending: true, applied: true, rejected: true } satisfies Record<
+  CloudCommand["status"],
+  true
+>;
 describe("Core/Contracts/PostgreSQL enum parity", () => {
   it.each([
     ["role", Object.keys(roles), roleSchema.options, roleEnum.enumValues],
@@ -101,10 +136,28 @@ describe("Core/Contracts/PostgreSQL enum parity", () => {
       v2ReviewStatusEnum.enumValues,
     ],
     [
-      "agent status",
-      agentRunStatusesV2,
-      agentRunStatusV2Schema.options,
-      v2AgentRunStatusEnum.enumValues,
+      "cloud task",
+      Object.keys(cloudTasks),
+      cloudTaskStatusSchema.options,
+      cloudTaskStatusEnum.enumValues,
+    ],
+    [
+      "cloud run",
+      Object.keys(cloudRuns),
+      cloudRunStatusSchema.options,
+      cloudRunStatusEnum.enumValues,
+    ],
+    [
+      "cloud tool",
+      Object.keys(cloudTools),
+      cloudToolExecutionSchema.shape.status.options,
+      cloudToolStatusEnum.enumValues,
+    ],
+    [
+      "cloud command",
+      Object.keys(cloudCommands),
+      cloudCommandSchema.shape.status.options,
+      cloudCommandStatusEnum.enumValues,
     ],
   ])("keeps %s identical", (_name, core, contract, db) => {
     expect(new Set(contract)).toEqual(new Set(core));

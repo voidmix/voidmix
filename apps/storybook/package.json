@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "storybook dev -p 6006",
-    "build": "bun run check && storybook build",
+    "build": "storybook build",
     "check": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@voidmix/agent-ui": "workspace:*",
     "@voidmix/ui": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"

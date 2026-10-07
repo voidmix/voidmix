@@ -5,8 +5,13 @@ deployment boundaries, and coding-agent guidance.
 
 ## Architecture
 
+- [Cloud platform](./architecture/cloud-platform.md) — Web-first Search/Computer,
+  durable execution, shared business UI and SaaS foundations.
+
 - [Architecture overview](./architecture/README.md) — system shape, workspace
   map, dependency direction, and design rules.
+- [Historical Agent workbench](./architecture/agent-workbench.md) — the earlier
+  local-first design; cloud execution order is defined by ADR-0016.
 - [Domain glossary](../CONTEXT.md) — shared terms for workspaces, projects,
   assets, sync, Agent runs, and boundary layers.
 - [Domain services and client state](./architecture/domain-services.md) — ownership,
@@ -43,6 +48,8 @@ deployment boundaries, and coding-agent guidance.
   environment boundaries.
 - [Testing and verification](./development/testing.md) — workspace checks, CI
   expectations, and the Vite+/Vitest plugin boundary.
+- [Cloud release acceptance](./development/cloud-acceptance.md) — verified local
+  results, real-provider boundaries and the remaining live release gate.
 - [Web bundle baseline](./development/web-bundle.md) — how to compare the home
   route's initial client preloads and deferred interaction chunks.
 - [Workspace preview](./development/workspace-preview.md) — Clean Signal routes,

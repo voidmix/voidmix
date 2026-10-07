@@ -5,7 +5,7 @@ description: A precise project workbench using shadcn Neutral across every surfa
 
 # Voidmix visual system
 
-The shipped product organizes projects and tasks. The longer-term roadmap in
+The cloud product centers research conversations and reviewable Task deliveries. The roadmap in
 [PRODUCT.md](PRODUCT.md) does not describe capabilities that the current UI can
 promise. Product captures use labelled synthetic examples of actual routes.
 
@@ -39,18 +39,21 @@ accessible in the DOM and through title text when truncated visually.
 
 ## Page composition
 
-- **Website:** a 64px navigation bar, centered introduction and a full product
-  view capped at 1200px. Standard Tabs select project lists or task details.
-  Two focused images explain project organization and task context. Mobile
-  shows actual mobile captures; images match locale and theme, including system
-  dark mode before hydration. Theme controls move to the footer on phones.
+- **Website:** a clear Search/Computer entry, concise capability descriptions and
+  visible configuration states. Marketing links open actual docs and contact
+  routes. Public metadata uses the selected locale and configured site origin.
 - **Authentication:** a quiet product panel and an unboxed form capped at 360px,
   with a plain text account link below the primary action. Below 900px use one
   column and show the Logo above the form. Registration and reset follow API
   capabilities. Autofill uses the same Neutral surface as the input and its addon.
-- **Web:** one 232px sidebar for projects, details and Admin, a 56px context bar
+- **Web:** one 232px sidebar for conversations, tasks, projects, usage and Admin, a 56px context bar
   and content capped at 1400px. Below 1024px use an icon rail; below 768px use
   a Sheet with focus restoration. The Logo mark remains visible on icon rails.
+- **Conversation:** a central answer and composer, source references and expandable
+  execution details. Mobile places auxiliary information in tabs or drawers;
+  preserve focus, input-method composition and manual scrolling.
+- **Delivery:** file collections are reviewable revisions. Preview and download
+  are authorized; accepting the current revision completes its Task.
 - **Projects:** divider rows show name, description, stage, ownership and update
   date. Creation uses a Dialog. Details put tasks beside 288px of project
   information; that information moves above tasks on narrow screens.

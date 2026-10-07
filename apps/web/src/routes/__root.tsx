@@ -2,7 +2,7 @@ import { TooltipProvider } from "@voidmix/ui/components/ui/tooltip";
 import {
   HeadContent,
   Scripts,
-  createRootRoute,
+  createRootRouteWithContext,
   useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
@@ -18,6 +18,7 @@ import { loadWebMessages } from "../../i18n/messages";
 import { createRecoveryTranslator, readDocumentLocale } from "../../i18n/recovery-messages";
 import { getRequestPreferences } from "../lib/request-preferences";
 import { scheduleClientLogger } from "../lib/client-logger";
+import { initializeProductTelemetry } from "../lib/product-telemetry";
 import { localizedRouteHead } from "../i18n/route-meta";
 import {
   CHUNK_RECOVERY_STORAGE_KEY,
@@ -26,8 +27,9 @@ import {
   shouldRetryChunkLoad,
 } from "../lib/chunk-recovery";
 import appCss from "../styles.css?url";
+import type { WebRouterContext } from "../lib/query-client";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<WebRouterContext>()({
   loader: () => getRequestPreferences(),
   errorComponent: RootErrorPage,
   notFoundComponent: NotFoundPage,
@@ -238,6 +240,7 @@ function LocalizedDocument({ children, theme }: { children: ReactNode; theme: Us
 
 function ClientLogger() {
   useEffect(() => {
+    void initializeProductTelemetry();
     scheduleClientLogger({
       service: "web",
       pretty: env.VITE_LOG_PRETTY ?? env.NODE_ENV === "development",

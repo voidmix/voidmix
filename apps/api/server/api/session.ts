@@ -50,5 +50,7 @@ export function toVoidmixSession(value: BetterAuthSession): Session | null {
 
 export function createBetterAuthSessionResolver(auth: ApiAuth): SessionResolver {
   return async (request) =>
-    toVoidmixSession(await auth.api.getSession({ headers: request.headers }));
+    toVoidmixSession(
+      await auth.api.getSession({ headers: request.headers, query: { disableCookieCache: true } }),
+    );
 }

@@ -33,6 +33,7 @@ describe("vmx CLI", () => {
     expect(help.stdout).toContain("desktop");
     expect(help.stdout).toContain("doctor");
     expect(help.stdout).toContain("deps");
+    expect(help.stdout).toContain("tasks");
     expect(version.status).toBe(0);
     expect(version.stdout).toBe("0.0.0\n");
   });

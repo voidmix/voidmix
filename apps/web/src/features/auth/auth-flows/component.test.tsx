@@ -89,7 +89,7 @@ async function submitCredentials(
 
 describe("authentication forms", () => {
   it.each([
-    ["opens Admin", undefined, "/admin"],
+    ["opens cloud conversations", undefined, "/chat"],
     ["returns to the requested workspace", "/admin?tab=users", "/admin?tab=users"],
   ])("signs in with email credentials and %s", async (_name, redirectTo, destination) => {
     mocks.signInEmail.mockResolvedValue({ data: {}, error: null });

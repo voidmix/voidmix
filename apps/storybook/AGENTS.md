@@ -34,6 +34,13 @@ visual documentation without becoming a product application.
 
 ```bash
 bun run --cwd apps/storybook check
-bun run --cwd apps/storybook build
+bun run storybook:build
 bun run storybook
 ```
+
+## Agent views
+
+- Cloud business stories consume `@voidmix/agent-ui` and its stylesheet.
+- Fixtures are explicitly deterministic examples: source links, delegated
+  execution, pending cancellation, revision review, IME input and both themes.
+- Stories never import clients, routes or production data.

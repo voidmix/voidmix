@@ -2,6 +2,7 @@ import { defineCommand } from "citty";
 
 import { contextualCommand } from "../runtime/command.js";
 import type { RepositoryProcessDependencies } from "../runtime/process-dependencies.js";
+import { prepareDesktopRunner } from "../desktop/prepare.js";
 
 export async function runDesktopBuild(dependencies: RepositoryProcessDependencies): Promise<void> {
   dependencies.log("info", "desktop.build.started");
@@ -23,7 +24,17 @@ const buildDesktopCommand = contextualCommand("desktop build", "repository", {
   },
 });
 
+const prepareDesktopCommand = contextualCommand("desktop prepare", "repository", {
+  meta: {
+    name: "prepare",
+    description: "Bundle the pinned Node runtime and Pi runner for Desktop",
+  },
+  async run(context) {
+    await prepareDesktopRunner(context.repositoryRoot, (event) => context.log("info", event));
+  },
+});
+
 export const desktopCommand = defineCommand({
   meta: { name: "desktop", description: "Manage the Voidmix desktop application" },
-  subCommands: { build: buildDesktopCommand },
+  subCommands: { build: buildDesktopCommand, prepare: prepareDesktopCommand },
 });

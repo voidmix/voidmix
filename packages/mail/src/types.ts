@@ -5,7 +5,11 @@ export type MailAddress = {
   name?: string;
 };
 
-export type MailTemplateKind = "email-verification" | "password-reset" | "welcome";
+export type MailTemplateKind =
+  | "email-verification"
+  | "password-reset"
+  | "welcome"
+  | "task-notification";
 
 export type MissingMailConfiguration = "RESEND_API_KEY" | "MAIL_FROM";
 
@@ -25,6 +29,7 @@ export type MailMessage = {
   html: string;
   text: string;
   replyTo?: MailAddress;
+  idempotencyKey?: string;
 };
 
 export type MailSendResult = { ok: true; id?: string } | { ok: false; error: string };
@@ -65,8 +70,21 @@ export type WelcomeTemplateInput = SendWelcomeEmailInput & {
   appUrl?: string;
 };
 
+export type TaskNotificationKind =
+  | "review_ready"
+  | "run_failed"
+  | "waiting_input"
+  | "task_completed";
+export type SendTaskNotificationInput = SendWelcomeEmailInput & {
+  kind: TaskNotificationKind;
+  taskId: string;
+  taskUrl: string;
+  idempotencyKey?: string;
+};
+
 export interface Mailer {
   sendVerification(input: SendLinkEmailInput): Promise<void>;
   sendPasswordReset(input: SendLinkEmailInput): Promise<void>;
   sendWelcome(input: SendWelcomeEmailInput): Promise<void>;
+  sendTaskNotification(input: SendTaskNotificationInput): Promise<void>;
 }

@@ -16,6 +16,21 @@ const message: MailMessage = {
 };
 
 describe("mail transports", () => {
+  it("forwards a stable notification delivery identity to the provider", async () => {
+    const send = vi.fn(async () => ({ data: { id: "notification-mail" }, error: null }));
+    await createResendTransport({
+      apiKey: "test-key",
+      client: { emails: { send } },
+      record: vi.fn(),
+    }).send({
+      ...message,
+      template: "task-notification",
+      idempotencyKey: "notification:event:recipient",
+    });
+    expect(send).toHaveBeenCalledWith(expect.objectContaining({ subject: "Verify" }), {
+      idempotencyKey: "notification:event:recipient",
+    });
+  });
   it("uses the logger transport without exposing message contents", async () => {
     const record = vi.fn();
     const result = await createLoggerTransport({ record }).send(message);

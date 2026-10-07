@@ -1,5 +1,6 @@
 import type { OutboxEvent, OutboxRepository } from "@voidmix/core";
-import type { AgentRunV2, AgentRunV2Repository } from "@voidmix/core";
+export { createCloudDispatcher, createCloudExecutor, runCloudExecutions } from "./cloud.js";
+export type { CloudExecutorOptions } from "./cloud.js";
 
 export type OutboxItem = OutboxEvent;
 export type { OutboxRepository } from "@voidmix/core";
@@ -12,38 +13,10 @@ export interface WorkerOptions {
   batchSize?: number;
   workerId?: string;
   sleep?: (ms: number) => Promise<void>;
+  onError?: (error: unknown, item: OutboxItem) => void;
 }
 
 const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-
-export function createAgentRunDispatcher(options: {
-  runs: AgentRunV2Repository;
-  execute: (run: AgentRunV2) => Promise<Record<string, unknown> | null>;
-  now?: () => Date;
-}): (item: OutboxItem) => Promise<void> {
-  const now = options.now ?? (() => new Date());
-  return async (item) => {
-    if (item.type !== "agent.run.queued") return;
-    const runId = typeof item.payload.runId === "string" ? item.payload.runId : null;
-    if (!runId) throw new Error("Agent run event is missing runId.");
-    const run = await options.runs.getById(runId);
-    if (!run || run.status !== "queued") return;
-    const running = await options.runs.updateStatus({ id: run.id, status: "running", now: now() });
-    if (!running) return;
-    try {
-      const output = await options.execute(running);
-      await options.runs.updateStatus({ id: run.id, status: "succeeded", output, now: now() });
-    } catch (error) {
-      await options.runs.updateStatus({
-        id: run.id,
-        status: "failed",
-        error: error instanceof Error ? error.message : "Agent execution failed.",
-        now: now(),
-      });
-      throw error;
-    }
-  };
-}
 
 /**
  * Run the Agent outbox loop. The repository owns the atomic lease operation;
@@ -55,6 +28,7 @@ export async function runWorker(options: WorkerOptions, signal?: AbortSignal): P
   const batchSize = options.batchSize ?? 10;
   const workerId = options.workerId ?? "worker-default";
   const sleep = options.sleep ?? defaultSleep;
+  let retryDelay = pollMs;
 
   while (!signal?.aborted) {
     const items = await options.outbox.claim({ workerId, limit: batchSize, leaseMs });
@@ -63,16 +37,26 @@ export async function runWorker(options: WorkerOptions, signal?: AbortSignal): P
       continue;
     }
 
-    await Promise.all(
+    let handledFailure = false;
+    const results = await Promise.allSettled(
       items.map(async (item) => {
         try {
           await options.dispatch(item);
           await options.outbox.acknowledge({ id: item.id, workerId });
         } catch (error) {
           await options.outbox.release({ id: item.id, workerId });
-          throw error;
+          if (options.onError) {
+            handledFailure = true;
+            options.onError(error, item);
+          } else throw error;
         }
       }),
     );
+    const failed = results.find((result) => result.status === "rejected");
+    if (failed?.status === "rejected") throw failed.reason;
+    if (handledFailure && !signal?.aborted) {
+      await sleep(retryDelay);
+      retryDelay = Math.min(60_000, retryDelay * 2);
+    } else retryDelay = pollMs;
   }
 }

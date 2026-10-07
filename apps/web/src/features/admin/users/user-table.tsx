@@ -56,7 +56,7 @@ export function UserTable({
             </TableHeading>
           </TableRow>
         </TableHeader>
-        <TableBody className="[@media(max-width:767px)]:block">
+        <TableBody className="[@media(max-width:767px)]:block [@media(max-width:767px)]:[&_tr:last-child]:border-b">
           {users.map((user) => (
             <UserRow key={user.id} onToggle={() => onToggle(user)} user={user} />
           ))}

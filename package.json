@@ -21,10 +21,18 @@
       "react": "^19.3.0",
       "react-dom": "^19.3.0",
       "zod": "^4.6.5",
-      "uuid": "^14.0.2"
+      "uuid": "^14.0.2",
+      "@earendil-works/pi-ai": "1.0.2"
     },
     "catalogs": {
       "backend": {
+        "@aws-sdk/client-s3": "^3.1146.0",
+        "@aws-sdk/s3-presigned-post": "^3.1146.0",
+        "@aws-sdk/s3-request-presigner": "^3.1146.0",
+        "exceljs": "^4.4.0",
+        "pdfkit": "^0.20.2",
+        "pptxgenjs": "^4.0.1",
+        "@sentry/node": "^11.4.0",
         "drizzle-kit": "1.0.0-rc.5-5935859",
         "drizzle-orm": "1.0.0-rc.5-5935859",
         "hono": "^4.13.13",
@@ -34,6 +42,10 @@
         "postgres": "^3.4.9"
       },
       "frontend": {
+        "@sentry/react": "^11.4.0",
+        "posthog-js": "^1.435.9",
+        "streamdown": "2.7.0",
+        "@pierre/diffs": "1.5.1",
         "@base-ui/react": "^1.8.0",
         "@phosphor-icons/react": "^2.1.10",
         "@tailwindcss/vite": "^4.3.3",
@@ -45,7 +57,9 @@
         "resend": "^6.32.0",
         "tailwindcss": "^4.3.3",
         "tw-animate-css": "^1.4.0",
-        "zustand": "^5.0.15"
+        "zustand": "^5.0.15",
+        "@tanstack/react-query": "5.104.1",
+        "@tanstack/react-router-ssr-query": "1.167.3"
       },
       "tooling": {
         "@dotenvx/dotenvx": "^2.32.4",
@@ -62,7 +76,8 @@
         "jsdom": "^30.1.1",
         "jiti": "^2.7.0",
         "lightningcss": "^1.33.0",
-        "@types/node": "^26.6.4",
+        "@types/node": "^24.19.1",
+        "@types/pdfkit": "^0.17.6",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.1",
@@ -74,7 +89,8 @@
         "vite": "npm:@voidzero-dev/vite-plus-core@^1.0.0",
         "vite-plus": "^1.0.0",
         "oxc-parser": "^0.152.0",
-        "@formatjs/icu-messageformat-parser": "^3.5.20"
+        "@formatjs/icu-messageformat-parser": "^3.5.20",
+        "turbo": "2.11.7"
       }
     }
   },
@@ -93,19 +109,19 @@
     "deps:dedupe": "vmx deps dedupe",
     "deps:dedupe:check": "vmx deps dedupe --check",
     "deps:audit": "vmx deps audit",
-    "dev": "vp run --filter './apps/*' --filter './packages/shared' --parallel dev",
-    "build": "vp run -r --cache build",
-    "check": "vp run -r check",
-    "lint": "vp lint",
+    "dev": "vmx tasks dev --filter './apps/*' --filter @voidmix/shared --concurrency=10",
+    "build": "vmx tasks build",
+    "check": "vmx tasks check",
+    "lint": "vmx tasks lint:leaf",
     "knip:report": "knip --no-progress --reporter compact --no-exit-code",
-    "format": "vp fmt --check",
+    "format": "vmx tasks format:leaf",
     "format:fix": "vp fmt",
-    "test": "vp run -r test",
-    "test:unit": "vp run -r test:unit",
-    "test:integration": "vp run -r test:integration",
-    "test:component": "vp run -r test:component",
-    "test:coverage": "vp run -r test:coverage",
-    "test:e2e": "vp run @voidmix/e2e#e2e",
+    "test": "vmx tasks test --filter !@voidmix/e2e",
+    "test:unit": "vmx tasks test:unit --filter !@voidmix/e2e",
+    "test:integration": "vmx tasks test:integration --filter !@voidmix/e2e",
+    "test:component": "vmx tasks test:component --filter !@voidmix/e2e",
+    "test:coverage": "vmx tasks test:coverage --filter !@voidmix/e2e",
+    "test:e2e": "vmx tasks e2e --filter @voidmix/e2e",
     "db:migrate": "vmx db migrate",
     "db:push": "vmx db push",
     "db:clean": "vmx db clean",
@@ -114,12 +130,20 @@
     "admin:create": "vmx admin create",
     "generate": "vmx generate",
     "desktop:build": "vmx desktop build",
+    "desktop:prepare": "vmx desktop prepare",
     "storybook": "bun run --cwd apps/storybook dev",
-    "storybook:build": "bun run --cwd apps/storybook build",
+    "storybook:build": "vmx tasks build --filter @voidmix/storybook",
     "verify": "vmx verify",
     "shadcn:update": "vmx shadcn update",
     "postinstall": "bun run --cwd packages/shared build",
-    "test:postgres": "vp run @voidmix/db#test:postgres"
+    "test:postgres": "vmx tasks test:postgres --filter @voidmix/db",
+    "build:web": "vmx tasks build --filter @voidmix/web",
+    "build:api": "vmx tasks build --filter @voidmix/api",
+    "build:worker": "vmx tasks build --filter @voidmix/worker",
+    "build:desktop": "vmx tasks build --filter @voidmix/desktop",
+    "lint:leaf": "vp lint",
+    "format:leaf": "vp fmt --check",
+    "build:desktop:native-prep": "bun run desktop:prepare && bun run build:desktop"
   },
   "devDependencies": {
     "@tailwindcss/vite": "catalog:frontend",
@@ -128,6 +152,7 @@
     "knip": "catalog:tooling",
     "tailwindcss": "catalog:frontend",
     "taze": "catalog:tooling",
+    "turbo": "catalog:tooling",
     "tw-animate-css": "catalog:frontend",
     "typescript": "catalog:tooling",
     "vite-plus": "catalog:tooling"

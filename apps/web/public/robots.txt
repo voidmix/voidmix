@@ -1,3 +1,0 @@
-# Voidmix Web is the public product surface and may be indexed.
-User-agent: *
-Allow: /

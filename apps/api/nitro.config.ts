@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: ["./server/runtime.plugin.ts"],
   routes: {
     "/api/auth/**": { handler: "./server/app.ts", format: "web" },
+    "/api/cloud/storage/**": { handler: "./server/app.ts", format: "web" },
+    "/internal/execution/**": { handler: "./server/app.ts", format: "web" },
     "/rpc/**": { handler: "./server/app.ts", format: "web" },
     "/health": { handler: "./server/app.ts", format: "web" },
   },

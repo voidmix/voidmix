@@ -13,6 +13,7 @@
   "devDependencies": {
     "@playwright/test": "catalog:tooling",
     "@types/node": "catalog:tooling",
+    "@voidmix/client": "workspace:*",
     "@voidmix/db": "workspace:*",
     "@voidmix/tsconfig": "workspace:*",
     "better-auth": "catalog:",

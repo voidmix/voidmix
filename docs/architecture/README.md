@@ -1,8 +1,8 @@
 # Architecture Overview
 
-> Status: implemented scaffold, updated September 8, 2026.
+> Cloud platform direction: [ADR-0016](./decisions/0016-cloud-agent-platform.md).
 
-Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud Web
+Voidmix is a Bun-managed, Turbo orchestrated TypeScript monorepo for a cloud Web
 application with an independent Hono API and operations console, plus a Tauri
 desktop client.
 
@@ -27,7 +27,10 @@ flowchart LR
   client --> rpc["oRPC contracts"]
   rpc --> api["apps/api"]
   api --> application["@voidmix/application"]
-  worker["Worker"] --> application
+  worker["Worker / Pi / trusted tools"] --> application
+  api --> storage["Private object storage adapter"]
+  worker --> storage
+  storage --> objects[("S3")]
   api --> shared["@voidmix/shared: env + logger"]
   api --> auth["Auth + RBAC"]
   api --> core["@voidmix/core"]
@@ -38,6 +41,10 @@ flowchart LR
 
 The API is the business boundary. Web and Desktop never access the database
 directly.
+
+The [cloud platform](./cloud-platform.md) defines the current Search/Computer
+model, new database baseline, delivery review and usage ledger. Local execution
+and device delivery are later stages; the earlier workbench design is historical.
 
 The domain language and aggregate boundaries are recorded in the root
 [`CONTEXT.md`](../../CONTEXT.md). `@voidmix/core` is the domain-kernel package;
@@ -78,6 +85,9 @@ apps/web/desktop ───> shared/env + shared/logger (Vite client integration)
 apps/worker ───> shared/env + shared/logger
 apps/api ───> cache
 apps/worker ───> application + db + ai
+apps/api/worker ───> storage
+apps/web/desktop/storybook ───> agent-ui + ui
+packages/storage ───> core + shared
 packages/db/mail/cache/scripts ───> shared/env + shared/logger
 packages/db ───> core
 packages/core/db ───> shared
@@ -101,6 +111,7 @@ Rules:
 ## Detailed documents
 
 - [Applications](./applications.md)
+- [Cloud platform](./cloud-platform.md)
 - [Shared packages](./packages.md)
 - [Product design](./design.md)
 - [Project Studio migration](./project-studio.md)

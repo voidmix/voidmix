@@ -14,6 +14,10 @@ resource fields, cursor envelopes and validated procedures; `methods.ts` owns
 HTTP method classification for both API and client. The public Auth capability
 DTO contains only three booleans; settings administration RPCs are retired.
 
+`cloud` defines the new conversation, Task/Run, immutable file, review, usage,
+notification and preference protocol. It retains native `Date` DTO fields and
+contains no Pi, Drizzle or S3 SDK types. Streams have independent connections.
+
 ## `@voidmix/application`
 
 The application command/query layer shared by the API and Agent Worker. It
@@ -22,6 +26,11 @@ ProjectAccess supplies narrow capability checks across domains. Application owns
 workflow ordering and invokes the administration transaction port; DB implements
 atomicity and authorized list queries. HTTP, SQL, React and provider lifecycle
 remain outside Application. See [domain services](./domain-services.md).
+
+The cloud application coordinates current personal/project authorization,
+idempotent commands, owner-fenced execution, model reservations and atomic
+revision publication. API and Worker both use this same execution model;
+`cloud.run.queued` is distinct from historical delivery events.
 
 ## `@voidmix/ai`
 
@@ -36,6 +45,24 @@ sessions, or exposes Pi SDK types to API and Web consumers.
 The transport adapter. `createApiClient({ baseUrl?, headers, fetch })` returns a
 typed client generated from the shared contract. Web and Desktop provide
 an absolute API origin and send credentialed requests.
+
+Framework-independent conversation/run sessions own replay, deduplication,
+contiguous cursors and reconnects. Apps own session lifetimes by account and
+resource; React reads the external store with `useSyncExternalStore`.
+
+## `@voidmix/storage`
+
+Server-only implementation of Core's object-storage port, shared by API and
+Worker. It supplies private S3 transfers, signed bounded uploads, authorized
+downloads and memory/filesystem test adapters. DB keeps metadata, never object
+bytes or provider credentials. Frontend applications cannot import this package.
+
+## `@voidmix/agent-ui`
+
+Controlled business views for composing messages, research sources, execution
+progress, tools and artifact review. Apps inject snapshots, actions and platform
+capabilities. Local state covers focus, selection, expansion and following the
+latest message; the package owns no transport or second copy of server facts.
 
 ## API server modules (`apps/api/server/api`)
 
@@ -54,9 +81,10 @@ new records retain time-ordered locality while remaining globally unique.
 
 The optional server-side Redis adapter provides JSON `remember` with TTLs and
 raw-string Better Auth secondary storage. Atomic token consumption and rate
-increments stay in Redis Lua scripts. API uses it for sessions, verification,
-rate limits and a short-lived Auth policy cache. It has no fallback store and
-no unused generic add/pull/flush facade. Mail configuration remains database-backed.
+increments stay in Redis Lua scripts. API uses its atomic counter for cloud AI
+admission; Better Auth sessions, verification and policy use PostgreSQL directly.
+The adapter has no fallback store and no unused generic add/pull/flush facade.
+Mail configuration remains database-backed.
 
 ## `@voidmix/shared`
 
@@ -127,7 +155,9 @@ not depend on the provider.
 
 ## `@voidmix/mail`
 
-Typed auth mail delivery for verification, password reset and welcome emails.
+Typed mail delivery for verification, password reset, welcome and opt-in Task
+notifications. Task templates cover review, failure, waiting input and completion
+without including prompts or file content.
 Verification and reset share a link template; typed senders share current
 configuration resolution and delivery. The unused Admin test-mail method is removed.
 Its JSON catalogs are rendered through the server-only `@voidmix/i18n`
@@ -157,12 +187,12 @@ The database adapter package.
 
 - Drizzle PostgreSQL schema lives in domain modules under `src/schema/`,
   exposed by the small `src/schema.ts` entrypoint.
-- Identity, settings and V2 adapters live in separate domain directories, exposed
-  by small compatibility entrypoints. Persisted legacy table definitions and all
-  migration history remain intact even though their runtime adapters are gone.
+- Identity, settings and V2 adapters live in separate domain directories.
+  Historical table definitions and migrations remain reference material; the
+  public runtime schema excludes the former local/legacy execution tables.
 - V2 Project, organization membership, Task, Asset, Review, Feedback, Activity,
-  AgentRun and outbox adapters implement Core ports. Queued Agent creation and
-  its outbox event use the same PostgreSQL transaction.
+  cloud execution and outbox adapters implement Core ports. Turn/Task/Run
+  creation and its outbox event use one PostgreSQL transaction.
 - Blob storage remains available in memory and on the filesystem.
 - `system_settings` stores typed ordinary configuration keys and
   `system_secrets` stores write-only secret values. Both record the updater and
@@ -179,7 +209,8 @@ The database adapter package.
 - Audit targets distinguish `user` from `system_setting`. `actor_id` always
   references a user; the generated nullable `target_user_id` preserves a
   restrictive user foreign key while allowing `target_id = mail` for settings.
-- SQL migrations live under `drizzle/`.
+- The new runtime schema and migrations use `schema/cloud-baseline.ts` and
+  `drizzle-cloud/`; historical `drizzle/` migrations remain reference material.
 - Database tables and Drizzle details are not exposed to frontend apps.
 
 `settings/reader.ts`, `values.ts` and `mutations.ts` share decoding, inheritance

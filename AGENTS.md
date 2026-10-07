@@ -23,7 +23,7 @@ document is stale, then update the document in the same change.
 
 ```text
 apps        web, desktop, api, worker, storybook    composition roots; never imported
-adapters    ai, application, cache, client, contracts, i18n, ui    surfaces apps are allowed to use
+adapters    ai, application, cache, client, contracts, i18n, ui, agent-ui, storage    surfaces apps are allowed to use
 core        core, db, auth, mail        db implements interfaces owned by core
 foundation  shared, tsconfig                no dependency on anything above
 tooling     scripts, e2e                never imported by runtime code
@@ -47,15 +47,18 @@ or `packages/` without a `package.json`.
   `apps/web/src/features/admin`
   until another real consumer justifies extraction.
 - Runtime applications never import `@voidmix/scripts`.
-- `apps/worker` is the dedicated Agent execution host. It may depend on
+- `apps/worker` is the durable delivery and scheduling host. It may depend on
   `@voidmix/application` and adapters, but never on Web/Desktop composition.
+- Desktop's `runtime/` owns local Pi execution; its renderer uses the native bridge.
 
 ## Toolchain
 
 - Use Bun `1.4.0` for installation, the lockfile, and repository scripts.
 - Use the root Bun catalogs for third-party dependency versions and
   `workspace:*` for internal packages.
-- Do not introduce another task orchestrator alongside Vite+.
+- Turbo is the only workspace task runner and task cache; Vite+ owns leaf tools.
+  Use root build scripts so Turbo runs checks first; do not use the Vite+ task runner.
+  See [ADR-0018](docs/architecture/decisions/0018-turbo-task-orchestration.md).
 - Oxlint and Oxfmt ship inside Vite+ and are configured in `vite.config.ts`. Use
   `bun run lint` and `bun run format`. Do not add a separate linter, formatter,
   or git-hook manager. The committed `.vite-hooks/pre-commit` runs the staged-file
@@ -93,6 +96,7 @@ or `packages/` without a `package.json`.
 
 - Reusable primitives live in `packages/ui`; page composition and
   application-specific navigation stay in the owning application.
+- Shared Agent business views live in `packages/agent-ui`; apps own data and platform access.
 - Do not introduce Radix primitives or Lucide icons without a recorded
   architecture decision under `docs/architecture/decisions/`.
 
@@ -130,7 +134,7 @@ narrow a failure down, not to be run in sequence:
 | policy           | `bun run policy:fix`, then read what it could not fix  |
 | format or lint   | `bun run format:fix`, then `bun run lint`              |
 | check or test    | that workspace's own command, named in its `AGENTS.md` |
-| build or runtime | `bun run --cwd apps/<app> build`                       |
+| build or runtime | `bun run build:<app>`                                  |
 
 `bun run test:postgres` and `bun run test:e2e` stay outside it: both require an
 explicit test database, and E2E also needs a Playwright browser. `bun run doctor`

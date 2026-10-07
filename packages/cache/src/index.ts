@@ -141,25 +141,30 @@ export function createRedisSecondaryStorage(
 
 export async function createRedisCache(options: RedisCacheOptions): Promise<RedisCacheConnection> {
   if (!options.client && !options.url) throw new Error("Redis URL is required.");
-  const ownsClient = !options.client;
-  const client =
-    options.client ??
-    (new Redis<"resp3">(options.url!, {
-      protocol: 3,
-      replyMapping: "resp3",
-      connectTimeout: options.connectTimeoutMs ?? 10_000,
-      commandTimeout: options.operationTimeoutMs ?? 5_000,
-      maxRetriesPerRequest: options.maxRetriesPerRequest ?? 1,
-      enableOfflineQueue: false,
-      lazyConnect: true,
-    }) as unknown as RedisClientLike);
+  const ownedClient = options.client
+    ? undefined
+    : new Redis<"resp3">(options.url!, {
+        protocol: 3,
+        replyMapping: "resp3",
+        connectTimeout: options.connectTimeoutMs ?? 10_000,
+        commandTimeout: options.operationTimeoutMs ?? 5_000,
+        maxRetriesPerRequest: options.maxRetriesPerRequest ?? 1,
+        enableOfflineQueue: false,
+        lazyConnect: true,
+      });
+  // Command/connect promises carry errors to callers. Avoid ioredis emitting
+  // arbitrary connection errors directly to stderr outside the host logger.
+  ownedClient?.on("error", () => {});
+  const client = options.client ?? (ownedClient as unknown as RedisClientLike);
   try {
     // lazyConnect lets factory creation fail deterministically at this point,
     // before the API starts accepting requests.
-    if (ownsClient) await client.connect?.();
+    if (ownedClient) await client.connect?.();
     await client.ping();
   } catch (error) {
-    if (ownsClient) await client.quit().catch(() => undefined);
+    // QUIT can fail while disconnected and leave automatic retry timers alive.
+    // There is no accepted connection to drain after factory initialization fails.
+    ownedClient?.disconnect();
     throw error;
   }
 
@@ -168,7 +173,13 @@ export async function createRedisCache(options: RedisCacheOptions): Promise<Redi
     cache: new RedisCache(client, `${prefix}:cache`),
     secondaryStorage: createRedisSecondaryStorage(client, `${prefix}:better-auth`),
     async close() {
-      if (ownsClient) await client.quit();
+      if (ownedClient) {
+        try {
+          await ownedClient.quit();
+        } finally {
+          ownedClient.disconnect();
+        }
+      }
     },
   };
 }

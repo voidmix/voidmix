@@ -78,33 +78,19 @@ describe("repository workflows", () => {
     expect(deps.verifyI18n).toHaveBeenCalledOnce();
 
     expect(deps.runCommand.mock.calls.map(([command]) => command)).toEqual([
-      ["vp", "fmt", "--check"],
-      ["vp", "lint"],
-      ["vp", "run", "@voidmix/shared#build"],
-      ["vp", "run", "-r", "check"],
-      ["vp", "run", "-r", "test"],
-      [
-        "vp",
-        "run",
-        "--filter",
-        "./apps/*",
-        "--filter",
-        "./packages/*",
-        "--filter",
-        "!@voidmix/shared",
-        "build",
-      ],
+      ["vmx", "tasks", "format:leaf"],
+      ["vmx", "tasks", "lint:leaf"],
+      ["vmx", "tasks", "check"],
+      ["vmx", "tasks", "test:unit", "test:component", "--filter", "!@voidmix/e2e"],
+      ["vmx", "tasks", "test:integration", "--filter", "!@voidmix/e2e"],
+      ["vmx", "tasks", "build"],
+      ["node", "apps/worker/dist/index.mjs", "--check"],
     ]);
-    expect(deps.runCommand.mock.calls.map(([, options]) => options.env)).toEqual([
-      deps.processEnv,
-      deps.processEnv,
-      deps.processEnv,
-      deps.processEnv,
-      deps.processEnv,
-      { ...deps.processEnv, NITRO_PRESET: "bun" },
-    ]);
+    expect(deps.runCommand.mock.calls.map(([, options]) => options.env)).toEqual(
+      Array(7).fill(deps.processEnv),
+    );
     expect(deps.runCommand.mock.calls.map(([, options]) => options.captureOutput)).toEqual(
-      Array(6).fill(!verbose),
+      Array(7).fill(!verbose),
     );
     expect(deps.verifyRuntimes).toHaveBeenCalledWith({ captureOutput: !verbose });
   });
@@ -112,12 +98,12 @@ describe("repository workflows", () => {
   it("checks formatting before spending minutes on a build", async () => {
     const deps = dependencies();
     deps.runCommand = vi.fn(async (command: readonly string[]) => {
-      if (command.includes("fmt")) throw new Error("Format issues found");
+      if (command.includes("format:leaf")) throw new Error("Format issues found");
     });
 
     await expect(runVerify(deps)).rejects.toThrow("Format issues found");
     expect(deps.runCommand.mock.calls.map(([command]) => command)).toEqual([
-      ["vp", "fmt", "--check"],
+      ["vmx", "tasks", "format:leaf"],
     ]);
     expect(deps.verifyRuntimes).not.toHaveBeenCalled();
   });

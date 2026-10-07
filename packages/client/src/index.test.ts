@@ -20,8 +20,14 @@ describe("createApiClient", () => {
       "review update",
       (client) => client.projects.reviews.update({ reviewId: "review-1", status: "approved" }),
     ],
-    ["Agent cancellation", (client) => client.projects.agentRuns.cancel({ runId: "run-1" })],
-    ["Agent retry", (client) => client.projects.agentRuns.retry({ runId: "run-1" })],
+    [
+      "Agent cancellation",
+      (client) => client.projects.agentRuns.cancel({ runId: "run-1", idempotencyKey: "cancel-1" }),
+    ],
+    [
+      "Agent retry",
+      (client) => client.projects.agentRuns.retry({ runId: "run-1", idempotencyKey: "retry-1" }),
+    ],
   ])("uses POST for %s so mutations cannot enter GET batching", async (_name, invoke) => {
     const methods: string[] = [];
     const client = createApiClient({

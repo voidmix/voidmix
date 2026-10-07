@@ -10,7 +10,9 @@ duplicating them here.
 `apps/web` is the public/product-facing TanStack Start application and the
 browser composition root for authentication and Admin operations.
 
-- Uses `@voidmix/ui` and owns Web-specific routes, metadata, SSR, and content.
+- Uses `@voidmix/ui` and controlled `@voidmix/agent-ui` views; owns Web routes,
+  metadata, SSR and content. Search/Computer live at `/chat` and Task deliveries
+  at `/tasks`; file review, notifications and account usage use the cloud API.
 - Serves `/manifest.webmanifest` through a TanStack Start server route with the
   VoidMix name, launch scope, theme, and shared 512×512 brand mark for
   install-capable browsers.
@@ -55,8 +57,11 @@ browser composition root for authentication and Admin operations.
   independent static copy.
 - Calls the standalone API origin through the shared typed client with
   credentialed cookie requests; it does not mount API handlers.
-- Project and task data use the standalone API origin through the shared client.
-  Preview routes remain explicitly labelled while live resource rollout continues.
+- Conversation/run sessions are scoped by account and resource. The app owns
+  drafts and pending mutations, releases subscriptions on navigation and rejects
+  late responses. Private routes are noindex and excluded from the public sitemap.
+- Admin adds `/admin-runs` for status, owner fencing and usage inspection.
+  Operational reads do not expose private prompts, results or file contents.
 - The API owns `DATABASE_URL`, Auth, mail, Redis, and persistence composition.
 
 ## Desktop
@@ -113,10 +118,19 @@ adapter.
 
 ## Worker
 
-`apps/worker` is the durable execution host for Agent and outbox work.
+`apps/worker` is the durable cloud Pi host for Agent and outbox work.
 
-- Claims outbox events with PostgreSQL leases and dispatches them through an
-  injected application handler.
+- Durably accepts `cloud.run.queued` intent before acknowledging the outbox.
+  A separate owner-fenced executor performs the run; delivery does not mean
+  model or tool execution has completed.
+- Runs one main Pi Agent and at most two children with a shared Task budget.
+  Registers only trusted research, extraction, calculation, document rendering
+  and delegation tools. Built-in shell/files, dynamic extensions and arbitrary
+  MCP startup remain disabled.
+- Publishes validated Markdown/PDF, XLSX/CSV and PPTX/PDF deliverables through
+  the same atomic revision workflow used by the API.
+- Owns opt-in notification mail and expired upload cleanup. Provider effects
+  remain outside SQL transactions, with durable intents and completion checks.
 - Shares application commands with the API without importing HTTP sessions or
   UI state.
 - Stops claiming on shutdown; unacknowledged work remains reclaimable after its
@@ -147,42 +161,22 @@ composition; Web does not host API routes.
 - `server/runtime.ts` memoizes the shared runtime and owns the host lifecycle.
 - `server/runtime.plugin.ts` closes runtime resources through Nitro's `close` hook.
 
-Current procedures:
+Current procedure groups:
 
 ```text
-health
-account.profile.get
-v2.projects.list / get / create
-v2.projects.tasks.list / create / update
-public.auth.capabilities.get
-workspace.assets.create
-workspace.assets.get
-workspace.assets.commitVersion
-workspace.assets.resolveConflict
-workspace.agents.runs.create
-workspace.agents.runs.get
-workspace.agents.runs.transition
-workspace.agents.runs.acquireLease
-workspace.agents.runs.heartbeat
-workspace.agents.steps.create
-workspace.agents.steps.transition
-admin.users.list
-admin.users.get
-admin.users.updateStatus
-admin.audit.list
-admin.settings.mail.get
-admin.settings.mail.update
-admin.settings.mail.sendTest
-admin.settings.auth.get
-admin.settings.auth.update
-studio.snapshot.get
-projects.list / get / create / update / archive / restore
-projects.tasks.list / create / update
-library.search
-reviews.list / create / update / resolve
-activity.list
-pi.sessions.create / get / cancel / retry
+health / account.get / auth.capabilities.get
+projects.* / library.assets.list / assets.upload.* / activity.list
+admin.users.* / admin.audit.list
+cloud.conversations.* / cloud.tasks.* / cloud.runs.*
+cloud.assets.* / cloud.usage.get / cloud.notifications.*
+cloud.preferences.* / cloud.capabilities.get / cloud.tools.get
+cloud.admin.runs.* / cloud.admin.usage.get
 ```
+
+Historical local execution contracts remain isolated while Desktop migration
+is deferred; the cloud runtime does not compose the former device runner or
+AgentRun database adapter. The new execution protocol is `cloud.*` and uses
+its own outbox event type and database baseline.
 
 `GET /health` is available on the standalone API and Web liveness shell. The
 runtime requires `DATABASE_URL`; the seeded in-memory repository is reserved
@@ -194,7 +188,8 @@ lease operations. The client and Fetch handler batch concurrent reads, deduplica
 identical in-flight reads, compress payloads above 1 KiB, propagate an
 `x-request-id` response header, retry rate-limited/unavailable reads when the
 server supplies `Retry-After`, enforce a 1 MiB request-body limit, and enforce a
-15-second request deadline. Hono preserves a valid incoming `X-Request-Id` and
+15-second request deadline for ordinary RPC. Cloud run/conversation streams
+use a separate typed SSE handler without batching, compression or this deadline. Hono preserves a valid incoming `X-Request-Id` and
 generates a 21-character Nano ID when one is absent or invalid. GET procedures
 are guarded by oRPC's CSRF protection plugin.
 
@@ -205,7 +200,7 @@ non-RPC routes, while the oRPC adapter records procedures and errors for
 Better Auth is mounted at `/api/auth/*` with credentialed CORS. Production
 sessions use parent-domain, HTTP-only, Secure, SameSite=None cookies so Web and
 Desktop can reuse the API session. Admin uses the
-HTTP-only cookie session; the public Web app remains unauthenticated. Auth email
+HTTP-only cookie session; Search/Computer and Task pages require authentication. Auth email
 verification, password reset, and welcome messages are sent through the typed
 `@voidmix/mail` service. Database mail settings override environment fallbacks
 and are resolved for every send. Admin responses contain safe effective values,

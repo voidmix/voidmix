@@ -111,6 +111,18 @@ export class PostgresProjectV2Repository implements ProjectV2Repository {
 export class PostgresProjectMemberV2Repository implements ProjectMemberV2Repository {
   constructor(private readonly db: Database) {}
 
+  private async mutate<T>(projectId: string, operation: (db: Database) => Promise<T>) {
+    return this.db.transaction(async (tx) => {
+      // Also serialize insertion of a new, narrowing grant: there may be no member row to lock.
+      await tx
+        .select({ id: v2Projects.id })
+        .from(v2Projects)
+        .where(eq(v2Projects.id, projectId))
+        .for("update");
+      return operation(tx);
+    });
+  }
+
   async getByProjectAndUser(input: {
     projectId: string;
     userId: string;
@@ -143,24 +155,26 @@ export class PostgresProjectMemberV2Repository implements ProjectMemberV2Reposit
     role: ProjectMemberV2["role"];
     now: Date;
   }): Promise<ProjectMemberV2> {
-    return inserted(
-      this.db
-        .insert(v2ProjectMembers)
-        .values({
-          id: `project-member-${input.projectId}-${input.userId}`,
-          projectId: input.projectId,
-          userId: input.userId,
-          role: input.role,
-          status: "active",
-          createdAt: input.now,
-          updatedAt: input.now,
-        })
-        .onConflictDoUpdate({
-          target: [v2ProjectMembers.projectId, v2ProjectMembers.userId],
-          set: { role: input.role, status: "active", updatedAt: input.now },
-        })
-        .returning(memberColumns),
-      "Project member upsert",
+    return this.mutate(input.projectId, (db) =>
+      inserted(
+        db
+          .insert(v2ProjectMembers)
+          .values({
+            id: `project-member-${input.projectId}-${input.userId}`,
+            projectId: input.projectId,
+            userId: input.userId,
+            role: input.role,
+            status: "active",
+            createdAt: input.now,
+            updatedAt: input.now,
+          })
+          .onConflictDoUpdate({
+            target: [v2ProjectMembers.projectId, v2ProjectMembers.userId],
+            set: { role: input.role, status: "active", updatedAt: input.now },
+          })
+          .returning(memberColumns),
+        "Project member upsert",
+      ),
     );
   }
 
@@ -169,17 +183,19 @@ export class PostgresProjectMemberV2Repository implements ProjectMemberV2Reposit
     userId: string;
     now: Date;
   }): Promise<ProjectMemberV2 | null> {
-    return first(
-      this.db
-        .update(v2ProjectMembers)
-        .set({ status: "removed", updatedAt: input.now })
-        .where(
-          and(
-            eq(v2ProjectMembers.projectId, input.projectId),
-            eq(v2ProjectMembers.userId, input.userId),
-          ),
-        )
-        .returning(memberColumns),
+    return this.mutate(input.projectId, (db) =>
+      first(
+        db
+          .update(v2ProjectMembers)
+          .set({ status: "removed", updatedAt: input.now })
+          .where(
+            and(
+              eq(v2ProjectMembers.projectId, input.projectId),
+              eq(v2ProjectMembers.userId, input.userId),
+            ),
+          )
+          .returning(memberColumns),
+      ),
     );
   }
 }

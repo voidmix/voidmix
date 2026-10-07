@@ -25,19 +25,26 @@ const packageRules: Record<string, readonly string[]> = {
   ai: ["application", "core", "shared"],
   mail: ["i18n", "shared"],
   cache: ["shared"],
+  storage: ["core", "shared"],
   client: ["contracts", "shared"],
   contracts: [],
   i18n: ["shared"],
   ui: ["i18n", "shared"],
+  "agent-ui": ["ui", "contracts", "i18n", "shared"],
 };
-function allowed(from: Workspace, to: Workspace) {
+const rendererPackages = ["client", "contracts", "i18n", "ui", "agent-ui", "shared", "tsconfig"];
+function allowed(from: Workspace, to: Workspace, file?: string) {
   if (to.path.startsWith("apps/")) return false;
   if (from.manifest.name === "@voidmix/scripts" || from.path === "e2e") return true;
   if (to.manifest.name === "@voidmix/scripts") return false;
-  if (["apps/web", "apps/desktop", "apps/storybook"].includes(from.path))
-    return ["client", "contracts", "i18n", "ui", "shared", "tsconfig"].includes(
-      to.manifest.name.slice(9),
-    );
+  if (from.path === "apps/desktop") {
+    const name = to.manifest.name.slice(9);
+    if (!file || file.startsWith("apps/desktop/runtime/"))
+      return rendererPackages.includes(name) || name === "ai";
+    return rendererPackages.includes(name);
+  }
+  if (["apps/web", "apps/storybook"].includes(from.path))
+    return rendererPackages.includes(to.manifest.name.slice(9));
   if (from.path.startsWith("apps/")) return true;
   return packageRules[from.manifest.name.slice(9)]?.includes(to.manifest.name.slice(9)) ?? false;
 }
@@ -113,7 +120,7 @@ export async function checkArchitecture(
     const workspace = workspaces.find((w) => file.startsWith(`${w.path}/`));
     if (!workspace) continue;
     const runtime =
-      /\/(src|server)\//.test(file) &&
+      /\/(src|server|runtime)\//.test(file) &&
       !/(?:\.test|\.spec)\.[jt]sx?$|\/(?:tests?|test-fixtures)\//.test(file);
     const aliases: Record<string, string[]> = {};
     // Resolve local aliases as well as relative paths, so an alias cannot conceal a private cross-package import.
@@ -127,6 +134,12 @@ export async function checkArchitecture(
     }
     const source = await deps.readFile(join(deps.repositoryRoot, file));
     for (const request of imports(file, source)) {
+      const renderer = runtime && file.startsWith("apps/desktop/src/");
+      const host = runtime && file.startsWith("apps/desktop/runtime/");
+      if (renderer && (request.startsWith("node:") || request.startsWith("@earendil-works/")))
+        violation(file, `renderer must use the native bridge, not host dependency: ${request}`);
+      if (host && /^(react(?:-dom)?(?:\/|$)|@tauri-apps\/api)/.test(request))
+        violation(file, `local runner must not import renderer dependency: ${request}`);
       const name = request.startsWith("@")
         ? request.split("/").slice(0, 2).join("/")
         : request.split("/")[0]!;
@@ -134,12 +147,21 @@ export async function checkArchitecture(
       let privatePath = false;
       if (!target) {
         const alias = Object.entries(aliases).find(([pattern]) => matches(pattern, request));
-        const mapped = alias?.[1][0]?.replace("*", request.slice(alias[0].split("*")[0]!.length));
+        const local: [string, string] | undefined = Object.entries(
+          workspace.manifest.imports ?? {},
+        ).find(([pattern]) => matches(pattern, request));
+        const mapped: string | undefined = local
+          ? local[1].replace("*", request.slice(local[0].split("*")[0]!.length))
+          : alias?.[1][0]?.replace("*", request.slice(alias[0].split("*")[0]!.length));
         const path: string | null = request.startsWith(".")
           ? posix.normalize(join(dirname(file), request))
           : mapped
             ? posix.normalize(join(workspace.path, mapped))
             : null;
+        if (renderer && path?.startsWith("apps/desktop/runtime/"))
+          violation(file, `renderer must not import local runner source: ${request}`);
+        if (host && path?.startsWith("apps/desktop/src/"))
+          violation(file, `local runner must not import renderer source: ${request}`);
         target = path ? workspaces.find((w) => path.startsWith(`${w.path}/`)) : undefined;
         privatePath = !!target && target !== workspace;
       }
@@ -152,7 +174,7 @@ export async function checkArchitecture(
         violation(file, `private cross-package import: ${request}`);
       if (runtime) {
         edges.get(workspace.manifest.name)!.add(target.manifest.name);
-        if (!allowed(workspace, target))
+        if (!allowed(workspace, target, file))
           violation(file, `forbidden runtime dependency: ${request}`);
         if (!workspace.manifest.dependencies?.[target.manifest.name])
           violation(file, `runtime import requires a declared production dependency: ${request}`);

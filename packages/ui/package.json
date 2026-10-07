@@ -9,6 +9,7 @@
     "#hooks/*": "./src/hooks/*.ts"
   },
   "exports": {
+    "./textarea": "./src/textarea.tsx",
     "./page-header": "./src/page-header.tsx",
     "./section-heading": "./src/section-heading.tsx",
     "./empty-state": "./src/empty-state.tsx",
@@ -44,11 +45,10 @@
   "scripts": {
     "check": "tsc --noEmit -p tsconfig.json",
     "test": "vp test --run --passWithNoTests",
-    "test:unit": "vp test --run --passWithNoTests --exclude '**/component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
+    "test:unit": "vp test --run --passWithNoTests --exclude '**/component.test.{ts,tsx}' --exclude '**/*.component.test.{ts,tsx}' --exclude '**/*.integration.test.{ts,tsx}'",
     "test:integration": "vp test --run --passWithNoTests integration.test",
     "test:component": "vp test --run --passWithNoTests component.test",
-    "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov",
-    "build": "tsc --noEmit -p tsconfig.json"
+    "test:coverage": "vp test --run --passWithNoTests --coverage --coverage.reporter=text --coverage.reporter=json --coverage.reporter=lcov"
   },
   "dependencies": {
     "@base-ui/react": "catalog:frontend",

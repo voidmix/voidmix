@@ -24,6 +24,15 @@ export interface CreateApiClientOptions {
 }
 
 export function createApiClient(options: CreateApiClientOptions = {}): ApiClient {
+  return createTransport(options, false);
+}
+
+/** Streams have their own lifetime; never batch them or apply a request timeout. */
+export function createStreamingApiClient(options: CreateApiClientOptions = {}): ApiClient {
+  return createTransport(options, true);
+}
+
+function createTransport(options: CreateApiClientOptions, streaming: boolean): ApiClient {
   const toHeaders = (value: ApiHeaders): Headers => {
     const entries = Object.entries(value).filter(
       (entry): entry is [string, string] => typeof entry[1] === "string",
@@ -41,21 +50,23 @@ export function createApiClient(options: CreateApiClientOptions = {}): ApiClient
     url: "/rpc",
     ...(baseUrl ? { origin: baseUrl } : {}),
     method: (_requestOptions, path) => (isMutationProcedure(path) ? "POST" : "GET"),
-    plugins: [
-      new DedupeLinkPlugin({ groups: [readRequestGroup] }),
-      new BatchLinkPlugin({ groups: [readRequestGroup], maxSize: 10, mode: "buffered" }),
-      new RequestCompressionLinkPlugin({ threshold: 1024 }),
-      // Native fetch decompresses HTTP responses. Applying the oRPC stream
-      // decompressor again corrupts large responses in Node SSR and browsers.
-      new RetryAfterLinkPlugin({
-        condition: (response, { request }) =>
-          (request.method === "GET" || request.method === "QUERY") &&
-          (response.status === 429 || response.status === 503),
-        maxAttempts: 2,
-        timeout: 5_000,
-      }),
-      new TimeoutLinkPlugin({ timeout: 15_000 }),
-    ],
+    plugins: streaming
+      ? []
+      : [
+          new DedupeLinkPlugin({ groups: [readRequestGroup] }),
+          new BatchLinkPlugin({ groups: [readRequestGroup], maxSize: 10, mode: "buffered" }),
+          new RequestCompressionLinkPlugin({ threshold: 1024 }),
+          // Native fetch decompresses HTTP responses. Applying the oRPC stream
+          // decompressor again corrupts large responses in Node SSR and browsers.
+          new RetryAfterLinkPlugin({
+            condition: (response, { request }) =>
+              (request.method === "GET" || request.method === "QUERY") &&
+              (response.status === 429 || response.status === 503),
+            maxAttempts: 2,
+            timeout: 5_000,
+          }),
+          new TimeoutLinkPlugin({ timeout: 15_000 }),
+        ],
     ...(configuredHeaders
       ? {
           headers: async () =>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 import { PostgresAgentRunV2Repository } from "./agents.js";
-import { outboxEvents, v2AgentRuns } from "../schema.js";
+import { outboxEvents, v2AgentRuns } from "../schema/resources.js";
 
 describe("queued Agent transaction", () => {
   it.each([false, true])(

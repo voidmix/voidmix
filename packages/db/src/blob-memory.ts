@@ -35,6 +35,7 @@ export class InMemoryBlobStorageRepository implements BlobStorageRepository {
     )
       throw new AssetDomainError("BLOB_UPLOAD_EXPIRED", "Blob upload is missing or expired.");
     if (
+      (input.workspaceId !== undefined && upload.workspaceId !== input.workspaceId) ||
       upload.byteSize !== input.byteSize ||
       upload.contentType !== input.contentType ||
       upload.expectedHash !== input.blobHash
@@ -47,7 +48,7 @@ export class InMemoryBlobStorageRepository implements BlobStorageRepository {
       createHash("sha256").update(bytes).digest("hex") !== input.blobHash
     )
       throw new AssetDomainError("BLOB_CHECKSUM_MISMATCH", "Blob size does not match.");
-    this.blobs.set(input.blobHash, {
+    this.blobs.set(`${upload.workspaceId}:${input.blobHash}`, {
       workspaceId: upload.workspaceId,
       bytes,
       contentType: input.contentType,
@@ -59,7 +60,7 @@ export class InMemoryBlobStorageRepository implements BlobStorageRepository {
     workspaceId: string;
     blobHash: string;
   }): Promise<BlobDownload | null> {
-    const blob = this.blobs.get(input.blobHash);
+    const blob = this.blobs.get(`${input.workspaceId}:${input.blobHash}`);
     if (!blob || blob.workspaceId !== input.workspaceId) return null;
     return {
       blobHash: input.blobHash,
@@ -71,7 +72,8 @@ export class InMemoryBlobStorageRepository implements BlobStorageRepository {
     };
   }
   async delete(input: { workspaceId: string; blobHash: string }): Promise<void> {
-    const blob = this.blobs.get(input.blobHash);
-    if (blob?.workspaceId === input.workspaceId) this.blobs.delete(input.blobHash);
+    const blob = this.blobs.get(`${input.workspaceId}:${input.blobHash}`);
+    if (blob?.workspaceId === input.workspaceId)
+      this.blobs.delete(`${input.workspaceId}:${input.blobHash}`);
   }
 }

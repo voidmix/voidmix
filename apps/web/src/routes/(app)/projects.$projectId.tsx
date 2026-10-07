@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { cloudQueries } from "../../lib/cloud-queries";
+import { useCloudQueries } from "../../lib/use-cloud-queries";
+import { useEffect, useRef, useState } from "react";
 import { Plus } from "@phosphor-icons/react";
 import { CreateTitleForm } from "../../features/projects/create-title-form";
+import { taskLabels } from "../../features/conversations/labels";
 import { ProjectStatus } from "../../features/projects/project-status";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@voidmix/ui/components/ui/button";
 import { EmptyState } from "@voidmix/ui/empty-state";
 import { PageHeader } from "@voidmix/ui/page-header";
@@ -13,14 +17,18 @@ import { createRouteApiClient } from "../../lib/route-api";
 import { RoutePending, RouteError } from "../../features/navigation/route-state";
 
 export const Route = createFileRoute("/(app)/projects/$projectId")({
-  loader: async ({ params, abortController, context }) => {
-    const api = createRouteApiClient();
-    const options = { signal: abortController.signal };
-    const [result, taskPage] = await Promise.all([
-      api.projects.get({ projectId: params.projectId }, options),
-      api.projects.tasks.list({ projectId: params.projectId }, options),
+  loader: async ({ params, context }) => {
+    const queries = cloudQueries(context, createRouteApiClient());
+    const [project] = await Promise.all([
+      context.queryClient.ensureQueryData(queries.project(params.projectId)),
+      context.queryClient.ensureQueryData(queries.tasks(undefined, params.projectId)),
     ]);
-    return { accountId: context.accountId, result, tasks: taskPage.items };
+    if (project.access === "manage")
+      await Promise.all([
+        context.queryClient.ensureQueryData(queries.members(params.projectId)),
+        context.queryClient.ensureQueryData(queries.spendingGrants(params.projectId)),
+      ]);
+    return { accountId: context.accountId };
   },
   pendingComponent: RoutePending,
   errorComponent: RouteError,
@@ -34,16 +42,29 @@ function ProjectDetailRoute() {
 
 function ProjectDetail({ projectId }: { projectId: string }) {
   const t = useTranslations("projects");
+  const cloud = useTranslations("cloud");
+  const statuses = taskLabels(cloud);
   const formatter = useFormatter();
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
-  const { result, tasks } = Route.useLoaderData();
-  const router = useRouter();
+  const { api, queries, queryClient } = useCloudQueries();
+  const { data: result } = useSuspenseQuery(queries.project(projectId));
+  const {
+    data: { items: tasks },
+  } = useSuspenseQuery(queries.tasks(undefined, projectId));
   async function createTask(title: string) {
     setSaving(true);
     try {
-      await createRouteApiClient().projects.tasks.create({ projectId, title });
-      await router.invalidate({ filter: (match) => match.routeId === Route.id, sync: true });
+      await api.cloud.tasks.create({
+        projectId,
+        title,
+        goal: title,
+        idempotencyKey: crypto.randomUUID(),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: queries.tasks(undefined, projectId).queryKey,
+        exact: true,
+      });
       setCreating(false);
     } finally {
       setSaving(false);
@@ -99,13 +120,19 @@ function ProjectDetail({ projectId }: { projectId: string }) {
             <ul className="project-task-list border-y border-border [&_li]:flex [&_li]:items-center [&_li]:justify-between [&_li]:gap-4 [&_li]:py-4.5 [&_li]:px-0 [&_li]:border-b [&_li]:border-border [&_li:last-child]:border-b-0">
               {tasks.map((task) => (
                 <li key={task.id}>
-                  <span className="min-w-0 [overflow-wrap:anywhere]">{task.title}</span>
+                  <Link
+                    to="/tasks/$taskId"
+                    params={{ taskId: task.id }}
+                    className="min-w-0 [overflow-wrap:anywhere] hover:underline"
+                  >
+                    {task.title}
+                  </Link>
                   <StatusBadge
-                    label={t(task.status === "in_progress" ? "inProgress" : task.status)}
+                    label={statuses[task.status]}
                     tone={
-                      task.status === "done"
+                      task.status === "completed"
                         ? "success"
-                        : task.status === "blocked"
+                        : task.status === "waiting_input"
                           ? "warning"
                           : task.status === "in_progress"
                             ? "info"
@@ -141,6 +168,116 @@ function ProjectDetail({ projectId }: { projectId: string }) {
           </div>
         </dl>
       </div>
+      <Link to="/chat" className="text-sm underline">
+        {t("startCloudConversation")}
+      </Link>
+      {access === "manage" ? <SpendingGrants projectId={projectId} /> : null}
     </div>
+  );
+}
+
+/** One-route management surface: membership and permission defaults remain server-owned. */
+function SpendingGrants({ projectId }: { projectId: string }) {
+  const t = useTranslations("cloud");
+  const { api, identity, queries, queryClient } = useCloudQueries();
+  const { data: members } = useSuspenseQuery(queries.members(projectId));
+  const { data: grants } = useSuspenseQuery(queries.spendingGrants(projectId));
+  const [pending, setPending] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  const lifetime = useRef<AbortController | null>(null);
+  const intents = useRef(new Map<string, string>());
+  const rows = [
+    ...new Set([
+      identity.actorId,
+      ...members.items
+        .filter((member) => member.status === "active")
+        .map((member) => member.userId),
+      ...grants.items.map((grant) => grant.userId),
+    ]),
+  ];
+  useEffect(() => {
+    lifetime.current = new AbortController();
+    return () => lifetime.current?.abort();
+  }, []);
+  async function change(userId: string, allowed: boolean) {
+    const signal = lifetime.current?.signal;
+    if (!signal || signal.aborted || pending) return;
+    const fingerprint = JSON.stringify([userId, allowed]);
+    const idempotencyKey = intents.current.get(fingerprint) ?? crypto.randomUUID();
+    intents.current.set(fingerprint, idempotencyKey);
+    setPending(userId);
+    setFailed(false);
+    try {
+      await api.cloud.tasks.setSpendingGrant(
+        { projectId, userId, allowed, idempotencyKey },
+        { signal },
+      );
+      if (signal.aborted) return;
+      intents.current.delete(fingerprint);
+      await queryClient.invalidateQueries({
+        queryKey: queries.spendingGrants(projectId).queryKey,
+        exact: true,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: queries.capabilities().queryKey,
+        exact: true,
+      });
+    } catch {
+      if (!signal.aborted) setFailed(true);
+    } finally {
+      if (!signal.aborted) setPending(null);
+    }
+  }
+  return (
+    <section className="space-y-4 border-t border-border pt-6" aria-label={t("spendingGrants")}>
+      <h2 className="text-lg font-semibold">{t("spendingGrants")}</h2>
+      <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+        {t("spendingDescription")}
+      </p>
+      {failed ? (
+        <p role="alert" className="text-sm">
+          {t("failed")}
+        </p>
+      ) : null}
+      <ul className="divide-y divide-border">
+        {rows.map((userId) => {
+          const grant = grants.items.find((item) => item.userId === userId);
+          return (
+            <li key={userId} className="flex flex-wrap items-center justify-between gap-4 py-4">
+              <div className="min-w-0">
+                <p className="text-sm wrap-anywhere">
+                  {userId === identity.actorId ? t("yourSpending") : userId}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t(
+                    grant
+                      ? grant.allowed
+                        ? "spendingAllowed"
+                        : "spendingDenied"
+                      : "spendingInherited",
+                  )}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  disabled={Boolean(pending) || grant?.allowed === true}
+                  onClick={() => void change(userId, true)}
+                >
+                  {pending === userId ? t("pending") : t("allowSpending")}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={Boolean(pending) || grant?.allowed === false}
+                  onClick={() => void change(userId, false)}
+                >
+                  {t("revokeSpending")}
+                </Button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

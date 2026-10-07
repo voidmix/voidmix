@@ -1,29 +1,11 @@
 import { UserCircle } from "@phosphor-icons/react";
 import { useDesktopTranslations } from "../../i18n/client";
 import { Avatar } from "@voidmix/ui/avatar";
-import { useEffect, useState } from "react";
-import { loadAccount, type AccountState } from "../../lib/account";
+import { useDesktopAccount } from "./account-provider";
 
 export function AccountControl() {
   const t = useDesktopTranslations("common");
-  const [account, setAccount] = useState<AccountState>({ status: "loading" });
-
-  useEffect(() => {
-    let active = true;
-    let revision = 0;
-    const refresh = () => {
-      const current = ++revision;
-      void loadAccount().then((result) => {
-        if (active && revision === current) setAccount(result);
-      });
-    };
-    refresh();
-    window.addEventListener("focus", refresh);
-    return () => {
-      active = false;
-      window.removeEventListener("focus", refresh);
-    };
-  }, []);
+  const account = useDesktopAccount();
 
   const profile = account.status === "signed_in" ? account.profile : null;
   const label = profile

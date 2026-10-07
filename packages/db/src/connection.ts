@@ -18,7 +18,7 @@ export function connectDatabase(databaseUrl: string): DatabaseConnection {
 
 export async function migrateDatabase(
   databaseUrl: string,
-  migrationsFolder = new URL("../drizzle", import.meta.url).pathname,
+  migrationsFolder = new URL("../drizzle-cloud", import.meta.url).pathname,
 ): Promise<void> {
   const client: Sql = postgres(databaseUrl, { max: 1 });
   try {

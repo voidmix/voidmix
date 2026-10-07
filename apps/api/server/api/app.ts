@@ -18,6 +18,8 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { nanoid } from "nanoid";
+import type { ObjectStorage } from "@voidmix/core";
+import { mountLocalStorage } from "./local-storage.js";
 
 import { createCanonicalApiRouter } from "./canonical-router.js";
 import { createApiRequestAuthContext, type ApiRequestAuthContext } from "./context.js";
@@ -33,6 +35,8 @@ export interface CreateApiAppOptions {
   authHandler: (request: Request) => Promise<Response>;
   now?: () => Date;
   loggerConfig?: EvlogConfig;
+  localStorage?: { storage: ObjectStorage; signingSecret: string };
+  executionGateway?: { fetch(request: Request): Promise<Response> };
 }
 
 type ApiEnv = {
@@ -86,7 +90,7 @@ export function createApiApp(options: CreateApiAppOptions) {
   const handler = withEvlog(
     new RPCHandler(router, {
       plugins: [
-        new BodyLimitPlugin<ApiContext>({ maxBodySize: 1_048_576 }),
+        new BodyLimitPlugin<ApiContext>({ maxBodySize: 15_000_000 }),
         new RequestHeadersHandlerPlugin<ApiContext>(),
         new ResponseHeadersHandlerPlugin<ApiContext>(),
         new RequestCompressionHandlerPlugin<ApiContext>(),
@@ -106,11 +110,28 @@ export function createApiApp(options: CreateApiAppOptions) {
       include: ["/rpc/**"],
     },
   );
+  // Event iterators have their own connection lifecycle and never enter batch/timeout middleware.
+  const streamHandler = withEvlog(
+    new RPCHandler(router, {
+      plugins: [
+        new BodyLimitPlugin<ApiContext>({ maxBodySize: 1_000_000 }),
+        new RequestHeadersHandlerPlugin<ApiContext>(),
+        new ResponseHeadersHandlerPlugin<ApiContext>(),
+        new GetMethodCsrfProtectionHandlerPlugin<ApiContext>(),
+      ],
+      allowMethods: (method, _procedure, path) =>
+        !isMutationProcedure(path) && (method === "GET" || method === "POST"),
+    }),
+    { ...middlewareOptions, include: ["/rpc/**"] },
+  );
   const origins = new Set(options.allowedOrigins);
   const app = new Hono<ApiEnv>();
+  // Private process credentials are independent of browser sessions and public CORS.
+  if (options.executionGateway)
+    app.all("/internal/execution/*", (context) => options.executionGateway!.fetch(context.req.raw));
 
   app.use("*", requestId({ generator: () => nanoid() }));
-  app.use("*", honoEvlog({ ...middlewareOptions, exclude: ["/rpc/**"] }));
+  app.use("*", honoEvlog({ ...middlewareOptions, exclude: ["/rpc/**", "/api/cloud/storage/**"] }));
   app.use("*", async (context, next) => {
     const log = context.get("log");
     if (log) {
@@ -135,6 +156,7 @@ export function createApiApp(options: CreateApiAppOptions) {
         "ORPC-Batch",
         "Content-Encoding",
         "Standard-Server",
+        "Last-Event-ID",
       ],
       exposeHeaders: ["X-Request-ID", "Retry-After", "Standard-Server"],
       allowMethods: ["GET", "POST", "OPTIONS"],
@@ -172,15 +194,34 @@ export function createApiApp(options: CreateApiAppOptions) {
       timestamp: (options.now?.() ?? new Date()).toISOString(),
     });
   });
+  app.use(
+    "/api/cloud/storage/*",
+    cors({
+      origin: (origin) => (origins.has(origin) ? origin : null),
+      allowMethods: ["GET", "POST", "OPTIONS"],
+      allowHeaders: ["Content-Type"],
+    }),
+  );
+  if (options.localStorage) mountLocalStorage(app, options.localStorage);
   app.use("/rpc/*", async (context, next) => {
-    context.set("auth", createApiRequestAuthContext(await options.resolveSession(context.req.raw)));
+    const request = context.req.raw;
+    context.set("auth", {
+      ...createApiRequestAuthContext(await options.resolveSession(request)),
+      revalidateSession: () => options.resolveSession(request),
+    });
     await next();
   });
   app.use("/rpc/*", async (context, next) => {
     const requestId = context.get("requestId");
     const request = context.req.raw;
     const locale = resolveRequestLocaleHint(request.headers);
-    const { matched, response } = await handler.handle(request, {
+    const connectionHandler =
+      /\/cloud\/(?:runs|conversations)\/stream$|\/projects\/agentRuns\/events\/stream$/.test(
+        context.req.path,
+      )
+        ? streamHandler
+        : handler;
+    const { matched, response } = await connectionHandler.handle(request, {
       prefix: "/rpc",
       context: {
         requestId,

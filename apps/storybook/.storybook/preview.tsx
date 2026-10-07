@@ -1,5 +1,5 @@
 import { TooltipProvider } from "@voidmix/ui/components/ui/tooltip";
-import "@voidmix/ui/styles.css";
+import "../src/preview.css";
 
 import { ThemeProvider } from "@voidmix/ui/theme";
 import type { Decorator, Preview } from "@storybook/react-vite";

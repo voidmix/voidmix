@@ -16,7 +16,8 @@ interfaces owned by `@voidmix/core`.
 Source layout: small compatibility entrypoints (`schema.ts`, `postgres.ts`,
 `memory.ts`, `v2.ts`); domain implementations under `identity/`, `settings/`,
 `v2/`, and `schema/`. `settings/reader.ts`, `settings/values.ts`, and
-`settings/mutations.ts` share resolution, decoding, and mutations across adapters. SQL history remains under `drizzle/`.
+`settings/mutations.ts` share resolution, decoding, and mutations across adapters. Historical SQL remains under `drizzle/`; the independent current baseline lives
+under `drizzle-cloud/`.
 See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired-code.md).
 
 ## Ownership
@@ -24,6 +25,22 @@ See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired
 - Own the Drizzle schema, user, canonical V2 resource, outbox, blob, and
   system-settings repositories in PostgreSQL and memory, plus migration
   execution.
+- Own `PostgresCloudRepository` and `InMemoryCloudRepository`, cloud indexes,
+  JSON-backed typed records with indexed ownership/parent/intent columns, ordered
+  events and atomic outbox writes. Reads restore native Date fields without
+  coercing arbitrary tool bodies; Round usage and owner account queries use indexed columns.
+- Cloud account/run/task advisory locks are acquired in sorted order. Active
+  task Runs also have a partial unique index. User/project permission rows are
+  read through the same transaction handle.
+- Run lease expiry, epoch, cancellation and account/round identities are indexed
+  columns alongside their typed data. Critical active-Task and expired-Run queries
+  have semantic Core ports; message projections and grant hashes commit durably.
+- Independent Worker identities may run concurrently. The optional dedicated
+  session guard only rejects duplicate live host identities; it never replaces
+  the per-Run expiring lease or prevents another host from claiming a different Run.
+- Both adapters reject changes to an existing TaskRound. SQL enforces one active
+  Run per Task and one round per goal version; Application guards acceptance and
+  publication under the same account/Run/Task locks.
 - Own no business rule and no interface definition — both belong to
   `@voidmix/core`.
 
@@ -43,8 +60,9 @@ See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired
   cursors bind to actor and query scope and invalid cursors raise BAD_REQUEST.
 - Queued Agent creation inserts the run and outbox event in the same transaction.
   All statements in that operation use the transaction handle.
-- Legacy table definitions remain for migration stability. They have no runtime
-  repository adapters. Do not remove them as part of runtime cleanup.
+- Legacy/local table definitions and adapter sources remain historical. They
+  are excluded from the runtime schema aggregate, public schema exports and
+  new migration baseline; do not apply the old baseline to a new database.
 - Auth policy reuses `system_settings` with the fixed keys
   `auth.registration_mode`, `auth.allowed_email_domains`,
   `mail.welcome_enabled`, `mail.verification_enabled`, and
@@ -74,7 +92,7 @@ See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired
   queries; domain adapters use explicit joins. Persisted foreign keys belong
   to table definitions and are independent of this runtime relation graph.
 - **Never hand-edit generated migrations.** Each lives in its own
-  `drizzle/<timestamp>_<name>/` with `migration.sql` and `snapshot.json`
+  `drizzle-cloud/<timestamp>_<name>/` with `migration.sql` and `snapshot.json`
   (Drizzle 1.0 RC; there is no `_journal.json`). Regenerate instead, and do not
   invent directory names.
 - `generate` exits 2 with `missing_hints` when a diff is ambiguous — it cannot
@@ -90,7 +108,7 @@ See [ADR-0013](../../docs/architecture/decisions/0013-domain-modules-and-retired
   development and test by `@voidmix/scripts`; `db migrate` only requires a
   database URL.
 - `db push` applies the schema without a migration, so it is for a database in
-  flux only. Committed schema changes still ship as generated `drizzle/*.sql`.
+  flux only. Committed schema changes still ship as generated `drizzle-cloud/` migrations.
   It forwards its flags to `drizzle-kit`, because an ambiguous diff exits 2 and
   demands `--hints '<json-array>'`.
 - `resetDatabase` (`db clean`) drops the `drizzle` and `public` schemas and

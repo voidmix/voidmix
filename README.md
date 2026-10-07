@@ -6,7 +6,7 @@
 [![TypeScript 7.0.2](https://img.shields.io/badge/TypeScript-7.0.2-3178c6?logo=typescript&logoColor=fff)](https://www.typescriptlang.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-d22128?logo=apache&logoColor=fff)](./LICENSE)
 
-Voidmix is a Bun-managed, Vite+ orchestrated TypeScript monorepo for a cloud
+Voidmix is a Bun-managed, Turbo orchestrated TypeScript monorepo for a cloud
 web app with a standalone typed Hono API, an operations console, and a Tauri
 desktop client.
 
@@ -31,12 +31,14 @@ request.
 apps/web        TanStack Start user application
 apps/desktop    Tauri 2 desktop client
 apps/api        Standalone Nitro API application
-apps/worker     Durable Agent and outbox execution host
+apps/worker     Cloud Pi execution, trusted tools and durable outbox host
 apps/storybook  Storybook UI component workbench
 e2e             Playwright Web smoke tests, including protected Admin routes
 
 packages/ui         Shared visual primitives
-packages/application Shared Project commands and queries for API and Worker
+packages/agent-ui   Shared controlled Agent business components
+packages/storage    Private S3-compatible object storage adapter
+packages/application Shared cloud and Project use cases for API and Worker
 packages/ai         Server-side Pi Agent adapter
 packages/cache      Redis cache facade and Better Auth secondary storage
 packages/client     Typed oRPC client
@@ -53,8 +55,9 @@ packages/tsconfig   Shared TypeScript presets
 
 `bun run policy` keeps this listing and the one in `AGENTS.md` in step with the
 workspaces Bun actually resolves, in both directions. The Worker owns durable
-Agent and outbox execution; its event handler is injected at the process
-boundary so the runtime stays independent from HTTP and UI state.
+outbox delivery, cloud Pi execution and trusted document generation. The Web-first
+release uses a fresh database and private object storage. Desktop cloud integration
+and local execution follow [the cloud platform decision](./docs/architecture/decisions/0016-cloud-agent-platform.md).
 
 ## Requirements
 
@@ -69,6 +72,7 @@ boundary so the runtime stays independent from HTTP and UI state.
 cp .env.example .env
 bun install
 bun run generate
+bun run db:migrate
 bun run dev
 ```
 
@@ -107,7 +111,7 @@ bun run verify
 The direct repository CLI uses nested commands such as `vmx db migrate`,
 while the root Bun script names above remain stable aliases.
 
-Vite+ owns task orchestration. `@voidmix/scripts` is reserved for procedural
+Turbo owns task orchestration and caching; Vite+ owns leaf tools. `@voidmix/scripts` is reserved for procedural
 automation such as database setup, generated artifacts, and desktop packaging.
 Using the Bun scripts also guarantees that the repository-local Vite+ version
 is used even when a different global `vp` is installed.

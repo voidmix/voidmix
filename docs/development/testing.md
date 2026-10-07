@@ -18,21 +18,21 @@ interactive debugging needs the full live output.
 
 Installation builds `@voidmix/shared` once because its public exports resolve
 from `packages/shared/dist`. The root `dev` command runs the shared pack watcher
-alongside applications. `verify` and focused consumer checks must build shared
-first after editing its source; for example run
-`bun run --cwd packages/shared build` before a workspace's `check` or `test`.
+alongside applications. Turbo builds shared before consumer checks and tests, including focused
+`vmx tasks` filters. Direct leaf commands bypass that graph: after editing shared,
+run `bun run --cwd packages/shared build` before a workspace's direct `check` or `test`.
 
-| Stage        | Command                                                                                | Why it is at this position                                           |
-| ------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| i18n         | in-process                                                                             | validates catalogs and authored JSX before build work                |
-| policy       | in-process                                                                             | milliseconds, and its failures are structural                        |
-| format       | `vp fmt --check`                                                                       | under a second over the whole repository                             |
-| lint         | `vp lint`                                                                              | seconds, type-aware                                                  |
-| shared build | `vp run @voidmix/shared#build`                                                         | refreshes the public ESM and declaration output before consumers run |
-| check        | `vp run -r check`                                                                      | per-workspace `tsc --noEmit`                                         |
-| test         | `vp run -r test`                                                                       | every workspace's Vitest suite                                       |
-| build        | `vp run --filter './apps/*' --filter './packages/*' --filter '!@voidmix/shared' build` | with `NITRO_PRESET=bun`; shared was built in the preceding stage     |
-| runtime      | in-process                                                                             | starts each built server and requires HTTP 200                       |
+| Stage          | Command                                                       | Purpose                                       |
+| -------------- | ------------------------------------------------------------- | --------------------------------------------- |
+| i18n / policy  | in-process                                                    | cheap source and structural checks            |
+| format         | `vmx tasks format:leaf`                                       | one repository-wide format check              |
+| lint           | `vmx tasks lint:leaf`                                         | one type-aware lint pass                      |
+| check          | `vmx tasks check`                                             | per-workspace typechecks; builds shared first |
+| unit/component | `vmx tasks test:unit test:component --filter '!@voidmix/e2e'` | disjoint deterministic cached layers          |
+| integration    | `vmx tasks test:integration --filter '!@voidmix/e2e'`         | uncached API/adapter checks                   |
+| build          | `vmx tasks build`                                             | graph-owned checks and output restoration     |
+| worker runtime | `node apps/worker/dist/index.mjs --check`                     | uncached compiled imports and resource probe  |
+| runtime        | in-process Node probes                                        | uncached Web/API HTTP smoke checks            |
 
 Nothing else needs to be run in sequence. The remaining scripts narrow a failure
 down: `bun run policy` prints each finding with a `Fix:` line and
@@ -57,18 +57,23 @@ the verification gate independently.
 
 [CI](../../.github/workflows/ci.yml) runs automatically on pull requests and pushes
 to `canary`, and can also be started with **Run workflow**. It needs no repository
-Secrets, Variables, `.env` file, or external database. Node and Bun versions come
+Secrets, Variables, `.env` file, or external database. Optional Turbo secrets
+enable signed remote cache only on trusted canary pushes/manual runs; PRs use
+local-only caches. Missing remote credentials never prevent verification. Node and Bun versions come
 from the root `package.json`; dependencies use the frozen lockfile.
 
 There are two job definitions (three runners):
 
 - `typescript` uses Ubuntu 24.04 and one disposable PostgreSQL 17 service. It runs
   `bun run verify`, Drizzle generation, real database tests and Chromium E2E.
+  It also builds the Worker image and runs real Chinese document exports with
+  network disabled, exercising the fixed LibreOffice/Poppler/font dependencies.
   Database and browser tests run sequentially against the same test database;
   each suite resets its fixtures. The final clean-tree check catches both changed
   tracked files and newly generated untracked files, including route/Drizzle drift.
 - `desktop` builds native packages on macOS and Windows, retaining the Rust cache.
-  Tauri's `beforeBuildCommand` already checks and builds the frontend. Its Vitest
+  Tauri's `beforeBuildCommand` prepares the pinned native runner resources uncached,
+  then enters `build:desktop`, which checks and builds the frontend through Turbo. Its Vitest
   tests run once with all other workspace tests in the Linux verification job.
 
 A newer push cancels the previous run for the same branch or pull request. Each
@@ -77,15 +82,15 @@ seven days. The generate step uses a non-routable `DATABASE_URL`; it validates t
 configuration without connecting to PostgreSQL. Only the database/browser test
 step sets `NODE_ENV=test`, leaving production builds and runtime probes intact.
 
-The full Vitest suite runs once inside `verify`. Layer commands remain available
+The disjoint unit/component/integration layers run once inside `verify`. Layer commands remain available
 for focused local checks, and policy enforces their canonical substring filters;
-CI no longer repeats those tests in three layers and again for coverage. Run
+CI does not repeat those layers again for coverage. Run
 `bun run test:coverage` explicitly when a coverage report is needed (there is no
 minimum coverage threshold). Knip remains a local advisory command, outside the
 required pipeline, so its framework/config discovery cannot block verification.
 
 `bun run test:e2e` starts API, Web and Desktop preview servers itself.
-It runs the `web`, `admin`, `authenticated`, `redesign`, `homepage`, `workbench` and `desktop` projects. Configure the
+It runs the `cloud`, `web`, `admin`, `authenticated`, `redesign`, `homepage`, `workbench` and `desktop` projects. Configure the
 dedicated database as described below. Set `VOIDMIX_E2E_PORT` to
 choose the Web port (default 3000); Desktop uses +1 and API +2. The retired Project Studio suite and its
 mock API fixture have been removed; Web still checks the sign-in redirect for
@@ -110,14 +115,22 @@ cargo clippy --all-targets -- -D warnings
 ```
 
 Each workspace must complete its local TypeScript check independently. The root
-Vite+ task graph runs checks, tests, and builds across all applications and
-packages. `bun run verify` deliberately sets `NITRO_PRESET=bun` for its build
-graph to prove that each Node deployment owns an explicit preset. After the
+Turbo task graph runs checks, tests, and builds across all applications and
+packages. Node deployments explicitly select `node-server`. After the
 build, it reads each Web and API `.output/nitro.json`, requires the `node-server`
 preset, and starts each generated server with the repository's Node runtime on
 a temporary loopback port. One Web process must serve both `/` and `/health`;
-the standalone compatibility output must also serve `/health`. The probe
-supplies a non-routable database URL and exercises no database query.
+the standalone API output must serve `/health` and reject an unauthenticated
+`POST /internal/execution/bootstrap` with HTTP 401. A 404 fails the probe, so a
+missing production route cannot pass as a healthy server. The probe supplies a
+non-routable database URL and exercises no database query.
+
+The Worker artifact check runs on Node 24.18.0 and needs no database or model
+credentials. Document integration tests additionally exercise LibreOffice when
+`SOFFICE_BINARY` is available, including an eight-page presentation and its real
+PDF preview. Provider-backed Search/Computer acceptance needs the configured
+model, search API and private bucket described in
+[deployment](../architecture/deployment.md).
 
 ## Vite+/Vitest configuration boundary
 
@@ -148,10 +161,10 @@ Run repository tests through:
 
 ```bash
 bun run test
-# or
-vp run -r test
-# or, for one workspace:
-bunx vp test --run
+# or, for one workspace through the graph:
+bun run vmx tasks test --filter @voidmix/scripts
+# or, directly inside a workspace:
+bun run --cwd packages/scripts test
 ```
 
 Do not rely on a globally installed `vp` binary. Even when its version matches
@@ -163,8 +176,8 @@ safe because they resolve `vp` from the root `node_modules/.bin`, the same way
 they already resolve `tsc` without declaring TypeScript.
 
 `vp test` is Vite+'s built-in command and is the runner every workspace `test`
-script calls. `vp run test`/`vpr test` runs the workspace script instead, so
-`vp run -r test` is still the repository-wide entry point. There is no direct
+script calls. Turbo runs workspace scripts; `bun run test` is the repository-wide uncached
+full-suite entry point, while focused unit/component runs use caches. There is no direct
 `vitest` dependency: Vite+ bundles the runner, and the test API is imported from
 `vite-plus/test`. `@vitest/coverage-v8` remains a direct dependency because
 Vite+ does not bundle it; its version therefore has to keep matching the Vitest
@@ -175,7 +188,7 @@ file-discovery smoke config only: a root `bunx vp test --run` collects every
 workspace's tests into one process, where per-workspace `setupFiles` and
 environments do not apply, so `jest-dom` matchers are missing and jsdom stubs
 such as `window.matchMedia` are absent. Expect failures from that invocation and
-use `vp run -r test` for a real repository-wide run.
+use `bun run test` for a real repository-wide run.
 
 ## Test layers
 
@@ -186,7 +199,7 @@ loading another application's plugin pipeline:
 | ----------- | -------------------------- | ------------------------------------------------------ |
 | Unit        | `*.test.ts(x)`             | Pure functions, contracts, repositories, and utilities |
 | Integration | `*.integration.test.ts(x)` | API boundaries and in-memory adapters                  |
-| Component   | `component.test.tsx`       | React UI behavior in `jsdom`                           |
+| Component   | `*component.test.ts(x)`    | React UI behavior in `jsdom`                           |
 | E2E         | `e2e/tests/*.spec.ts`      | Browser smoke tests across running applications        |
 
 `test:unit` selects its layer by excluding the other two patterns, while
@@ -196,7 +209,7 @@ matches no file and still exits 0 under `--passWithNoTests`, which is how twelve
 workspaces once ran zero integration and zero component tests while reporting
 green. The four layer scripts are byte-identical in every workspace that owns a
 `vitest.config.ts`; `bun run policy` holds them to that single form, and the form
-itself lives in `packages/scripts/src/policy/manifests.ts`. Change it there, then
+itself lives in `packages/scripts/src/policy/manifests/rules.ts`. Change it there, then
 run `bun run policy` for the paste-ready fix in each workspace.
 
 Node workspaces use the Node test environment. DOM workspaces and individual

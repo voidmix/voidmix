@@ -39,6 +39,7 @@ export class FileSystemBlobStorageRepository implements BlobStorageRepository {
       throw new AssetDomainError("BLOB_UPLOAD_EXPIRED", "Blob upload is missing or expired.");
     }
     if (
+      (input.workspaceId !== undefined && upload.workspaceId !== input.workspaceId) ||
       upload.byteSize !== input.byteSize ||
       upload.contentType !== input.contentType ||
       upload.expectedHash !== input.blobHash ||

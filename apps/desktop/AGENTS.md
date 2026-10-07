@@ -96,9 +96,11 @@ src-tauri/
 - `check` runs **two** typecheck passes (`typecheck` and `typecheck:node`) because
   the renderer and the Node-side config have separate tsconfigs. Both must pass.
 - After renaming routes, let the Start dev plugin regenerate the tree before
-  running `build`, whose first step checks the existing generated route types.
+  running `bun run build:desktop`, whose graph checks the existing generated route types.
 - Rust changes additionally require `cargo fmt --check`, `cargo check`, and
   `cargo clippy --all-targets -- -D warnings` in `src-tauri`.
+- Native `beforeBuildCommand` runs root `build:desktop:native-prep`: prepare the
+  pinned Node/Pi resources uncached, then run the Turbo frontend build gate.
 - `src-tauri/gen/schemas/` is generated Tauri output — do not hand-edit it.
 - Widening `capabilities/default.json` grants the renderer new native access.
   Treat it as a security boundary and keep the allowlist minimal.
@@ -125,7 +127,7 @@ src-tauri/
 ## Verification
 
 ```bash
-bun run --cwd apps/desktop build          # refreshes routeTree.gen.ts and SPA shell
+bun run build:desktop                    # checks and refreshes the SPA shell
 bun run --cwd apps/desktop check          # runs both typecheck passes
 bun run --cwd apps/desktop test
 bun run i18n:check

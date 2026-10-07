@@ -13,6 +13,7 @@ import { useDesktopPreferences } from "./lib/preferences";
 import { Route as rootRoute } from "./routes/__root";
 
 const loaders = vi.hoisted(() => ({
+  loadAccount: vi.fn(),
   loadProjects: vi.fn(),
   loadProject: vi.fn(),
   createProject: vi.fn(),
@@ -44,6 +45,7 @@ function deferred<Value>() {
 }
 
 vi.mock("./lib/projects", () => loaders);
+vi.mock("./lib/account", () => ({ loadAccount: loaders.loadAccount }));
 vi.mock("./lib/cloud", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./lib/cloud")>()),
   loadCloudSnapshot: loaders.loadCloudSnapshot,
@@ -74,6 +76,10 @@ beforeEach(() => {
   useDesktopPreferences.setState(useDesktopPreferences.getInitialState(), true);
   localStorage.clear();
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+  loaders.loadAccount.mockResolvedValue({
+    status: "signed_in",
+    profile: { id: "user-1", email: "user@example.test", displayName: "Desktop user" },
+  });
   loaders.loadProjects.mockResolvedValue({
     status: "loaded",
     data: { items: [], nextCursor: null },
@@ -149,10 +155,14 @@ describe("Desktop Start routes", () => {
   });
 
   it("shows route pending UI until project data is ready", async () => {
+    const router = renderRoute("/settings");
+    await screen.findByText("Desktop user");
     const pending = deferred<{ status: "loaded"; data: { items: []; nextCursor: null } }>();
     loaders.loadProjects.mockReturnValue(pending.promise);
-    renderRoute("/projects");
-    expect(await screen.findByRole("status")).toBeDefined();
+    act(() => {
+      void router.navigate({ to: "/projects" });
+    });
+    expect((await screen.findByRole("status")).textContent).toBe(messages.en.common.loading);
     await act(async () =>
       pending.resolve({ status: "loaded", data: { items: [], nextCursor: null } }),
     );
@@ -211,6 +221,7 @@ describe("Desktop Start routes", () => {
   it("reloads the project list after creation", async () => {
     renderRoute("/projects");
     await screen.findByRole("heading", { name: "Projects" });
+    expect(loaders.loadProjects).toHaveBeenCalledTimes(2);
     fireEvent.click(screen.getByRole("button", { name: "New project" }));
     const input = screen.getByRole("textbox");
     fireEvent.change(input, { target: { value: "New film" } });
@@ -223,7 +234,7 @@ describe("Desktop Start routes", () => {
 
     expect(await screen.findByRole("heading", { name: "New film" })).toBeDefined();
     expect(loaders.createProject).toHaveBeenCalledWith("New film");
-    expect(loaders.loadProjects).toHaveBeenCalledTimes(2);
+    expect(loaders.loadProjects).toHaveBeenCalledTimes(3);
     expect(screen.queryByRole("textbox")).toBeNull();
   });
 
@@ -237,7 +248,7 @@ describe("Desktop Start routes", () => {
     fireEvent.submit(input.closest("form")!);
     expect(await screen.findByRole("alert")).toBeDefined();
     expect((screen.getByRole("textbox") as HTMLInputElement).value).toBe("New film");
-    expect(loaders.loadProjects).toHaveBeenCalledTimes(1);
+    expect(loaders.loadProjects).toHaveBeenCalledTimes(2);
   });
 
   it("refreshes the overview through its route loader", async () => {
@@ -249,7 +260,7 @@ describe("Desktop Start routes", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
     expect(await screen.findByText("123,456")).toBeDefined();
-    expect(loaders.loadCloudSnapshot).toHaveBeenCalledTimes(2);
+    expect(loaders.loadCloudSnapshot).toHaveBeenCalledTimes(3);
   });
 
   it("uses the cloud route data on the devices page", async () => {
@@ -282,13 +293,51 @@ describe("Desktop Start routes", () => {
   });
 
   it("recovers a route loader error when retried", async () => {
-    loaders.loadProjects.mockRejectedValueOnce(new Error("offline"));
+    loaders.loadProjects.mockRejectedValue(new Error("offline"));
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     renderRoute("/projects");
     expect(await screen.findByRole("alert")).toBeDefined();
+    expect(loaders.loadProjects).toHaveBeenCalledTimes(2);
+    loaders.loadProjects.mockResolvedValue({
+      status: "loaded",
+      data: { items: [], nextCursor: null },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
     expect(await screen.findByRole("heading", { name: "Projects" })).toBeDefined();
-    expect(loaders.loadProjects).toHaveBeenCalledTimes(2);
+    expect(loaders.loadProjects).toHaveBeenCalledTimes(3);
     warn.mockRestore();
+  });
+
+  it("hides account-owned project data after sign-out while leaving settings available", async () => {
+    const router = renderRoute("/projects/project-1");
+    await screen.findByRole("heading", { name: "Launch film" });
+    loaders.loadAccount.mockResolvedValue({ status: "signed_out" });
+    fireEvent(window, new Event("focus"));
+    await waitFor(() =>
+      expect(screen.getByRole("status").textContent).toBe(messages.en.common.signedOut),
+    );
+    expect(screen.queryByRole("heading", { name: "Launch film" })).toBeNull();
+    await act(() => router.navigate({ to: "/settings" }));
+    expect(await screen.findByRole("heading", { name: "Settings" })).toBeDefined();
+  });
+
+  it("disposes the old account view before loading another account's project", async () => {
+    renderRoute("/projects/project-1");
+    await screen.findByRole("heading", { name: "Launch film" });
+    const next = deferred<{ status: "loaded"; data: ReturnType<typeof project> }>();
+    loaders.loadAccount.mockResolvedValue({
+      status: "signed_in",
+      profile: { id: "user-2", email: "other@example.test", displayName: "Other user" },
+    });
+    loaders.loadProject.mockReturnValue(next.promise);
+    fireEvent(window, new Event("focus"));
+    await waitFor(() => expect(loaders.loadProject).toHaveBeenCalledTimes(3));
+    expect(screen.queryByRole("heading", { name: "Launch film" })).toBeNull();
+    await act(async () =>
+      next.resolve({ status: "loaded", data: project("project-1", "Other account project") }),
+    );
+    expect(await screen.findByRole("heading", { name: "Other account project" })).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Launch film" })).toBeNull();
+    expect(screen.getByText("Other user")).toBeDefined();
   });
 });

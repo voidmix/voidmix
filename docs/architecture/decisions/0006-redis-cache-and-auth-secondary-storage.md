@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted
+Accepted for the cache adapter; Auth secondary storage and policy caching are
+superseded by [ADR-0016](0016-cloud-agent-platform.md).
 
 ## Context
 

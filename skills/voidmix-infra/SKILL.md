@@ -67,8 +67,8 @@ things that mislead in the moment and belong to no single rule:
   `dev` or `build` silently repairs. Web has no `generate-routes` script.
 - **Never use a globally installed `vp`.** Its bundled Vitest is a different
   physical dependency tree from the workspace's `vite-plus/test` and fails with
-  `Cannot read properties of undefined (reading 'config')`. `vp test` (built-in)
-  is also not `vp run test` (workspace script).
+  `Cannot read properties of undefined (reading 'config')`. `vp test` is the leaf test runner;
+  `vmx tasks test` runs that script across the Turbo graph. Never use `vp run`.
 
 ## Verification
 

@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { getDesktopRuntime, hideMainWindow, type DesktopRuntime } from "../../lib/desktop";
 import { useDesktopPreferences } from "../../lib/preferences";
 import { AccountControl } from "./account-control";
+import { DesktopAccountProvider, useDesktopAccount } from "./account-provider";
 import { useDesktopTranslations, useLocale, useSetLocale } from "../../i18n/client";
 
 function WindowActions() {
@@ -52,12 +53,22 @@ function WindowActions() {
 }
 
 export function DesktopShell() {
+  return (
+    <DesktopAccountProvider>
+      <DesktopShellContent />
+    </DesktopAccountProvider>
+  );
+}
+
+function DesktopShellContent() {
   const t = useDesktopTranslations("common");
   const themeT = useDesktopTranslations("settings");
   const locale = useLocale();
   const setLocale = useSetLocale();
   const nextLocale = LOCALE_OPTIONS.find((option) => option.value !== locale)!;
   const pathname = useLocation({ select: (location) => location.pathname });
+  const account = useDesktopAccount();
+  const protectedPage = pathname !== "/settings";
   const navigation = [
     { to: "/", label: t("home"), icon: House },
     { to: "/projects", label: t("projects"), icon: FolderSimple },
@@ -184,7 +195,21 @@ export function DesktopShell() {
           <WindowActions />
         </header>
         <main className="app-content flex-1 min-h-0 overflow-auto">
-          <Outlet />
+          {protectedPage && account.status !== "signed_in" ? (
+            <p className="p-8 text-sm text-muted-foreground" role="status">
+              {t(
+                account.status === "loading"
+                  ? "accountLoading"
+                  : account.status === "signed_out"
+                    ? "signedOut"
+                    : account.status === "unconfigured"
+                      ? "accountUnconfigured"
+                      : "accountUnavailable",
+              )}
+            </p>
+          ) : (
+            <Outlet key={account.status === "signed_in" ? account.profile.id : "public"} />
+          )}
         </main>
       </div>
     </div>

@@ -36,6 +36,16 @@ describe("logger", () => {
         "**.refreshToken",
         "**.sessionToken",
         "**.apiKey",
+        "prompt",
+        "fileContent",
+        "signedUrl",
+        "downloadUrl",
+        "uploadUrl",
+        "**.prompt",
+        "**.fileContent",
+        "**.signedUrl",
+        "**.downloadUrl",
+        "**.uploadUrl",
       ]),
     });
   });

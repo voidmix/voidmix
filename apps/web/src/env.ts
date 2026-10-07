@@ -7,6 +7,11 @@ export const webEnv = {
   extends: [runtimeEnv, loggerEnv],
   client: {
     VITE_API_URL: z.url().optional(),
+    VITE_POSTHOG_KEY: z.string().optional(),
+    VITE_POSTHOG_HOST: z.url().optional(),
+    VITE_SENTRY_DSN: z.url().optional(),
+    VITE_SUPPORT_EMAIL: z.email().optional(),
+    VITE_SITE_URL: z.url().optional(),
   },
 } as const satisfies Preset;
 

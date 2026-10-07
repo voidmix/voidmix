@@ -1,5 +1,21 @@
-import { ArrowsClockwise, FolderSimple, List, UsersThree } from "@phosphor-icons/react";
-import { Link, Outlet, useLocation, useNavigate, useRouterState } from "@tanstack/react-router";
+import {
+  ArrowsClockwise,
+  FolderSimple,
+  List,
+  UsersThree,
+  ChatCircle,
+  ListChecks,
+  ChartBar,
+  Bell,
+} from "@phosphor-icons/react";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useRouter,
+  useRouterState,
+} from "@tanstack/react-router";
 import { useState } from "react";
 import { IconButton } from "@voidmix/ui/icon-button";
 import { Avatar } from "@voidmix/ui/avatar";
@@ -11,8 +27,19 @@ import { AccountMenu } from "./account-menu";
 
 export function AppShell() {
   const t = useTranslations("navigation");
+  const adminRuns = useTranslations("adminRuns");
   const session = useSession();
   const navigate = useNavigate();
+  const router = useRouter();
+  async function logout() {
+    await signOut();
+    const accountId = session.data?.user.id;
+    if (accountId) router.options.context.resources.disposeAccount(accountId);
+    await router.options.context.queryClient.cancelQueries();
+    router.options.context.queryClient.clear();
+    router.clearCache({ filter: (match) => match.routeId.startsWith("/(app)") });
+    await navigate({ to: "/" });
+  }
   const pathname = useLocation({ select: (location) => location.pathname });
   const refreshing = useRouterState({ select: (state) => state.isLoading });
   const [open, setOpen] = useState(false);
@@ -20,8 +47,17 @@ export function AppShell() {
   const name = session.data?.user.name ?? t("user");
   const admin = role === "admin" || role === "owner";
   const items = [
+    { to: "/chat", label: t("chat"), icon: ChatCircle },
+    { to: "/tasks", label: t("tasks"), icon: ListChecks },
+    { to: "/notifications", label: t("notifications"), icon: Bell },
+    { to: "/settings/usage", label: t("usage"), icon: ChartBar },
     { to: "/projects", label: t("projects"), icon: FolderSimple },
-    ...(admin ? ([{ to: "/admin", label: t("users"), icon: UsersThree }] as const) : []),
+    ...(admin
+      ? ([
+          { to: "/admin", label: t("users"), icon: UsersThree },
+          { to: "/admin-runs", label: adminRuns("title"), icon: ListChecks },
+        ] as const)
+      : []),
   ] as const;
   const navigation = (
     <nav aria-label={t("navigation")} className="workbench-nav flex flex-col gap-1.5">
@@ -51,7 +87,7 @@ export function AppShell() {
       </a>
       <aside className="workbench-sidebar sticky top-0 h-svh flex flex-col gap-8 pt-7 pb-4 px-4 border-r border-border bg-sidebar [@media(max-width:1023px)]:px-3 [@media(max-width:1023px)]:[&_.workbench-nav_span]:hidden [@media(max-width:767px)]:hidden">
         <Link
-          to="/projects"
+          to="/chat"
           className="workbench-brand flex py-0 px-3 [&_img]:size-7 [@media(max-width:1023px)]:[&_[data-slot=logo]_>_span]:hidden [@media(max-width:1023px)]:p-0 [@media(max-width:1023px)]:justify-center"
           aria-label={t("projects")}
         >
@@ -61,14 +97,7 @@ export function AppShell() {
         <div className="workbench-account mt-auto flex items-center gap-2 border-t border-border pt-4 [@media(max-width:1023px)]:justify-center [@media(max-width:1023px)]:[&>div:first-child]:hidden">
           <Avatar name={name} size="small" />
           <span className="min-w-0 flex-1 truncate [@media(max-width:1023px)]:hidden">{name}</span>
-          <AccountMenu
-            name={name}
-            role={role}
-            onSignOut={async () => {
-              await signOut();
-              await navigate({ to: "/" });
-            }}
-          />
+          <AccountMenu name={name} role={role} onSignOut={logout} />
         </div>
       </aside>
       <div className="workbench-frame min-w-0">
@@ -87,17 +116,24 @@ export function AppShell() {
               }
             >
               {navigation}
-              <AccountMenu
-                name={name}
-                role={role}
-                onSignOut={async () => {
-                  await signOut();
-                  await navigate({ to: "/" });
-                }}
-              />
+              <AccountMenu name={name} role={role} onSignOut={logout} />
             </Modal>
           </div>
-          <span>{pathname.startsWith("/admin") ? t("users") : t("projects")}</span>
+          <span>
+            {pathname.startsWith("/admin-runs")
+              ? adminRuns("title")
+              : pathname.startsWith("/admin")
+                ? t("users")
+                : pathname.startsWith("/chat")
+                  ? t("chat")
+                  : pathname.startsWith("/tasks")
+                    ? t("tasks")
+                    : pathname.startsWith("/notifications")
+                      ? t("notifications")
+                      : pathname.startsWith("/settings")
+                        ? t("usage")
+                        : t("projects")}
+          </span>
           {refreshing ? (
             <span role="status" title={t("refreshing")} className="ml-auto text-muted-foreground">
               <ArrowsClockwise

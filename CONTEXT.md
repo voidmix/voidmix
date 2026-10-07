@@ -1,73 +1,85 @@
 # Voidmix domain language
 
-This glossary records the terms that have one meaning across product, domain,
-API, and client conversations. It intentionally avoids framework, storage, and
-deployment details.
+This glossary defines the current cloud platform described in
+[ADR-0016](docs/architecture/decisions/0016-cloud-agent-platform.md). Earlier
+Workspace/device execution designs remain historical reference material.
 
-## People and scope
+## Identity and scope
 
-- **Actor** — the person or controlled process responsible for an action.
-- **User** — a person with a Voidmix account.
-- **Workspace** — the team-owned boundary for projects, assets, runs, and their
-  membership rules.
-- **Membership** — a user's relationship with a Workspace, including its role
-  (`owner`, `editor`, or `viewer`) and access state (`active` or `suspended`).
-  Active owners and editors may write; active viewers may read. A missing
-  membership denies access.
+- **Actor** — the authenticated user or trusted host performing an operation.
+  A model cannot choose an actor, ownership or permission scope.
+- **Account** — a user's personal ownership and quota boundary.
+- **Scope** — explicitly personal (`ownerUserId`) or project (`projectId`).
+  Personal ownership comes from authentication; children inherit the root scope.
+- **Project** — account-owned work with explicit project members and capabilities.
+  An organization membership can restrict the member's effective permissions.
+- **Capability** — permission for a particular operation, checked against current
+  account, project and organization facts. Membership is not an unrestricted grant.
 
-## Creative work
+## Conversations and work
 
-- **Project** — a body of creative work owned by a Workspace.
-- **Task** — a unit of work tracked inside a Project. A Task has its own
-  lifecycle and is not a file version.
-- **Asset** — the logical creative item identified by the team, such as a
-  source file, image, video, or document.
-- **Asset version** — an immutable snapshot of an Asset at a point in its
-  history. The current version is the Asset's head.
-- **Blob** — the file content referenced by an Asset version. A Blob has no
-  project workflow semantics by itself.
-- **Manifest** — a device's view of the Assets and versions it knows about.
-- **Sync cursor** — a position in the ordered change history used to request
-  changes since a previous synchronization.
-- **Sync conflict** — a rejected or unresolved concurrent change where the
-  submitted Asset head is no longer current.
-- **Tombstone** — a retained deletion marker that allows deletion to propagate
-  to other device manifests.
+- **Conversation** — a scoped history of user inputs and their execution attempts.
+- **Turn** — one user input with its prompt, mode, authorized file references and
+  idempotency key. Repeating a request returns its original Turn and Run.
+- **Search** — research using actual sources, excerpts and attributed answers.
+  Search can have a Conversation and Run without creating a Task.
+- **Computer** — background work with trusted tools and reviewable deliverables.
+  Browser, GUI and arbitrary code execution require later designs.
+- **Task** — a goal the user can review and accept. It can be personal or belong
+  to a Project; creating a Project is not a prerequisite.
+- **Task status** — `open`, `in_progress`, `waiting_input`, `review`, `completed`
+  or `cancelled`. Accepting the current delivery completes the Task.
 
-## Agent work
+## Execution
 
-- **Agent run** — one bounded attempt to achieve a requested outcome within a
-  Workspace and an explicitly granted capability scope.
-- **Agent step** — a durable, ordered part of an Agent run that can be retried
-  or resumed.
-- **Agent lease** — a time-bounded claim by one worker to execute an Agent run;
-  acquisition, takeover after expiry, and heartbeat renewal are atomic.
-- **Tool invocation** — one request by an Agent step to use a named capability.
-- **Agent artifact** — an Asset or other durable output produced or attached by
-  an Agent run.
-- **Capability** — a named permission to perform one class of operation. A
-  capability is narrower than general Workspace membership.
+- **Run** — one bounded attempt, optionally linked to a Task. Retry creates a
+  new Run with its attempt and origin; it does not overwrite the prior attempt.
+- **Run status** — `queued`, `running`, `needs_input`, `succeeded`, `failed` or
+  `cancelled`. Run success alone does not complete a Task.
+- **Agent execution** — the main Agent or a child with its own context. Children
+  inherit scope and share the Task budget; they cannot delegate further.
+- **Tool execution** — a trusted named operation with durable input/result and
+  execution identity. Unknown external effects are not automatically replayed.
+- **Run event** — a root-Run event with ordered sequence, occurrence time and
+  payload; child events include their execution identity. A subscription cursor
+  joins snapshot, history and live delivery without dropping events.
+- **Run command** — a durable, idempotent cancellation or steering request with
+  an execution result. Disconnecting the client is not cancellation.
+- **Delivery lease** — a Worker claim on an outbox record. Acknowledging it means
+  the execution intent was durably accepted, not that the Run has completed.
+- **Execution owner / epoch** — the host ownership fence rejecting old writers.
+  A lost heartbeat alone does not authorize replaying unknown tool effects.
+- **Source evidence** — an actual source URL, title and excerpt associated with
+  a Run and used to support citations.
 
-## Records and change
+## Files and review
 
-- **Domain event** — a fact about a domain change used to continue internal
-  work. It is not a user-facing activity record.
-- **Audit event** — a durable product record of who performed a sensitive or
-  consequential action and what changed.
-- **Idempotency key** — a caller-provided identity for one retriable command;
-  repeating it must not create a second effect.
-- **Head** — the version currently accepted as the latest version of an Asset.
+- **Asset version** — an immutable scoped file version with size and checksum.
+  Upload intent, verified bytes and publication are distinct states.
+- **Object** — private file bytes in object storage, separate from DB metadata.
+  A successful object transfer does not publish a delivery.
+- **Artifact set revision** — the complete file collection for one delivery.
+  Its publication, Run result, Task review state and notification intent commit
+  atomically. The user accepts the current Revision, not an obsolete version.
 
-## Boundary terms
+## Usage and records
 
-- **Domain** — the rules and language that decide which state transitions are
-  valid.
-- **Application service** — a use-case boundary that coordinates domain rules,
-  persistence, audit, and external capabilities.
-- **Adapter** — an implementation that connects a port to a database, storage
-  provider, mail service, model provider, or another external system.
-- **Transport** — the HTTP or streaming boundary that maps requests and
-  responses to application services.
-- **Feature** — a user-facing product capability owned by an application. A
-  Feature may span transport, client, UI, and domain modules; it is not a
-  directory category inside the domain by default.
+- **Usage ledger** — durable model/tool/storage usage facts. Model attempts,
+  retries and compaction consume real quotas; logs and Redis are not the ledger.
+- **Reservation** — quota held before a physical model call. Confirmed unstarted
+  calls release it; unknown started calls remain explicitly unknown and estimated.
+- **Notification** — a durable user-facing state change with read state and
+  optional email delivery governed by current preferences and permissions.
+- **Outbox event** — a fact committed with business state and later delivered.
+- **Audit event** — a durable record of sensitive administration, separate from
+  operational logs and product analytics.
+- **Idempotency key** — caller-provided command identity. Reuse with a different
+  payload conflicts; an HTTP retry does not create another effect.
+
+## Boundaries
+
+Core owns rules and ports. Application coordinates use cases and transactions.
+Adapters implement database, storage, model and mail access. Contracts define
+public protocol; Client owns transport and replay. Applications own routes,
+account/resource lifetimes, drafts and platform access. Agent UI receives
+controlled facts and actions and owns only local presentation state.

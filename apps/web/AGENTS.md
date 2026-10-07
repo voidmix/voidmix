@@ -98,6 +98,7 @@ server/
 - The Docker build requires the public `VITE_API_URL` build argument. Keep its
   declaration and missing-value guard: runtime-only variables cannot repair an
   already-built browser bundle, and Web does not serve same-origin RPC/Auth.
+  Optional site, support, Sentry and PostHog values also use declared public build arguments.
 - `server/env.ts` is never imported by browser modules. Keep database, Auth, mail,
   and allowed-origin values on the server side of the Web bundle.
 - `(app)/route.tsx` uses account.get as a navigation aid and
@@ -149,8 +150,49 @@ server/
 ## Verification
 
 ```bash
-bun run --cwd apps/web build   # regenerates routeTree.gen.ts via the Start plugin
+bun run build:web   # shipping gate; regenerates routeTree.gen.ts via Start
 bun run --cwd apps/web check
 bun run --cwd apps/web test
 bun run test:e2e                         # Playwright smoke, needs browsers
 ```
+
+## Cloud product
+
+- `/chat`, `/chat/$conversationId`, `/tasks`, `/tasks/$taskId`, `/settings/usage`
+  and `/notifications` compose canonical `cloud` client contracts. Project detail
+  lists use scoped cursor navigation; conversations can load older turns while
+  preserving their live session. Project detail creates cloud Tasks; no Web route requires a local device or imports a runner.
+- Successful sign-in defaults to `/chat`; explicit protected destinations retain
+  their existing authorization and return behavior.
+- Cloud features own account/resource-scoped session lifetimes, draft and action
+  state. Account changes unmount them; pending requests and blob URLs are disposed.
+- Each Router/SSR request owns a QueryClient. Ordinary Task/Round/Revision,
+  lists, file metadata, usage, notification, preference and capability reads use
+  `lib/cloud-queries.ts` through Client; keys include actor/account and resource
+  scope. Router loaders prefetch them; feature consumers subscribe with Query.
+- Conversation and Run live projections belong only to Client Sessions. Route
+  bootstrap seeds the Conversation Session; do not put live snapshots in Query
+  or a second store. `features/runs` owns its controller and controlled panels.
+  Actions refresh durable facts without replacing SSE. Terminal invalidation is
+  targeted and occurs once for a locally created or actively followed Run.
+- Computer prompts explicitly select new Task, new goal Round, or continuation
+  of the current unaccepted Round. Retry keeps the Run's existing Round; steer
+  targets that Run. Revision acceptance includes its Round and goal version.
+- Older Conversation/Run pages load on request. Durable message projections
+  render without replaying every historical delta; shared pure selectors retain
+  unchanged row references. Usage polls every 15 seconds while visible.
+- Files use immutable version IDs and a bounded account-owned memory cache;
+  signed URLs are requested at use time, checked for expiry and never persisted
+  or dehydrated. Account exit aborts reads, revokes blob URLs and clears caches.
+- Project managers can explicitly authorize/revoke AI spending on project
+  detail. Editing rights alone grant no spending permission; API remains final.
+- Notifications own email opt-in and recipient locale; usage displays unknown
+  consumption explicitly and labels model costs as estimates.
+- Optional PostHog/Sentry browser adapters load after hydration and receive only
+  allowlisted metadata. Disable autocapture/replay; no user content, credentials,
+  resource paths or signed URLs enter their events.
+- Public `/docs`, `/privacy`, `/contact`, `/robots.txt` and `/sitemap.xml` use
+  localized metadata and deployment `VITE_SITE_URL`; Contact uses optional
+  `VITE_SUPPORT_EMAIL` and explicitly reports missing support configuration.
+  Markdown/diff vendors are excluded from SSR via the shared wrapper’s build guard.
+  Protected pages are noindex and absent from sitemap.

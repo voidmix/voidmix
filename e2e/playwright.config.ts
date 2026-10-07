@@ -38,6 +38,7 @@ export default defineConfig({
   reporter: process.env.CI ? [["dot"], ["html", { open: "never" }]] : "list",
   use: { trace: "on-first-retry", locale: "en-US" },
   projects: [
+    { name: "cloud", testMatch: /cloud\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "homepage", testMatch: /homepage\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "workbench", testMatch: /workbench\.spec\.ts/, use: { baseURL: webUrl } },
     { name: "redesign", testMatch: /redesign\.spec\.ts/, use: { baseURL: webUrl } },

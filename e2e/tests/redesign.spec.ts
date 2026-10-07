@@ -41,9 +41,13 @@ test("Desktop creates a long project and task through the real API at minimum wi
     .getByLabel("Add a task")
     .fill("Desktop task with a long title " + "持续追踪进度".repeat(25));
   await page.getByLabel("Add a task").press("Enter");
-  await expect(page.getByText(/^Desktop task with a long title/)).toBeVisible();
+  await expect(
+    page.getByRole("listitem").getByText(/^Desktop task with a long title/),
+  ).toBeVisible();
   await page.reload();
-  await expect(page.getByText(/^Desktop task with a long title/)).toBeVisible();
+  await expect(
+    page.getByRole("listitem").getByText(/^Desktop task with a long title/),
+  ).toBeVisible();
   await contained(page);
   expect(
     await page.locator(".app-content").evaluate((node) => node.scrollWidth <= node.clientWidth),
@@ -58,21 +62,25 @@ test("Desktop connection failures show no demos and project retry restores real 
   const unavailable = `${api}/**`;
   await page.route(unavailable, (route) => route.abort("connectionrefused"));
   await page.goto(`http://127.0.0.1:${port + 1}/`);
-  await expect(page.getByRole("heading", { name: "Unable to connect", exact: true })).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Account unavailable");
   await expect(page.getByText("12,846", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Preview account", { exact: true })).toHaveCount(0);
   await page.goto(`http://127.0.0.1:${port + 1}/devices`);
-  await expect(
-    page.getByRole("heading", { name: "Device information is unavailable" }),
-  ).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Account unavailable");
   await expect(page.locator(".device-row")).toHaveCount(0);
   await page.goto(`http://127.0.0.1:${port + 1}/projects`);
-  await expect(page.getByRole("heading", { name: "Projects are unavailable" })).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("Account unavailable");
   await page.screenshot({
     caret: "initial",
     path: info.outputPath("desktop-connection-failure.png"),
   });
   await page.unroute(unavailable);
+  await page.reload();
+  await expect(page.getByRole("link", { name: /Admin film/ }).first()).toBeVisible();
+  await page.route("**/rpc/projects/list**", (route) => route.abort("connectionrefused"));
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Projects are unavailable" })).toBeVisible();
+  await page.unroute("**/rpc/projects/list**");
   await page.getByRole("button", { name: "Refresh", exact: true }).click();
   await expect(page.getByRole("link", { name: /Admin film/ }).first()).toBeVisible();
 });

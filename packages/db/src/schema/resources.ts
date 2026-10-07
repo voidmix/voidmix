@@ -1,5 +1,5 @@
 import { dateColumn, createdAt, timestamps, requiredReference } from "./columns.js";
-import { boolean, index, integer, jsonb, pgTable, text, uniqueIndex } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, pgTable, text } from "drizzle-orm/pg-core";
 import { v2Projects } from "./projects.js";
 import { users } from "./identity.js";
 import { v2ReviewStatusEnum, v2AgentRunStatusEnum } from "./enums.js";
@@ -31,7 +31,7 @@ export const v2AssetVersions = pgTable(
     createdAt: createdAt(),
   },
   (table) => [
-    uniqueIndex("asset_versions_v2_object_key_idx").on(table.objectKey),
+    index("asset_versions_v2_object_key_idx").on(table.objectKey),
     index("asset_versions_v2_project_created_idx").on(table.projectId, table.createdAt),
   ],
 );

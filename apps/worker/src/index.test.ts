@@ -1,15 +1,9 @@
 import { describe, expect, it } from "vite-plus/test";
-import {
-  createAgentRunDispatcher,
-  runWorker,
-  type OutboxItem,
-  type OutboxRepository,
-} from "./index.js";
-import type { AgentRunV2, AgentRunV2Repository } from "@voidmix/core";
+import { runWorker, type OutboxItem, type OutboxRepository } from "./index.js";
 
-describe("V2 outbox worker", () => {
+describe("durable outbox worker", () => {
   it("acknowledges successful work and stops on abort", async () => {
-    const item: OutboxItem = { id: "event-1", type: "agent.run.created", payload: {} };
+    const item: OutboxItem = { id: "event-1", type: "cloud.run.queued", payload: {} };
     const controller = new AbortController();
     const acknowledged: string[] = [];
     let claimed = false;
@@ -38,7 +32,7 @@ describe("V2 outbox worker", () => {
   it("releases failed work for retry", async () => {
     const released: string[] = [];
     const outbox: OutboxRepository = {
-      claim: async () => [{ id: "event-2", type: "agent.run.created", payload: {} }],
+      claim: async () => [{ id: "event-2", type: "cloud.run.queued", payload: {} }],
       acknowledge: async () => undefined,
       release: async ({ id }) => {
         released.push(id);
@@ -60,39 +54,29 @@ describe("V2 outbox worker", () => {
     expect(released).toEqual(["event-2"]);
   });
 
-  it("moves a queued V2 run through execution states", async () => {
-    let run: AgentRunV2 = {
-      id: "run-1",
-      projectId: "project-1",
-      requestedByUserId: "user-1",
-      assetVersionId: null,
-      status: "queued",
-      attempt: 1,
-      input: { goal: "test" },
-      output: null,
-      error: null,
-      createdAt: new Date(0),
-      updatedAt: new Date(0),
+  it("backs off handled delivery failures rather than immediately reclaiming them", async () => {
+    const controller = new AbortController();
+    const delays: number[] = [];
+    const outbox: OutboxRepository = {
+      claim: async () => [{ id: "mail", type: "cloud.notification.created", payload: {} }],
+      acknowledge: async () => {},
+      release: async () => {},
     };
-    const repository: AgentRunV2Repository = {
-      getById: async () => run,
-      create: async () => run,
-      updateStatus: async (input) => {
-        run = { ...run, ...input, updatedAt: input.now };
-        return run;
+    await runWorker(
+      {
+        outbox,
+        pollMs: 1000,
+        dispatch: async () => {
+          throw new Error("Unavailable");
+        },
+        onError: () => {},
+        sleep: async (ms) => {
+          delays.push(ms);
+          if (delays.length === 3) controller.abort();
+        },
       },
-    };
-    const dispatch = createAgentRunDispatcher({
-      runs: repository,
-      execute: async () => ({ result: "ok" }),
-      now: () => new Date(1),
-    });
-    await dispatch({
-      id: "event-1",
-      type: "agent.run.queued",
-      payload: { runId: "run-1" },
-    });
-    expect(run.status).toBe("succeeded");
-    expect(run.output).toEqual({ result: "ok" });
+      controller.signal,
+    );
+    expect(delays).toEqual([1000, 2000, 4000]);
   });
 });
