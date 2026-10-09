@@ -1,0 +1,26 @@
+apps/api/Dockerfile
+  s_7cac302f2bd7b3::t_f62271e58b225a 9
+apps/web/Dockerfile
+  s_7cac302f2bd7b3::t_f62271e58b225a 9
+apps/worker/Dockerfile
+  s_7cac302f2bd7b3::t_f62271e58b225a 9
+docs/architecture/deployment.md
+  s_7cac302f2bd7b3::t_f62271e58b225a 57-60,110-114
+  s_7cac302f2bd7b3::t_3194c5f79edb51 115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "502a0bdb82b2ca44d61d7286171ab4f6d8f2bd55",
+  "prompts": {},
+  "sessions": {
+    "s_7cac302f2bd7b3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a11bcf-ee85-78d2-bdb3-a6bc0aff7298",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Zack <lorenx@163.com>"
+    }
+  }
+}
