@@ -54,6 +54,10 @@ pruned workspace manifest, copies source before
 shared postinstall, and invokes the root build gate. Only built production
 artifacts enter the runtime image.
 
+The tools stage copies only the `bun` executable from the Bun image. Invoke
+package binaries with `bun x`; the separate `bunx` executable is not copied into
+the Node image and is unavailable during pruning.
+
 - Web serves Nitro's `.output/server/index.mjs` on Railway's `PORT` and exposes
   page routes plus `/health`.
 - API starts through `apps/api/scripts/start.mjs` and exposes `/api/auth/*`,
@@ -102,6 +106,12 @@ declares these optional public build arguments, plus `VITE_SITE_URL` and
 `VITE_SUPPORT_EMAIL`; set them before building the image. Product events are explicit;
 automatic capture and session recording remain disabled. Do not include prompt,
 file content or signed URLs in telemetry.
+
+`VITE_POSTHOG_KEY` must be the public PostHog project token, never a personal or
+project secret API key. Docker's `SecretsUsedInArgOrEnv` check can flag its name;
+that warning does not mean pruning failed or that this browser value is secret.
+Actual server secrets must remain runtime-only or use build secret mounts when
+needed during a build.
 
 Set `VITE_API_URL` on the Railway **Web** service before building (for the hosted
 Voidmix deployment, `https://api.voidmix.com`). The Dockerfile declares this
