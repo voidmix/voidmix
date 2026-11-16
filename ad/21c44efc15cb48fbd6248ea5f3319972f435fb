@@ -1,0 +1,182 @@
+infra/k8s/base/web.yaml
+  s_ccb2206306ae02::t_d9e8fdd6fce969 1-92
+infra/README.md
+  s_ccb2206306ae02::t_603a9c2e48ea9f 27-35,45-54
+  s_ccb2206306ae02::t_403f4a013523b9 1-26,36-44,55-62
+docs/decisions.md
+  s_ccb2206306ae02::t_a1c95ec003d4cb 1-56
+packages/scripts/README.md
+  s_ccb2206306ae02::t_bb312ed9081c19 19,52
+packages/logger/README.md
+  s_ccb2206306ae02::t_ec2efd4780224f 26-27,54
+packages/scripts/tests/scripts.test.ts
+  s_ccb2206306ae02::t_bb312ed9081c19 132-133
+apps/api/src/middleware/rpc.ts
+  s_fd407423311a08::t_95ad6892bc9a1b 5,7,9-21,23-25,27-29
+apps/api/README.md
+  s_fd407423311a08::t_cb6186c87b6f53 20,35,39
+  s_ccb2206306ae02::t_603a9c2e48ea9f 21,27
+  s_fd407423311a08::t_dd576cce3c3032 15-19,22-26
+  s_ccb2206306ae02::t_0ebd872e7e0241 31
+apps/api/tests/fixtures.ts
+  s_fd407423311a08::t_95ad6892bc9a1b 1-12,14-17,20
+  s_ccb2206306ae02::t_3290b672f095e4 13,18-19
+tests/e2e/specs/api.spec.ts
+  s_ccb2206306ae02::t_76fa6a1a34c808 13-20
+deploy/Caddyfile
+  s_ccb2206306ae02::t_3aca00d2473e99 1-14
+infra/k8s/overlays/example/config.env
+  s_ccb2206306ae02::t_6d29e860d0af8d 1-6,9-13
+  s_ccb2206306ae02::t_ea943594f61bb6 7-8
+apps/api/src/routes/health.ts
+  s_ccb2206306ae02::t_f736b78f849fc3 8-9,12,14,18,20,37-42,44-52,54-63
+  s_ccb2206306ae02::t_331fb90fa17870 1,4-7,10-11,13,15-17,19,21-36,43,53,64-66
+CONTRIBUTING.md
+  s_ccb2206306ae02::t_0ebd872e7e0241 55,57
+  s_fd407423311a08::t_cb6186c87b6f53 37
+deploy/AGENTS.md
+  s_ccb2206306ae02::t_0ebd872e7e0241 8
+deploy/README.md
+  s_ccb2206306ae02::t_0ebd872e7e0241 48-50,53,64,69,71-75,79
+packages/db/README.md
+  s_ccb2206306ae02::t_ec2efd4780224f 31-33
+  s_fd407423311a08::t_cb6186c87b6f53 29
+apps/api/tests/app.test.ts
+  s_fd407423311a08::t_95ad6892bc9a1b 2,7-9,23-28,37-49,52,55-84
+  s_ccb2206306ae02::t_3290b672f095e4 53-54
+  s_fd407423311a08::t_dd576cce3c3032 14-18
+  s_ccb2206306ae02::t_88e4ce8556ec62 50-51
+  s_ccb2206306ae02::t_259565ec12a2e2 85
+.github/workflows/release.yml
+  s_ccb2206306ae02::t_83bc8d2061be64 1-47
+docs/configuration.md
+  s_ccb2206306ae02::t_0ebd872e7e0241 37-39,43-44,80
+apps/api/src/runtime.ts
+  s_ccb2206306ae02::t_ea943594f61bb6 2,9-11
+compose.deploy.yaml
+  s_ccb2206306ae02::t_cd11f9525dbc12 191-192
+  s_ccb2206306ae02::t_ea943594f61bb6 47-49
+  s_ccb2206306ae02::t_8f8fbaedb7e715 85-130
+.dockerignore
+  s_ccb2206306ae02::t_de804c70ad5bcc 23
+  s_ccb2206306ae02::t_ea943594f61bb6 24
+apps/api/src/resources.ts
+  s_fd407423311a08::t_537cbbc1c9e3cc 28-32
+packages/scripts/src/deploy/smoke.ts
+  s_ccb2206306ae02::t_76fa6a1a34c808 20-26
+packages/db/src/migrate.ts
+  s_ccb2206306ae02::t_331fb90fa17870 1,7-9,11,13-26
+packages/logger/src/otlp.ts
+  s_ccb2206306ae02::t_3af6c4d584e0b4 1-40
+apps/desktop/auth.go
+  s_fd407423311a08::t_537cbbc1c9e3cc 21
+README.md
+  s_ccb2206306ae02::t_0ebd872e7e0241 55-57,60,90
+.github/workflows/ci.yml
+  s_ccb2206306ae02::t_76fa6a1a34c808 73-76
+.env.example
+  s_ccb2206306ae02::t_ea943594f61bb6 6-7
+deploy/.env.example
+  s_ccb2206306ae02::t_f3f4bc061ece79 31-38
+  s_ccb2206306ae02::t_ea943594f61bb6 13-16
+package.json
+  s_ccb2206306ae02::t_bb312ed9081c19 28
+apps/api/src/app.ts
+  s_ccb2206306ae02::t_331fb90fa17870 10,28
+  s_fd407423311a08::t_95ad6892bc9a1b 5,11,15,18,33
+infra/k8s/overlays/example/namespace.yaml
+  s_ccb2206306ae02::t_f3d8884c74c313 1-4
+apps/api/server.ts
+  s_fd407423311a08::t_537cbbc1c9e3cc 4-9
+apps/api/tests/health.test.ts
+  s_ccb2206306ae02::t_5c8e836fb036e0 1-13,23-35,37-46,52,54-66,69-71,80-105
+  s_ccb2206306ae02::t_af235487d7e94d 14-22,36,47-51,53,67-68,72-79
+packages/cache/README.md
+  s_fd407423311a08::t_cb6186c87b6f53 29
+.gitignore
+  s_ccb2206306ae02::t_ea943594f61bb6 24
+  s_ccb2206306ae02::t_115efbc397ad8b 23
+docs/adding-a-feature.md
+  s_ccb2206306ae02::t_4de66356fb6540 1-43,47,51-61,64,68-72,79-86
+  s_ccb2206306ae02::t_603a9c2e48ea9f 44-46,48-50,62-63,65-67,73-78
+docs/operations.md
+  s_ccb2206306ae02::t_d27d63a9cb1c1b 1-6,13-55,61-66
+  s_ccb2206306ae02::t_603a9c2e48ea9f 7-12,56-60,67-76
+packages/auth/src/device.ts
+  s_fd407423311a08::t_537cbbc1c9e3cc 1-3
+docs/testing.md
+  s_ccb2206306ae02::t_0ebd872e7e0241 72
+packages/db/src/client.ts
+  s_ccb2206306ae02::t_331fb90fa17870 1,21-25
+packages/auth/README.md
+  s_fd407423311a08::t_cb6186c87b6f53 39-40
+packages/logger/package.json
+  s_ccb2206306ae02::t_ea943594f61bb6 9
+apps/api/src/lib/context.ts
+  s_fd407423311a08::t_537cbbc1c9e3cc 2-3,6,11-23
+infra/k8s/overlays/example/secrets.env.example
+  s_ccb2206306ae02::t_766eb12b731b54 1-7
+packages/storage/README.md
+  s_fd407423311a08::t_cb6186c87b6f53 61
+packages/scripts/src/index.ts
+  s_ccb2206306ae02::t_bb312ed9081c19 29,109-116
+packages/scripts/src/commands/deployment.ts
+  s_ccb2206306ae02::t_bb312ed9081c19 5,26-27
+infra/k8s/base/kustomization.yaml
+  s_ccb2206306ae02::t_ebccae6b823c54 1-14
+infra/k8s/overlays/example/kustomization.yaml
+  s_ccb2206306ae02::t_02616e65a7ce48 1-51
+docs/architecture.md
+  s_fd407423311a08::t_dd576cce3c3032 62-68
+  s_ccb2206306ae02::t_ec2efd4780224f 42
+  s_fd407423311a08::t_cb6186c87b6f53 58,60,72,76
+  s_ccb2206306ae02::t_205cf26b1f80c3 103
+  s_ccb2206306ae02::t_0ebd872e7e0241 55,70,74,102
+apps/api/tests/resources.test.ts
+  s_fd407423311a08::t_95ad6892bc9a1b 18,22-25,38,42-44,50-51,60-61,65
+turbo.json
+  s_ccb2206306ae02::t_ea943594f61bb6 55-58,82-85,111-114
+infra/k8s/base/api.yaml
+  s_ccb2206306ae02::t_ea943594f61bb6 71
+  s_ccb2206306ae02::t_2112e9073f0fa2 1-70,72-121
+packages/logger/tests/otlp.test.ts
+  s_ccb2206306ae02::t_82218bba1f912f 1-57
+infra/k8s/base/ingress.yaml
+  s_ccb2206306ae02::t_60038f184ffbd4 1-29
+apps/api/tests/logging.test.ts
+  s_fd407423311a08::t_95ad6892bc9a1b 6,29
+apps/api/AGENTS.md
+  s_ccb2206306ae02::t_ec2efd4780224f 8
+  s_fd407423311a08::t_cb6186c87b6f53 6,10
+apps/web/src/components/auth-screen.tsx
+  s_fd407423311a08::t_537cbbc1c9e3cc 2,9,21,61
+  s_fd407423311a08::t_71c50d313f4eac 59-60
+apps/api/src/plugins/resources.ts
+  s_ccb2206306ae02::t_ea943594f61bb6 3,6-13
+packages/auth/src/server.ts
+  s_fd407423311a08::t_537cbbc1c9e3cc 8-9,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "ad21c44efc15cb48fbd6248ea5f3319972f435fb",
+  "prompts": {},
+  "sessions": {
+    "s_ccb2206306ae02": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4fa021c0-c7ee-4e5a-a43d-3fc546d8d5a8",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "heixing <heixing@xiaohongshu.com>"
+    },
+    "s_fd407423311a08": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1e234-6048-70e3-a992-9f47d1fcf80a",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "heixing <heixing@xiaohongshu.com>"
+    }
+  }
+}
