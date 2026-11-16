@@ -28,8 +28,8 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    // Dark is the prerendered default; the inline script applies a stored light choice before paint.
-    <html lang="zh-CN" className="dark" suppressHydrationWarning>
+    // Light is the prerendered default; the inline script applies a stored dark choice before paint.
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <HeadContent />

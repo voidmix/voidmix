@@ -30,8 +30,8 @@ func main() {
 			Height:    720,
 			MinWidth:  480,
 			MinHeight: 360,
-			// Matches the dark theme background so the window does not flash white before first paint.
-			BackgroundColor: "#0c0d11",
+			// Matches the default light page background before the WebView paints.
+			BackgroundColor: "#f7f7f5",
 			StateKey:        "main",
 			URL:             "/",
 		})

@@ -10,12 +10,12 @@ export function Starter({ children }: { children?: ReactNode }) {
 
   return (
     <AppShell>
-      <div className="flex w-full max-w-md flex-col gap-8">
+      <div className="flex w-full max-w-md flex-col gap-9">
         <div className="flex items-center gap-4">
           <Logo className="size-11" />
-          <div className="space-y-1">
-            <h1 className="text-2xl leading-none font-semibold tracking-tight">Voidmix</h1>
-            <p className="text-sm text-muted-foreground">项目已就绪，从这里开始构建。</p>
+          <div className="space-y-2">
+            <h1 className="text-3xl leading-none font-semibold tracking-tight">Voidmix</h1>
+            <p className="text-sm leading-6 text-muted-foreground">项目已就绪，从这里开始构建。</p>
           </div>
         </div>
         <Surface className="flex flex-col items-start gap-6">

@@ -31,6 +31,9 @@ function App() {
     <Starter>
       <div className="w-full space-y-4 border-t pt-6">
         <div className="flex flex-wrap gap-3">
+          <Button nativeButton={false} render={<Link to="/workbench" />}>
+            打开工作台
+          </Button>
           {/* Rendered as a link, so Base UI must not expect native button semantics. */}
           <Button
             className="h-10 px-4"

@@ -26,7 +26,9 @@ Available primitives include Button, Input, Textarea, Label, Card, Badge, Separa
 
 ## Theme and page frame
 
-The theme is dark by default: cool-tinted neutrals with one indigo accent, Geist for text and Geist Mono for codes and output. Each root document renders `<html class="dark">` and inlines `themeScript` from `@voidmix/ui/lib/theme` in `<head>`, which applies a stored light choice before first paint. `ThemeToggle` switches and persists the choice; the `<html>` class is the single source of truth.
+The Soft light product direction is light by default: a warm off-white page, opaque white cards, near-black text, generous 14–16px corners, and diffuse low-opacity shadows. Primary actions use neutral pill buttons, with light gray secondary actions. The backdrop is flat, without a glow or dot grid. Geist provides text and Geist Mono provides codes and agent usage lines. Dark mode uses warm charcoal surfaces, light text, and an inverted neutral primary action.
+
+Each root document renders `<html>` without a dark class and inlines `themeScript` from `@voidmix/ui/lib/theme` in `<head>`. Only a stored `dark` choice enables `.dark` before first paint. Missing, invalid, or inaccessible storage keeps the light default. `ThemeToggle` uses the same light server snapshot, switches and persists the choice, and treats the `<html>` class as the source of truth. The desktop window's `BackgroundColor` in `apps/desktop/main.go` matches the default light background (`#f7f7f5`).
 
 ```tsx
 import { AppShell, Surface } from "@voidmix/ui/components/app-shell"
@@ -36,9 +38,21 @@ import { AppShell, Surface } from "@voidmix/ui/components/app-shell"
 </AppShell>
 ```
 
-`AppShell` provides the backdrop, top bar with the theme toggle, and a centered column; pass `brandHref` to show the wordmark link, and omit it where the page's own heading is the brand. `Surface` is the raised panel for a page's primary content. The `app-backdrop` and `surface` utilities behind them live in `globals.css`. `Logo` is decorative and needs visible text beside it.
+`AppShell` provides the backdrop, top bar with the theme toggle, and a centered column; pass `brandHref` to show the wordmark link, and omit it where the page's own heading is the brand. `Surface` and `Card` share the opaque `surface` utility. The `app-backdrop` and `surface` utilities behind them live in `globals.css`. `Logo` is decorative and needs visible text beside it. `Icon` exposes named decorative Hugeicons without requiring applications to depend on the icon library.
 
-`primary` carries white text at AA contrast but is too dark for body-size text on dark surfaces, so links use the foreground color. Keep the desktop window's `BackgroundColor` in `apps/desktop/main.go` equal to the dark background to avoid a white flash.
+Color communicates state through paired tint and foreground tokens, exposed through `@theme inline` as `bg-status-running`, `text-status-running-foreground`, and corresponding classes for every state. `StatusPill` always includes a label; `RiskBadge` does the same for risk. Low, medium, and high risk reuse the done, waiting, and failed pairs respectively. All pairs provide at least 4.5:1 text contrast in both themes.
+
+| Token pair       | Light tint / foreground | Dark tint / foreground |
+| ---------------- | ----------------------- | ---------------------- |
+| `status-running` | `#eaf2ff` / `#285ba6`   | `#23344b` / `#aecbfa`  |
+| `status-waiting` | `#fff2d6` / `#805716`   | `#40351f` / `#efd08e`  |
+| `status-done`    | `#e8f5ec` / `#286441`   | `#213b2b` / `#a6dabb`  |
+| `status-failed`  | `#fceceb` / `#a13c36`   | `#452a29` / `#f3b2ac`  |
+| `risk-low`       | `#e8f5ec` / `#286441`   | `#213b2b` / `#a6dabb`  |
+| `risk-medium`    | `#fff2d6` / `#805716`   | `#40351f` / `#efd08e`  |
+| `risk-high`      | `#fceceb` / `#a13c36`   | `#452a29` / `#f3b2ac`  |
+
+The Web `/workbench` route demonstrates the theme with a responsive sidebar, approval inbox, and agent cards. Its sample requests, filters, and decisions are local component state with no loader or API calls. The processed count includes 12 historical sample requests; only decisions made in the current page session appear in its processed list.
 
 ## Icons and composition
 

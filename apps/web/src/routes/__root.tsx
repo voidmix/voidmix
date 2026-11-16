@@ -43,9 +43,9 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    // Dark is the server default; the inline script switches to a stored light choice before
+    // Light is the server default; the inline script switches to a stored dark choice before
     // paint, which changes this class ahead of hydration.
-    <html lang="zh-CN" className="dark" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <HeadContent />

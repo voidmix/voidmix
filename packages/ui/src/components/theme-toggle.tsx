@@ -13,8 +13,8 @@ function subscribe(notify: () => void) {
 }
 
 export function ThemeToggle() {
-  // The server renders the dark default; a stored light choice is picked up at hydration.
-  const theme = useSyncExternalStore<Theme>(subscribe, currentTheme, () => "dark")
+  // The server renders the light default; a stored dark choice is picked up at hydration.
+  const theme = useSyncExternalStore<Theme>(subscribe, currentTheme, () => "light")
   const next: Theme = theme === "light" ? "dark" : "light"
 
   return (
@@ -24,7 +24,11 @@ export function ThemeToggle() {
       aria-label={next === "light" ? "切换到浅色模式" : "切换到深色模式"}
       onClick={() => applyTheme(next)}
     >
-      <HugeiconsIcon icon={next === "light" ? Sun03Icon : Moon02Icon} strokeWidth={2} />
+      <HugeiconsIcon
+        aria-hidden="true"
+        icon={next === "light" ? Sun03Icon : Moon02Icon}
+        strokeWidth={2}
+      />
     </Button>
   )
 }

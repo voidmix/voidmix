@@ -10,6 +10,21 @@
 
 @theme inline {
   --font-heading: var(--font-sans);
+  --shadow-surface: var(--surface-shadow);
+  --color-status-running: var(--status-running);
+  --color-status-running-foreground: var(--status-running-foreground);
+  --color-status-waiting: var(--status-waiting);
+  --color-status-waiting-foreground: var(--status-waiting-foreground);
+  --color-status-done: var(--status-done);
+  --color-status-done-foreground: var(--status-done-foreground);
+  --color-status-failed: var(--status-failed);
+  --color-status-failed-foreground: var(--status-failed-foreground);
+  --color-risk-low: var(--risk-low);
+  --color-risk-low-foreground: var(--risk-low-foreground);
+  --color-risk-medium: var(--risk-medium);
+  --color-risk-medium-foreground: var(--risk-medium-foreground);
+  --color-risk-high: var(--risk-high);
+  --color-risk-high-foreground: var(--risk-high-foreground);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -44,7 +59,7 @@
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-xl: calc(var(--radius) + 2px);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
@@ -55,75 +70,92 @@
 }
 
 :root {
-  /* Cool-tinted neutrals (hue 265) with one indigo accent. Primary keeps white text at AA. */
   color-scheme: light;
-  --background: oklch(0.985 0.003 265);
-  --foreground: oklch(0.2 0.015 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.015 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.015 265);
-  --primary: oklch(0.5 0.21 275);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.955 0.006 265);
-  --secondary-foreground: oklch(0.25 0.015 265);
-  --muted: oklch(0.96 0.005 265);
-  --muted-foreground: oklch(0.5 0.02 265);
-  --accent: oklch(0.95 0.008 265);
-  --accent-foreground: oklch(0.25 0.015 265);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.2 0.02 265 / 10%);
-  --input: oklch(0.2 0.02 265 / 16%);
-  --ring: oklch(0.55 0.2 275);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.975 0.004 265);
-  --sidebar-foreground: oklch(0.2 0.015 265);
-  --sidebar-primary: oklch(0.5 0.21 275);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.95 0.008 265);
-  --sidebar-accent-foreground: oklch(0.25 0.015 265);
-  --sidebar-border: oklch(0.2 0.02 265 / 10%);
-  --sidebar-ring: oklch(0.55 0.2 275);
+  --background: #f7f7f5;
+  --foreground: #242522;
+  --card: #ffffff;
+  --card-foreground: #242522;
+  --popover: #ffffff;
+  --popover-foreground: #242522;
+  --primary: #252622;
+  --primary-foreground: #ffffff;
+  --secondary: #eeefeb;
+  --secondary-foreground: #343630;
+  --muted: #f1f2ee;
+  --muted-foreground: #666960;
+  --accent: #e9eae5;
+  --accent-foreground: #242522;
+  --destructive: #a13c36;
+  --border: #e8e9e3;
+  --input: #d5d7ce;
+  --ring: #777c70;
+  --status-running: #eaf2ff;
+  --status-running-foreground: #285ba6;
+  --status-waiting: #fff2d6;
+  --status-waiting-foreground: #805716;
+  --status-done: #e8f5ec;
+  --status-done-foreground: #286441;
+  --status-failed: #fceceb;
+  --status-failed-foreground: #a13c36;
+  --risk-low: var(--status-done);
+  --risk-low-foreground: var(--status-done-foreground);
+  --risk-medium: var(--status-waiting);
+  --risk-medium-foreground: var(--status-waiting-foreground);
+  --risk-high: var(--status-failed);
+  --risk-high-foreground: var(--status-failed-foreground);
+  --chart-1: #285ba6;
+  --chart-2: #286441;
+  --chart-3: #805716;
+  --chart-4: #a13c36;
+  --chart-5: #666960;
+  --radius: 0.875rem;
+  --surface-shadow: 0 2px 4px -2px #24252204, 0 8px 28px -8px #2425220a;
+  --sidebar: #f1f2ee;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.155 0.008 265);
-  --foreground: oklch(0.96 0.005 265);
-  --card: oklch(0.195 0.01 265);
-  --card-foreground: oklch(0.96 0.005 265);
-  --popover: oklch(0.21 0.011 265);
-  --popover-foreground: oklch(0.96 0.005 265);
-  --primary: oklch(0.55 0.21 275);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.25 0.012 265);
-  --secondary-foreground: oklch(0.96 0.005 265);
-  --muted: oklch(0.23 0.01 265);
-  --muted-foreground: oklch(0.71 0.015 265);
-  --accent: oklch(0.26 0.014 265);
-  --accent-foreground: oklch(0.96 0.005 265);
-  --destructive: oklch(0.72 0.18 22);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.65 0.18 275);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.18 0.009 265);
-  --sidebar-foreground: oklch(0.96 0.005 265);
-  --sidebar-primary: oklch(0.55 0.21 275);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.26 0.014 265);
-  --sidebar-accent-foreground: oklch(0.96 0.005 265);
-  --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: oklch(0.65 0.18 275);
+  --background: #191a18;
+  --foreground: #f3f3ef;
+  --card: #22231f;
+  --card-foreground: #f3f3ef;
+  --popover: #282a25;
+  --popover-foreground: #f3f3ef;
+  --primary: #f2f2ed;
+  --primary-foreground: #20211e;
+  --secondary: #30322c;
+  --secondary-foreground: #e5e7de;
+  --muted: #292b25;
+  --muted-foreground: #acb0a4;
+  --accent: #363930;
+  --accent-foreground: #f3f3ef;
+  --destructive: #f3b2ac;
+  --border: #34362f;
+  --input: #505449;
+  --ring: #a4ad96;
+  --status-running: #23344b;
+  --status-running-foreground: #aecbfa;
+  --status-waiting: #40351f;
+  --status-waiting-foreground: #efd08e;
+  --status-done: #213b2b;
+  --status-done-foreground: #a6dabb;
+  --status-failed: #452a29;
+  --status-failed-foreground: #f3b2ac;
+  --chart-1: #aecbfa;
+  --chart-2: #a6dabb;
+  --chart-3: #efd08e;
+  --chart-4: #f3b2ac;
+  --chart-5: #acb0a4;
+  --surface-shadow: 0 2px 4px -2px #00000014, 0 8px 28px -8px #00000029;
+  --sidebar: #1d1f1a;
+  --sidebar-accent: #30322c;
 }
 
 @layer base {
@@ -132,48 +164,24 @@
   }
   body {
     position: relative;
-    @apply bg-background font-sans text-foreground antialiased;
+    @apply bg-background font-sans leading-relaxed text-foreground antialiased;
   }
   ::selection {
-    background: color-mix(in oklch, var(--primary) 45%, transparent);
+    background: var(--foreground);
+    color: var(--background);
   }
 }
 
-/* Page backdrop: a faint accent glow and dot grid that fade out below the fold. Decorative only,
-   so it sits behind content and ignores pointer events. */
 @utility app-backdrop {
   position: relative;
   isolation: isolate;
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        56rem 28rem at 50% -8rem,
-        color-mix(in oklch, var(--primary) 20%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-          circle at 1px 1px,
-          color-mix(in oklch, var(--foreground) 10%, transparent) 1px,
-          transparent 0
-        )
-        0 0 / 24px 24px;
-    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 25%, transparent 75%);
-  }
+  background: var(--background);
 }
 
-/* Raised panel shared by full-page surfaces. */
+/* A single opaque surface treatment keeps cards consistent in both themes. */
 @utility surface {
   border: 1px solid var(--border);
-  border-radius: calc(var(--radius) * 1.8);
-  background: color-mix(in oklch, var(--card) 82%, transparent);
-  box-shadow:
-    inset 0 1px 0 0 oklch(1 0 0 / 5%),
-    0 1px 2px 0 oklch(0 0 0 / 12%),
-    0 16px 40px -16px oklch(0 0 0 / 35%);
-  backdrop-filter: blur(8px);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  box-shadow: var(--surface-shadow);
 }
