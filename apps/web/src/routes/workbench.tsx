@@ -6,6 +6,7 @@ import { Kbd } from "@voidmix/ui/components/kbd"
 import { Logo } from "@voidmix/ui/components/logo"
 import { RiskBadge, type RiskLevel } from "@voidmix/ui/components/risk-badge"
 import { StatusPill, type AgentStatus } from "@voidmix/ui/components/status-pill"
+import { ThinkingLoader } from "@voidmix/ui/components/thinking-loader"
 import { ThemeToggle } from "@voidmix/ui/components/theme-toggle"
 import { cn } from "@voidmix/ui/lib/utils"
 
@@ -962,13 +963,25 @@ function AgentCard({
       </div>
 
       <p className="mt-3">{agent.task}</p>
-      <p className="mt-1 truncate text-xs text-muted-foreground">
-        {agent.status === "waiting"
-          ? pendingCount > 0
-            ? `已暂停，等待你确认 ${pendingCount} 个操作`
-            : "已收到你的决定，准备继续"
-          : agent.step}
-      </p>
+      {agent.status === "running" ? (
+        // A live agent cycles through what it is doing instead of showing one frozen line.
+        <ThinkingLoader
+          variant="plain"
+          size="sm"
+          loop
+          interval={3200}
+          phases={[agent.step, "对比两边的审批协议", "整理差异要点"]}
+          className="mt-1.5"
+        />
+      ) : (
+        <p className="mt-1 truncate text-xs text-muted-foreground">
+          {agent.status === "waiting"
+            ? pendingCount > 0
+              ? `已暂停，等待你确认 ${pendingCount} 个操作`
+              : "已收到你的决定，准备继续"
+            : agent.step}
+        </p>
+      )}
 
       <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
         <progress

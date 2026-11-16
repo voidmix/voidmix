@@ -42,15 +42,14 @@ import { AppShell, Surface } from "@voidmix/ui/components/app-shell"
 
 Color communicates state through paired tint and foreground tokens, exposed through `@theme inline` as `bg-status-running`, `text-status-running-foreground`, and corresponding classes for every state. `StatusPill` always includes a label; `RiskBadge` does the same for risk. Low, medium, and high risk reuse the done, waiting, and failed pairs respectively. All pairs provide at least 4.5:1 text contrast in both themes.
 
-| Token pair       | Light tint / foreground | Dark tint / foreground |
-| ---------------- | ----------------------- | ---------------------- |
-| `status-running` | `#eaf2ff` / `#285ba6`   | `#23344b` / `#aecbfa`  |
-| `status-waiting` | `#fff2d6` / `#805716`   | `#40351f` / `#efd08e`  |
-| `status-done`    | `#e8f5ec` / `#286441`   | `#213b2b` / `#a6dabb`  |
-| `status-failed`  | `#fceceb` / `#a13c36`   | `#452a29` / `#f3b2ac`  |
-| `risk-low`       | `#e8f5ec` / `#286441`   | `#213b2b` / `#a6dabb`  |
-| `risk-medium`    | `#fff2d6` / `#805716`   | `#40351f` / `#efd08e`  |
-| `risk-high`      | `#fceceb` / `#a13c36`   | `#452a29` / `#f3b2ac`  |
+| Token pair       | Light tint / foreground             | Dark tint / foreground               |
+| ---------------- | ----------------------------------- | ------------------------------------ |
+| `status-running` | `rgb(1 144 254 / 10%)` / `#0067c7`  | `rgb(79 176 254 / 14%)` / `#4fb0fe`  |
+| `status-waiting` | `rgb(242 138 46 / 12%)` / `#a35600` | `rgb(242 161 92 / 14%)` / `#ffb35c`  |
+| `status-done`    | `rgb(95 200 138 / 14%)` / `#177540` | `rgb(125 207 159 / 14%)` / `#7dcf9f` |
+| `status-failed`  | `rgb(240 68 56 / 10%)` / `#c4320a`  | `rgb(255 107 95 / 14%)` / `#ff8a7a`  |
+
+`risk-low`, `risk-medium`, and `risk-high` alias the done, waiting, and failed pairs.
 
 The Web `/workbench` route demonstrates the theme with a responsive sidebar, approval inbox, and agent cards. Its sample requests, filters, and decisions are local component state with no loader or API calls. The processed count includes 12 historical sample requests; only decisions made in the current page session appear in its processed list.
 
@@ -74,6 +73,21 @@ carries a `status-pulse` halo that stops under reduced motion.
 
 Muted text and the light-theme running, waiting, and done foregrounds are slightly darker than the
 source so small text keeps a 4.5:1 contrast ratio.
+
+### affectUI registry
+
+`components.json` registers the `@affectui` namespace, so its components install like any other
+shadcn item and land in `src/components`:
+
+```sh
+bun run ui:add @affectui/thinking-loader
+```
+
+The registry needs a personal key. Put `AFFECTUI_TOKEN=<key>` in `packages/ui/.env.local`, which
+Git ignores; never commit it or place it in a `VITE_*` variable. Installed files are vendored
+source: review them like any other change. Where upstream code conflicts with this repository's
+lint rules, relax the specific rules at the top of that file with a comment, as
+`thinking-loader.tsx` does, instead of rewriting the component.
 
 ## Icons and composition
 
