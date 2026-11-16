@@ -1,0 +1,24 @@
+deploy/README.md
+  s_ccb2206306ae02::t_d46e8e7d7738a0 5-6
+deploy/railway/README.md
+  s_ccb2206306ae02::t_7d1e3786fb9628 1-8,15-39,44-56
+  s_ccb2206306ae02::t_d46e8e7d7738a0 9-14,40-43
+deploy/railway/Dockerfile
+  s_ccb2206306ae02::t_76ddd86f3058b7 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "499449d898b2ba516a26ab6f50c5805133fa4a1f",
+  "prompts": {},
+  "sessions": {
+    "s_ccb2206306ae02": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4fa021c0-c7ee-4e5a-a43d-3fc546d8d5a8",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Zack <heyloyep@gmail.com>"
+    }
+  }
+}
