@@ -10,6 +10,14 @@ test("独立 API 健康检查", async ({ request }) => {
   expect(await response.json()).toEqual({ status: "ok" })
 })
 
+test("就绪检查确认数据库可用", async ({ request }) => {
+  const response = await request.get(`${apiOrigin}/ready`)
+
+  expect(response.status()).toBe(200)
+  // Redis is optional in E2E, so only the gating dependency is asserted.
+  expect(await response.json()).toMatchObject({ status: "ready", checks: { database: "ok" } })
+})
+
 test("允许 Expo Web 的跨域预检", async ({ request }) => {
   const response = await request.fetch(`${apiOrigin}/api/rpc/greet`, {
     method: "OPTIONS",

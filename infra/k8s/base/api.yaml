@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voidmix-api
+  labels:
+    app.kubernetes.io/name: voidmix-api
+    app.kubernetes.io/component: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: voidmix-api
+  strategy:
+    rollingUpdate:
+      # Keep full capacity while new pods run migrations and become ready.
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: voidmix-api
+        app.kubernetes.io/component: api
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        # The image's `bun` user; a numeric ID lets the kubelet verify runAsNonRoot.
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # Migrations must finish before the API serves. Replicas starting together serialize on
+        # the PostgreSQL advisory lock taken by @voidmix/db/migrate.
+        - name: migrate
+          image: voidmix-migrate
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: voidmix-secrets
+                  key: DATABASE_URL
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+      containers:
+        - name: api
+          image: voidmix-api
+          ports:
+            - name: http
+              containerPort: 3002
+          envFrom:
+            - configMapRef:
+                name: voidmix-config
+            - secretRef:
+                name: voidmix-secrets
+          # Liveness never touches backends, so a database outage does not restart healthy pods.
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          # Readiness requires PostgreSQL and reports Redis; unready pods leave the Service.
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 192Mi
+            limits:
+              memory: 512Mi
+      # Nitro closes the resource owner on SIGTERM; allow in-flight requests to drain.
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voidmix-api
+  labels:
+    app.kubernetes.io/name: voidmix-api
+    app.kubernetes.io/component: api
+spec:
+  selector:
+    app.kubernetes.io/name: voidmix-api
+  ports:
+    - name: http
+      port: 3002
+      targetPort: http
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: voidmix-api
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: voidmix-api

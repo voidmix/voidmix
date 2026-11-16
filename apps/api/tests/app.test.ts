@@ -1,25 +1,86 @@
 import { expect, mock, test } from "bun:test"
+import { os } from "@orpc/server"
 import { configureLogger } from "@voidmix/logger"
 import type { AuthSession } from "@voidmix/auth/types"
 
 import { createApp } from "../src/app"
-import type { ApiAuth } from "../src/lib/context"
+import type { ApiAuth, RpcContext } from "../src/lib/context"
+import type { RpcRouter } from "../src/middleware/rpc"
+import { fakeServices } from "./fixtures"
 
 const logger = () =>
   configureLogger("voidmix-api-test", { env: { NODE_ENV: "test" }, silent: true, drain: () => {} })
 
-function fixture(session: AuthSession | null = null, origins: string[] = []) {
+function fixture(
+  session: AuthSession | null = null,
+  origins: string[] = [],
+  rpcRouter?: RpcRouter,
+) {
   const auth = {
     handler: mock(async (_request: Request) => new Response("auth response", { status: 202 })),
     api: { getSession: mock(async (_input: { headers: Headers }) => session) },
   } satisfies ApiAuth
-  return { auth, app: createApp({ auth, corsOrigins: origins, logger: logger() }) }
+  const services = fakeServices()
+  return {
+    auth,
+    services,
+    app: createApp({ auth, services, corsOrigins: origins, logger: logger(), rpcRouter }),
+  }
 }
 
 const rpc = (input: unknown = undefined, headers: Record<string, string> = {}) => ({
   method: "POST",
   headers: { "Content-Type": "application/json", ...headers },
   body: JSON.stringify({ json: input }),
+})
+
+test("injected backend capabilities reach procedure context", async () => {
+  const inspect = mock(async ({ context }: { context: RpcContext }) => ({
+    database: context.services.database,
+    cache: await context.services.getCache(),
+    storage: context.services.getStorage(),
+  }))
+  const { app, services } = fixture(null, [], {
+    inspect: os.$context<RpcContext>().handler(inspect),
+  })
+  const response = await app.request("/api/rpc/inspect", rpc())
+  expect(response.status).toBe(200)
+  expect(inspect).toHaveBeenCalledTimes(1)
+  expect(inspect.mock.calls[0]![0].context.services).toBe(services)
+  // bun:test types settled mock results as unknown; the handler's own return type is the contract.
+  const result = (await inspect.mock.results[0]!.value) as Awaited<ReturnType<typeof inspect>>
+  expect(result.database).toBe(services.database)
+  expect(result.cache).toBe(services.cache)
+  expect(result.storage).toBe(services.storage)
+  expect(services.getCache).toHaveBeenCalledTimes(1)
+  expect(services.getStorage).toHaveBeenCalledTimes(1)
+})
+
+test("separate application instances keep backend capabilities isolated", async () => {
+  const contexts: RpcContext[] = []
+  const router = {
+    inspect: os.$context<RpcContext>().handler(async ({ context }) => {
+      contexts.push(context)
+      await context.services.getCache()
+      context.services.getStorage()
+      return {}
+    }),
+  }
+  const first = fixture(null, [], router)
+  const second = fixture(null, [], router)
+  const responses = await Promise.all([
+    first.app.request("/api/rpc/inspect", rpc()),
+    second.app.request("/api/rpc/inspect", rpc()),
+    first.app.request("/api/rpc/inspect", rpc()),
+  ])
+  expect(responses.map((response) => response.status)).toEqual([200, 200, 200])
+  expect(contexts.filter((context) => context.services === first.services)).toHaveLength(2)
+  expect(contexts.filter((context) => context.services === second.services)).toHaveLength(1)
+  expect(first.services.database).not.toBe(second.services.database)
+  expect(first.services.getCache).toHaveBeenCalledTimes(2)
+  expect(second.services.getCache).toHaveBeenCalledTimes(1)
+  expect(first.services.getStorage).toHaveBeenCalledTimes(2)
+  expect(second.services.getStorage).toHaveBeenCalledTimes(1)
 })
 
 test("liveness and CORS preflights never invoke authentication", async () => {

@@ -36,6 +36,8 @@ React components may use `authClient.useSession()`. The API proxy preserves Cook
 
 Allowed public client IDs are `voidmix-mobile`, `voidmix-mobile-web`, and `voidmix-desktop`. They are identifiers, not secrets. Grants expire after ten minutes; polling starts at the server-provided interval, normally five seconds. Clients handle pending, slow-down, denial, expiration, cancellation, and closed windows. Tokens and private device codes never appear in redirect URLs.
 
+The browser-safe `@voidmix/auth/device` entry point exports the `deviceClientIds` list and its derived `DeviceClientId` type. Server validation uses that list, and Web authorization labels must cover the type. Keep Go's native desktop constant aligned with this TypeScript source.
+
 | Client      | Implementation and storage                                                                                                          |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Expo native | System authorization browser, validated `voidmix://auth/complete` callback, then SecureStore                                        |

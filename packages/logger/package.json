@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./hono": "./src/hono.ts",
+    "./otlp": "./src/otlp.ts",
     "./orpc": "./src/orpc.ts"
   },
   "scripts": {

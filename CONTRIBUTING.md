@@ -34,7 +34,7 @@ Run the tests appropriate to the changed behavior; see [testing](docs/testing.md
 
 Use strict TypeScript, double quotes, no semicolons, and Oxfmt formatting. Use `gofmt` for Go. Prefer named public subpaths over broad barrel exports. Framework middleware belongs next to its transport adapter; application configuration and resource ownership stay at the application entry point.
 
-API HTTP behavior is assembled by `src/app.ts` with explicit dependencies. Keep environment reads and process instances in `src/runtime.ts`; only the server entry and lifecycle plugins import it. Add resource acquisition and disposal together in `src/resources.ts`, then pass the capability to its consumer. Test HTTP behavior through the same factory with an in-memory auth adapter; keep shared package tests independent of application policy.
+API HTTP behavior is assembled by `src/app.ts` with explicit dependencies. Keep environment reads and process instances in `src/runtime.ts`; only the server entry and lifecycle plugins import it. Add resource acquisition and disposal together in `src/resources.ts`. The server passes the resource owner as `createApp`'s `services` option, preserving its guarded database getter; procedures borrow capabilities through `context.services`. Test HTTP behavior through the same factory with an in-memory auth adapter and fake services. Use the optional `rpcRouter` for context tests without changing the public contract; keep shared package tests independent of application policy.
 
 Write documentation and comments in English. Preserve the current user-facing language unless a product change calls for translation. Comments should explain invariants, ordering, ownership, recovery, or compatibility workarounds. Document public helpers with resource lifetime and error semantics when those details are not obvious from their types. Update nearby comments when behavior changes.
 
@@ -52,6 +52,6 @@ For schema changes, generate a new Drizzle migration and review its SQL and meta
 
 ## Documentation ownership
 
-Keep the root README as a navigation and onboarding page. Put local setup and usage in the owning workspace README. Keep cross-application flows in `docs/architecture.md`, environment ownership in `docs/configuration.md`, and test setup in `docs/testing.md`. Update command examples, environment templates, and agent guidance in the same change when their contract changes.
+Keep the root README as a navigation and onboarding page. Put local setup and usage in the owning workspace README. Keep cross-application flows in `docs/architecture.md`, environment ownership in `docs/configuration.md`, test setup in `docs/testing.md`, deployed-system procedures in `docs/operations.md`, and the reasons behind lasting constraints in `docs/decisions.md`. Update command examples, environment templates, and agent guidance in the same change when their contract changes.
 
-All workspaces are currently private; there is no public package publishing workflow. Add release/versioning machinery when there is an actual independently released artifact that needs it.
+All workspaces are currently private; there is no public package publishing workflow. Pushing a `v*.*.*` tag publishes the deployment container images and nothing else. Add release/versioning machinery when there is an actual independently released artifact that needs it.

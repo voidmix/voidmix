@@ -3,6 +3,7 @@ import { HTTPException } from "hono/http-exception"
 import { configureLogger, log, type EvlogConfig, type WideEvent } from "@voidmix/logger"
 
 import { createApp } from "../src/app"
+import { fakeServices } from "./fixtures"
 
 let events: WideEvent[]
 let config: EvlogConfig
@@ -25,6 +26,7 @@ afterEach(() => {
 function app() {
   return createApp({
     logger: config,
+    services: fakeServices(),
     corsOrigins: [],
     auth: {
       handler: async () => new Response(null, { status: 404 }),

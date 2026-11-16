@@ -1,0 +1,51 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Copy this directory per environment. Everything environment-specific lives here.
+namespace: voidmix
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+# Images published by the release workflow: ghcr.io/<owner>/<repository>-<target>.
+images:
+  - name: voidmix-web
+    newName: ghcr.io/example/voidmix-web
+    newTag: 0.1.0
+  - name: voidmix-api
+    newName: ghcr.io/example/voidmix-api
+    newTag: 0.1.0
+  - name: voidmix-migrate
+    newName: ghcr.io/example/voidmix-migrate
+    newTag: 0.1.0
+
+# Generated names carry a content hash, so changing a value rolls the pods that read it.
+configMapGenerator:
+  - name: voidmix-config
+    envs:
+      - config.env
+
+secretGenerator:
+  - name: voidmix-secrets
+    envs:
+      # Not committed. Copy secrets.env.example, or replace this generator with the cluster's
+      # secret manager (External Secrets, Sealed Secrets, CSI) producing the same keys.
+      - secrets.env
+
+patches:
+  - target:
+      kind: Ingress
+      name: voidmix
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: app.example.com
+      - op: replace
+        path: /spec/rules/1/host
+        value: api.example.com
+      - op: add
+        path: /spec/tls
+        value:
+          - hosts: [app.example.com, api.example.com]
+            secretName: voidmix-tls

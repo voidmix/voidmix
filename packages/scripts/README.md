@@ -16,6 +16,7 @@ bun run docker:init
 bun run docker:up
 bun run docker:status
 bun run docker:logs
+bun run docker:backup
 bun run docker:down
 ```
 
@@ -48,7 +49,7 @@ The checker is read-only and needs the installed TypeScript dependency. It is lo
 
 `services:up` starts PostgreSQL, Redis, and RustFS through `compose.yaml`, waits for health, then initializes the local bucket. `services:down` uses `stop`, retaining containers and volumes. Migrations are separate and explicit.
 
-Deployment commands use `compose.deploy.yaml` and `deploy/.env`. `docker:up` builds four targets and waits for migration/storage initialization and health. `docker:down` stops services and retains data. See [deployment](../../deploy/README.md).
+Deployment commands use `compose.deploy.yaml` and `deploy/.env`. `docker:up` builds four targets and waits for migration/storage initialization and health. `docker:down` stops services and retains data. `docker:backup` runs the one-shot `backup` profile, which writes a PostgreSQL dump to `BACKUP_DIR`. See [deployment](../../deploy/README.md).
 
 ## Reusable helpers and verification
 

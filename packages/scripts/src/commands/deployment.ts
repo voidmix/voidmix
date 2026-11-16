@@ -2,7 +2,7 @@ import { join } from "node:path"
 
 import { runCommand, type Command } from "../lib/process"
 
-export type DeploymentAction = "build" | "up" | "down" | "status" | "logs"
+export type DeploymentAction = "build" | "up" | "down" | "status" | "logs" | "backup"
 
 export async function manageDeployment(action: DeploymentAction, root: string, dryRun = false) {
   const envFile = join(root, "deploy/.env")
@@ -23,6 +23,8 @@ export async function manageDeployment(action: DeploymentAction, root: string, d
     down: ["stop"],
     status: ["ps", "--all"],
     logs: ["logs", "--follow", "--tail", "100"],
+    // Naming the service activates its profile; --rm removes only the finished job container.
+    backup: ["run", "--rm", "backup"],
   }
   const command: Command = [...compose, ...operations[action]]
   if (!dryRun) await runCommand(command, { cwd: root })

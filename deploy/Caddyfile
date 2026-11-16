@@ -1,0 +1,14 @@
+# Optional reverse proxy for the `proxy` Compose profile. Caddy obtains and renews certificates
+# for PROXY_WEB_DOMAIN, which must resolve to this host with ports 80 and 443 reachable.
+{$PROXY_WEB_DOMAIN} {
+	encode zstd gzip
+	# Web serves pages and proxies /api/auth/* and /api/rpc/* to the API on the private network.
+	reverse_proxy web:3000
+}
+
+# Native clients (Expo, desktop, CLI) call the API origin directly. To publish it, add a DNS
+# name, uncomment this site, and set that origin in the clients' build configuration.
+# api.example.com {
+# 	encode zstd gzip
+# 	reverse_proxy api:3002
+# }

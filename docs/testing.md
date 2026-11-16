@@ -69,4 +69,4 @@ These suites require explicitly supplied test variables, use unique namespaces, 
 
 Browser tests cannot establish native behavior. After changing native integration, build the real MyGo application and exercise its WebView, keyring, cancel/reopen, and sign-out flow. Test Expo deep links, SecureStore, browser return, and lifecycle on an emulator or device using a development build.
 
-The Docker workflow builds real Linux images, runs an isolated deployment, checks API health, Web SSR, RPC, migrations, cookie forwarding, and session revocation, then removes only that test deployment. The [deployment guide](../deploy/README.md) documents its smoke-test variables.
+The Docker workflow builds real Linux images, runs an isolated deployment, checks API health and readiness, Web SSR, RPC, migrations, cookie forwarding, and session revocation, then removes only that test deployment. The [deployment guide](../deploy/README.md) documents its smoke-test variables.

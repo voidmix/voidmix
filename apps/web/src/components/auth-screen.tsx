@@ -1,11 +1,12 @@
 import { useState, type FormEvent } from "react"
+import { deviceClientIds, type DeviceClientId } from "@voidmix/auth/device"
 import { Button } from "@voidmix/ui/components/button"
 import { Input } from "@voidmix/ui/components/input"
 import { Label } from "@voidmix/ui/components/label"
 
 import { authClient } from "@/lib/auth"
 
-const clientNames: Record<string, string> = {
+const clientNames: Record<DeviceClientId, string> = {
   "voidmix-mobile": "Voidmix 移动端",
   "voidmix-mobile-web": "Voidmix 移动端网页版",
   "voidmix-desktop": "Voidmix 桌面端",
@@ -17,7 +18,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const [code, setCode] = useState(initialCode)
-  const [device, setDevice] = useState<{ code: string; clientId: string } | null>(null)
+  const [device, setDevice] = useState<{ code: string; clientId: DeviceClientId } | null>(null)
   const [outcome, setOutcome] = useState<"approved" | "denied" | null>(null)
 
   async function submitAccount(event: FormEvent<HTMLFormElement>) {
@@ -55,8 +56,9 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
       if (result.error || !result.data || result.data.status !== "pending") {
         throw new Error("授权码无效或已过期，请回到应用重新发起登录。")
       }
-      const clientId = result.data.client_id ?? ""
-      if (!clientNames[clientId]) throw new Error("无法识别此应用，请重新发起登录。")
+      const requestedClientId = result.data.client_id
+      const clientId = deviceClientIds.find((id) => id === requestedClientId)
+      if (!clientId) throw new Error("无法识别此应用，请重新发起登录。")
       setDevice({ code: normalized, clientId })
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "连接失败，请重试。")

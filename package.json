@@ -25,6 +25,7 @@
     "docker:down": "bun run repo docker:down",
     "docker:status": "bun run repo docker:status",
     "docker:logs": "bun run repo docker:logs",
+    "docker:backup": "bun run repo docker:backup",
     "docker:smoke": "bun packages/scripts/src/deploy/smoke.ts",
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=@voidmix/web --filter=@voidmix/api-server",

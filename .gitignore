@@ -20,3 +20,5 @@ blob-report/
 .expo/
 apps/mobile/ios/
 apps/mobile/android/
+deploy/backups/
+infra/k8s/overlays/*/secrets.env

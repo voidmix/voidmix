@@ -26,9 +26,11 @@ try {
 }
 ```
 
-`createDatabase` returns a lazy Drizzle database and its pool. The default maximum is ten connections **per process**, with five-second connection and thirty-second idle timeouts. Long-lived servers reuse the pool. The API resource owner in `apps/api/src/resources.ts` creates it and closes it through Nitro's resource plugin. One-shot scripts close it in `finally`.
+`createDatabase` returns a lazy Drizzle database and its pool. The default maximum is ten connections **per process**, with five-second connection and thirty-second idle timeouts. Long-lived servers reuse the pool. The API resource owner in `apps/api/src/resources.ts` creates it and closes it through Nitro's resource plugin. Procedures borrow the `Database` handle through `context.services.database`; the owner's getter throws once shutdown begins. Previously borrowed handles follow the pool's shutdown behavior. Consumers do not own `pool.end()`. One-shot scripts close their own pool in `finally`.
 
-`@voidmix/db/migrate` exports `migrateDatabase(connectionString)`, which uses a single-connection pool, resolves SQL relative to its module, and always closes the pool.
+`pingDatabase(db)` round-trips one trivial query and rejects when PostgreSQL is unreachable; the API's readiness endpoint uses it.
+
+`@voidmix/db/migrate` exports `migrateDatabase(connectionString)`, which uses a single-connection pool, resolves SQL relative to its module, and always closes the pool. It holds a PostgreSQL session advisory lock on a dedicated connection for the whole run, so migrators that start together (for example several API replicas) apply pending SQL once and the rest find nothing to do.
 
 ## Schema and migrations
 

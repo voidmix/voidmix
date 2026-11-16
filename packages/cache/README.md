@@ -26,7 +26,7 @@ async function cacheExample(getCache: () => Promise<Cache | null>) {
 }
 ```
 
-Pass `getCache` from the API resource owner into its consumer. It returns `null` without `REDIS_URL` and otherwise shares one lazy connection attempt per resource owner. Failed initialization clears the promise so a later call can retry. The Nitro resource plugin closes it. Cache failures reject; business code decides whether to fail or read the source of truth.
+API procedures receive the resource owner's `getCache` through `context.services`; pass it explicitly to other consumers. It returns `null` without `REDIS_URL` and otherwise shares one lazy connection attempt per resource owner. Failed initialization clears the promise so a later call can retry. The Nitro resource plugin closes it, and acquisition rejects once shutdown starts. Cache failures reject; business code decides whether to fail or read the source of truth.
 
 `getJson<T>` returns `null` for a miss and rejects malformed JSON. The type argument does not perform runtime validation. `setJson` requires an explicit positive integer TTL in seconds and a JSON-serializable value.
 

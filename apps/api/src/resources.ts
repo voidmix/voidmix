@@ -25,6 +25,11 @@ export function createApiResources(config: ApiConfig) {
 
   return {
     auth,
+    // Guard acquisition like the optional clients; previously borrowed handles are not revoked.
+    get database() {
+      assertOpen()
+      return database.db
+    },
     async getCache() {
       assertOpen()
       return cache.get()

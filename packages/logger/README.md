@@ -23,6 +23,8 @@ try {
 
 Use `log` for standalone infrastructure/startup events and `createLogger` for a task with a defined lifetime. Shared business libraries should accept a logger rather than reinitializing process configuration. `configureLogger(service, { drain })` supports an application-selected evlog drain; terminal output is the default.
 
+`createOtlpLogDrain(env)` from `@voidmix/logger/otlp` returns a batched OTLP/HTTP drain when `OTEL_EXPORTER_OTLP_ENDPOINT` (or `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`) is set, and `undefined` otherwise. Events reach it already redacted. The application owns the drain: pass it to `configureLogger` and await `flush()` at shutdown. Batches hold up to 50 events or five seconds; export failures are reported on stderr and never fail a request.
+
 ## Request lifecycle
 
 The API registers request IDs, evlog, and status severity before CORS, auth, and routes. Events include service, environment, request ID, method, path, status, and duration. `X-Request-Id` is returned to clients; valid incoming IDs survive, while invalid or oversized IDs are replaced.
@@ -49,4 +51,4 @@ bun run test:logger
 bun run check
 ```
 
-Package tests exercise JSON output, redaction, configuration, concurrent request isolation, and shared Hono/oRPC emission through the public logging adapters. They do not import API code. Application-specific level handling, request IDs, and HTTP errors are tested through `createApp` by `bun run test:api`.
+Package tests exercise JSON output, redaction, configuration, OTLP export against a loopback collector, concurrent request isolation, and shared Hono/oRPC emission through the public logging adapters. They do not import API code. Application-specific level handling, request IDs, and HTTP errors are tested through `createApp` by `bun run test:api`.

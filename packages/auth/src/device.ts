@@ -1,4 +1,6 @@
-export type DeviceClientId = "voidmix-mobile" | "voidmix-mobile-web" | "voidmix-desktop"
+export const deviceClientIds = ["voidmix-mobile", "voidmix-mobile-web", "voidmix-desktop"] as const
+
+export type DeviceClientId = (typeof deviceClientIds)[number]
 
 export interface DeviceGrant {
   device_code: string

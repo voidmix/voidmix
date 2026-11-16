@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: voidmix
+spec:
+  # Hosts are placeholders; an overlay replaces them and adds its ingress class and TLS.
+  rules:
+    # Browsers use Web, which proxies /api/auth/* and /api/rpc/* to the API inside the cluster.
+    - host: app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: voidmix-web
+                port:
+                  name: http
+    # Native clients and the CLI call the API origin directly.
+    - host: api.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: voidmix-api
+                port:
+                  name: http

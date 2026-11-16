@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
 
@@ -17,3 +18,8 @@ export function createDatabase(connectionString: string, options: { max?: number
 }
 
 export type Database = ReturnType<typeof createDatabase>["db"]
+
+/** Round-trip one trivial query; rejects when PostgreSQL is unreachable or the pool is closed. */
+export async function pingDatabase(db: Database) {
+  await db.execute(sql`select 1`)
+}

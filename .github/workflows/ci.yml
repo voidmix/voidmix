@@ -70,6 +70,10 @@ jobs:
         if: always()
         run: bun run storage:down
       - run: bun run db:check
+      - name: Render Kubernetes manifests
+        run: |
+          cp infra/k8s/overlays/example/secrets.env.example infra/k8s/overlays/example/secrets.env
+          kubectl kustomize infra/k8s/overlays/example > /dev/null
       - name: Check Expo dependency versions
         run: bun run check:mobile
       - name: Check Go formatting

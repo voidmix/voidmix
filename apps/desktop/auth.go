@@ -18,6 +18,7 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
+// Keep this native identifier aligned with deviceClientIds in packages/auth/src/device.ts.
 const desktopClientID = "voidmix-desktop"
 const keyringService = "com.voidmix.app"
 

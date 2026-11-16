@@ -52,7 +52,10 @@
         "S3_SECRET_ACCESS_KEY",
         "S3_PREFIX",
         "LOG_LEVEL",
-        "LOG_FORMAT"
+        "LOG_FORMAT",
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "OTEL_EXPORTER_OTLP_HEADERS",
+        "OTEL_RESOURCE_ATTRIBUTES"
       ]
     },
     "start": {
@@ -76,7 +79,10 @@
         "S3_SECRET_ACCESS_KEY",
         "S3_PREFIX",
         "LOG_LEVEL",
-        "LOG_FORMAT"
+        "LOG_FORMAT",
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "OTEL_EXPORTER_OTLP_HEADERS",
+        "OTEL_RESOURCE_ATTRIBUTES"
       ]
     },
     "@voidmix/desktop#dev:native": {
@@ -102,7 +108,10 @@
         "S3_SECRET_ACCESS_KEY",
         "S3_PREFIX",
         "LOG_LEVEL",
-        "LOG_FORMAT"
+        "LOG_FORMAT",
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "OTEL_EXPORTER_OTLP_HEADERS",
+        "OTEL_RESOURCE_ATTRIBUTES"
       ],
       "with": ["@voidmix/api-server#dev", "@voidmix/web#dev"]
     },

@@ -129,6 +129,8 @@ test("部署使用独立配置，停止计划保留数据卷，未初始化时�
   expect(plan.commands[0]).toContain(join(root, "compose.deploy.yaml"))
   expect(plan.commands[0]).toContain("stop")
   expect(plan.commands[0]).not.toContain("--volumes")
+  const backup = await manageDeployment("backup", root, true)
+  expect(backup.commands[0]!.slice(-3)).toEqual(["run", "--rm", "backup"])
   await expect(manageDeployment("up", root)).rejects.toThrow("docker:init")
 })
 

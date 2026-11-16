@@ -20,5 +20,7 @@ apps/desktop/build
 apps/cli/build
 apps/mobile/ios
 apps/mobile/android
+deploy/backups
+infra
 out
 .DS_Store

@@ -5,6 +5,8 @@ import { deviceAuthorization } from "better-auth/plugins/device-authorization"
 import type { Database } from "@voidmix/db/client"
 import * as schema from "@voidmix/db/schema"
 
+import { deviceClientIds } from "./device"
+
 interface AuthOptions {
   database: Database
   baseURL: string
@@ -34,8 +36,7 @@ export function createAuth(options: AuthOptions) {
         verificationUri: new URL("/authorize", options.baseURL).href,
         expiresIn: "10m",
         interval: "5s",
-        validateClient: (id) =>
-          ["voidmix-mobile", "voidmix-mobile-web", "voidmix-desktop"].includes(id),
+        validateClient: (id) => deviceClientIds.some((clientId) => clientId === id),
       }),
     ],
   })

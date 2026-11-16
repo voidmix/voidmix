@@ -15,10 +15,14 @@ const config = loadApiConfig({
   S3_SECRET_ACCESS_KEY: "test-only-secret",
 })
 
-test("construction opens no connections and each owner reuses only its own storage handle", async () => {
+test("construction opens no connections and each owner reuses only its own database and storage", async () => {
   const first = createApiResources(config)
   const second = createApiResources(config)
   try {
+    expect(first.database).toBe(first.database)
+    expect(first.database).not.toBe(second.database)
+    expect(first.database.$client.totalCount).toBe(0)
+    expect(second.database.$client.totalCount).toBe(0)
     expect(await first.getCache()).toBeNull()
     expect(first.getStorage()).toBe(first.getStorage())
     expect(first.getStorage()).not.toBe(second.getStorage())
@@ -31,14 +35,20 @@ test("shutdown is shared and resources cannot be reopened during or after shutdo
   const resources = createApiResources({ ...config, storage: undefined })
   const first = resources.close()
   expect(resources.close()).toBe(first)
+  expect(() => resources.database).toThrow("closing")
   expect(() => resources.getStorage()).toThrow("closing")
   await expect(resources.getCache()).rejects.toThrow("closing")
   await first
+  expect(() => resources.database).toThrow("closing")
+  expect(() => resources.getStorage()).toThrow("closing")
+  await expect(resources.getCache()).rejects.toThrow("closing")
   await resources.close()
 })
 
 test("a failing disposer is reported once and does not cause resources to reopen", async () => {
   const resources = createApiResources(config)
+  const database = resources.database
+  const end = spyOn(database.$client, "end")
   const handle = resources.getStorage()!
   const failure = new Error("storage disposal failed")
   const dispose = spyOn(handle, "dispose").mockRejectedValue(failure)
@@ -47,9 +57,12 @@ test("a failing disposer is reported once and does not cause resources to reopen
     await expect(closing).rejects.toMatchObject({ errors: [failure] })
     await expect(resources.close()).rejects.toBeInstanceOf(AggregateError)
     expect(dispose).toHaveBeenCalledTimes(1)
+    expect(end).toHaveBeenCalledTimes(1)
+    expect(() => resources.database).toThrow("closing")
     expect(() => resources.getStorage()).toThrow("closing")
   } finally {
     dispose.mockRestore()
+    end.mockRestore()
     await handle.dispose()
   }
 })

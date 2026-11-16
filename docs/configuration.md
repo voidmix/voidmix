@@ -34,8 +34,13 @@ Existing files are preserved, including during concurrent initialization. New en
 | `S3_PREFIX`                                 | API                    | Non-empty object namespace; API defaults to `voidmix`                      |
 | `LOG_LEVEL`                                 | API                    | `trace`, `debug`, `info`, `warn`, `error`, or `fatal`; default `info`      |
 | `LOG_FORMAT`                                | API                    | `pretty` or `json`; defaults to pretty in development, JSON otherwise      |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`               | API                    | Optional OTLP/HTTP collector URL; enables log export when set              |
+| `OTEL_EXPORTER_OTLP_HEADERS`                | API                    | Optional collector headers; treat as a secret                              |
+| `OTEL_RESOURCE_ATTRIBUTES`                  | API                    | Optional OpenTelemetry resource attributes, `key=value` comma-separated    |
 
 The API runtime calls `loadApiConfig(process.env)` once at startup. The configuration function itself has no process or infrastructure side effects; routes and middleware receive its values through application composition. Restart the API after changing runtime settings.
+
+Log export is off unless an OTLP endpoint is set; an endpoint that is not an HTTP(S) URL fails startup. The exporter reads the standard `OTEL_*` process variables directly.
 
 Auth configuration is required at server startup. PostgreSQL connects on first use. Redis and S3 are optional and connect only when used. If S3 is enabled, all S3 connection fields are required at startup, even before the first storage operation. Shared library factories take configuration explicitly rather than reading `.env` themselves.
 
@@ -72,4 +77,4 @@ For physical devices, set `BETTER_AUTH_URL` to the computer's reachable Web addr
 
 When adding configuration, update its owner, the `.env.example`, this guide, and the relevant Turbo task's environment list. Build-time public variables must participate in the build hash. Runtime secrets belong in `passThroughEnv`, never in generated client code.
 
-Production Web/API outputs are `.output`; desktop output is `dist/client`; Expo output is `dist`; CLI JavaScript output is `dist`. [Docker deployment](../deploy/README.md) documents its independent credentials, image targets, networking, and initialization jobs.
+Production Web/API outputs are `.output`; desktop output is `dist/client`; Expo output is `dist`; CLI JavaScript output is `dist`. [Docker deployment](../deploy/README.md) documents its independent credentials, image targets, networking, initialization jobs, and the `COMPOSE_PROFILES`, `PROXY_WEB_DOMAIN`, and `BACKUP_DIR` settings. [Kubernetes deployment](../infra/README.md) maps the same server variables onto a ConfigMap and a Secret.

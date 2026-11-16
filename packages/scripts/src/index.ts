@@ -26,6 +26,7 @@ Commands:
   docker:down       Stop the deployment and retain volumes
   docker:status     Show deployment status
   docker:logs       Follow deployment logs
+  docker:backup     Write a PostgreSQL dump of the deployment to BACKUP_DIR
 
 Options:
   --dry-run         Preview initialization, service, or deployment operations
@@ -105,7 +106,14 @@ async function main() {
       return 0
     }
     if (
-      ["docker:build", "docker:up", "docker:down", "docker:status", "docker:logs"].includes(command)
+      [
+        "docker:build",
+        "docker:up",
+        "docker:down",
+        "docker:status",
+        "docker:logs",
+        "docker:backup",
+      ].includes(command)
     ) {
       if (json && !dryRun) throw new UsageError("Deployment --json output requires --dry-run.")
       const result = await manageDeployment(

@@ -45,9 +45,12 @@ Backend infrastructure is internal to the Compose network. `Exited (0)` is the e
 | `API_BIND_HOST` / `API_PORT`            | Host API binding                                                          |
 | `S3_BUCKET` / `S3_REGION` / `S3_PREFIX` | Bucket, signing region, object namespace                                  |
 | `LOG_LEVEL` / `LOG_FORMAT`              | API logging; default `info` and `json`                                    |
+| `OTEL_EXPORTER_OTLP_*`                  | Optional OTLP/HTTP log export; headers may carry credentials              |
+| `COMPOSE_PROFILES` / `PROXY_WEB_DOMAIN` | Enable the bundled HTTPS proxy and name its certificate host              |
+| `BACKUP_DIR`                            | Host directory for PostgreSQL dumps; default `deploy/backups`             |
 | `DOCKER_IMAGE_PREFIX` / `IMAGE_TAG`     | Image naming; default `voidmix` and `local`                               |
 
-Put an HTTPS reverse proxy before public endpoints. A host proxy can forward to `127.0.0.1:3000`; a container proxy can join the deployment network and forward to `web:3000`. Browser traffic normally uses Web's API proxy. Native clients also need an externally reachable HTTPS API origin, set in their build configuration.
+Put an HTTPS reverse proxy before public endpoints. The bundled option is the `proxy` profile: set `COMPOSE_PROFILES=proxy`, `PROXY_WEB_DOMAIN` to a DNS name that resolves to the host, and `BETTER_AUTH_URL` to `https://<PROXY_WEB_DOMAIN>`, then run `docker:up`. Caddy listens on ports 80 and 443, obtains and renews the certificate, and forwards to `web:3000`; its certificates persist in the `caddy-data` volume. `deploy/Caddyfile` contains a commented site for publishing the API origin to native clients. Alternatively, a host proxy can forward to `127.0.0.1:3000`, or another container proxy can join the deployment network and forward to `web:3000`. Browser traffic normally uses Web's API proxy. Native clients also need an externally reachable HTTPS API origin, set in their build configuration.
 
 For managed infrastructure, reuse the Dockerfile targets with an application-specific Compose/orchestration configuration and inject runtime `DATABASE_URL`, `REDIS_URL`, `S3_*`, and auth settings. Run migrations before the API; external buckets may be created independently.
 
@@ -58,17 +61,22 @@ bun run docker:build
 bun run docker:up
 bun run docker:logs
 bun run docker:status
+bun run docker:backup
 bun run docker:down
 bun run docker:up --dry-run
 ```
 
-Re-run `docker:up` after source updates. `docker:down` stops containers and keeps volumes. Back up PostgreSQL and object data according to the deployment environment. Changing a password in `.env` does not change an already-initialized PostgreSQL role; rotate the database credential in the database too.
+Re-run `docker:up` after source updates. `docker:down` stops containers and keeps volumes. `docker:backup` writes a PostgreSQL dump to `BACKUP_DIR`; object data is not included. [Operations](../docs/operations.md) covers restore, upgrades, secret rotation, probes, and troubleshooting. Changing a password in `.env` does not change an already-initialized PostgreSQL role; rotate the database credential in the database too.
 
-API logs are JSON on stdout/stderr with request IDs, severity, duration, and redaction. Collect them through the deployment platform or inspect `docker:logs`.
+API logs are JSON on stdout/stderr with request IDs, severity, duration, and redaction. Collect them through the deployment platform, inspect `docker:logs`, or set `OTEL_EXPORTER_OTLP_ENDPOINT` to export them to an OpenTelemetry collector.
+
+The container health check uses the API's `/health` liveness endpoint. `/ready` additionally verifies PostgreSQL and reports Redis; use it for load balancer rotation.
+
+Pushing a `v*.*.*` tag runs the release workflow, which publishes the four image targets to `ghcr.io/<owner>/<repository>-<target>`. To run published images instead of building locally, set `DOCKER_IMAGE_PREFIX` and `IMAGE_TAG` to match and start with `docker compose ... up -d --no-build`.
 
 ## Isolated smoke tests
 
-The Docker CI workflow builds real Linux images, starts a separate test deployment, checks health, SSR, RPC, migrations, cookie proxying, and session revocation, then removes only that test deployment and its volumes.
+The Docker CI workflow builds real Linux images, starts a separate test deployment, checks health, readiness, SSR, RPC, migrations, cookie proxying, and session revocation, then removes only that test deployment and its volumes.
 
 ```sh
 DOCKER_TEST_WEB_ORIGIN=http://127.0.0.1:14310 \

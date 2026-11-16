@@ -17,6 +17,13 @@ const fetchTest = (input: RequestInfo | URL, init?: RequestInit) =>
 const health = await fetchTest(`${api}/health`)
 assert.equal(health.status, 200)
 assert.deepEqual(await health.json(), { status: "ok" })
+// The deployment always runs PostgreSQL and Redis, so both dependencies must report ok.
+const ready = await fetchTest(`${api}/ready`)
+assert.equal(ready.status, 200)
+assert.deepEqual(await ready.json(), {
+  status: "ready",
+  checks: { database: "ok", cache: "ok" },
+})
 const homepage = await fetchTest(web)
 assert.equal(homepage.status, 200)
 assert(

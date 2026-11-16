@@ -52,11 +52,12 @@ packages/              Reusable code exposed through package.json exports
   scripts/             Repository commands and maintenance checks
   typescript-config/   Shared strict compiler configuration
 tests/e2e/             Production browser, HTTP, and CLI tests
-docs/                  Architecture, configuration, and verification guides
-deploy/                Docker deployment configuration and operations
+docs/                  Architecture, configuration, operations, and verification guides
+deploy/                Docker Compose deployment, reverse proxy, and backups
+infra/                 Kubernetes manifests for clusters with managed data services
 ```
 
-Start with [architecture](docs/architecture.md) when choosing where code belongs, [configuration](docs/configuration.md) when connecting applications, and [contributing](CONTRIBUTING.md) when making changes. Every workspace has a README; scoped `AGENTS.md` files capture the same local constraints for coding agents.
+Start with [architecture](docs/architecture.md) when choosing where code belongs, [configuration](docs/configuration.md) when connecting applications, [adding a feature](docs/adding-a-feature.md) for the path through the workspaces, [operations](docs/operations.md) when running a deployment, and [contributing](CONTRIBUTING.md) when making changes. The [decision log](docs/decisions.md) records why the main constraints exist. Every workspace has a README; scoped `AGENTS.md` files capture the same local constraints for coding agents.
 
 ## Common commands
 
@@ -86,7 +87,7 @@ bun run docker:up
 bun run docker:status
 ```
 
-The deployment includes Web, API, PostgreSQL, Redis, S3, and one-shot migration/bucket initialization jobs. It uses separate configuration and volumes from local development. Runtime images contain Bun and built artifacts; the host needs neither Node.js nor Go. See [Docker deployment](deploy/README.md) for networking, configuration, and operations.
+The deployment includes Web, API, PostgreSQL, Redis, S3, and one-shot migration/bucket initialization jobs. It uses separate configuration and volumes from local development. Runtime images contain Bun and built artifacts; the host needs neither Node.js nor Go. See [Docker deployment](deploy/README.md) for networking, the optional HTTPS proxy, and backups, and [Kubernetes deployment](infra/README.md) for clusters with managed PostgreSQL, Redis, and S3.
 
 ## Dependency policy
 
