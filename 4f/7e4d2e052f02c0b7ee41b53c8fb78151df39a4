@@ -1,0 +1,67 @@
+packages/ui/src/styles/globals.css
+  s_440c51816ac966::t_81ef8f622160f7 13-27,62,74-120,125-158,167,170-171,178,181,184-186
+apps/desktop/main.go
+  s_440c51816ac966::t_81ef8f622160f7 33-34
+packages/ui/src/components/icon.tsx
+  s_440c51816ac966::t_8e8bb6f7212de8 1-39
+packages/ui/README.md
+  s_440c51816ac966::t_e7991e586b0805 29-31,41-43,55
+  s_440c51816ac966::t_677000d0fa8d4f 45-53
+  s_440c51816ac966::t_c4caebddba3194 44
+apps/web/src/routes/__root.tsx
+  s_440c51816ac966::t_81ef8f622160f7 46,48
+packages/ui/src/components/starter.tsx
+  s_440c51816ac966::t_3567798989d548 13,16-18
+packages/ui/src/lib/theme.ts
+  s_440c51816ac966::t_e7991e586b0805 11
+  s_440c51816ac966::t_81ef8f622160f7 3,8-9
+packages/ui/src/components/card.tsx
+  s_440c51816ac966::t_3567798989d548 14
+apps/web/src/routes/workbench.tsx
+  s_440c51816ac966::t_e7991e586b0805 257
+  s_440c51816ac966::t_677000d0fa8d4f 97-101,106-108,136-138,152-154,161-164,167-170,173-175,182-187,197-199,201-204,210-218,220,225-235,242-247,261-266,269-271,275-278,281-293,304-311,317-320,322-326,330-334,336-339,348-358,360-362,368-370,376-378
+  s_440c51816ac966::t_b7bda3dae927dd 25,34,43,52
+  s_440c51816ac966::t_f5f152c28df0f2 221
+  s_440c51816ac966::t_d6aa9d892b43db 316
+  s_440c51816ac966::t_8e8bb6f7212de8 1-24,26-33,35-42,44-51,53-96,102-105,109-135,139-151,155-160,165-166,171-172,176-181,188-196,200,205-209,219,222-224,236-241,248-256,258-260,267-268,272-274,279-280,294-303,312-315,321,327-329,335,340-347,359,363-367,371-375,379-384
+apps/web/src/routes/index.tsx
+  s_440c51816ac966::t_e7991e586b0805 34-36
+packages/ui/src/components/input.tsx
+  s_440c51816ac966::t_3567798989d548 11
+packages/ui/src/components/theme-toggle.tsx
+  s_440c51816ac966::t_677000d0fa8d4f 27-31
+  s_440c51816ac966::t_81ef8f622160f7 16-17
+packages/ui/src/components/risk-badge.tsx
+  s_440c51816ac966::t_8e8bb6f7212de8 1-24
+apps/web/src/routeTree.gen.ts
+  s_440c51816ac966::t_677000d0fa8d4f 15,34-38,54,62,71,77-78,80-89,96,124-130,152
+apps/desktop/src/routes/__root.tsx
+  s_440c51816ac966::t_81ef8f622160f7 31-32
+packages/ui/src/components/status-pill.tsx
+  s_440c51816ac966::t_8e8bb6f7212de8 1-26
+packages/ui/src/components/app-shell.tsx
+  s_440c51816ac966::t_3567798989d548 8,14,18,28
+packages/ui/src/components/button.tsx
+  s_440c51816ac966::t_677000d0fa8d4f 12
+  s_440c51816ac966::t_3567798989d548 6,11,23-30
+packages/ui/src/components/logo.tsx
+  s_440c51816ac966::t_3567798989d548 3,12
+packages/ui/src/components/badge.tsx
+  s_440c51816ac966::t_3567798989d548 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "4f7e4d2e052f02c0b7ee41b53c8fb78151df39a4",
+  "prompts": {},
+  "sessions": {
+    "s_440c51816ac966": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1e2e1-4f70-70b1-ab12-c9ca67baaf6e",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Zack <heyloyep@gmail.com>"
+    }
+  }
+}
