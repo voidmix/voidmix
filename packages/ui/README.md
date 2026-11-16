@@ -84,10 +84,15 @@ bun run ui:add @affectui/thinking-loader
 ```
 
 The registry needs a personal key. Put `AFFECTUI_TOKEN=<key>` in `packages/ui/.env.local`, which
-Git ignores; never commit it or place it in a `VITE_*` variable. Installed files are vendored
-source: review them like any other change. Where upstream code conflicts with this repository's
-lint rules, relax the specific rules at the top of that file with a comment, as
-`thinking-loader.tsx` does, instead of rewriting the component.
+Git ignores; never commit it or place it in a `VITE_*` variable. Installed files are vendored source: read them before committing. They are kept as shipped, with a
+provenance comment and `oxlint-disable` at the top, because upstream does not follow this
+repository's lint rules; files that also conflict with the strict compiler options carry
+`@ts-nocheck`. Their exported prop types still type-check every caller.
+
+Vendored so far: `thinking-loader`, `segmented-control`, `empty-state`, and `running-now` are used
+by the Web workbench. `permission-request`, `tool-call-card`, `inline-diff`, and `autonomy-dial`
+are installed but unused, because their built-in labels are English and have no label props;
+translate the strings in the file before using them in product screens.
 
 ## Icons and composition
 

@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import { Button } from "@voidmix/ui/components/button"
+import { EmptyState } from "@voidmix/ui/components/empty-state"
 import { Icon, type IconName } from "@voidmix/ui/components/icon"
 import { Kbd } from "@voidmix/ui/components/kbd"
 import { Logo } from "@voidmix/ui/components/logo"
 import { RiskBadge, type RiskLevel } from "@voidmix/ui/components/risk-badge"
+import { RunningNow, type RunningTaskState } from "@voidmix/ui/components/running-now"
+import { SegmentedControl } from "@voidmix/ui/components/segmented-control"
 import { StatusPill, type AgentStatus } from "@voidmix/ui/components/status-pill"
 import { ThinkingLoader } from "@voidmix/ui/components/thinking-loader"
 import { ThemeToggle } from "@voidmix/ui/components/theme-toggle"
@@ -437,9 +440,46 @@ function Workbench() {
             <Icon name="arrowRight" className="size-3" />
             <span className="truncate font-medium text-foreground">收件箱</span>
           </div>
-          <span className="flex shrink-0 items-center gap-1.5 rounded-sm bg-status-done px-1.5 py-0.5 text-xs font-medium text-status-done-foreground">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />2 个节点在线
-          </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <RunningNow
+              align="end"
+              tasks={agents.map((agent) => {
+                const waiting = pending.filter((request) => request.agent === agent.name).length
+                const state: RunningTaskState =
+                  agent.status === "done" ? "done" : waiting > 0 ? "needs-you" : "running"
+                return {
+                  id: agent.name,
+                  title: `${agent.name} · ${agent.task}`,
+                  step: waiting > 0 ? `等待你确认 ${waiting} 个操作` : agent.step,
+                  done: agent.steps[0],
+                  total: agent.steps[1],
+                  state,
+                }
+              })}
+              onOpen={() =>
+                document.getElementById("inbox")?.scrollIntoView({ behavior: "smooth" })
+              }
+              labels={{
+                title: "后台任务",
+                running: "个运行中",
+                needsYou: "个需要你",
+                needsYouOne: "个需要你",
+                needsYouBadge: "需要你",
+                paused: "已暂停",
+                pausedCount: "个已暂停",
+                done: "已完成",
+                pause: "暂停",
+                resume: "继续",
+                open: "打开",
+                openAll: "查看全部任务",
+                empty: "当前没有运行中的任务",
+                idle: "没有任务在运行",
+              }}
+            />
+            <span className="flex shrink-0 items-center gap-1.5 rounded-sm bg-status-done px-1.5 py-0.5 text-xs font-medium text-status-done-foreground">
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />2 个节点在线
+            </span>
+          </div>
         </header>
 
         <div className="mx-auto grid max-w-[1200px] items-start gap-6 p-4 sm:p-6 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -461,38 +501,17 @@ function Workbench() {
             </div>
 
             <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-              <fieldset className="min-w-0 border-0 p-0">
-                <legend className="sr-only">审批筛选</legend>
-                <div className="inline-flex gap-0.5 rounded-md bg-secondary p-0.5">
-                  {(
-                    [
-                      { value: "pending", label: "待处理", count: pending.length },
-                      { value: "processed", label: "已处理", count: processedCount },
-                      { value: "all", label: "全部" },
-                    ] as const
-                  ).map((tab) => (
-                    <button
-                      key={tab.value}
-                      type="button"
-                      aria-pressed={filter === tab.value}
-                      onClick={() => setFilter(tab.value)}
-                      className={cn(
-                        "flex h-6 items-center gap-1.5 rounded-sm px-2.5 text-sm font-medium outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring pointer-coarse:h-9",
-                        filter === tab.value
-                          ? "bg-card text-foreground shadow-surface"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      {tab.label}
-                      {"count" in tab && (
-                        <span className="font-mono text-xs font-normal text-muted-foreground tabular-nums">
-                          {tab.count}
-                        </span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
+              <SegmentedControl
+                aria-label="审批筛选"
+                size="sm"
+                value={filter}
+                onChange={setFilter}
+                options={[
+                  { value: "pending", label: "待处理", count: pending.length },
+                  { value: "processed", label: "已处理", count: processedCount },
+                  { value: "all", label: "全部" },
+                ]}
+              />
               {/* Shortcut legend: hidden on touch devices, where there is no keyboard to use it. */}
               <p className="flex items-center gap-3 text-xs text-muted-foreground pointer-coarse:hidden">
                 <span className="flex items-center gap-1">
@@ -535,25 +554,30 @@ function Workbench() {
                 />
               ))}
               {visible.length === 0 && (
-                <div className="surface px-4 py-10 text-center">
-                  <span className="mx-auto mb-3 flex size-8 items-center justify-center rounded-md bg-status-done text-status-done-foreground">
-                    <Icon name={needle ? "search" : "check"} className="size-4" />
-                  </span>
-                  <h2 className="font-medium">
-                    {needle
+                <EmptyState
+                  icon={<Icon name={needle ? "search" : "check"} className="size-4" />}
+                  title={
+                    needle
                       ? "没有匹配的请求"
                       : filter === "pending"
                         ? "全部处理好了"
-                        : "还没有新的处理记录"}
-                  </h2>
-                  <p className="mt-1 text-muted-foreground">
-                    {needle
+                        : "还没有新的处理记录"
+                  }
+                  text={
+                    needle
                       ? "换个关键词，或清空搜索再看看。"
                       : filter === "pending"
                         ? "代理可以继续工作了，有新请求时会出现在这里。"
-                        : "本次处理的请求会显示在这里。"}
-                  </p>
-                </div>
+                        : "本次处理的请求会显示在这里。"
+                  }
+                  action={
+                    needle ? (
+                      <Button variant="secondary" size="sm" onClick={() => setQuery("")}>
+                        清空搜索
+                      </Button>
+                    ) : undefined
+                  }
+                />
               )}
             </div>
 

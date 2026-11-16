@@ -1,7 +1,7 @@
-/* Vendored from the @affectui registry (`bun run ui:add @affectui/thinking-loader`) and kept
-   verbatim so a later update diffs cleanly. The upstream file reads the clock and a ref during
-   render and uses role="status"; those repository rules are relaxed for this file only. */
-/* oxlint-disable react/purity, react/refs, jsx-a11y/prefer-tag-over-role */
+/* Vendored from the @affectui registry (`bun run ui:add @affectui/thinking-loader`) and kept as shipped so a
+   later update diffs cleanly. Upstream does not follow this repository's lint rules, so linting is
+   off for this file; review changes to it by reading the diff. */
+/* oxlint-disable */
 "use client"
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
