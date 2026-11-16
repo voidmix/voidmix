@@ -1,0 +1,24 @@
+packages/ui/src/components/kbd.tsx
+  s_ccb2206306ae02::t_f17c3e648926cd 1-15
+apps/web/src/routes/workbench.tsx
+  s_ccb2206306ae02::t_e72a9ec4035df5 2,5,18,20-29,38,43,52,54,59,66-79,81,86,98,101,106,115-116,119-120,131,134,143,146,155,158,177,180-206,218-222,225,228-229,231-233,242-243,247-273,276-324,347,354-357,399,462-515,523-531,533,569-635,662-668,672-675,677,681-684,686,691,707-713,716-721,728-731,734,776-845,855-871,874-884,891,895-899,909,931-939,941-942,965-967
+  s_ccb2206306ae02::t_6d40238c09f9a4 968-971,993
+packages/ui/src/components/icon.tsx
+  s_ccb2206306ae02::t_7e6f0fdb1dfc99 3-4,6,15,30-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "4a4434cfed6872e87ee274fd26794742f731037a",
+  "prompts": {},
+  "sessions": {
+    "s_ccb2206306ae02": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4fa021c0-c7ee-4e5a-a43d-3fc546d8d5a8",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Zack <heyloyep@gmail.com>"
+    }
+  }
+}
