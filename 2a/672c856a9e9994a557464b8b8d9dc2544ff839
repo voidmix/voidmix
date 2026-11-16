@@ -1,0 +1,37 @@
+apps/web/src/routes/workbench.tsx
+  s_ccb2206306ae02::t_8b57f348f63beb 4,9-10,443-482,504-514,557-560,564-567,571-580
+packages/ui/README.md
+  s_ccb2206306ae02::t_4bec3c5cd24c20 87-95
+packages/ui/src/components/autonomy-dial.tsx
+  s_ccb2206306ae02::t_a261fc121e585e 1-620
+packages/ui/src/components/empty-state.tsx
+  s_ccb2206306ae02::t_1e40eef461ce92 1-216
+packages/ui/src/components/inline-diff.tsx
+  s_ccb2206306ae02::t_982755d4742287 1-1159
+packages/ui/src/components/permission-request.tsx
+  s_ccb2206306ae02::t_d2ba31524fbafc 1-770
+packages/ui/src/components/running-now.tsx
+  s_ccb2206306ae02::t_120320d5d815a0 1-851
+packages/ui/src/components/segmented-control.tsx
+  s_ccb2206306ae02::t_9a3b5cbd989c0d 1-620
+packages/ui/src/components/thinking-loader.tsx
+  s_ccb2206306ae02::t_d158db42bc841b 1-4
+packages/ui/src/components/tool-call-card.tsx
+  s_ccb2206306ae02::t_aa7b3759b97ee3 1-975
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "2a672c856a9e9994a557464b8b8d9dc2544ff839",
+  "prompts": {},
+  "sessions": {
+    "s_ccb2206306ae02": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4fa021c0-c7ee-4e5a-a43d-3fc546d8d5a8",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Zack <heyloyep@gmail.com>"
+    }
+  }
+}
