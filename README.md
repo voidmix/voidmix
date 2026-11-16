@@ -70,6 +70,7 @@ Start with [architecture](docs/architecture.md) when choosing where code belongs
 | `bun run check:mobile`    | Check Expo SDK compatibility                                |
 | `bun run test:scripts`    | Test maintenance tooling                                    |
 | `bun run test:logger`     | Test logging, redaction, and request isolation              |
+| `bun run test:api`        | Test API composition, authorization, config, and shutdown   |
 | `bun run test:go`         | Test native authentication with the Go race detector        |
 | `bun run test:e2e`        | Build and test all production application entry points      |
 | `bun run ui:add tooltip`  | Add a shared Base UI component                              |

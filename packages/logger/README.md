@@ -49,4 +49,4 @@ bun run test:logger
 bun run check
 ```
 
-Tests exercise JSON output, redaction, level filtering, request IDs, HTTP errors, concurrent request isolation, and shared Hono/oRPC emission. They use the API's actual request/error middleware so adapter behavior remains covered.
+Package tests exercise JSON output, redaction, configuration, concurrent request isolation, and shared Hono/oRPC emission through the public logging adapters. They do not import API code. Application-specific level handling, request IDs, and HTTP errors are tested through `createApp` by `bun run test:api`.

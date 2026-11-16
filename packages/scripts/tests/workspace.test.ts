@@ -134,3 +134,22 @@ test("requires workspace documentation and workspace protocols", async () => {
   await rm(join(root, "apps/web/README.md"))
   expect((await checkWorkspace(root)).issues).toHaveLength(2)
 })
+
+test("only the API entry point and lifecycle plugins may import its process runtime", async () => {
+  const root = await fixture()
+  await workspace(
+    root,
+    "apps/api",
+    { name: "@voidmix/api-server" },
+    {
+      "server.ts": 'import "./src/runtime"',
+      "src/plugins/resources.ts": 'import "../runtime"',
+      "src/routes/auth.ts": 'import "../runtime"',
+      "src/middleware/session.ts": 'import "../runtime.ts"',
+      "src/app.ts": 'import "./runtime.js"',
+    },
+  )
+  const report = await checkWorkspace(root)
+  expect(report.issues).toHaveLength(3)
+  for (const issue of report.issues) expect(issue.message).toContain("inject dependencies")
+})

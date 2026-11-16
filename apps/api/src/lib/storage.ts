@@ -1,25 +1,23 @@
-import { createObjectStorage, type ObjectStorage } from "@voidmix/storage/client"
+import {
+  createObjectStorage,
+  type ObjectStorage,
+  type ObjectStorageOptions,
+} from "@voidmix/storage/client"
 
-import { requiredEnv } from "./env"
+/** Lazy handles stay local to one resource owner; creating one does not contact S3. */
+export function createStorageResource(options: ObjectStorageOptions | undefined) {
+  let storage: ObjectStorage | undefined
 
-let storage: ObjectStorage | undefined
-
-/** Disabled without a bucket; creating the process-local handle does not contact S3. */
-export function getStorage(): ObjectStorage | null {
-  if (!process.env.S3_BUCKET?.trim()) return null
-  storage ??= createObjectStorage({
-    endpoint: requiredEnv("S3_ENDPOINT"),
-    bucket: requiredEnv("S3_BUCKET"),
-    region: requiredEnv("S3_REGION"),
-    accessKeyId: requiredEnv("S3_ACCESS_KEY_ID"),
-    secretAccessKey: requiredEnv("S3_SECRET_ACCESS_KEY"),
-    prefix: process.env.S3_PREFIX?.trim() || "voidmix",
-  })
-  return storage
-}
-
-export async function closeStorage() {
-  const current = storage
-  storage = undefined
-  await current?.dispose()
+  return {
+    get(): ObjectStorage | null {
+      if (!options) return null
+      storage ??= createObjectStorage(options)
+      return storage
+    },
+    async close() {
+      const current = storage
+      storage = undefined
+      await current?.dispose()
+    },
+  }
 }

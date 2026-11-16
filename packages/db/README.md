@@ -26,7 +26,7 @@ try {
 }
 ```
 
-`createDatabase` returns a lazy Drizzle database and its pool. The default maximum is ten connections **per process**, with five-second connection and thirty-second idle timeouts. Long-lived servers reuse the pool. The API owns it in `apps/api/src/lib/database.ts` and closes it through Nitro's resource plugin. One-shot scripts close it in `finally`.
+`createDatabase` returns a lazy Drizzle database and its pool. The default maximum is ten connections **per process**, with five-second connection and thirty-second idle timeouts. Long-lived servers reuse the pool. The API resource owner in `apps/api/src/resources.ts` creates it and closes it through Nitro's resource plugin. One-shot scripts close it in `finally`.
 
 `@voidmix/db/migrate` exports `migrateDatabase(connectionString)`, which uses a single-connection pool, resolves SQL relative to its module, and always closes the pool.
 

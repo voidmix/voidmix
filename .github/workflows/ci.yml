@@ -60,6 +60,7 @@ jobs:
       - run: bun run doctor --tools-only
       - run: bun run test:scripts
       - run: bun run test:logger
+      - run: bun run test:api
       - run: bun run test:go
       - run: bun run test:cache
       - name: Start local S3 storage

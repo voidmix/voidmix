@@ -13,18 +13,20 @@ Redis 8 listens on `127.0.0.1:6379`, with a 128 MB `allkeys-lru` cache and no pe
 ## API usage
 
 ```ts
-import { getCache } from "../lib/cache"
+import type { Cache } from "@voidmix/cache/client"
 import { getJson, setJson } from "@voidmix/cache/json"
 
-const cache = await getCache()
-if (cache) {
+async function cacheExample(getCache: () => Promise<Cache | null>) {
+  const cache = await getCache()
+  if (!cache) return
   await setJson(cache, "example:123", { title: "Voidmix" }, 60)
   const value = await getJson<{ title: string }>(cache, "example:123")
   await cache.del("example:123")
+  return value
 }
 ```
 
-`getCache()` returns `null` without `REDIS_URL`. Otherwise it shares one lazy connection attempt per API process. Failed initialization clears the promise so a later call can retry. The Nitro resource plugin closes it. Cache failures reject; business code decides whether to fail or read the source of truth.
+Pass `getCache` from the API resource owner into its consumer. It returns `null` without `REDIS_URL` and otherwise shares one lazy connection attempt per resource owner. Failed initialization clears the promise so a later call can retry. The Nitro resource plugin closes it. Cache failures reject; business code decides whether to fail or read the source of truth.
 
 `getJson<T>` returns `null` for a miss and rejects malformed JSON. The type argument does not perform runtime validation. `setJson` requires an explicit positive integer TTL in seconds and a JSON-serializable value.
 

@@ -1,21 +1,26 @@
 import { afterEach, beforeEach, expect, spyOn, test } from "bun:test"
 import { Hono } from "hono"
-import { HTTPException } from "hono/http-exception"
 import { os } from "@orpc/server"
 import { RPCHandler } from "@orpc/server/fetch"
 
-import { configureLogger, createLogger, log, type WideEvent, type AuditableLogger } from "../src"
-import { useLogger } from "../src/hono"
+import {
+  configureLogger,
+  createLogger,
+  log,
+  toMiddlewareOptions,
+  type WideEvent,
+  type AuditableLogger,
+  type EvlogConfig,
+} from "../src"
+import { useLogger, evlog, type EvlogVariables } from "../src/hono"
 import { rpcLogger } from "../src/orpc"
-import { loggerMiddleware } from "../../../apps/api/src/middleware/logger"
-import { errorHandler } from "../../../apps/api/src/middleware/error"
-import type { ApiEnv } from "../../../apps/api/src/lib/context"
 
 let events: WideEvent[]
+let config: EvlogConfig
 
 beforeEach(() => {
   events = []
-  configureLogger("voidmix-test", {
+  config = configureLogger("voidmix-test", {
     env: { NODE_ENV: "test" },
     silent: true,
     drain: ({ event }) => {
@@ -29,9 +34,8 @@ afterEach(() => {
 })
 
 function app() {
-  const server = new Hono<ApiEnv>()
-  server.use("*", ...loggerMiddleware)
-  server.onError(errorHandler)
+  const server = new Hono<EvlogVariables>()
+  server.use("*", evlog(toMiddlewareOptions(config)))
   return server
 }
 
@@ -82,72 +86,9 @@ test("脱敏覆盖嵌套凭据、Cookie、设备授权码及错误中的数据�
   expect(context.user.password).toBe("plain-password")
 })
 
-test("LOG_LEVEL 同时过滤普通日志与请求事件", async () => {
-  configureLogger("filtered", {
-    env: { NODE_ENV: "test", LOG_LEVEL: "warn" },
-    silent: true,
-    drain: ({ event }) => {
-      events.push(event)
-    },
-  })
-  log.info({ action: "hidden" })
-  const server = app().get("/ok", (c) => c.json({ ok: true }))
-  const response = await server.request("/ok")
-  expect(response.status).toBe(200)
-  expect(events).toHaveLength(0)
-  await server.request("/missing")
-  expect(events).toHaveLength(1)
-  expect(events[0]).toMatchObject({ status: 404, level: "warn" })
-})
-
 test("错误的日志配置会在启动时报告变量名称", () => {
   expect(() => configureLogger("invalid", { env: { LOG_FORMAT: "xml" } })).toThrow("LOG_FORMAT")
   expect(() => configureLogger("invalid", { env: { LOG_LEVEL: "verbose" } })).toThrow("LOG_LEVEL")
-})
-
-test("请求 ID 在日志和响应中一致，查询参数、请求体与凭据不进入事件", async () => {
-  const server = app().post("/example", (c) => c.json({ ok: true }))
-  const response = await server.request("/example?token=private-query", {
-    method: "POST",
-    headers: {
-      "X-Request-Id": "request-example",
-      Authorization: "Bearer private-credential",
-      Cookie: "session=private-cookie",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ password: "private-body" }),
-  })
-  expect(response.headers.get("X-Request-Id")).toBe("request-example")
-  expect(events).toHaveLength(1)
-  expect(events[0]).toMatchObject({
-    method: "POST",
-    path: "/example",
-    requestId: "request-example",
-    status: 200,
-  })
-  expect(typeof events[0]!.durationMs).toBe("number")
-  expect(JSON.stringify(events)).not.toMatch(/private-(query|credential|cookie|body)/)
-})
-
-test("无效或过长的请求 ID 被替换，错误响应仍带关联 ID", async () => {
-  const server = app().get("/error", () => {
-    throw new Error("private implementation detail")
-  })
-  for (const value of ["invalid id", "a".repeat(129)]) {
-    const response = await server.request("/error", { headers: { "X-Request-Id": value } })
-    expect(response.status).toBe(500)
-    expect(await response.text()).toBe("Internal Server Error")
-    const id = response.headers.get("X-Request-Id")
-    expect(id).toMatch(/^[a-f0-9-]{36}$/)
-    expect(events.at(-1)).toMatchObject({ requestId: id, status: 500, level: "error" })
-    expect(events.at(-1)).toHaveProperty("error.message", "private implementation detail")
-  }
-  const denied = app().get("/denied", () => {
-    throw new HTTPException(403, { message: "Denied" })
-  })
-  const response = await denied.request("/denied")
-  expect(response.status).toBe(403)
-  expect(await response.text()).toBe("Denied")
 })
 
 test("并发异步请求的 useLogger 上下文互相隔离", async () => {
@@ -164,8 +105,7 @@ test("并发异步请求的 useLogger 上下文互相隔离", async () => {
   )
   expect(events).toHaveLength(2)
   for (const name of ["slow", "fast"]) {
-    expect(events.find((event) => event.requestId === `request-${name}`)).toMatchObject({
-      path: `/${name}`,
+    expect(events.find((event) => event.path === `/${name}`)).toMatchObject({
       task: name,
     })
   }

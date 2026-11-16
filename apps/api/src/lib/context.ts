@@ -6,3 +6,9 @@ export type ApiEnv = {
   Variables: EvlogVariables["Variables"] & { session: AuthSession | null; requestId: string }
 }
 export type RpcContext = { headers: Headers; session: AuthSession | null; log: AuditableLogger }
+
+/** Only the two auth operations the HTTP application needs, rather than the entire auth SDK. */
+export interface ApiAuth {
+  handler: (request: Request) => Promise<Response>
+  api: { getSession: (input: { headers: Headers }) => Promise<AuthSession | null> }
+}

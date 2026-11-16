@@ -18,6 +18,7 @@
     "services:status": "bun run repo services:status",
     "test:scripts": "turbo run test --filter=@voidmix/scripts --",
     "test:logger": "turbo run test --filter=@voidmix/logger --",
+    "test:api": "turbo run test --filter=@voidmix/api-server --",
     "docker:init": "bun run repo docker:init",
     "docker:build": "bun run repo docker:build",
     "docker:up": "bun run repo docker:up",

@@ -8,7 +8,7 @@ Typical changes:
 
 | Change                  | Files to start with                                   | Verification                                       |
 | ----------------------- | ----------------------------------------------------- | -------------------------------------------------- |
-| HTTP/RPC behavior       | `packages/api/src/contract.ts`, `apps/api/src/routes` | API build and `api` E2E project                    |
+| HTTP/RPC behavior       | `packages/api/src/contract.ts`, `apps/api/src/routes` | `test:api`, API build, and `api` E2E project       |
 | Web page                | `apps/web/src/routes`, app-local components           | Web build and browser E2E projects                 |
 | Native desktop behavior | `apps/desktop/*.go`, generated bindings               | `test:go`, frontend build, native package          |
 | Mobile behavior         | `apps/mobile/src/app`, `src/lib`                      | `check:mobile`, build, `expo-web`, native device   |
@@ -33,6 +33,8 @@ Run the tests appropriate to the changed behavior; see [testing](docs/testing.md
 ## Code and comments
 
 Use strict TypeScript, double quotes, no semicolons, and Oxfmt formatting. Use `gofmt` for Go. Prefer named public subpaths over broad barrel exports. Framework middleware belongs next to its transport adapter; application configuration and resource ownership stay at the application entry point.
+
+API HTTP behavior is assembled by `src/app.ts` with explicit dependencies. Keep environment reads and process instances in `src/runtime.ts`; only the server entry and lifecycle plugins import it. Add resource acquisition and disposal together in `src/resources.ts`, then pass the capability to its consumer. Test HTTP behavior through the same factory with an in-memory auth adapter; keep shared package tests independent of application policy.
 
 Write documentation and comments in English. Preserve the current user-facing language unless a product change calls for translation. Comments should explain invariants, ordering, ownership, recovery, or compatibility workarounds. Document public helpers with resource lifetime and error semantics when those details are not obvious from their types. Update nearby comments when behavior changes.
 

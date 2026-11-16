@@ -122,6 +122,17 @@ export async function checkWorkspace(root: string) {
           if ((target === ".." || target.startsWith("../")) && !isTest) {
             issue(sourcePath, `Import ${specifier} through its workspace's public exports.`)
           }
+          if (
+            directory === "apps/api" &&
+            /^src\/runtime(?:\.[cm]?[jt]s)?$/.test(target) &&
+            file !== "server.ts" &&
+            !file.startsWith("src/plugins/")
+          ) {
+            issue(
+              sourcePath,
+              "Only server.ts and lifecycle plugins may import the API runtime; inject dependencies elsewhere.",
+            )
+          }
           continue
         }
         const name = packageName(specifier)

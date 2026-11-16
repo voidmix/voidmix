@@ -35,7 +35,9 @@ Existing files are preserved, including during concurrent initialization. New en
 | `LOG_LEVEL`                                 | API                    | `trace`, `debug`, `info`, `warn`, `error`, or `fatal`; default `info`      |
 | `LOG_FORMAT`                                | API                    | `pretty` or `json`; defaults to pretty in development, JSON otherwise      |
 
-Auth configuration is required at server startup. PostgreSQL connects on first use. Redis and S3 are optional and connect only when used. If S3 is enabled, all S3 connection fields are required. Shared library factories take configuration explicitly rather than reading `.env` themselves.
+The API runtime calls `loadApiConfig(process.env)` once at startup. The configuration function itself has no process or infrastructure side effects; routes and middleware receive its values through application composition. Restart the API after changing runtime settings.
+
+Auth configuration is required at server startup. PostgreSQL connects on first use. Redis and S3 are optional and connect only when used. If S3 is enabled, all S3 connection fields are required at startup, even before the first storage operation. Shared library factories take configuration explicitly rather than reading `.env` themselves.
 
 CORS defaults allow local Expo Web origins outside production. An explicit empty `CORS_ORIGINS` disables that list. Auth origin validation remains enabled in all environments; development additionally trusts local Web and Expo Web origins. CORS permission and authentication trust are distinct settings.
 

@@ -6,7 +6,8 @@
 | ---------------------- | ------------------------------------------------------------------------------------ | --------------------------------- |
 | `bun run check`        | Lint, formatting, workspace structure, TypeScript, generated routes/bindings, Go vet | None                              |
 | `bun run test:scripts` | Environment file protection, command plans, process behavior, workspace policies     | Temporary files and processes     |
-| `bun run test:logger`  | JSON, redaction, levels, IDs, errors, request isolation, Hono/oRPC integration       | None                              |
+| `bun run test:logger`  | JSON, redaction, request isolation, shared Hono/oRPC adapters                        | None                              |
+| `bun run test:api`     | HTTP factory, auth/CORS ordering, authorization, request logging, config, shutdown   | None                              |
 | `bun run test:go`      | Keyring ownership, restore, cancellation, failure revocation, races                  | Go HTTP fixtures and fake keyring |
 | `bun run test:cache`   | Real Redis JSON, TTL, isolation, failures                                            | Explicit test Redis               |
 | `bun run test:storage` | Real S3 JSON/binary, headers, metadata, paging, scoped deletion, failures            | Explicit test S3                  |
@@ -15,6 +16,8 @@
 | `bun run test:e2e`     | Built browser, HTTP, auth, and CLI flows                                             | Explicit test PostgreSQL          |
 
 Bun test fits the existing server helpers and repository tools: they run on Bun and need real timers, filesystem, processes, or backend services. Playwright covers browser behavior and HTTP integration; Go uses its native test and race tools. Add Vitest if a future requirement needs its specific Vite transformations or test ecosystem. There is no parallel test runner configuration to maintain today.
+
+API tests import `src/app.ts`, not `server.ts` or `src/runtime.ts`. They supply an in-memory auth adapter and explicit logger/origin settings, then use Hono's in-process request interface. This covers the real middleware and RPC implementation without a PostgreSQL connection or environment mutation. Resource tests use unreachable endpoints to verify lazy construction, owner isolation, and repeated/failing shutdown. They do not replace E2E coverage of Better Auth and the real database.
 
 ## Browser, API, and CLI E2E
 

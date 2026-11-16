@@ -40,6 +40,7 @@ By default it also validates required auth/PostgreSQL settings and enabled Redis
 - Shared packages and applications do not depend on other applications; E2E may depend on app artifacts.
 - Browser-facing modules do not directly import server infrastructure or auth construction.
 - Runtime workspace dependencies are acyclic, and root dependency constraints use `resolutions`.
+- Only the API server entry and lifecycle plugins import its process runtime; HTTP modules receive dependencies explicitly.
 
 The checker is read-only and needs the installed TypeScript dependency. It is loaded lazily so bootstrap commands such as `docker:init` and deployment management continue to run before `bun install`. The check is structural: it does not prove arbitrary dynamic imports or complete bundle security.
 

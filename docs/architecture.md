@@ -57,9 +57,21 @@ Applications may depend on shared packages. Shared packages do not depend on app
 5. RPC session middleware resolves Cookie or Bearer credentials once.
 6. oRPC validates the shared contract and enriches the existing event with the operation name. `requireSession` protects selected procedures.
 
-`src/lib/database.ts` owns one lazy PostgreSQL pool per process. `src/lib/cache.ts` shares a lazy Redis connection attempt and clears failed initialization so later calls can retry. `src/lib/storage.ts` lazily creates one S3 handle. Shared factories never read application configuration.
+The API separates three kinds of ownership:
 
-`src/plugins/resources.ts` releases the pool, Redis client, and storage handle when Nitro closes. It attempts every cleanup and reports errors after all settle. Add new process-owned resource cleanup there. Avoid opening pools per request or at shared-package import time.
+| Module             | Interface and responsibility                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `src/config.ts`    | `loadApiConfig(env)` produces a configuration snapshot without reading process globals.                             |
+| `src/resources.ts` | `createApiResources(config)` owns one lazy PostgreSQL pool, auth instance, optional Redis/S3 handles, and shutdown. |
+| `src/app.ts`       | `createApp({ auth, corsOrigins, logger })` assembles HTTP behavior without constructing infrastructure.             |
+
+`src/runtime.ts` is the process composition root: it reads the environment, initializes logging, and creates the resource owner. Only `server.ts` and Nitro lifecycle plugins import it; `check:workspace` enforces this direct-import rule. Routes and middleware receive narrow capabilities. Adding a new dependency means wiring it through the factory rather than importing a hidden singleton.
+
+Redis shares one connection attempt per resource owner and clears failed initialization so later calls can retry. S3 creates one lazy handle per owner. Shared library factories never read application configuration. Enabled S3 requires complete connection settings at startup; neither construction nor builds contact its backend.
+
+`src/plugins/resources.ts` delegates to the owner's `close()` when Nitro closes. Shutdown is shared and idempotent, rejects new resource acquisition, attempts every cleanup, and reports failures after all settle. Add each new process-owned resource and its cleanup together in `src/resources.ts`. Avoid opening pools per request or at shared-package import time.
+
+HTTP tests instantiate the same `createApp` with an in-memory auth adapter, exercising middleware order, authorization, validation, errors, and instance isolation without a database. Shared logger tests stay inside their package; application request IDs and response policy belong to API tests. Standalone evlog configuration remains process-wide, so configuring multiple log services in one process is not an isolation guarantee.
 
 ## Authentication and credentials
 

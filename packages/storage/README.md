@@ -58,7 +58,7 @@ try {
 }
 ```
 
-In API code, reuse `getStorage()` from `apps/api/src/lib/storage.ts`; Nitro disposes it at shutdown. Construction and builds send no S3 requests; operations reject on backend errors. Reads return `null` when absent; JSON generics are not runtime validation.
+In API code, receive `getStorage()` from the application resource owner through an explicit dependency; Nitro disposes it at shutdown. Enabled S3 requires complete settings at startup. Construction and builds send no S3 requests; operations reject on backend errors. Reads return `null` when absent; JSON generics are not runtime validation.
 
 The prefix defaults to `voidmix`. `clear("temporary")` deletes only that directory under the prefix; `clear()` deletes the whole current prefix. Sibling directory names do not match. List operations traverse pagination; bulk deletion uses batches of at most 1,000 keys. Use `bulkDelete: false` for providers without bulk deletion support.
 

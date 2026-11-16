@@ -27,7 +27,7 @@
 ## Verification
 
 - `bun run check` runs lint, formatting, structural dependency checks, TypeScript generation/checking, and Go vet.
-- `bun run test:scripts`, `test:logger`, and `test:go` exercise tooling, logs, and native auth without external data services.
+- `bun run test:scripts`, `test:logger`, `test:api`, and `test:go` exercise tooling, shared logs, API composition, and native auth without external data services.
 - `bun run build` builds all application assets. Use workspace filters for a narrow iteration loop.
 - `bun run check:mobile` verifies Expo compatibility. Infrastructure tests and project-specific E2E setup are documented in `docs/testing.md`.
 - Run checks appropriate to changed behavior. Clearly distinguish browser/simulated native checks from real WebView/device verification.

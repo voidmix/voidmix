@@ -1,5 +1,7 @@
 import { Hono } from "hono"
 
-import { auth } from "../lib/auth"
+import type { ApiAuth } from "../lib/context"
 
-export const authRoutes = new Hono().all("/api/auth/*", (c) => auth.handler(c.req.raw))
+export function createAuthRoutes(auth: ApiAuth) {
+  return new Hono().all("/api/auth/*", (c) => auth.handler(c.req.raw))
+}

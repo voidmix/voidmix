@@ -116,6 +116,9 @@
     "@voidmix/logger#test": {
       "cache": false
     },
+    "@voidmix/api-server#test": {
+      "cache": false
+    },
     "@voidmix/storage#test": {
       "cache": false,
       "passThroughEnv": [
