@@ -1,0 +1,26 @@
+{
+  "name": "@voidmix/cli",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "voidmix": "./dist/voidmix.js"
+  },
+  "type": "module",
+  "scripts": {
+    "cli": "bun src/index.ts",
+    "build": "bun scripts/build.ts",
+    "build:binary": "bun build ./src/index.ts --compile --outfile=build/voidmix --no-compile-autoload-dotenv --no-compile-autoload-bunfig",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@voidmix/api": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "@voidmix/typescript-config": "workspace:*",
+    "typescript": "~6.0.2"
+  },
+  "engines": {
+    "bun": ">=1.4.4"
+  }
+}

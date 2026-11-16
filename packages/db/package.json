@@ -1,0 +1,29 @@
+{
+  "name": "@voidmix/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./client": "./src/client.ts",
+    "./schema": "./src/schema/index.ts",
+    "./migrate": "./src/migrate.ts"
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "bun scripts/migrate.ts",
+    "check": "drizzle-kit check",
+    "studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/pg": "^8.23.1",
+    "@voidmix/typescript-config": "workspace:*",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "~6.0.2"
+  }
+}

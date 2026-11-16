@@ -1,0 +1,28 @@
+{
+  "name": "@voidmix/auth",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": "./src/server.ts",
+    "./client": "./src/client.ts",
+    "./device": "./src/device.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@voidmix/db": "workspace:*",
+    "better-auth": "1.7.25"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@voidmix/typescript-config": "workspace:*",
+    "react": "19.3.0",
+    "typescript": "~6.0.2"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0"
+  }
+}

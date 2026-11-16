@@ -1,0 +1,29 @@
+{
+  "name": "@voidmix/api-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port ${API_PORT:-3002} --host ${API_HOST:-127.0.0.1} --strictPort",
+    "build": "vite build",
+    "start": "PORT=${API_PORT:-3002} bun .output/server/index.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orpc/server": "^1.16.2",
+    "@voidmix/api": "workspace:*",
+    "@voidmix/auth": "workspace:*",
+    "@voidmix/cache": "workspace:*",
+    "@voidmix/db": "workspace:*",
+    "@voidmix/logger": "workspace:*",
+    "@voidmix/storage": "workspace:*",
+    "hono": "^4.13.18"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@voidmix/typescript-config": "workspace:*",
+    "nitro": "3.0.261103-rc",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.8"
+  }
+}

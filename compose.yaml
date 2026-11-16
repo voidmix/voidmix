@@ -1,0 +1,61 @@
+services:
+  s3:
+    image: rustfs/rustfs:1.0.5
+    command: ["/data"]
+    environment:
+      RUSTFS_ACCESS_KEY: voidmix
+      RUSTFS_SECRET_KEY: voidmix-local-storage
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_OBS_LOGGER_LEVEL: error
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - s3-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:8-alpine
+    command:
+      [
+        "redis-server",
+        "--save",
+        "",
+        "--appendonly",
+        "no",
+        "--maxmemory",
+        "128mb",
+        "--maxmemory-policy",
+        "allkeys-lru",
+      ]
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: voidmix
+      POSTGRES_PASSWORD: voidmix
+      POSTGRES_DB: voidmix
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U voidmix -d voidmix"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  s3-data:
+  postgres-data:

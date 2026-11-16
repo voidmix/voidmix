@@ -1,0 +1,41 @@
+{
+  "name": "@voidmix/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 1420 --strictPort",
+    "dev:native": "mygo dev",
+    "build": "vite build",
+    "build:native": "mygo build",
+    "preview": "vite preview dist --outDir client --host 127.0.0.1 --port ${DESKTOP_PORT:-1420} --strictPort",
+    "generate": "mygo generate",
+    "generate-routes": "tsr generate",
+    "typecheck": "bun run generate && bun run generate-routes && tsc --noEmit",
+    "check:go": "go vet ./...",
+    "ui:add": "shadcn add",
+    "test": "go test -race ./..."
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.170.46",
+    "@tanstack/react-start": "^1.169.5",
+    "@voidmix/ui": "workspace:*",
+    "mygo-runtime": "0.9.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@tanstack/router-cli": "^1.168.0",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "@voidmix/typescript-config": "workspace:*",
+    "mygo-cli": "0.9.1",
+    "shadcn": "^4.23.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.8"
+  }
+}

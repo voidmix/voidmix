@@ -1,0 +1,130 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["bunfig.toml"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".output/**", ".nitro/**"],
+      "env": ["VITE_API_URL"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
+    "@voidmix/mobile#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
+      "env": ["EXPO_PUBLIC_API_URL"]
+    },
+    "test:e2e": {
+      "dependsOn": [
+        "@voidmix/api-server#build",
+        "@voidmix/web#build",
+        "@voidmix/desktop#build",
+        "@voidmix/mobile#build",
+        "@voidmix/cli#build"
+      ],
+      "cache": false,
+      "passThroughEnv": ["CI", "E2E_DATABASE_URL"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "API_ORIGIN",
+        "API_PORT",
+        "API_HOST",
+        "CORS_ORIGINS",
+        "EXPO_PUBLIC_API_URL",
+        "DATABASE_URL",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_SECRET",
+        "AUTH_TRUSTED_ORIGINS",
+        "WEB_HOST",
+        "VITE_API_URL",
+        "REDIS_URL",
+        "S3_ENDPOINT",
+        "S3_BUCKET",
+        "S3_REGION",
+        "S3_ACCESS_KEY_ID",
+        "S3_SECRET_ACCESS_KEY",
+        "S3_PREFIX",
+        "LOG_LEVEL",
+        "LOG_FORMAT"
+      ]
+    },
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "API_ORIGIN",
+        "API_PORT",
+        "CORS_ORIGINS",
+        "PORT",
+        "HOST",
+        "DATABASE_URL",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_SECRET",
+        "AUTH_TRUSTED_ORIGINS",
+        "REDIS_URL",
+        "S3_ENDPOINT",
+        "S3_BUCKET",
+        "S3_REGION",
+        "S3_ACCESS_KEY_ID",
+        "S3_SECRET_ACCESS_KEY",
+        "S3_PREFIX",
+        "LOG_LEVEL",
+        "LOG_FORMAT"
+      ]
+    },
+    "@voidmix/desktop#dev:native": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "API_ORIGIN",
+        "API_PORT",
+        "API_HOST",
+        "CORS_ORIGINS",
+        "EXPO_PUBLIC_API_URL",
+        "DATABASE_URL",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_SECRET",
+        "AUTH_TRUSTED_ORIGINS",
+        "WEB_HOST",
+        "VITE_API_URL",
+        "REDIS_URL",
+        "S3_ENDPOINT",
+        "S3_BUCKET",
+        "S3_REGION",
+        "S3_ACCESS_KEY_ID",
+        "S3_SECRET_ACCESS_KEY",
+        "S3_PREFIX",
+        "LOG_LEVEL",
+        "LOG_FORMAT"
+      ],
+      "with": ["@voidmix/api-server#dev", "@voidmix/web#dev"]
+    },
+    "@voidmix/cache#test": {
+      "cache": false,
+      "passThroughEnv": ["TEST_REDIS_URL"]
+    },
+    "@voidmix/scripts#test": {
+      "cache": false
+    },
+    "@voidmix/logger#test": {
+      "cache": false
+    },
+    "@voidmix/storage#test": {
+      "cache": false,
+      "passThroughEnv": [
+        "TEST_S3_ENDPOINT",
+        "TEST_S3_BUCKET",
+        "TEST_S3_REGION",
+        "TEST_S3_ACCESS_KEY_ID",
+        "TEST_S3_SECRET_ACCESS_KEY"
+      ]
+    }
+  }
+}

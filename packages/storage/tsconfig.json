@@ -1,0 +1,5 @@
+{
+  "extends": "@voidmix/typescript-config/base.json",
+  "compilerOptions": { "types": ["bun"], "lib": ["ES2022", "DOM", "DOM.Iterable"] },
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"]
+}

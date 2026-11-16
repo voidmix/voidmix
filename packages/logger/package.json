@@ -1,0 +1,37 @@
+{
+  "name": "@voidmix/logger",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./hono": "./src/hono.ts",
+    "./orpc": "./src/orpc.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "evlog": "^2.35.1"
+  },
+  "devDependencies": {
+    "@orpc/server": "^1.16.2",
+    "@types/bun": "^1.4.4",
+    "@voidmix/typescript-config": "workspace:*",
+    "hono": "^4.13.18",
+    "typescript": "~6.0.2"
+  },
+  "peerDependencies": {
+    "@orpc/server": "^1.16.2",
+    "hono": "^4.13.18"
+  },
+  "peerDependenciesMeta": {
+    "@orpc/server": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@voidmix/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./contract": "./src/contract.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orpc/client": "^1.16.2",
+    "@orpc/contract": "^1.16.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@voidmix/typescript-config": "workspace:*",
+    "typescript": "~6.0.2"
+  }
+}

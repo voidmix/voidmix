@@ -1,0 +1,8 @@
+[install]
+# Hoist native Expo dependencies so peer resolution does not create duplicate module instances.
+linker = "hoisted"
+saveTextLockfile = true
+
+[run]
+shell = "bun"
+bun = true

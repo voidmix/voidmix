@@ -1,0 +1,23 @@
+{
+  "name": "@voidmix/storage",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "init:local": "bun scripts/init-local.ts"
+  },
+  "dependencies": {
+    "aws4fetch": "^1.0.20",
+    "unstorage": "2.0.0-beta.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "@voidmix/typescript-config": "workspace:*",
+    "typescript": "~6.0.2"
+  }
+}

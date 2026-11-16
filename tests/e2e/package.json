@@ -1,0 +1,22 @@
+{
+  "name": "@voidmix/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "install:browsers": "playwright install chromium",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^24.10.0",
+    "@voidmix/api": "workspace:*",
+    "@voidmix/auth": "workspace:*",
+    "@voidmix/cli": "workspace:*",
+    "@voidmix/db": "workspace:*",
+    "@voidmix/typescript-config": "workspace:*",
+    "typescript": "~6.0.2"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "@voidmix/typescript-config/react.json",
+  "compilerOptions": {
+    "paths": {
+      "@voidmix/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}

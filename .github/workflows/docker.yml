@@ -1,0 +1,37 @@
+name: Docker
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and test containers
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      COMPOSE_PROJECT_NAME: voidmix-docker-ci
+      WEB_PORT: "14310"
+      API_PORT: "14312"
+      BETTER_AUTH_URL: http://127.0.0.1:14310
+      AUTH_TRUSTED_ORIGINS: http://127.0.0.1:14310
+      DOCKER_TEST_WEB_ORIGIN: http://127.0.0.1:14310
+      DOCKER_TEST_API_ORIGIN: http://127.0.0.1:14312
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun run docker:init
+      - run: bun run docker:up
+      - run: bun run docker:smoke
+      - name: Show deployment logs on failure
+        if: failure()
+        run: docker compose --env-file deploy/.env -f compose.deploy.yaml logs --no-color --tail 100
+      - name: Clean up test deployment
+        if: always()
+        run: docker compose --env-file deploy/.env -f compose.deploy.yaml down --volumes --remove-orphans
