@@ -1,0 +1,25 @@
+apps/web/src/routes/workbench.tsx
+  s_ccb2206306ae02::t_b161816f361afe 9,966-984
+packages/ui/README.md
+  s_ccb2206306ae02::t_e0bebde3aafd3a 45-52,77-91
+packages/ui/components.json
+  s_ccb2206306ae02::t_5fec5ab38b3385 22-30
+packages/ui/src/components/thinking-loader.tsx
+  s_ccb2206306ae02::t_a6775df9190286 1-399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "190fb312e10655abb83e9ff75b99f9c7b2a5a6bc",
+  "prompts": {},
+  "sessions": {
+    "s_ccb2206306ae02": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4fa021c0-c7ee-4e5a-a43d-3fc546d8d5a8",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Zack <heyloyep@gmail.com>"
+    }
+  }
+}
