@@ -36,14 +36,14 @@ function App() {
           </Button>
           {/* Rendered as a link, so Base UI must not expect native button semantics. */}
           <Button
-            className="h-10 px-4"
+            className="h-8 px-4"
             variant="outline"
             nativeButton={false}
             render={<Link to="/login" />}
           >
             登录账户
           </Button>
-          <Button className="h-10 px-4" variant="secondary" disabled={pending} onClick={greet}>
+          <Button className="h-8 px-4" variant="secondary" disabled={pending} onClick={greet}>
             {pending ? "调用中…" : "调用 oRPC"}
           </Button>
         </div>

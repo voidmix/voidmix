@@ -112,11 +112,11 @@ function Workbench() {
     <div className="app-backdrop min-h-svh lg:grid lg:grid-cols-[224px_minmax(0,1fr)]">
       <a
         href="#inbox"
-        className="sr-only z-20 rounded-full bg-primary px-5 py-3 text-primary-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+        className="sr-only z-20 rounded-full bg-primary px-4 py-3 text-primary-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
       >
         跳到待审批
       </a>
-      <aside className="flex min-w-0 flex-col border-b bg-sidebar p-5 lg:sticky lg:top-0 lg:h-svh lg:border-r lg:border-b-0 lg:p-6">
+      <aside className="flex min-w-0 flex-col border-b bg-sidebar p-4 lg:sticky lg:top-0 lg:h-svh lg:border-r lg:border-b-0 lg:p-6">
         <a
           href="/"
           className="flex w-fit items-center gap-3 rounded-xl text-xl font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -178,7 +178,7 @@ function Workbench() {
           </ul>
         </section>
         <div className="mt-6 flex items-center justify-between border-t pt-4 lg:mt-auto">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <span
               aria-hidden="true"
               className="flex size-8 items-center justify-center rounded-full bg-card text-xs font-medium"
@@ -191,9 +191,9 @@ function Workbench() {
         </div>
       </aside>
 
-      <div className="min-w-0 px-5 pb-10 sm:px-8 xl:px-10">
+      <div className="min-w-0 px-4 pb-6 sm:px-8 xl:px-10">
         <header className="flex h-20 items-center justify-between gap-4 border-b text-xs text-muted-foreground">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <span>工作台</span>
             <Icon name="arrowRight" className="size-3" />
             <span className="text-foreground">收件箱</span>
@@ -204,7 +204,7 @@ function Workbench() {
           </span>
         </header>
 
-        <div className="mx-auto grid max-w-[1360px] items-start gap-10 pt-10 xl:grid-cols-[minmax(0,1fr)_340px] xl:gap-8">
+        <div className="mx-auto grid max-w-[1360px] items-start gap-10 pt-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:gap-8">
           <main id="inbox" className="min-w-0 scroll-mt-6" aria-labelledby="inbox-heading">
             <div className="mb-8">
               <p className="mb-2 text-xs font-medium tracking-[0.14em] text-muted-foreground">
@@ -224,7 +224,7 @@ function Workbench() {
 
             <div
               aria-label="审批筛选"
-              className="mb-5 flex flex-wrap gap-1 rounded-full bg-secondary/70 p-1 sm:w-fit"
+              className="mb-4 flex flex-wrap gap-1 rounded-full bg-secondary/70 p-1 sm:w-fit"
             >
               {(
                 [
@@ -266,7 +266,7 @@ function Workbench() {
                         </h2>
                         <RiskBadge risk={request.risk} className="ml-auto" />
                       </div>
-                      <p className="rounded-xl bg-background px-3.5 py-3 font-mono text-[13px] leading-6 break-all">
+                      <p className="rounded-xl bg-background px-3 py-3 font-mono text-[13px] leading-6 break-all">
                         {request.detail}
                       </p>
                       <p className="mt-4 text-xs leading-6 text-muted-foreground">{request.meta}</p>
@@ -299,7 +299,7 @@ function Workbench() {
                 </Card>
               ))}
               {visible.length === 0 && (
-                <div className="surface px-6 py-12 text-center">
+                <div className="surface px-6 py-6 text-center">
                   <Icon name="check" className="mx-auto mb-4 size-8 text-muted-foreground" />
                   <h2 className="font-medium">
                     {filter === "pending" ? "全部处理好了" : "还没有新的处理记录"}
@@ -316,7 +316,7 @@ function Workbench() {
             <output className="sr-only">{notice}</output>
             <div
               id="approval-policy"
-              className="mt-6 flex scroll-mt-6 items-start gap-2.5 text-xs leading-6 text-muted-foreground"
+              className="mt-6 flex scroll-mt-6 items-start gap-2 text-xs leading-6 text-muted-foreground"
             >
               <Icon name="shield" className="mt-1 size-4" />
               <p>
@@ -332,7 +332,7 @@ function Workbench() {
             aria-labelledby="agents-heading"
             className="min-w-0 scroll-mt-6 xl:pt-1"
           >
-            <div className="mb-5 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between">
               <h2 id="agents-heading" className="text-base font-semibold">
                 运行中
                 <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">02</span>
@@ -364,8 +364,8 @@ function Workbench() {
                         </div>
                         <StatusPill status={agent.status} className="ml-auto" />
                       </div>
-                      <p className="mt-5 text-sm leading-7">{agent.task}</p>
-                      <p className="mt-5 border-t pt-4 font-mono text-[11px] leading-6 text-muted-foreground">
+                      <p className="mt-4 text-sm leading-7">{agent.task}</p>
+                      <p className="mt-4 border-t pt-4 font-mono text-[11px] leading-6 text-muted-foreground">
                         {agent.usage}
                       </p>
                     </article>
@@ -373,7 +373,7 @@ function Workbench() {
                 </Card>
               ))}
             </div>
-            <p className="mt-5 text-center text-xs leading-6 text-muted-foreground">
+            <p className="mt-4 text-center text-xs leading-6 text-muted-foreground">
               安心专注，代理会在需要时找到你。
             </p>
           </aside>

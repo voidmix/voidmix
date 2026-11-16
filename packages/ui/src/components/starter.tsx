@@ -20,14 +20,14 @@ export function Starter({ children }: { children?: ReactNode }) {
         </div>
         <Surface className="flex flex-col items-start gap-6">
           <div className="flex items-center gap-3">
-            <Button className="h-10 px-4" onClick={() => setCount((value) => value + 1)}>
+            <Button className="h-8 px-4" onClick={() => setCount((value) => value + 1)}>
               点击计数{" "}
               <span aria-live="polite" className="font-mono tabular-nums">
                 {count}
               </span>
             </Button>
             <Button
-              className="h-10 px-4"
+              className="h-8 px-4"
               variant="outline"
               disabled={count === 0}
               onClick={() => setCount(0)}

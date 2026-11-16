@@ -34,5 +34,5 @@ export function AppShell({ children, brandHref }: { children: ReactNode; brandHr
 
 /** Raised panel for the page's primary content. */
 export function Surface({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("surface w-full p-6 sm:p-8", className)}>{children}</div>
+  return <div className={cn("surface w-full p-4 sm:p-6", className)}>{children}</div>
 }

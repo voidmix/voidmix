@@ -54,6 +54,23 @@ Color communicates state through paired tint and foreground tokens, exposed thro
 
 The Web `/workbench` route demonstrates the theme with a responsive sidebar, approval inbox, and agent cards. Its sample requests, filters, and decisions are local component state with no loader or API calls. The processed count includes 12 historical sample requests; only decisions made in the current page session appear in its processed list.
 
+### Scale borrowed from affectUI
+
+Colors, type, radii, shadows, focus, and control heights follow the tokens published at
+affectui.com/design-system, mapped onto this package's token names.
+
+| Aspect  | Values                                                                                                   |
+| ------- | -------------------------------------------------------------------------------------------------------- |
+| Type    | Inter; 13px body at 1.43 line height (`text-sm`), 12px small, 24px/600 page titles; system mono          |
+| Radius  | 5px chips (`rounded-sm`), 7px controls (`rounded-md`), 10px cards and panels (`rounded-lg`)              |
+| Shadow  | `shadow-surface` for cards (includes a half-pixel edge), `shadow-popover` for floating layers            |
+| Spacing | 2px grid: gaps of 4, 6, or 8; 12px inside rows and fields; 16px card padding; 24px between sections      |
+| Heights | Buttons 24 / 28 / 32px (`sm`, default, `lg`); inputs 32px; coarse pointers grow to 36–40px and 16px text |
+| Focus   | Keyboard only: 2px solid outline, 2px offset. Text fields show no ring; their border firms up            |
+
+Muted text and the light-theme running, waiting, and done foregrounds are slightly darker than the
+source so small text keeps a 4.5:1 contrast ratio.
+
 ## Icons and composition
 
 ```tsx

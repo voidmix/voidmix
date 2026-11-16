@@ -1,8 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/inter";
 
 @custom-variant dark (&:is(.dark *));
 @source "../../../../apps/**/*.{ts,tsx}";
@@ -11,6 +10,12 @@
 @theme inline {
   --font-heading: var(--font-sans);
   --shadow-surface: var(--surface-shadow);
+  --shadow-popover: var(--popover-shadow);
+  /* 13px body with a 1.43 line height; 16px `text-base` stays for touch fields. */
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.4286;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
   --color-status-running: var(--status-running);
   --color-status-running-foreground: var(--status-running-foreground);
   --color-status-waiting: var(--status-waiting);
@@ -56,106 +61,121 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  /* Three working radii: 5px for chips, 7px for controls, 10px for cards and panels. */
+  --radius-sm: 5px;
+  --radius-md: 7px;
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 2px);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  /* CJK system faces follow Geist so Chinese copy does not fall back to a serif default. */
+  /* CJK system faces follow Inter so Chinese copy does not fall back to a serif default. */
   --font-sans:
-    "Geist Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    "Inter Variable", Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
+/* Color values follow the affectUI design-system palette (affectui.com/design-system/colors),
+   mapped onto this package's token names. Muted text and the light-theme running, waiting, and done
+   foregrounds are slightly darker than the source so small text keeps 4.5:1. */
 :root {
   color-scheme: light;
-  --background: #f7f7f5;
-  --foreground: #242522;
+  --background: #f5f5f5;
+  --foreground: rgb(0 0 0 / 88%);
   --card: #ffffff;
-  --card-foreground: #242522;
+  --card-foreground: rgb(0 0 0 / 88%);
   --popover: #ffffff;
-  --popover-foreground: #242522;
-  --primary: #252622;
+  --popover-foreground: rgb(0 0 0 / 88%);
+  --primary: rgb(0 0 0 / 88%);
   --primary-foreground: #ffffff;
-  --secondary: #eeefeb;
-  --secondary-foreground: #343630;
-  --muted: #f1f2ee;
-  --muted-foreground: #666960;
-  --accent: #e9eae5;
-  --accent-foreground: #242522;
-  --destructive: #a13c36;
-  --border: #e8e9e3;
-  --input: #d5d7ce;
-  --ring: #777c70;
-  --status-running: #eaf2ff;
-  --status-running-foreground: #285ba6;
-  --status-waiting: #fff2d6;
-  --status-waiting-foreground: #805716;
-  --status-done: #e8f5ec;
-  --status-done-foreground: #286441;
-  --status-failed: #fceceb;
-  --status-failed-foreground: #a13c36;
+  --secondary: rgb(0 0 0 / 5%);
+  --secondary-foreground: rgb(0 0 0 / 88%);
+  --muted: rgb(0 0 0 / 3%);
+  --muted-foreground: rgb(0 0 0 / 58%);
+  --accent: rgb(0 0 0 / 6%);
+  --accent-foreground: rgb(0 0 0 / 88%);
+  --destructive: #c4320a;
+  --border: rgb(0 0 0 / 8%);
+  --input: rgb(0 0 0 / 13%);
+  --ring: rgb(0 96 226 / 70%);
+  --status-running: rgb(1 144 254 / 10%);
+  --status-running-foreground: #0067c7;
+  --status-waiting: rgb(242 138 46 / 12%);
+  --status-waiting-foreground: #a35600;
+  --status-done: rgb(95 200 138 / 14%);
+  --status-done-foreground: #177540;
+  --status-failed: rgb(240 68 56 / 10%);
+  --status-failed-foreground: #c4320a;
   --risk-low: var(--status-done);
   --risk-low-foreground: var(--status-done-foreground);
   --risk-medium: var(--status-waiting);
   --risk-medium-foreground: var(--status-waiting-foreground);
   --risk-high: var(--status-failed);
   --risk-high-foreground: var(--status-failed-foreground);
-  --chart-1: #285ba6;
-  --chart-2: #286441;
-  --chart-3: #805716;
-  --chart-4: #a13c36;
-  --chart-5: #666960;
-  --radius: 0.875rem;
-  --surface-shadow: 0 2px 4px -2px #24252204, 0 8px 28px -8px #2425220a;
-  --sidebar: #f1f2ee;
-  --sidebar-foreground: var(--foreground);
-  --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: var(--border);
-  --sidebar-ring: var(--ring);
+  --chart-1: #0190fe;
+  --chart-2: #5fc88a;
+  --chart-3: #e8b000;
+  --chart-4: #f28a2e;
+  --chart-5: #a651f0;
+  --radius: 0.625rem;
+  --surface-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 6%), 0 1px 1px -1px rgb(0 0 0 / 10%), 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --popover-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 8%), 0 8px 24px -6px rgb(0 0 0 / 14%), 0 2px 6px -2px rgb(0 0 0 / 6%);
+  --sidebar: #fcfcfc;
+  --sidebar-foreground: rgb(0 0 0 / 88%);
+  --sidebar-primary: rgb(0 0 0 / 88%);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgb(0 0 0 / 5%);
+  --sidebar-accent-foreground: rgb(0 0 0 / 88%);
+  --sidebar-border: rgb(0 0 0 / 8%);
+  --sidebar-ring: rgb(0 96 226 / 70%);
 }
 
 .dark {
   color-scheme: dark;
-  --background: #191a18;
-  --foreground: #f3f3ef;
-  --card: #22231f;
-  --card-foreground: #f3f3ef;
-  --popover: #282a25;
-  --popover-foreground: #f3f3ef;
-  --primary: #f2f2ed;
-  --primary-foreground: #20211e;
-  --secondary: #30322c;
-  --secondary-foreground: #e5e7de;
-  --muted: #292b25;
-  --muted-foreground: #acb0a4;
-  --accent: #363930;
-  --accent-foreground: #f3f3ef;
-  --destructive: #f3b2ac;
-  --border: #34362f;
-  --input: #505449;
-  --ring: #a4ad96;
-  --status-running: #23344b;
-  --status-running-foreground: #aecbfa;
-  --status-waiting: #40351f;
-  --status-waiting-foreground: #efd08e;
-  --status-done: #213b2b;
-  --status-done-foreground: #a6dabb;
-  --status-failed: #452a29;
-  --status-failed-foreground: #f3b2ac;
-  --chart-1: #aecbfa;
-  --chart-2: #a6dabb;
-  --chart-3: #efd08e;
-  --chart-4: #f3b2ac;
-  --chart-5: #acb0a4;
-  --surface-shadow: 0 2px 4px -2px #00000014, 0 8px 28px -8px #00000029;
-  --sidebar: #1d1f1a;
-  --sidebar-accent: #30322c;
+  --background: #0c0c0d;
+  --foreground: rgb(255 255 255 / 90%);
+  --card: #1c1c1e;
+  --card-foreground: rgb(255 255 255 / 90%);
+  --popover: #1f1f22;
+  --popover-foreground: rgb(255 255 255 / 90%);
+  --primary: rgb(255 255 255 / 90%);
+  --primary-foreground: #161618;
+  --secondary: rgb(255 255 255 / 7%);
+  --secondary-foreground: rgb(255 255 255 / 90%);
+  --muted: rgb(255 255 255 / 4%);
+  --muted-foreground: rgb(255 255 255 / 56%);
+  --accent: rgb(255 255 255 / 8%);
+  --accent-foreground: rgb(255 255 255 / 90%);
+  --destructive: #ff8a7a;
+  --border: rgb(255 255 255 / 14%);
+  --input: rgb(255 255 255 / 20%);
+  --ring: rgb(77 141 255 / 80%);
+  --status-running: rgb(79 176 254 / 14%);
+  --status-running-foreground: #4fb0fe;
+  --status-waiting: rgb(242 161 92 / 14%);
+  --status-waiting-foreground: #ffb35c;
+  --status-done: rgb(125 207 159 / 14%);
+  --status-done-foreground: #7dcf9f;
+  --status-failed: rgb(255 107 95 / 14%);
+  --status-failed-foreground: #ff8a7a;
+  --chart-1: #4fb0fe;
+  --chart-2: #7dcf9f;
+  --chart-3: #e6c24d;
+  --chart-4: #f2a15c;
+  --chart-5: #b98af0;
+  --surface-shadow: 0 0 0 0.5px rgb(255 255 255 / 10%), 0 1px 2px 0 rgb(0 0 0 / 40%);
+  --popover-shadow: 0 0 0 0.5px rgb(255 255 255 / 12%), 0 12px 32px -8px rgb(0 0 0 / 60%);
+  --sidebar: #121213;
+  --sidebar-foreground: rgb(255 255 255 / 90%);
+  --sidebar-primary: rgb(255 255 255 / 90%);
+  --sidebar-primary-foreground: #161618;
+  --sidebar-accent: rgb(255 255 255 / 7%);
+  --sidebar-accent-foreground: rgb(255 255 255 / 90%);
+  --sidebar-border: rgb(255 255 255 / 14%);
+  --sidebar-ring: rgb(77 141 255 / 80%);
 }
 
 @layer base {
@@ -164,7 +184,7 @@
   }
   body {
     position: relative;
-    @apply bg-background font-sans leading-relaxed text-foreground antialiased;
+    @apply bg-background font-sans text-sm text-foreground antialiased;
   }
   ::selection {
     background: var(--foreground);
@@ -180,8 +200,8 @@
 
 /* A single opaque surface treatment keeps cards consistent in both themes. */
 @utility surface {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  /* The card shadow carries its own half-pixel edge, so no separate border is drawn. */
+  border-radius: var(--radius-lg);
   background: var(--card);
   box-shadow: var(--surface-shadow);
 }

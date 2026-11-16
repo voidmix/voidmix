@@ -161,7 +161,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
                   <Input
                     id="device-code"
                     name="user_code"
-                    className="h-11 font-mono text-base uppercase tabular-nums md:text-base"
+                    className="h-8 font-mono text-base uppercase tabular-nums"
                     value={code}
                     onChange={(event) => setCode(event.target.value)}
                     required
@@ -170,7 +170,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
                     spellCheck={false}
                   />
                 </div>
-                <Button className="h-11 w-full" disabled={busy} type="submit">
+                <Button className="h-8 w-full" disabled={busy} type="submit">
                   {busy ? "正在核对…" : "核对授权码"}
                 </Button>
               </form>
@@ -189,14 +189,14 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
                 </p>
                 <div className="flex gap-3">
                   <Button
-                    className="h-11 flex-1"
+                    className="h-8 flex-1"
                     variant="outline"
                     disabled={busy}
                     onClick={() => decide(false)}
                   >
                     拒绝
                   </Button>
-                  <Button className="h-11 flex-1" disabled={busy} onClick={() => decide(true)}>
+                  <Button className="h-8 flex-1" disabled={busy} onClick={() => decide(true)}>
                     {busy ? "正在处理…" : "允许登录"}
                   </Button>
                 </div>
@@ -204,7 +204,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
             )}
             <Button
               variant="link"
-              className="h-11 p-0 text-muted-foreground"
+              className="h-8 p-0 text-muted-foreground"
               disabled={busy}
               onClick={signOut}
             >
@@ -217,7 +217,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
               <div className="space-y-2">
                 <Label htmlFor="name">姓名</Label>
                 <Input
-                  className="h-11 md:text-base"
+                  className="h-8"
                   id="name"
                   name="name"
                   required
@@ -229,7 +229,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
             <div className="space-y-2">
               <Label htmlFor="email">邮箱</Label>
               <Input
-                className="h-11 md:text-base"
+                className="h-8"
                 id="email"
                 name="email"
                 type="email"
@@ -240,7 +240,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
             <div className="space-y-2">
               <Label htmlFor="password">密码</Label>
               <Input
-                className="h-11 md:text-base"
+                className="h-8"
                 id="password"
                 name="password"
                 type="password"
@@ -256,11 +256,11 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
                 </p>
               )}
             </div>
-            <Button className="h-11 w-full" type="submit" disabled={busy || !!sessionError}>
+            <Button className="h-8 w-full" type="submit" disabled={busy || !!sessionError}>
               {busy ? "正在提交…" : register ? "创建账户" : "登录"}
             </Button>
             <Button
-              className="h-11 w-full"
+              className="h-8 w-full"
               variant="ghost"
               type="button"
               disabled={busy}
