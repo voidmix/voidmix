@@ -119,6 +119,14 @@
   --chart-4: #f28a2e;
   --chart-5: #a651f0;
   --radius: 0.625rem;
+  /* Layered primary button: a top-to-bottom fill, a lit top edge, and a dark outer ring. */
+  --button-top: #323137;
+  --button-bottom: #201e25;
+  --button-top-hover: #3c3b42;
+  --button-bottom-hover: #29272f;
+  --button-edge: #4b4951;
+  --button-ring: #0d0d0d;
+  --button-text: #fafafa;
   --surface-shadow:
     0 0 0 0.5px rgb(0 0 0 / 6%), 0 1px 1px -1px rgb(0 0 0 / 10%), 0 1px 2px 0 rgb(0 0 0 / 5%);
   --popover-shadow:
@@ -167,6 +175,13 @@
   --chart-4: #f2a15c;
   --chart-5: #b98af0;
   --surface-shadow: 0 0 0 0.5px rgb(255 255 255 / 10%), 0 1px 2px 0 rgb(0 0 0 / 40%);
+  --button-top: #f4f4f5;
+  --button-bottom: #e4e4e7;
+  --button-top-hover: #ffffff;
+  --button-bottom-hover: #ececef;
+  --button-edge: #ffffff;
+  --button-ring: rgb(0 0 0 / 60%);
+  --button-text: #121213;
   --popover-shadow: 0 0 0 0.5px rgb(255 255 255 / 12%), 0 12px 32px -8px rgb(0 0 0 / 60%);
   --sidebar: #121213;
   --sidebar-foreground: rgb(255 255 255 / 90%);
@@ -196,6 +211,36 @@
   position: relative;
   isolation: isolate;
   background: var(--background);
+}
+
+/* Halo behind a live status dot. Motion is decorative, so it stops for reduced-motion users. */
+@utility status-pulse {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0.25;
+    animation: status-pulse 1.8s ease-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      animation: none;
+    }
+  }
+}
+
+@keyframes status-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
 }
 
 /* A single opaque surface treatment keeps cards consistent in both themes. */

@@ -8,10 +8,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-[color-mix(in_oklch,var(--primary),var(--primary-foreground)_14%)]",
+          "bg-linear-to-b from-(--button-top) to-(--button-bottom) text-(--button-text) shadow-[inset_0_1px_0_0_var(--button-edge),0_0_0_1px_var(--button-ring),0_1px_2px_0_rgb(0_0_0/0.18)] hover:from-(--button-top-hover) hover:to-(--button-bottom-hover)",
         outline: "border-input bg-card text-foreground hover:bg-muted aria-expanded:bg-muted",
+        // A raised white key on light surfaces; the card shadow supplies its hairline edge.
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-card text-foreground shadow-surface hover:bg-[color-mix(in_oklch,var(--card),var(--foreground)_4%)] aria-expanded:bg-muted",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:

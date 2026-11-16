@@ -68,6 +68,10 @@ affectui.com/design-system, mapped onto this package's token names.
 | Heights | Buttons 24 / 28 / 32px (`sm`, default, `lg`); inputs 32px; coarse pointers grow to 36–40px and 16px text |
 | Focus   | Keyboard only: 2px solid outline, 2px offset. Text fields show no ring; their border firms up            |
 
+The primary button is layered: a top-to-bottom fill, a lit top edge, and a dark outer ring
+(`--button-*` tokens); the secondary button is a raised card-colored key. A running status dot
+carries a `status-pulse` halo that stops under reduced motion.
+
 Muted text and the light-theme running, waiting, and done foregrounds are slightly darker than the
 source so small text keeps a 4.5:1 contrast ratio.
 

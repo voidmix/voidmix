@@ -19,7 +19,10 @@ export function StatusPill({
   const state = states[status]
   return (
     <Badge variant="secondary" className={cn(state.className, className)} {...props}>
-      <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
+      <span
+        aria-hidden="true"
+        className={cn("size-1.5 rounded-full bg-current", status === "running" && "status-pulse")}
+      />
       {state.label}
     </Badge>
   )

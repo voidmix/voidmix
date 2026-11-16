@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
-import { Badge } from "@voidmix/ui/components/badge"
+import { useState, type ReactNode } from "react"
 import { Button } from "@voidmix/ui/components/button"
-import { Card, CardContent } from "@voidmix/ui/components/card"
 import { Icon, type IconName } from "@voidmix/ui/components/icon"
 import { Logo } from "@voidmix/ui/components/logo"
 import { RiskBadge, type RiskLevel } from "@voidmix/ui/components/risk-badge"
@@ -15,65 +13,115 @@ export const Route = createFileRoute("/workbench")({
   component: Workbench,
 })
 
-const requests: {
+// Static sample data: this screen demonstrates the visual direction and calls no backend.
+type Detail =
+  | { kind: "command"; command: string }
+  | { kind: "file"; directory: string; file: string; added: number; removed: number }
+  | { kind: "network"; method: string; host: string; path: string }
+
+interface ApprovalRequest {
   id: number
   action: string
   icon: IconName
   risk: RiskLevel
-  detail: string
-  meta: string
+  detail: Detail
+  impact: string
+  agent: string
   node: string
-}[] = [
+  nodeIcon: IconName
+  age: string
+}
+
+const requests: ApprovalRequest[] = [
   {
     id: 1,
     action: "执行命令",
     icon: "terminal",
     risk: "high",
-    detail: "bun run db:migrate",
-    meta: "Coder · MacBook Pro · 2 分钟前",
+    detail: { kind: "command", command: "bun run db:migrate" },
+    impact: "会修改数据库结构，执行后无法自动回滚。",
+    agent: "Coder",
     node: "MacBook Pro",
+    nodeIcon: "laptop",
+    age: "2 分钟前",
   },
   {
     id: 2,
     action: "修改文件",
     icon: "file",
     risk: "medium",
-    detail: "apps/api/src/config.ts +12 −3",
-    meta: "Coder · MacBook Pro · 8 分钟前",
+    detail: { kind: "file", directory: "apps/api/src/", file: "config.ts", added: 12, removed: 3 },
+    impact: "改动服务端配置加载，只影响工作区内的文件。",
+    agent: "Coder",
     node: "MacBook Pro",
+    nodeIcon: "laptop",
+    age: "8 分钟前",
   },
   {
     id: 3,
     action: "访问网络",
     icon: "globe",
     risk: "low",
-    detail: "GET api.github.com/repos/voidmix/voidmix",
-    meta: "Researcher · VPS 新加坡 · 11 分钟前",
+    detail: {
+      kind: "network",
+      method: "GET",
+      host: "api.github.com",
+      path: "/repos/voidmix/voidmix",
+    },
+    impact: "只读请求，不携带任何凭据。",
+    agent: "Researcher",
     node: "VPS 新加坡",
+    nodeIcon: "server",
+    age: "11 分钟前",
   },
 ]
 
-const agents: { name: string; role: string; status: AgentStatus; task: string; usage: string }[] = [
+interface Agent {
+  name: string
+  role: string
+  status: AgentStatus
+  task: string
+  model: string
+  cost: string
+  duration: string
+  /** Completed and total steps; drives the progress bar. */
+  steps: [number, number]
+  tint: string
+}
+
+const agents: Agent[] = [
   {
     name: "Coder",
     role: "开发代理",
     status: "waiting",
     task: "把配置加载改成纯函数，并补上迁移。",
-    usage: "Sonnet 5.5 · $0.42 · 6 分 12 秒",
+    model: "Sonnet 5.5",
+    cost: "$0.42",
+    duration: "6 分 12 秒",
+    steps: [4, 6],
+    tint: "bg-chart-4/15 text-chart-4",
   },
   {
     name: "Researcher",
     role: "研究代理",
     status: "running",
     task: "对比两个开源项目的审批机制。",
-    usage: "Opus 5.5 · $0.18 · 2 分 40 秒",
+    model: "Opus 5.5",
+    cost: "$0.18",
+    duration: "2 分 40 秒",
+    steps: [2, 5],
+    tint: "bg-chart-1/15 text-chart-1",
   },
   {
     name: "Reviewer",
     role: "审查代理",
     status: "done",
     task: "审查界面调整的改动，没有发现问题。",
-    usage: "Haiku 5.5 · $0.03 · 48 秒",
+    model: "Haiku 5.5",
+    cost: "$0.03",
+    duration: "48 秒",
+    steps: [3, 3],
+    tint: "bg-chart-2/15 text-chart-2",
   },
 ]
 
@@ -84,301 +132,498 @@ const navigation: { label: string; icon: IconName; href: string }[] = [
   { label: "审批策略", icon: "shield", href: "#approval-policy" },
 ]
 
+const nodes: { name: string; icon: IconName; online: boolean; note: string }[] = [
+  { name: "MacBook Pro", icon: "laptop", online: true, note: "2 个代理" },
+  { name: "VPS 新加坡", icon: "server", online: true, note: "1 个代理" },
+  { name: "工作站", icon: "cpu", online: false, note: "离线" },
+]
+
 type Decision = "allowed" | "denied"
 type Filter = "pending" | "processed" | "all"
+
+/** Search matches what a person sees on the card: action, agent, node, and the detail text. */
+function searchText(request: ApprovalRequest) {
+  const detail =
+    request.detail.kind === "command"
+      ? request.detail.command
+      : request.detail.kind === "file"
+        ? `${request.detail.directory}${request.detail.file}`
+        : `${request.detail.method} ${request.detail.host}${request.detail.path}`
+  return `${request.action} ${request.agent} ${request.node} ${detail}`.toLowerCase()
+}
 
 function Workbench() {
   const [decisions, setDecisions] = useState<Record<number, Decision>>({})
   const [filter, setFilter] = useState<Filter>("pending")
+  const [query, setQuery] = useState("")
   const [notice, setNotice] = useState("")
   const pending = requests.filter((request) => !decisions[request.id])
   const processedCount = 12 + Object.keys(decisions).length
-  const visible = requests.filter((request) =>
-    filter === "all"
-      ? true
-      : filter === "pending"
-        ? !decisions[request.id]
-        : !!decisions[request.id],
-  )
+  const needle = query.trim().toLowerCase()
+  const visible = requests.filter((request) => {
+    const decided = !!decisions[request.id]
+    const inTab = filter === "all" || (filter === "pending" ? !decided : decided)
+    return inTab && (!needle || searchText(request).includes(needle))
+  })
 
-  function decide(id: number, decision: Decision) {
-    setDecisions((previous) => ({ ...previous, [id]: decision }))
-    setNotice(
-      `${requests.find((request) => request.id === id)?.action}请求已${decision === "allowed" ? "允许" : "拒绝"}。`,
-    )
+  function decide(request: ApprovalRequest, decision: Decision) {
+    setDecisions((previous) => ({ ...previous, [request.id]: decision }))
+    setNotice(`${request.action}请求已${decision === "allowed" ? "允许" : "拒绝"}。`)
   }
 
   return (
-    <div className="app-backdrop min-h-svh lg:grid lg:grid-cols-[224px_minmax(0,1fr)]">
+    <div className="app-backdrop min-h-svh lg:grid lg:grid-cols-[232px_minmax(0,1fr)]">
       <a
         href="#inbox"
-        className="sr-only z-20 rounded-full bg-primary px-4 py-3 text-primary-foreground focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+        className="sr-only z-20 rounded-md bg-card px-3 py-2 shadow-popover focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
       >
         跳到待审批
       </a>
-      <aside className="flex min-w-0 flex-col border-b bg-sidebar p-4 lg:sticky lg:top-0 lg:h-svh lg:border-r lg:border-b-0 lg:p-6">
+
+      <aside className="flex min-w-0 flex-col gap-4 border-b bg-sidebar p-3 lg:sticky lg:top-0 lg:h-svh lg:border-r lg:border-b-0">
         <a
           href="/"
-          className="flex w-fit items-center gap-3 rounded-xl text-xl font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-8 w-fit items-center gap-2 rounded-md px-1.5 text-[0.9375rem] font-semibold tracking-tight outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          <Logo className="size-9" />
+          <Logo className="size-5" />
           Voidmix
         </a>
-        <p className="mt-8 mb-3 px-3 text-xs font-medium text-muted-foreground">个人工作空间</p>
-        <nav aria-label="工作空间" className="grid grid-cols-2 gap-1 sm:grid-cols-4 lg:grid-cols-1">
+
+        <label className="flex h-8 items-center gap-2 rounded-md bg-card px-2 text-muted-foreground shadow-surface focus-within:text-foreground pointer-coarse:h-10">
+          <Icon name="search" className="size-3.5" />
+          <span className="sr-only">搜索请求</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="搜索请求…"
+            className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground pointer-coarse:text-base [&::-webkit-search-cancel-button]:hidden"
+          />
+        </label>
+
+        <nav
+          aria-label="工作空间"
+          className="grid grid-cols-2 gap-0.5 sm:grid-cols-4 lg:grid-cols-1"
+        >
           {navigation.map((item, index) => (
             <a
               key={item.label}
               href={item.href}
               aria-current={index === 0 ? "page" : undefined}
               className={cn(
-                "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm outline-none transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring",
-                index === 0
-                  ? "bg-sidebar-accent font-medium shadow-surface"
-                  : "text-muted-foreground",
+                "flex h-7 items-center gap-2 rounded-md px-2 text-sm outline-none transition-colors hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring pointer-coarse:h-10",
+                index === 0 ? "bg-sidebar-accent font-medium" : "text-muted-foreground",
               )}
             >
-              <Icon name={item.icon} className="size-[18px]" />
+              <Icon name={item.icon} className="size-4" />
               {item.label}
-              {index === 0 && (
-                <span className="ml-auto rounded-md bg-secondary px-1.5 font-mono text-xs text-secondary-foreground">
+              {index === 0 && pending.length > 0 && (
+                <span className="ml-auto min-w-4 rounded-sm bg-primary px-1 text-center font-mono text-[0.6875rem] leading-4 font-medium text-primary-foreground tabular-nums">
                   {pending.length}
                 </span>
               )}
             </a>
           ))}
         </nav>
-        <section id="nodes" aria-labelledby="nodes-heading" className="mt-9 scroll-mt-6">
-          <h2 id="nodes-heading" className="px-3 text-xs font-medium text-muted-foreground">
-            节点
-          </h2>
-          <ul className="mt-3 grid gap-1 sm:grid-cols-3 lg:grid-cols-1">
-            {[
-              { name: "MacBook Pro", online: true },
-              { name: "VPS 新加坡", online: true },
-              { name: "工作站", online: false },
-            ].map((node) => (
+
+        <section id="nodes" aria-labelledby="nodes-heading" className="scroll-mt-4">
+          <div className="flex items-center justify-between px-2 pb-1.5">
+            <h2 id="nodes-heading" className="text-xs font-medium text-muted-foreground">
+              节点
+            </h2>
+            <span className="font-mono text-[0.6875rem] text-muted-foreground tabular-nums">
+              {nodes.filter((node) => node.online).length}/{nodes.length}
+            </span>
+          </div>
+          <ul className="grid gap-0.5 sm:grid-cols-3 lg:grid-cols-1">
+            {nodes.map((node) => (
               <li
                 key={node.name}
-                className="flex min-h-10 flex-wrap items-center gap-2 px-3 text-xs"
+                className={cn(
+                  "flex h-7 items-center gap-2 px-2 text-sm",
+                  !node.online && "text-muted-foreground",
+                )}
               >
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "size-1.5 rounded-full",
-                    node.online ? "bg-status-done-foreground" : "bg-muted-foreground",
-                  )}
-                />
-                <span className="font-medium">{node.name}</span>
-                <span className="ml-auto text-muted-foreground">
-                  {node.online ? "在线" : "离线"}
+                <span className="relative flex">
+                  <Icon name={node.icon} className="size-4 text-muted-foreground" />
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "absolute -right-0.5 -bottom-0.5 size-1.5 rounded-full ring-2 ring-sidebar",
+                      node.online ? "bg-status-done-foreground" : "bg-muted-foreground",
+                    )}
+                  />
                 </span>
+                <span className="truncate">{node.name}</span>
+                <span className="ml-auto shrink-0 text-xs text-muted-foreground">{node.note}</span>
               </li>
             ))}
           </ul>
         </section>
-        <div className="mt-6 flex items-center justify-between border-t pt-4 lg:mt-auto">
-          <div className="flex items-center gap-2">
-            <span
-              aria-hidden="true"
-              className="flex size-8 items-center justify-center rounded-full bg-card text-xs font-medium"
-            >
-              Y
-            </span>
-            <span className="text-xs text-muted-foreground">你的工作空间</span>
-          </div>
+
+        <div className="mt-auto flex items-center gap-2 border-t pt-3">
+          <span
+            aria-hidden="true"
+            className="flex size-6 items-center justify-center rounded-full bg-chart-5/15 text-[0.6875rem] font-semibold text-chart-5"
+          >
+            Y
+          </span>
+          <span className="min-w-0 flex-1 truncate text-sm">个人工作空间</span>
           <ThemeToggle />
         </div>
       </aside>
 
-      <div className="min-w-0 px-4 pb-6 sm:px-8 xl:px-10">
-        <header className="flex h-20 items-center justify-between gap-4 border-b text-xs text-muted-foreground">
-          <div className="flex items-center gap-2">
+      <div className="min-w-0">
+        <header className="flex h-12 items-center justify-between gap-4 border-b px-4 text-sm sm:px-6">
+          <div className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
             <span>工作台</span>
             <Icon name="arrowRight" className="size-3" />
-            <span className="text-foreground">收件箱</span>
+            <span className="truncate font-medium text-foreground">收件箱</span>
           </div>
-          <span className="flex items-center gap-2">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-status-done-foreground" />2
-            个节点在线
+          <span className="flex shrink-0 items-center gap-1.5 rounded-sm bg-status-done px-1.5 py-0.5 text-xs font-medium text-status-done-foreground">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />2 个节点在线
           </span>
         </header>
 
-        <div className="mx-auto grid max-w-[1360px] items-start gap-10 pt-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:gap-8">
-          <main id="inbox" className="min-w-0 scroll-mt-6" aria-labelledby="inbox-heading">
-            <div className="mb-8">
-              <p className="mb-2 text-xs font-medium tracking-[0.14em] text-muted-foreground">
-                让每一步，都在掌握之中
-              </p>
-              <h1
-                id="inbox-heading"
-                className="text-[1.875rem] leading-tight font-semibold tracking-tight"
-              >
-                待审批
-              </h1>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                {pending.length} 个请求在等你确认，来自{" "}
-                {new Set(pending.map((request) => request.node)).size} 个节点。
-              </p>
+        <div className="mx-auto grid max-w-[1200px] items-start gap-6 p-4 sm:p-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <main id="inbox" className="min-w-0 scroll-mt-4" aria-labelledby="inbox-heading">
+            <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+              <div>
+                <h1 id="inbox-heading" className="text-2xl font-semibold tracking-[-0.5px]">
+                  待审批
+                </h1>
+                <p className="mt-1 text-muted-foreground">
+                  {pending.length} 个请求在等你确认，来自{" "}
+                  {new Set(pending.map((request) => request.node)).size} 个节点。
+                </p>
+              </div>
+              <dl className="flex gap-5 text-xs">
+                <Stat label="今日已处理" value={String(processedCount)} />
+                <Stat label="今日花费" value="$0.63" />
+              </dl>
             </div>
 
-            <div
-              aria-label="审批筛选"
-              className="mb-4 flex flex-wrap gap-1 rounded-full bg-secondary/70 p-1 sm:w-fit"
-            >
-              {(
-                [
-                  { value: "pending", label: "待处理", count: pending.length },
-                  { value: "processed", label: "已处理", count: processedCount },
-                  { value: "all", label: "全部" },
-                ] as const
-              ).map((tab) => (
-                <Button
-                  key={tab.value}
-                  variant="ghost"
-                  size="sm"
-                  aria-pressed={filter === tab.value}
-                  onClick={() => setFilter(tab.value)}
-                  className={cn(
-                    "flex-1 gap-2 px-4 sm:flex-none",
-                    filter === tab.value
-                      ? "bg-card text-foreground shadow-xs hover:bg-card"
-                      : "text-muted-foreground",
-                  )}
-                >
-                  {tab.label}
-                  {"count" in tab && <span className="font-mono text-xs">{tab.count}</span>}
-                </Button>
-              ))}
-            </div>
+            <fieldset className="min-w-0 border-0 p-0">
+              <legend className="sr-only">审批筛选</legend>
+              <div className="mt-4 mb-3 inline-flex gap-0.5 rounded-md bg-secondary p-0.5">
+                {(
+                  [
+                    { value: "pending", label: "待处理", count: pending.length },
+                    { value: "processed", label: "已处理", count: processedCount },
+                    { value: "all", label: "全部" },
+                  ] as const
+                ).map((tab) => (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    aria-pressed={filter === tab.value}
+                    onClick={() => setFilter(tab.value)}
+                    className={cn(
+                      "flex h-6 items-center gap-1.5 rounded-sm px-2.5 text-sm font-medium outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring pointer-coarse:h-9",
+                      filter === tab.value
+                        ? "bg-card text-foreground shadow-surface"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {tab.label}
+                    {"count" in tab && (
+                      <span className="font-mono text-xs font-normal text-muted-foreground tabular-nums">
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
 
-            <div className="space-y-4">
+            <div className="grid gap-3">
               {visible.map((request) => (
-                <Card key={request.id} className="gap-0">
-                  <CardContent>
-                    <article aria-labelledby={`request-${request.id}`}>
-                      <div className="mb-4 flex items-center gap-3">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-                          <Icon name={request.icon} />
-                        </span>
-                        <h2 id={`request-${request.id}`} className="text-base font-medium">
-                          {request.action}
-                        </h2>
-                        <RiskBadge risk={request.risk} className="ml-auto" />
-                      </div>
-                      <p className="rounded-xl bg-background px-3 py-3 font-mono text-[13px] leading-6 break-all">
-                        {request.detail}
-                      </p>
-                      <p className="mt-4 text-xs leading-6 text-muted-foreground">{request.meta}</p>
-                      <div className="mt-4 flex items-center justify-end gap-2">
-                        {decisions[request.id] ? (
-                          <Badge variant="secondary" className="min-h-10 px-4">
-                            <Icon name="check" />
-                            {decisions[request.id] === "allowed" ? "已允许" : "已拒绝"}
-                          </Badge>
-                        ) : (
-                          <>
-                            <Button
-                              variant="secondary"
-                              aria-label={`拒绝${request.action}`}
-                              onClick={() => decide(request.id, "denied")}
-                            >
-                              拒绝
-                            </Button>
-                            <Button
-                              aria-label={`允许${request.action}`}
-                              onClick={() => decide(request.id, "allowed")}
-                            >
-                              允许
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </article>
-                  </CardContent>
-                </Card>
+                <RequestCard
+                  key={request.id}
+                  request={request}
+                  decision={decisions[request.id]}
+                  onDecide={(decision) => decide(request, decision)}
+                />
               ))}
               {visible.length === 0 && (
-                <div className="surface px-6 py-6 text-center">
-                  <Icon name="check" className="mx-auto mb-4 size-8 text-muted-foreground" />
+                <div className="surface px-4 py-10 text-center">
+                  <span className="mx-auto mb-3 flex size-8 items-center justify-center rounded-md bg-status-done text-status-done-foreground">
+                    <Icon name={needle ? "search" : "check"} className="size-4" />
+                  </span>
                   <h2 className="font-medium">
-                    {filter === "pending" ? "全部处理好了" : "还没有新的处理记录"}
+                    {needle
+                      ? "没有匹配的请求"
+                      : filter === "pending"
+                        ? "全部处理好了"
+                        : "还没有新的处理记录"}
                   </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {filter === "pending"
-                      ? "代理可以继续工作了，稍后再来看看。"
-                      : "本次处理的请求会显示在这里。"}
+                  <p className="mt-1 text-muted-foreground">
+                    {needle
+                      ? "换个关键词，或清空搜索再看看。"
+                      : filter === "pending"
+                        ? "代理可以继续工作了，有新请求时会出现在这里。"
+                        : "本次处理的请求会显示在这里。"}
                   </p>
                 </div>
               )}
             </div>
 
             <output className="sr-only">{notice}</output>
-            <div
+            <p
               id="approval-policy"
-              className="mt-6 flex scroll-mt-6 items-start gap-2 text-xs leading-6 text-muted-foreground"
+              className="mt-4 flex scroll-mt-4 items-center gap-1.5 text-xs text-muted-foreground"
             >
-              <Icon name="shield" className="mt-1 size-4" />
-              <p>
-                需要你确认的操作，才会继续执行。
-                <br />
-                每一次审批，都会留下记录。
-              </p>
-            </div>
+              <Icon name="shield" className="size-3.5" />
+              命令执行、文件修改和网络访问需要你确认后才会继续，每次决定都会留下记录。
+            </p>
           </main>
 
-          <aside
-            id="agents"
-            aria-labelledby="agents-heading"
-            className="min-w-0 scroll-mt-6 xl:pt-1"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 id="agents-heading" className="text-base font-semibold">
+          <aside id="agents" aria-labelledby="agents-heading" className="min-w-0 scroll-mt-4">
+            <div className="flex h-8 items-center justify-between">
+              <h2 id="agents-heading" className="font-medium">
                 运行中
-                <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">02</span>
               </h2>
-              <span className="text-xs text-muted-foreground">你的代理团队</span>
+              <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                {agents.filter((agent) => agent.status !== "done").length}/{agents.length}
+              </span>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+            <div className="mt-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
               {agents.map((agent) => (
-                <Card key={agent.name} className="gap-0">
-                  <CardContent>
-                    <article aria-labelledby={`agent-${agent.name}`}>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span
-                          aria-hidden="true"
-                          className={cn(
-                            "flex size-11 items-center justify-center rounded-2xl font-mono text-lg font-medium",
-                            agent.name === "Coder"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-foreground",
-                          )}
-                        >
-                          {agent.name[0]}
-                        </span>
-                        <div>
-                          <h3 id={`agent-${agent.name}`} className="text-sm font-semibold">
-                            {agent.name}
-                          </h3>
-                          <p className="mt-0.5 text-xs text-muted-foreground">{agent.role}</p>
-                        </div>
-                        <StatusPill status={agent.status} className="ml-auto" />
-                      </div>
-                      <p className="mt-4 text-sm leading-7">{agent.task}</p>
-                      <p className="mt-4 border-t pt-4 font-mono text-[11px] leading-6 text-muted-foreground">
-                        {agent.usage}
-                      </p>
-                    </article>
-                  </CardContent>
-                </Card>
+                <AgentCard
+                  key={agent.name}
+                  agent={agent}
+                  pendingCount={pending.filter((request) => request.agent === agent.name).length}
+                />
               ))}
             </div>
-            <p className="mt-4 text-center text-xs leading-6 text-muted-foreground">
-              安心专注，代理会在需要时找到你。
-            </p>
           </aside>
         </div>
       </div>
     </div>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 font-mono text-sm font-medium tabular-nums">{value}</dd>
+    </div>
+  )
+}
+
+/** A quiet inline chip pairing a small icon with a label, used for agent and node context. */
+function MetaChip({ icon, children }: { icon: IconName; children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <Icon name={icon} className="size-3.5" />
+      {children}
+    </span>
+  )
+}
+
+function RequestCard({
+  request,
+  decision,
+  onDecide,
+}: {
+  request: ApprovalRequest
+  decision: Decision | undefined
+  onDecide: (decision: Decision) => void
+}) {
+  const [copied, setCopied] = useState(false)
+  const { detail } = request
+  const copyable = detail.kind === "command" ? detail.command : undefined
+
+  async function copy() {
+    if (!copyable) return
+    try {
+      await navigator.clipboard.writeText(copyable)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Clipboard access can be denied; the command stays selectable as text.
+    }
+  }
+
+  return (
+    <article
+      aria-labelledby={`request-${request.id}`}
+      className={cn("surface overflow-hidden", decision && "opacity-75")}
+    >
+      <div className="flex items-center gap-2.5 px-4 pt-3.5">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-secondary text-muted-foreground">
+          <Icon name={request.icon} className="size-4" />
+        </span>
+        <h2 id={`request-${request.id}`} className="font-medium">
+          {request.action}
+        </h2>
+        <RiskBadge risk={request.risk} />
+        <span className="ml-auto flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+          <Icon name="clock" className="size-3.5" />
+          {request.age}
+        </span>
+      </div>
+
+      <div className="px-4 pt-3">
+        <div className="flex items-center gap-2 rounded-md bg-muted py-2 pr-1.5 pl-3 font-mono text-[0.8125rem]">
+          <p className="min-w-0 flex-1 break-all">
+            {detail.kind === "command" && (
+              <>
+                <span aria-hidden="true" className="mr-2 text-muted-foreground select-none">
+                  $
+                </span>
+                {detail.command}
+              </>
+            )}
+            {detail.kind === "file" && (
+              <>
+                <span className="text-muted-foreground">{detail.directory}</span>
+                {detail.file}
+              </>
+            )}
+            {detail.kind === "network" && (
+              <>
+                <span className="mr-2 rounded-sm bg-status-running px-1 py-px text-[0.6875rem] font-medium text-status-running-foreground">
+                  {detail.method}
+                </span>
+                {detail.host}
+                <span className="text-muted-foreground">{detail.path}</span>
+              </>
+            )}
+          </p>
+          {detail.kind === "file" && <DiffStat added={detail.added} removed={detail.removed} />}
+          {copyable && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={copied ? "已复制" : "复制命令"}
+              onClick={copy}
+            >
+              <Icon name={copied ? "check" : "copy"} className="size-3.5" />
+            </Button>
+          )}
+        </div>
+        <p className="mt-2 text-muted-foreground">{request.impact}</p>
+      </div>
+
+      <div className="mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t bg-muted/60 px-4 py-2.5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+          <MetaChip icon="message">{request.agent}</MetaChip>
+          <MetaChip icon={request.nodeIcon}>{request.node}</MetaChip>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          {decision ? (
+            <span
+              className={cn(
+                "flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium",
+                decision === "allowed"
+                  ? "bg-status-done text-status-done-foreground"
+                  : "bg-status-failed text-status-failed-foreground",
+              )}
+            >
+              <Icon name={decision === "allowed" ? "check" : "close"} className="size-3.5" />
+              {decision === "allowed" ? "已允许" : "已拒绝"}
+            </span>
+          ) : (
+            <>
+              <Button
+                variant="secondary"
+                aria-label={`拒绝${request.action}`}
+                onClick={() => onDecide("denied")}
+              >
+                拒绝
+              </Button>
+              <Button aria-label={`允许${request.action}`} onClick={() => onDecide("allowed")}>
+                允许
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </article>
+  )
+}
+
+/** Line counts with a five-block bar split in the same proportion, labelled for screen readers. */
+function DiffStat({ added, removed }: { added: number; removed: number }) {
+  const addedBlocks = Math.round((added / (added + removed)) * 5)
+  return (
+    <span className="flex shrink-0 items-center gap-1.5 pr-1.5 text-xs tabular-nums">
+      <span className="text-status-done-foreground">+{added}</span>
+      <span className="text-status-failed-foreground">−{removed}</span>
+      <span aria-hidden="true" className="flex gap-px">
+        {Array.from({ length: 5 }, (_, index) => (
+          <span
+            key={index}
+            className={cn(
+              "size-1.5 rounded-[1px]",
+              index < addedBlocks ? "bg-status-done-foreground" : "bg-status-failed-foreground",
+            )}
+          />
+        ))}
+      </span>
+    </span>
+  )
+}
+
+function AgentCard({ agent, pendingCount }: { agent: Agent; pendingCount: number }) {
+  const [done, total] = agent.steps
+  return (
+    <article aria-labelledby={`agent-${agent.name}`} className="surface p-4">
+      <div className="flex items-center gap-2.5">
+        <span
+          aria-hidden="true"
+          className={cn(
+            "flex size-7 shrink-0 items-center justify-center rounded-md text-xs font-semibold",
+            agent.tint,
+          )}
+        >
+          {agent.name[0]}
+        </span>
+        <div className="min-w-0">
+          <h3 id={`agent-${agent.name}`} className="leading-4 font-medium">
+            {agent.name}
+          </h3>
+          <p className="text-xs text-muted-foreground">{agent.role}</p>
+        </div>
+        <StatusPill status={agent.status} className="ml-auto" />
+      </div>
+
+      <p className="mt-3">{agent.task}</p>
+
+      <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+        <progress
+          aria-label={`${agent.name} 进度`}
+          max={total}
+          value={done}
+          className={cn(
+            "h-1 flex-1 appearance-none overflow-hidden rounded-full bg-secondary [&::-moz-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-transparent [&::-webkit-progress-value]:rounded-full",
+            agent.status === "done"
+              ? "[&::-moz-progress-bar]:bg-status-done-foreground [&::-webkit-progress-value]:bg-status-done-foreground"
+              : "[&::-moz-progress-bar]:bg-foreground/70 [&::-webkit-progress-value]:bg-foreground/70",
+          )}
+        />
+        <span className="font-mono tabular-nums">
+          {done}/{total} 步
+        </span>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t pt-3 font-mono text-xs text-muted-foreground tabular-nums">
+        <MetaChip icon="cpu">{agent.model}</MetaChip>
+        <MetaChip icon="coins">{agent.cost}</MetaChip>
+        <MetaChip icon="timer">{agent.duration}</MetaChip>
+      </div>
+
+      {pendingCount > 0 && (
+        <a
+          href="#inbox"
+          className="mt-3 flex h-7 items-center justify-between rounded-md bg-status-waiting px-2 text-xs font-medium text-status-waiting-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          等你批准 {pendingCount} 个请求
+          <Icon name="arrowRight" className="size-3.5" />
+        </a>
+      )}
+    </article>
   )
 }
