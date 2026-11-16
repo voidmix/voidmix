@@ -106,7 +106,7 @@ export function Account() {
       </p>
       <div className="flex flex-wrap gap-3">
         <Button
-          className="min-h-11"
+          className="h-10 px-4"
           variant="outline"
           disabled={!native || busy}
           onClick={user ? logout : login}
@@ -114,7 +114,7 @@ export function Account() {
           {busy ? "正在处理…" : user ? "退出登录" : "打开网页登录"}
         </Button>
         {code && (
-          <Button className="min-h-11" variant="ghost" onClick={cancel}>
+          <Button className="h-10 px-4" variant="ghost" onClick={cancel}>
             取消登录
           </Button>
         )}

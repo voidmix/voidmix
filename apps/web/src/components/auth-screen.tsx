@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { deviceClientIds, type DeviceClientId } from "@voidmix/auth/device"
+import { AppShell, Surface } from "@voidmix/ui/components/app-shell"
 import { Button } from "@voidmix/ui/components/button"
 import { Input } from "@voidmix/ui/components/input"
 import { Label } from "@voidmix/ui/components/label"
@@ -105,16 +106,10 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
   }
 
   return (
-    <main className="flex min-h-svh items-center justify-center px-6 py-12 selection:bg-primary selection:text-primary-foreground">
-      <div className="w-full max-w-sm space-y-8">
-        <a
-          href="/"
-          className="inline-flex min-h-11 items-center text-lg font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Voidmix
-        </a>
+    <AppShell brandHref="/">
+      <Surface className="max-w-sm space-y-7">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-balance">
+          <h1 className="text-xl font-semibold tracking-tight text-balance">
             {outcome
               ? outcome === "approved"
                 ? "已允许登录"
@@ -147,9 +142,17 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
           )
         ) : session ? (
           <div className="space-y-6">
-            <div className="space-y-1 border-b pb-5">
-              <p className="font-medium break-words">{session.user.name}</p>
-              <p className="text-sm break-all text-muted-foreground">{session.user.email}</p>
+            <div className="flex items-center gap-3 rounded-xl border bg-background/60 p-3">
+              <span
+                aria-hidden="true"
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-foreground uppercase"
+              >
+                {Array.from(session.user.name.trim())[0] ?? "?"}
+              </span>
+              <div className="min-w-0 space-y-0.5">
+                <p className="text-sm font-medium break-words">{session.user.name}</p>
+                <p className="text-sm break-all text-muted-foreground">{session.user.email}</p>
+              </div>
             </div>
             {authorize && !device && (
               <form onSubmit={inspectCode} className="space-y-4">
@@ -179,7 +182,7 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
                   请求使用此账户登录。请确认这是你刚刚发起的操作，且下方授权码与应用中一致。
                 </p>
                 <p
-                  className="rounded-lg bg-muted px-4 py-5 text-center font-mono text-2xl tracking-widest break-all tabular-nums"
+                  className="rounded-xl border bg-background/60 px-4 py-5 text-center font-mono text-2xl font-medium tracking-[0.3em] break-all tabular-nums"
                   aria-label={`授权码 ${device.code}`}
                 >
                   {device.code}
@@ -199,7 +202,12 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
                 </div>
               </div>
             )}
-            <Button variant="link" className="h-11 p-0" disabled={busy} onClick={signOut}>
+            <Button
+              variant="link"
+              className="h-11 p-0 text-muted-foreground"
+              disabled={busy}
+              onClick={signOut}
+            >
               {authorize ? "换个账户登录" : "退出登录"}
             </Button>
           </div>
@@ -266,11 +274,14 @@ export function AuthScreen({ authorize = false, initialCode = "" }) {
           </form>
         )}
         {(error || sessionError) && (
-          <p role="alert" className="text-sm leading-6 text-destructive">
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm leading-6 text-destructive"
+          >
             {error || "无法读取登录状态，请检查网络并刷新页面。"}
           </p>
         )}
-      </div>
-    </main>
+      </Surface>
+    </AppShell>
   )
 }

@@ -1,6 +1,8 @@
 import { ClientOnly, HeadContent, Link, Scripts, createRootRoute } from "@tanstack/react-router"
 
+import { AppShell } from "@voidmix/ui/components/app-shell"
 import appCss from "@voidmix/ui/globals.css?url"
+import { themeScript } from "@voidmix/ui/lib/theme"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -12,20 +14,24 @@ export const Route = createRootRoute({
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   notFoundComponent: () => (
-    <main className="space-y-3 p-6">
-      <h1 className="text-xl font-semibold">未找到页面</h1>
-      <Link className="underline underline-offset-4" to="/">
-        返回首页
-      </Link>
-    </main>
+    <AppShell>
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">未找到页面</h1>
+        <Link className="text-sm text-muted-foreground underline underline-offset-4" to="/">
+          返回首页
+        </Link>
+      </div>
+    </AppShell>
   ),
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN">
+    // Dark is the prerendered default; the inline script applies a stored light choice before paint.
+    <html lang="zh-CN" className="dark" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <HeadContent />
       </head>
       <body>

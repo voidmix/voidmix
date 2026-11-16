@@ -25,11 +25,19 @@ export function App() {
   return (
     <Starter>
       <Account />
-      <div className="w-full space-y-3 border-t pt-6">
-        <Button variant="secondary" disabled={!native || pending} onClick={greet}>
+      <div className="w-full space-y-4 border-t pt-6">
+        <Button
+          className="h-10 px-4"
+          variant="secondary"
+          disabled={!native || pending}
+          onClick={greet}
+        >
           {pending ? "调用中…" : "调用 Go"}
         </Button>
-        <p aria-live="polite" className="text-sm leading-relaxed text-muted-foreground">
+        <p
+          aria-live="polite"
+          className="rounded-lg border bg-background/60 px-3 py-2.5 font-mono text-[0.8rem] leading-relaxed text-muted-foreground"
+        >
           {message || (native ? "试试调用桌面端的 Go 服务。" : "请在桌面应用中体验 Go 调用。")}
         </p>
       </div>
