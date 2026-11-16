@@ -2,6 +2,8 @@
 
 The root Dockerfile provides `web`, `api`, `migrate`, and `storage-init` targets. Bun multi-stage builds and Turbo prune produce non-root runtime images containing built artifacts. The host needs Docker and Compose v2, not Node.js or Go. Native apps and CLI use their own packaging flows.
 
+For a managed platform instead of a single host, see [Railway deployment](railway/README.md) or [Kubernetes deployment](../infra/README.md).
+
 ## Start
 
 ```sh
