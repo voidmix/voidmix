@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState, type ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import { Button } from "@voidmix/ui/components/button"
 import { Icon, type IconName } from "@voidmix/ui/components/icon"
+import { Kbd } from "@voidmix/ui/components/kbd"
 import { Logo } from "@voidmix/ui/components/logo"
 import { RiskBadge, type RiskLevel } from "@voidmix/ui/components/risk-badge"
 import { StatusPill, type AgentStatus } from "@voidmix/ui/components/status-pill"
@@ -14,10 +15,18 @@ export const Route = createFileRoute("/workbench")({
 })
 
 // Static sample data: this screen demonstrates the visual direction and calls no backend.
+type DiffLine = { kind: "context" | "added" | "removed"; text: string }
 type Detail =
-  | { kind: "command"; command: string }
-  | { kind: "file"; directory: string; file: string; added: number; removed: number }
-  | { kind: "network"; method: string; host: string; path: string }
+  | { kind: "command"; command: string; cwd: string }
+  | {
+      kind: "file"
+      directory: string
+      file: string
+      added: number
+      removed: number
+      diff: DiffLine[]
+    }
+  | { kind: "network"; method: string; host: string; path: string; purpose: string }
 
 interface ApprovalRequest {
   id: number
@@ -26,10 +35,12 @@ interface ApprovalRequest {
   risk: RiskLevel
   detail: Detail
   impact: string
+  reason: string
   agent: string
   node: string
   nodeIcon: IconName
   age: string
+  time: string
 }
 
 const requests: ApprovalRequest[] = [
@@ -38,24 +49,41 @@ const requests: ApprovalRequest[] = [
     action: "执行命令",
     icon: "terminal",
     risk: "high",
-    detail: { kind: "command", command: "bun run db:migrate" },
+    detail: { kind: "command", command: "bun run db:migrate", cwd: "~/Git/voidmix" },
     impact: "会修改数据库结构，执行后无法自动回滚。",
+    reason: "新增了审批记录表，需要先应用迁移才能继续验证接口。",
     agent: "Coder",
     node: "MacBook Pro",
     nodeIcon: "laptop",
     age: "2 分钟前",
+    time: "今天 14:32",
   },
   {
     id: 2,
     action: "修改文件",
     icon: "file",
     risk: "medium",
-    detail: { kind: "file", directory: "apps/api/src/", file: "config.ts", added: 12, removed: 3 },
+    detail: {
+      kind: "file",
+      directory: "apps/api/src/",
+      file: "config.ts",
+      added: 12,
+      removed: 3,
+      diff: [
+        { kind: "context", text: "export function loadApiConfig(env: Environment) {" },
+        { kind: "removed", text: "  const redisUrl = process.env.REDIS_URL" },
+        { kind: "added", text: "  const redisUrl = env.REDIS_URL?.trim() || undefined" },
+        { kind: "added", text: "  const approvalTimeout = seconds(env.APPROVAL_TIMEOUT, 300)" },
+        { kind: "context", text: "  return {" },
+      ],
+    },
     impact: "改动服务端配置加载，只影响工作区内的文件。",
+    reason: "把配置读取改成不依赖进程环境的纯函数，方便测试。",
     agent: "Coder",
     node: "MacBook Pro",
     nodeIcon: "laptop",
     age: "8 分钟前",
+    time: "今天 14:26",
   },
   {
     id: 3,
@@ -67,12 +95,15 @@ const requests: ApprovalRequest[] = [
       method: "GET",
       host: "api.github.com",
       path: "/repos/voidmix/voidmix",
+      purpose: "读取仓库的公开信息，不发送请求体。",
     },
     impact: "只读请求，不携带任何凭据。",
+    reason: "需要仓库的默认分支和最近更新时间来完成对比。",
     agent: "Researcher",
     node: "VPS 新加坡",
     nodeIcon: "server",
     age: "11 分钟前",
+    time: "今天 14:23",
   },
 ]
 
@@ -81,10 +112,12 @@ interface Agent {
   role: string
   status: AgentStatus
   task: string
+  /** What the agent is doing right now; shown under the task. */
+  step: string
   model: string
   cost: string
-  duration: string
-  /** Completed and total steps; drives the progress bar. */
+  /** Elapsed seconds at page load; live agents keep counting. */
+  seconds: number
   steps: [number, number]
   tint: string
 }
@@ -95,9 +128,10 @@ const agents: Agent[] = [
     role: "开发代理",
     status: "waiting",
     task: "把配置加载改成纯函数，并补上迁移。",
+    step: "已暂停，等待你确认 2 个操作",
     model: "Sonnet 5.5",
     cost: "$0.42",
-    duration: "6 分 12 秒",
+    seconds: 372,
     steps: [4, 6],
     tint: "bg-chart-4/15 text-chart-4",
   },
@@ -106,9 +140,10 @@ const agents: Agent[] = [
     role: "研究代理",
     status: "running",
     task: "对比两个开源项目的审批机制。",
+    step: "正在阅读 docs/approvals.md",
     model: "Opus 5.5",
     cost: "$0.18",
-    duration: "2 分 40 秒",
+    seconds: 160,
     steps: [2, 5],
     tint: "bg-chart-1/15 text-chart-1",
   },
@@ -117,9 +152,10 @@ const agents: Agent[] = [
     role: "审查代理",
     status: "done",
     task: "审查界面调整的改动，没有发现问题。",
+    step: "已交付审查结论",
     model: "Haiku 5.5",
     cost: "$0.03",
-    duration: "48 秒",
+    seconds: 48,
     steps: [3, 3],
     tint: "bg-chart-2/15 text-chart-2",
   },
@@ -138,8 +174,35 @@ const nodes: { name: string; icon: IconName; online: boolean; note: string }[] =
   { name: "工作站", icon: "cpu", online: false, note: "离线" },
 ]
 
-type Decision = "allowed" | "denied"
+type Decision = "allowed" | "always" | "denied"
 type Filter = "pending" | "processed" | "all"
+
+const decisionLabel: Record<Decision, string> = {
+  allowed: "已允许",
+  always: "已设为始终允许",
+  denied: "已拒绝",
+}
+
+interface LogEntry {
+  key: string
+  /** Set for decisions made in this session, which can be undone. */
+  requestId?: number
+  decision: Decision
+  action: string
+  agent: string
+  when: string
+}
+
+const earlierLog: LogEntry[] = [
+  {
+    key: "earlier-1",
+    decision: "allowed",
+    action: "读取文件",
+    agent: "Reviewer",
+    when: "14 分钟前",
+  },
+  { key: "earlier-2", decision: "denied", action: "推送分支", agent: "Coder", when: "21 分钟前" },
+]
 
 /** Search matches what a person sees on the card: action, agent, node, and the detail text. */
 function searchText(request: ApprovalRequest) {
@@ -152,11 +215,22 @@ function searchText(request: ApprovalRequest) {
   return `${request.action} ${request.agent} ${request.node} ${detail}`.toLowerCase()
 }
 
+function formatDuration(seconds: number) {
+  const minutes = Math.floor(seconds / 60)
+  return minutes ? `${minutes} 分 ${seconds % 60} 秒` : `${seconds} 秒`
+}
+
 function Workbench() {
   const [decisions, setDecisions] = useState<Record<number, Decision>>({})
+  const [log, setLog] = useState<LogEntry[]>(earlierLog)
   const [filter, setFilter] = useState<Filter>("pending")
   const [query, setQuery] = useState("")
+  const [selectedId, setSelectedId] = useState<number | null>(requests[0]!.id)
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({})
   const [notice, setNotice] = useState("")
+  const [elapsed, setElapsed] = useState(0)
+  const searchRef = useRef<HTMLInputElement>(null)
+
   const pending = requests.filter((request) => !decisions[request.id])
   const processedCount = 12 + Object.keys(decisions).length
   const needle = query.trim().toLowerCase()
@@ -165,11 +239,88 @@ function Workbench() {
     const inTab = filter === "all" || (filter === "pending" ? !decided : decided)
     return inTab && (!needle || searchText(request).includes(needle))
   })
+  const actionable = visible.filter((request) => !decisions[request.id])
+  const selected = actionable.find((request) => request.id === selectedId) ?? actionable[0]
 
   function decide(request: ApprovalRequest, decision: Decision) {
     setDecisions((previous) => ({ ...previous, [request.id]: decision }))
-    setNotice(`${request.action}请求已${decision === "allowed" ? "允许" : "拒绝"}。`)
+    setLog((previous) => [
+      {
+        key: `session-${request.id}`,
+        requestId: request.id,
+        decision,
+        action: request.action,
+        agent: request.agent,
+        when: "刚刚",
+      },
+      ...previous.filter((entry) => entry.requestId !== request.id),
+    ])
+    setNotice(`${request.action}：${decisionLabel[decision]}。`)
+    // Keep the keyboard flow moving: select the next request that still needs a decision.
+    const rest = actionable.filter((candidate) => candidate.id !== request.id)
+    setSelectedId(rest[0]?.id ?? null)
   }
+
+  function undo(requestId: number) {
+    const request = requests.find((candidate) => candidate.id === requestId)
+    setDecisions((previous) => {
+      const next = { ...previous }
+      delete next[requestId]
+      return next
+    })
+    setLog((previous) => previous.filter((entry) => entry.requestId !== requestId))
+    setSelectedId(requestId)
+    if (request) setNotice(`已撤销对${request.action}的决定。`)
+  }
+
+  // Live agents keep counting so the screen reads as running, not as a still.
+  useEffect(() => {
+    const timer = setInterval(() => setElapsed((seconds) => seconds + 1), 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Page-level shortcuts. They never fire while typing, and Escape leaves the search field.
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null
+      const typing =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target?.isContentEditable
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault()
+        searchRef.current?.focus()
+        return
+      }
+      if (typing) {
+        if (event.key === "Escape") searchRef.current?.blur()
+        return
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey) return
+      const index = selected ? actionable.indexOf(selected) : -1
+      const key = event.key.toLowerCase()
+      if (key === "j" || event.key === "ArrowDown") {
+        const next = actionable[Math.min(index + 1, actionable.length - 1)]
+        if (next) setSelectedId(next.id)
+      } else if (key === "k" || event.key === "ArrowUp") {
+        const previous = actionable[Math.max(index - 1, 0)]
+        if (previous) setSelectedId(previous.id)
+      } else if (!selected) {
+        return
+      } else if (key === "a") {
+        decide(selected, "allowed")
+      } else if (key === "d") {
+        decide(selected, "denied")
+      } else if (key === "e") {
+        setExpanded((previous) => ({ ...previous, [selected.id]: !previous[selected.id] }))
+      } else {
+        return
+      }
+      event.preventDefault()
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  })
 
   return (
     <div className="app-backdrop min-h-svh lg:grid lg:grid-cols-[232px_minmax(0,1fr)]">
@@ -193,12 +344,17 @@ function Workbench() {
           <Icon name="search" className="size-3.5" />
           <span className="sr-only">搜索请求</span>
           <input
+            ref={searchRef}
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="搜索请求…"
             className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground pointer-coarse:text-base [&::-webkit-search-cancel-button]:hidden"
           />
+          <span aria-hidden="true" className="flex gap-0.5 pointer-coarse:hidden">
+            <Kbd>⌘</Kbd>
+            <Kbd>K</Kbd>
+          </span>
         </label>
 
         <nav
@@ -240,7 +396,7 @@ function Workbench() {
               <li
                 key={node.name}
                 className={cn(
-                  "flex h-7 items-center gap-2 px-2 text-sm",
+                  "flex h-7 items-center gap-2 rounded-md px-2 text-sm transition-colors hover:bg-sidebar-accent",
                   !node.online && "text-muted-foreground",
                 )}
               >
@@ -303,38 +459,60 @@ function Workbench() {
               </dl>
             </div>
 
-            <fieldset className="min-w-0 border-0 p-0">
-              <legend className="sr-only">审批筛选</legend>
-              <div className="mt-4 mb-3 inline-flex gap-0.5 rounded-md bg-secondary p-0.5">
-                {(
-                  [
-                    { value: "pending", label: "待处理", count: pending.length },
-                    { value: "processed", label: "已处理", count: processedCount },
-                    { value: "all", label: "全部" },
-                  ] as const
-                ).map((tab) => (
-                  <button
-                    key={tab.value}
-                    type="button"
-                    aria-pressed={filter === tab.value}
-                    onClick={() => setFilter(tab.value)}
-                    className={cn(
-                      "flex h-6 items-center gap-1.5 rounded-sm px-2.5 text-sm font-medium outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring pointer-coarse:h-9",
-                      filter === tab.value
-                        ? "bg-card text-foreground shadow-surface"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {tab.label}
-                    {"count" in tab && (
-                      <span className="font-mono text-xs font-normal text-muted-foreground tabular-nums">
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
+            <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <fieldset className="min-w-0 border-0 p-0">
+                <legend className="sr-only">审批筛选</legend>
+                <div className="inline-flex gap-0.5 rounded-md bg-secondary p-0.5">
+                  {(
+                    [
+                      { value: "pending", label: "待处理", count: pending.length },
+                      { value: "processed", label: "已处理", count: processedCount },
+                      { value: "all", label: "全部" },
+                    ] as const
+                  ).map((tab) => (
+                    <button
+                      key={tab.value}
+                      type="button"
+                      aria-pressed={filter === tab.value}
+                      onClick={() => setFilter(tab.value)}
+                      className={cn(
+                        "flex h-6 items-center gap-1.5 rounded-sm px-2.5 text-sm font-medium outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring pointer-coarse:h-9",
+                        filter === tab.value
+                          ? "bg-card text-foreground shadow-surface"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {tab.label}
+                      {"count" in tab && (
+                        <span className="font-mono text-xs font-normal text-muted-foreground tabular-nums">
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              {/* Shortcut legend: hidden on touch devices, where there is no keyboard to use it. */}
+              <p className="flex items-center gap-3 text-xs text-muted-foreground pointer-coarse:hidden">
+                <span className="flex items-center gap-1">
+                  <Kbd>J</Kbd>
+                  <Kbd>K</Kbd>
+                  切换
+                </span>
+                <span className="flex items-center gap-1">
+                  <Kbd>A</Kbd>
+                  允许
+                </span>
+                <span className="flex items-center gap-1">
+                  <Kbd>D</Kbd>
+                  拒绝
+                </span>
+                <span className="flex items-center gap-1">
+                  <Kbd>E</Kbd>
+                  展开
+                </span>
+              </p>
+            </div>
 
             <div className="grid gap-3">
               {visible.map((request) => (
@@ -342,7 +520,17 @@ function Workbench() {
                   key={request.id}
                   request={request}
                   decision={decisions[request.id]}
+                  selected={selected?.id === request.id}
+                  expanded={!!expanded[request.id]}
+                  onSelect={() => setSelectedId(request.id)}
+                  onToggle={() =>
+                    setExpanded((previous) => ({
+                      ...previous,
+                      [request.id]: !previous[request.id],
+                    }))
+                  }
                   onDecide={(decision) => decide(request, decision)}
+                  onUndo={() => undo(request.id)}
                 />
               ))}
               {visible.length === 0 && (
@@ -378,24 +566,73 @@ function Workbench() {
             </p>
           </main>
 
-          <aside id="agents" aria-labelledby="agents-heading" className="min-w-0 scroll-mt-4">
-            <div className="flex h-8 items-center justify-between">
-              <h2 id="agents-heading" className="font-medium">
-                运行中
-              </h2>
-              <span className="font-mono text-xs text-muted-foreground tabular-nums">
-                {agents.filter((agent) => agent.status !== "done").length}/{agents.length}
-              </span>
-            </div>
-            <div className="mt-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-              {agents.map((agent) => (
-                <AgentCard
-                  key={agent.name}
-                  agent={agent}
-                  pendingCount={pending.filter((request) => request.agent === agent.name).length}
-                />
-              ))}
-            </div>
+          <aside className="grid min-w-0 gap-6">
+            <section id="agents" aria-labelledby="agents-heading" className="scroll-mt-4">
+              <div className="flex h-8 items-center justify-between">
+                <h2 id="agents-heading" className="font-medium">
+                  运行中
+                </h2>
+                <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                  {agents.filter((agent) => agent.status !== "done").length}/{agents.length}
+                </span>
+              </div>
+              <div className="mt-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                {agents.map((agent) => (
+                  <AgentCard
+                    key={agent.name}
+                    agent={agent}
+                    elapsed={elapsed}
+                    pendingCount={pending.filter((request) => request.agent === agent.name).length}
+                  />
+                ))}
+              </div>
+            </section>
+
+            <section aria-labelledby="log-heading">
+              <div className="flex h-8 items-center justify-between">
+                <h2 id="log-heading" className="font-medium">
+                  最近记录
+                </h2>
+                <span className="text-xs text-muted-foreground">今天</span>
+              </div>
+              <ol className="surface mt-2 divide-y">
+                {log.map((entry) => (
+                  <li key={entry.key} className="flex items-center gap-2.5 px-3 py-2.5">
+                    <span
+                      className={cn(
+                        "flex size-5 shrink-0 items-center justify-center rounded-full",
+                        entry.decision === "denied"
+                          ? "bg-status-failed text-status-failed-foreground"
+                          : "bg-status-done text-status-done-foreground",
+                      )}
+                    >
+                      <Icon
+                        name={entry.decision === "denied" ? "close" : "check"}
+                        className="size-3"
+                      />
+                    </span>
+                    <p className="min-w-0 flex-1">
+                      <span className="font-medium">{decisionLabel[entry.decision]}</span>{" "}
+                      {entry.action}
+                      <span className="block text-xs text-muted-foreground">
+                        {entry.agent} · {entry.when}
+                      </span>
+                    </p>
+                    {entry.requestId !== undefined && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label={`撤销对${entry.action}的决定`}
+                        onClick={() => undo(entry.requestId!)}
+                      >
+                        <Icon name="undo" className="size-3.5" />
+                        撤销
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </section>
           </aside>
         </div>
       </div>
@@ -422,18 +659,36 @@ function MetaChip({ icon, children }: { icon: IconName; children: ReactNode }) {
   )
 }
 
+/** The icon tile takes the risk tint, so severity reads before the badge text does. */
+const riskTile: Record<RiskLevel, string> = {
+  low: "bg-secondary text-muted-foreground",
+  medium: "bg-risk-medium text-risk-medium-foreground",
+  high: "bg-risk-high text-risk-high-foreground",
+}
+
 function RequestCard({
   request,
   decision,
+  selected,
+  expanded,
+  onSelect,
+  onToggle,
   onDecide,
+  onUndo,
 }: {
   request: ApprovalRequest
   decision: Decision | undefined
+  selected: boolean
+  expanded: boolean
+  onSelect: () => void
+  onToggle: () => void
   onDecide: (decision: Decision) => void
+  onUndo: () => void
 }) {
   const [copied, setCopied] = useState(false)
   const { detail } = request
   const copyable = detail.kind === "command" ? detail.command : undefined
+  const panelId = `request-${request.id}-details`
 
   async function copy() {
     if (!copyable) return
@@ -449,20 +704,34 @@ function RequestCard({
   return (
     <article
       aria-labelledby={`request-${request.id}`}
-      className={cn("surface overflow-hidden", decision && "opacity-75")}
+      onPointerDown={decision ? undefined : onSelect}
+      className={cn(
+        "surface overflow-hidden transition-[box-shadow,opacity]",
+        decision && "opacity-70",
+        // The selected request is the target of the page shortcuts.
+        selected && "outline-2 outline-offset-2 outline-ring",
+      )}
     >
       <div className="flex items-center gap-2.5 px-4 pt-3.5">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-secondary text-muted-foreground">
+        <span
+          className={cn(
+            "flex size-7 shrink-0 items-center justify-center rounded-md",
+            riskTile[request.risk],
+          )}
+        >
           <Icon name={request.icon} className="size-4" />
         </span>
         <h2 id={`request-${request.id}`} className="font-medium">
           {request.action}
         </h2>
         <RiskBadge risk={request.risk} />
-        <span className="ml-auto flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+        <time
+          title={request.time}
+          className="ml-auto flex shrink-0 items-center gap-1 text-xs text-muted-foreground"
+        >
           <Icon name="clock" className="size-3.5" />
           {request.age}
-        </span>
+        </time>
       </div>
 
       <div className="px-4 pt-3">
@@ -504,7 +773,76 @@ function RequestCard({
             </Button>
           )}
         </div>
-        <p className="mt-2 text-muted-foreground">{request.impact}</p>
+
+        <div className="mt-2 flex items-start gap-2">
+          <p className="min-w-0 flex-1 text-muted-foreground">
+            {request.risk === "high" && (
+              <Icon
+                name="alert"
+                className="mr-1 inline size-3.5 align-[-2px] text-risk-high-foreground"
+              />
+            )}
+            {request.impact}
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-expanded={expanded}
+            aria-controls={panelId}
+            onClick={onToggle}
+            className="-mr-1.5 shrink-0 text-muted-foreground"
+          >
+            {expanded ? "收起" : "详情"}
+            <Icon
+              name="arrowDown"
+              className={cn("size-3.5 transition-transform", expanded && "rotate-180")}
+            />
+          </Button>
+        </div>
+
+        {expanded && (
+          <div id={panelId} className="mt-2 grid gap-2">
+            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-xs">
+              <dt className="text-muted-foreground">原因</dt>
+              <dd>{request.reason}</dd>
+              {detail.kind === "command" && (
+                <>
+                  <dt className="text-muted-foreground">工作目录</dt>
+                  <dd className="flex items-center gap-1 font-mono">
+                    <Icon name="folder" className="size-3.5 text-muted-foreground" />
+                    {detail.cwd}
+                  </dd>
+                </>
+              )}
+              {detail.kind === "network" && (
+                <>
+                  <dt className="text-muted-foreground">用途</dt>
+                  <dd>{detail.purpose}</dd>
+                </>
+              )}
+            </dl>
+            {detail.kind === "file" && (
+              <pre className="overflow-x-auto rounded-md border font-mono text-xs leading-5">
+                {detail.diff.map((line, index) => (
+                  <span
+                    key={index}
+                    className={cn(
+                      "block px-3",
+                      line.kind === "added" && "bg-status-done text-status-done-foreground",
+                      line.kind === "removed" && "bg-status-failed text-status-failed-foreground",
+                      line.kind === "context" && "text-muted-foreground",
+                    )}
+                  >
+                    <span aria-hidden="true" className="mr-2 inline-block w-2 select-none">
+                      {line.kind === "added" ? "+" : line.kind === "removed" ? "−" : ""}
+                    </span>
+                    {line.text}
+                  </span>
+                ))}
+              </pre>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mt-3.5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t bg-muted/60 px-4 py-2.5">
@@ -514,28 +852,51 @@ function RequestCard({
         </div>
         <div className="ml-auto flex items-center gap-2">
           {decision ? (
-            <span
-              className={cn(
-                "flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium",
-                decision === "allowed"
-                  ? "bg-status-done text-status-done-foreground"
-                  : "bg-status-failed text-status-failed-foreground",
-              )}
-            >
-              <Icon name={decision === "allowed" ? "check" : "close"} className="size-3.5" />
-              {decision === "allowed" ? "已允许" : "已拒绝"}
-            </span>
+            <>
+              <span
+                className={cn(
+                  "flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium",
+                  decision === "denied"
+                    ? "bg-status-failed text-status-failed-foreground"
+                    : "bg-status-done text-status-done-foreground",
+                )}
+              >
+                <Icon name={decision === "denied" ? "close" : "check"} className="size-3.5" />
+                {decisionLabel[decision]}
+              </span>
+              <Button variant="ghost" aria-label={`撤销对${request.action}的决定`} onClick={onUndo}>
+                <Icon name="undo" className="size-3.5" />
+                撤销
+              </Button>
+            </>
           ) : (
             <>
+              {/* High-risk actions are confirmed every time, so no standing grant is offered. */}
+              {request.risk !== "high" && (
+                <Button
+                  variant="ghost"
+                  className="text-muted-foreground"
+                  aria-label={`始终允许${request.action}`}
+                  onClick={() => onDecide("always")}
+                >
+                  始终允许
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 aria-label={`拒绝${request.action}`}
                 onClick={() => onDecide("denied")}
               >
                 拒绝
+                {selected && <Kbd className="pointer-coarse:hidden">D</Kbd>}
               </Button>
               <Button aria-label={`允许${request.action}`} onClick={() => onDecide("allowed")}>
                 允许
+                {selected && (
+                  <Kbd className="bg-white/15 text-(--button-text) shadow-none pointer-coarse:hidden">
+                    A
+                  </Kbd>
+                )}
               </Button>
             </>
           )}
@@ -545,7 +906,7 @@ function RequestCard({
   )
 }
 
-/** Line counts with a five-block bar split in the same proportion, labelled for screen readers. */
+/** Line counts with a five-block bar split in the same proportion. */
 function DiffStat({ added, removed }: { added: number; removed: number }) {
   const addedBlocks = Math.round((added / (added + removed)) * 5)
   return (
@@ -567,8 +928,18 @@ function DiffStat({ added, removed }: { added: number; removed: number }) {
   )
 }
 
-function AgentCard({ agent, pendingCount }: { agent: Agent; pendingCount: number }) {
+function AgentCard({
+  agent,
+  elapsed,
+  pendingCount,
+}: {
+  agent: Agent
+  elapsed: number
+  pendingCount: number
+}) {
   const [done, total] = agent.steps
+  // Only a running agent accrues time; one waiting on approval is paused.
+  const seconds = agent.seconds + (agent.status === "running" ? elapsed : 0)
   return (
     <article aria-labelledby={`agent-${agent.name}`} className="surface p-4">
       <div className="flex items-center gap-2.5">
@@ -591,6 +962,13 @@ function AgentCard({ agent, pendingCount }: { agent: Agent; pendingCount: number
       </div>
 
       <p className="mt-3">{agent.task}</p>
+      <p className="mt-1 truncate text-xs text-muted-foreground">
+        {agent.status === "waiting"
+          ? pendingCount > 0
+            ? `已暂停，等待你确认 ${pendingCount} 个操作`
+            : "已收到你的决定，准备继续"
+          : agent.step}
+      </p>
 
       <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
         <progress
@@ -612,7 +990,7 @@ function AgentCard({ agent, pendingCount }: { agent: Agent; pendingCount: number
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t pt-3 font-mono text-xs text-muted-foreground tabular-nums">
         <MetaChip icon="cpu">{agent.model}</MetaChip>
         <MetaChip icon="coins">{agent.cost}</MetaChip>
-        <MetaChip icon="timer">{agent.duration}</MetaChip>
+        <MetaChip icon="timer">{formatDuration(seconds)}</MetaChip>
       </div>
 
       {pendingCount > 0 && (

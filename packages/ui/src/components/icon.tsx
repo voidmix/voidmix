@@ -1,6 +1,9 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
+  Alert02Icon,
+  ArrowDown01Icon,
   ArrowRight01Icon,
+  ArrowTurnBackwardIcon,
   Cancel01Icon,
   Clock01Icon,
   Coins01Icon,
@@ -9,6 +12,7 @@ import {
   Copy01Icon,
   CpuIcon,
   FileEditIcon,
+  Folder01Icon,
   Globe02Icon,
   InboxIcon,
   LaptopIcon,
@@ -23,6 +27,10 @@ import {
 import { cn } from "@voidmix/ui/lib/utils"
 
 const icons = {
+  alert: Alert02Icon,
+  arrowDown: ArrowDown01Icon,
+  folder: Folder01Icon,
+  undo: ArrowTurnBackwardIcon,
   arrowRight: ArrowRight01Icon,
   bell: Notification01Icon,
   clock: Clock01Icon,
