@@ -1,0 +1,19 @@
+deploy/railway/README.md
+  s_ccb2206306ae02::t_6f1c204853101e 22-36,51-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "b4ca62bc77f407cc2325a4cc6184f0fbe785bce6",
+  "prompts": {},
+  "sessions": {
+    "s_ccb2206306ae02": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4fa021c0-c7ee-4e5a-a43d-3fc546d8d5a8",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "Zack <heyloyep@gmail.com>"
+    }
+  }
+}
