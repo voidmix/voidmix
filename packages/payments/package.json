@@ -1,0 +1,14 @@
+{
+  "name": "@voidmix/payments",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "stripe": "23.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "@voidmix/typescript-config": "workspace:*",
+    "typescript": "~6.0.2"
+  }
+}
